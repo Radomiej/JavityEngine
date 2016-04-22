@@ -12,12 +12,15 @@ public interface Component {
 	public void awake();
 	public void start();
 	public void update();
+	public void lateUpdate();
 	public void remove();
 	public void setEnabled(boolean enable);
 	public boolean isEnabled();
 	public Transform getTransform();
 	public void onDisable();
 	public void onEnabled();
+	public void onPause();
+	public void onResume();
 	public void onCollisionEnter(Contact contact);
 	public void onCollisionExit(Contact contact);
 	public void onCollisionPreSolve(Contact contact, Manifold oldManifold);

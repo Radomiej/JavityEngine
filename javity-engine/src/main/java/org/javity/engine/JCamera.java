@@ -1,7 +1,9 @@
 package org.javity.engine;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class JCamera {
 	
@@ -36,6 +38,10 @@ public class JCamera {
 		nativeCamera.update();
 	}
 	
-	
+	public Vector2 screenToWorldPoint(Vector2 screenPoint){
+		Vector3 worldPoint3 = nativeCamera.unproject(new Vector3(screenPoint.x, screenPoint.y, 0));
+		Vector2 worldPoint = new Vector2(worldPoint3.x, worldPoint3.y);
+		return worldPoint;
+	}
 	
 }

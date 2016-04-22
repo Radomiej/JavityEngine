@@ -40,7 +40,7 @@ public class Transform extends NativeComponent {
 				setPosition(newPosition);
 			}
 		} else {
-			position = positionComponent.getPosition();
+			position.set(positionComponent.getPosition());
 			if (parent != null)
 				updateLocalPosition(parent);
 		}
@@ -48,11 +48,11 @@ public class Transform extends NativeComponent {
 	}
 
 	public Vector2 getPosition() {
-		return position;
+		return position.cpy();
 	}
 
 	public void setPosition(Vector2 position) {
-		this.position = position;
+		this.position.set(position);
 		if (positionComponent != null)
 			positionComponent.setPosition(position);
 		if (parent != null)

@@ -74,7 +74,7 @@ public class GameObject {
 		return componentType.cast(componentsMap.get(componentType.getName()));
 	}
 
-	public static void destroy(Component componentToRemove) {
+	static void destroy(Component componentToRemove) {
 		if(componentToRemove == null){
 			Gdx.app.error("GameObject:destroy", "componentToRemove is null");
 			return;
@@ -83,6 +83,7 @@ public class GameObject {
 			Gdx.app.error("GameObject:destroy", "GameObject is null for Component");
 			return;
 		}
+		componentToRemove.onDisable();
 		componentToRemove.remove();
 		componentToRemove.getGameObject().removeComponent(componentToRemove);
 	}

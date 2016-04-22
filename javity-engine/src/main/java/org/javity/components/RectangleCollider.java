@@ -3,6 +3,7 @@ package org.javity.components;
 import org.javity.engine.NativeComponent;
 
 import galaxy.rapid.components.RectangleColliderComponent;
+import galaxy.rapid.event.AddRectangleColliderComponent;
 import galaxy.rapid.event.RemoveRectangleColliderComponent;
 
 public class RectangleCollider extends NativeComponent {
@@ -24,12 +25,22 @@ public class RectangleCollider extends NativeComponent {
 		rectangleColliderComponent.setWidth(width);
 		rectangleColliderComponent.setHeight(height);
 
-		addNativeComponent(rectangleColliderComponent);
+//		addNativeComponent(rectangleColliderComponent);
 	}
 
 	@Override
-	public void remove() {
+	public void onEnabled() {
+		getRapidBus().post(new AddRectangleColliderComponent(rectangleColliderComponent, getGameObject().getEntity()));
+	}
+	
+	@Override
+	public void onDisable() {
 		getRapidBus().post(new RemoveRectangleColliderComponent(rectangleColliderComponent));
+	}
+	
+	@Override
+	public void remove() {
+//		getRapidBus().post(new RemoveRectangleColliderComponent(rectangleColliderComponent));
 	}
 
 

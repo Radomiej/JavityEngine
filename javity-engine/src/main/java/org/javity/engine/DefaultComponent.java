@@ -91,10 +91,17 @@ public abstract class DefaultComponent implements Component {
 	}
 	
 	@Override
-	public void onDisable() {
-		
-	}
+	public void onDisable() {}
 	
 	@Override
-	public void onEnabled() {};
+	public void onEnabled() {}
+	
+	@Override
+	public void onPause() {}
+	
+	@Override
+	public void onResume() {}
+	
+	@Override
+	public void lateUpdate() {}
 }

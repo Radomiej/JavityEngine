@@ -67,6 +67,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	private void startsComponents(GameObject gameObject) {
 		for(Component component : gameObject.getComponents()){
 			component.start();
+			component.onEnabled();
 		}
 	}
 
@@ -99,6 +100,32 @@ public class JavityScreen extends RapidArtemisScreen {
 				component.update();
 			}
 		}
+		for (GameObject gameObject : scene.getGameObjects()) {
+			Iterable<Component> components = gameObject.getComponents();
+			for(Component component : components){
+				component.lateUpdate();
+			}
+		}
 		super.render(delta);
+	}
+	
+	@Override
+	public void pause() {
+		for (GameObject gameObject : scene.getGameObjects()) {
+			Iterable<Component> components = gameObject.getComponents();
+			for(Component component : components){
+				component.onPause();
+			}
+		}
+	}
+	
+	@Override
+	public void resume() {
+		for (GameObject gameObject : scene.getGameObjects()) {
+			Iterable<Component> components = gameObject.getComponents();
+			for(Component component : components){
+				component.onResume();
+			}
+		}
 	}
 }
