@@ -1,13 +1,20 @@
 package org.javity.engine;
 
+import java.io.NotSerializableException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.javity.components.RectangleCollider;
 import org.javity.components.Rigidbody;
 import org.javity.components.SpriteRenderer;
 import org.javity.components.Transform;
+import org.javity.components.reflection.GameObjectsMonoReference;
+import org.javity.engine.serializer.JsonSceneSerializer;
+import org.javity.engine.serializer.KryoSceneSerializer;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
@@ -20,71 +27,27 @@ import com.badlogic.gdx.utils.OrderedMap;
 public class SceneManager {
 	public static Scene current;
 
-	private static Json json;
-
-	static {
-		json = new Json();
-		json.setOutputType(OutputType.javascript);
-		json.setUsePrototypes(false);
-		json.addClassTag("Scene", CustomScene.class);
-		json.addClassTag("SpriteRenderer", SpriteRenderer.class);
-		json.addClassTag("Rigidbody", Rigidbody.class);
-		json.addClassTag("RectangleCollider", RectangleCollider.class);
-		json.addClassTag("Transform", Transform.class);
-
-		json.setSerializer(OrderedMap.class, new Json.Serializer<OrderedMap>() {
-			@Override
-			public void write(Json json, OrderedMap object, Class knownType) {
-				ArrayList<Object> keysRaw = new ArrayList<Object>();
-				ArrayList<Object> valuesRaw = new ArrayList<Object>();
-				Keys keys = object.keys();
-				for(Object key : keys.iterator()){
-					Object value = object.get(key);
-					keysRaw.add(key);
-					valuesRaw.add(value);
-				}
-				
-				RawMap rawMap = new RawMap();
-				rawMap.keysRaw = keysRaw;
-				rawMap.valuesRaw = valuesRaw;
-				
-				
-				json.writeObjectStart();
-				json.writeValue("raw", rawMap);
-				json.writeObjectEnd();
-			}
-
-			@Override
-			public OrderedMap read(Json json, JsonValue jsonData, Class type) {
-				RawMap rawMap = json.readValue(RawMap.class, jsonData.child());
-				
-				OrderedMap map = new OrderedMap();
-				try {
-					map = (OrderedMap) type.newInstance();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				for(int x = 0; x < rawMap.keysRaw.size(); x++){
-					map.put(rawMap.keysRaw.get(x), rawMap.valuesRaw.get(x));
-				}
-				
-				return map;
-			}
-		});
-	}
-
+	static Json json = JsonSceneSerializer.json;
+	
+	private static KryoSceneSerializer kryoSceneSerializer = new KryoSceneSerializer();
+	
 	public static String saveToJson(Scene scene) {
+//		return kryoSceneSerializer.serialize(scene);
 		return json.prettyPrint(scene);
 	}
 
 	public static Scene loadSceneFromJson(String jsonScene) {
+//		System.out.println("load json: " + jsonScene);
 		Scene scene = json.fromJson(CustomScene.class, jsonScene);
+//		Scene scene = kryoSceneSerializer.deserialize(jsonScene);
+		
+		prepareReferenceToGameObject(scene);
 		relinkComponentsToGameObject(scene);
 		return scene;
+	}
+
+	private static void prepareReferenceToGameObject(Scene scene) {
+		new GameObjectsMonoReference((CustomScene) scene).procces();
 	}
 
 	private static void relinkComponentsToGameObject(Scene scene) {

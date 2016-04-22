@@ -1,5 +1,7 @@
 package org.javity.engine;
 
+import org.javity.components.Transform;
+
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -11,6 +13,11 @@ public interface Component {
 	public void start();
 	public void update();
 	public void remove();
+	public void setEnabled(boolean enable);
+	public boolean isEnabled();
+	public Transform getTransform();
+	public void onDisable();
+	public void onEnabled();
 	public void onCollisionEnter(Contact contact);
 	public void onCollisionExit(Contact contact);
 	public void onCollisionPreSolve(Contact contact, Manifold oldManifold);

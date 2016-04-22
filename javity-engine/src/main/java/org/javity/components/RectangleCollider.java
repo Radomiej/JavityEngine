@@ -9,6 +9,15 @@ public class RectangleCollider extends NativeComponent {
 	public float width = 100, height = 100;
 	private transient RectangleColliderComponent rectangleColliderComponent;
 
+	public RectangleCollider() {
+		this(100, 100);
+	}
+	
+	public RectangleCollider(float width, float height){
+		this.width = width;
+		this.height = height;
+	}
+	
 	@Override
 	public void awake() {
 		rectangleColliderComponent = new RectangleColliderComponent();

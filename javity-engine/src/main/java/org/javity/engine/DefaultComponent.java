@@ -1,15 +1,21 @@
 package org.javity.engine;
 
+import org.javity.components.Transform;
+
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public abstract class DefaultComponent implements Component {
 	private transient GameObject gameObject;
-
+	private transient Transform transform;
+	private boolean enabled = true;
+	
+	
 	@Override
 	public void setGameObject(GameObject gameObject) {
 		this.gameObject = gameObject;
+		this.transform = gameObject.getComponent(Transform.class);
 	}
 
 	@Override
@@ -17,6 +23,29 @@ public abstract class DefaultComponent implements Component {
 		return gameObject;
 	}
 
+	@Override
+	public void setEnabled(boolean enable) {
+		if(enable == enabled){
+			return;
+		}
+		this.enabled = enable;
+		if(enable){
+			onEnabled();
+		}else{
+			onDisable();
+		}
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	@Override
+	public Transform getTransform() {
+		return transform;
+	}
+	
 	@Override
 	public void awake() {
 	}
@@ -60,4 +89,12 @@ public abstract class DefaultComponent implements Component {
 	@Override
 	public void onCollisionTriggerStay(Contact contact) {
 	}
+	
+	@Override
+	public void onDisable() {
+		
+	}
+	
+	@Override
+	public void onEnabled() {};
 }

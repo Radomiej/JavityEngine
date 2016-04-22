@@ -31,7 +31,8 @@ public class JavityScreen extends RapidArtemisScreen {
 	@Override
 	protected void injectWorld(EntityEngine world) {
 		System.out.println("injectWorld");
-		Camera.INSTANCE.setMain(camera);
+		JCamera.setMain(camera);
+		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 		
 		for (GameObject gameObject : scene.getGameObjects()) {
 			gameObject.start();

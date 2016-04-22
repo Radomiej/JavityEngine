@@ -1,14 +1,21 @@
 package org.javity.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
+import org.javity.components.Transform;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 
 public class CustomScene implements Scene {
 
-	public List<GameObject> gameObjects = new ArrayList<GameObject>();
+	private List<GameObject> gameObjects = new ArrayList<GameObject>();
+	private HashMap<UUID, GameObject> loadSceneObjects = new HashMap<UUID, GameObject>();
 	
 	@Override
 	public void initialize() {
@@ -17,15 +24,25 @@ public class CustomScene implements Scene {
 	}
 
 	@Override
-	public GameObject instantiateGameObject(GameObject prefab) {
-		GameObject newObject = prefab;
+	public List<GameObject> getGameObjects() {
+		return gameObjects;
+	}
+
+	@Override
+	public GameObject instantiateGameObject(GameObject gameObject, Vector2 position) {
+		Json json = SceneManager.json;
+		String gameObjectJson = json.toJson(gameObject);
+		System.out.println("parse objet: " + gameObjectJson);
+		GameObject newObject = json.fromJson(GameObject.class, gameObjectJson);
+		Transform transform = newObject.getComponent(Transform.class);
+		transform.setPosition(position);
+		
 		gameObjects.add(newObject);
 		return newObject;
 	}
 
-	@Override
-	public List<GameObject> getGameObjects() {
-		return gameObjects;
+	public HashMap<UUID, GameObject> getLoadSceneObjects() {
+		return loadSceneObjects;
 	}
 
 }

@@ -7,7 +7,23 @@ import galaxy.rapid.event.RemoveBox2dComponentEvent;
 
 public class Rigidbody extends NativeComponent {
 	private transient Box2dComponent box2dComponent;
+	private boolean kinematic;
+	
+	public Rigidbody() {
+		this(false);
+	}
+	public Rigidbody(boolean isKinematic) {
+		setKinematic(isKinematic);
+	}
 
+	public void setKinematic(boolean isKinematic) {
+		this.kinematic = isKinematic;
+		if(box2dComponent != null) box2dComponent.setKinematic(isKinematic);		
+	}
+	public boolean isKinematic(){
+		return kinematic;
+	}
+	
 	@Override
 	public void awake() {
 		box2dComponent = new Box2dComponent();
@@ -18,6 +34,7 @@ public class Rigidbody extends NativeComponent {
 
 	@Override
 	public void start() {
+		setKinematic(kinematic);
 	}
 
 	@Override

@@ -12,6 +12,13 @@ public class SpriteRenderer extends NativeComponent {
 	private transient RenderComponent renderComponent;
 	private transient SpriteComponent spriteComponent;
 	
+	public SpriteRenderer() {
+	}
+	
+	public SpriteRenderer(String sprite){
+		this.sprite = sprite;
+	}
+	
 	@Override
 	public void awake() {
 		renderComponent = new RenderComponent();

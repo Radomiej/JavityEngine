@@ -5,9 +5,10 @@ import galaxy.rapid.screen.RapidScreen;
 
 public class JavityInitialScreen extends RapidScreen{
 
-	private String jsonScene;
-	public JavityInitialScreen() {
-		
+	private SceneBulider sceneBulider;
+	
+	public JavityInitialScreen(SceneBulider sceneBulider) {
+		this.sceneBulider = sceneBulider;
 	}
 	
 	@Override
@@ -22,7 +23,7 @@ public class JavityInitialScreen extends RapidScreen{
 
 	@Override
 	protected void create() {
-		Scene scene = SceneManager.loadSceneFromJson(jsonScene);
+		Scene scene = SceneManager.loadSceneFromJson(sceneBulider.getSceneJson());
 		super.eventBus.post(new ChangeScreenEvent(new JavityScreen(scene)));
 	}
 }
