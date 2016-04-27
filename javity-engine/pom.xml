@@ -9,6 +9,7 @@
 
 	<properties>
 		<targetJdk>1.6</targetJdk>
+		<niftyGui.version>1.4.2-SNAPSHOT</niftyGui.version>
 	</properties>
 
 	<distributionManagement>
@@ -20,18 +21,44 @@
 
 	<repositories>
 		<repository>
-			<id>artemis-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-		<repository>
 			<id>maven-repo</id>
 			<name>SilverRepo</name>
 			<url>http://maven.ra-studio.ovh</url>
 		</repository>
+		<!-- still needed for some other dependencies not yet available in central 
+			like jglfont -->
+		<repository>
+			<id>nifty-maven-repo.sourceforge.net</id>
+			<url>http://nifty-gui.sourceforge.net/nifty-maven-repo</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.github.nifty-gui</groupId>
+			<artifactId>nifty</artifactId>
+			<version>${niftyGui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.nifty-gui</groupId>
+			<artifactId>nifty-libgdx-renderer</artifactId>
+			<version>${niftyGui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.nifty-gui</groupId>
+			<artifactId>nifty-examples</artifactId>
+			<version>${niftyGui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.nifty-gui</groupId>
+			<artifactId>nifty-style-black</artifactId>
+			<version>${niftyGui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.nifty-gui</groupId>
+			<artifactId>nifty-default-controls</artifactId>
+			<version>${niftyGui.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>galaxy.rapid</groupId>
@@ -51,7 +78,7 @@
 		<dependency>
 			<groupId>net.onedaybeard.artemis</groupId>
 			<artifactId>artemis-odb</artifactId>
-			<version>1.2.0</version>
+			<version>2.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
