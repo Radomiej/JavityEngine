@@ -9,7 +9,6 @@
 
 	<properties>
 		<targetJdk>1.6</targetJdk>
-		<niftyGui.version>1.4.2-SNAPSHOT</niftyGui.version>
 	</properties>
 
 	<distributionManagement>
@@ -34,32 +33,6 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.github.nifty-gui</groupId>
-			<artifactId>nifty</artifactId>
-			<version>${niftyGui.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.nifty-gui</groupId>
-			<artifactId>nifty-libgdx-renderer</artifactId>
-			<version>${niftyGui.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.nifty-gui</groupId>
-			<artifactId>nifty-examples</artifactId>
-			<version>${niftyGui.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.nifty-gui</groupId>
-			<artifactId>nifty-style-black</artifactId>
-			<version>${niftyGui.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.nifty-gui</groupId>
-			<artifactId>nifty-default-controls</artifactId>
-			<version>${niftyGui.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>galaxy.rapid</groupId>
 			<artifactId>galaxy-rapid-engine</artifactId>
