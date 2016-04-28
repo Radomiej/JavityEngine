@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.artemis.Component;
+import com.badlogic.gdx.Gdx;
 
 import galaxy.rapid.eventbus.RapidBus;
 
@@ -12,6 +13,10 @@ public abstract class NativeComponent extends DefaultComponent {
 	private transient RapidBus rapidBus;
 
 	public void addNativeComponent(Component component) {
+		if(component == null){
+			Gdx.app.error(getClass().getSimpleName(), "Try add null component for rapid");
+			return;
+		}
 		nativeComponents.add(component);
 	}
 

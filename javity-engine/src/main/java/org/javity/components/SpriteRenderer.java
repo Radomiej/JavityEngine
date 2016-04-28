@@ -6,6 +6,7 @@ import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpriteResource;
 import org.javity.engine.resources.SingleSpriteResource;
 
+import galaxy.rapid.asset.RapidAsset;
 import galaxy.rapid.components.RenderComponent;
 import galaxy.rapid.components.SpriteComponent;
 
@@ -37,10 +38,7 @@ public class SpriteRenderer extends NativeComponent {
 		addNativeComponent(renderComponent);
 		addNativeComponent(spriteComponent);
 
-		spriteComponent.setSpriteAsset(sprite.getResourcePath());
-		if (sprite instanceof SpriteAtlasResource) {
-			spriteComponent.setAtlas(true);
-		}
+		setSprite(sprite);
 	}
 
 	public SpriteResource getSprite() {
@@ -53,8 +51,10 @@ public class SpriteRenderer extends NativeComponent {
 			spriteComponent.setSpriteAsset(sprite.getResourcePath());
 			if (sprite instanceof SpriteAtlasResource) {
 				spriteComponent.setAtlas(true);
+				RapidAsset.INSTANCE.loadTextureAtlas(sprite.getResourcePath().split("#")[0]);
 			}else{
 				spriteComponent.setAtlas(false);
+				RapidAsset.INSTANCE.loadSprite(sprite.getResourcePath());
 			}
 		}
 	}

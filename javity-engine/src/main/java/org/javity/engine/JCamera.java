@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import galaxy.rapid.camera.RapidCamera;
+
 public class JCamera {
 	
 	private static JCamera main;
@@ -16,25 +18,24 @@ public class JCamera {
 		return main;
 	}
 
-	static void setMain(com.badlogic.gdx.graphics.Camera nativeCamera) {
-		JCamera cameraNativeAdapter = new JCamera(nativeCamera);
+	static void setMain(RapidCamera camera) {
+		JCamera cameraNativeAdapter = new JCamera(camera);
 		main = cameraNativeAdapter;
 	}
 
-	private com.badlogic.gdx.graphics.Camera nativeCamera;
+	private RapidCamera nativeCamera;
 	
-	public JCamera(com.badlogic.gdx.graphics.Camera nativeCamera) {
-		this.nativeCamera = nativeCamera;
+	public JCamera(RapidCamera camera) {
+		this.nativeCamera = camera;
 	}
 
 	public Vector2 getPosition() {
-		Vector2 cameraPosition = new Vector2(nativeCamera.position.x, nativeCamera.position.y);
+		Vector2 cameraPosition = new Vector2(nativeCamera.getPosition().x, nativeCamera.getPosition().y);
 		return cameraPosition;
 	}
 
 	public void setPosition(Vector2 position) {
-		nativeCamera.position.x = position.x;
-		nativeCamera.position.y = position.y;
+		nativeCamera.setPosition(position);
 		nativeCamera.update();
 	}
 	
