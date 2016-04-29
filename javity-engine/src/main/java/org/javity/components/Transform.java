@@ -12,9 +12,14 @@ public class Transform extends NativeComponent {
 	private Vector2 position = Vector2.Zero;
 	private Vector2 scale = new Vector2(1, 1);
 	private float rotation;
+	private int orderZ = 0;
 	private transient PositionComponent positionComponent;
 	private GameObject parent;
 	private Vector2 localPosition = new Vector2();
+	private float localRotation = 0;
+	private float absoluteRotation = 0;
+	private Vector2 localScale = new Vector2(1, 1);
+	private int localOrderZ = 0;
 
 	@Override
 	public void awake() {
@@ -32,14 +37,34 @@ public class Transform extends NativeComponent {
 
 	@Override
 	public void update() {
+		
+		absoluteRotation = positionComponent.getRotation();
+		if(absoluteRotation != rotation + localRotation){
+			rotation = absoluteRotation - localRotation;
+		}
+		
+		if (parent != null) {
+			localRotation = parent.getTransform().rotation;
+			positionComponent.setRotation(rotation + localRotation);
+		}else{
+			localRotation = 0;
+		}
+		
+//		if(rotation + localRotation != positionComponent.getRotation()){
+//			absolute = positionComponent.getRotation() - localRotation;
+//		}
+		
 		if (position.equals(positionComponent.getPosition())) {
 			if (parent != null) {
 //				System.out.println("Pozycja rodzica: " + parent.getTransform().position);
-				Vector2 newPosition = parent.getTransform().position.cpy();
-				newPosition.add(localPosition);
-				setPosition(newPosition);
+				localRotation = parent.getTransform().rotation;
+				Vector2 newPosition = localPosition.cpy().rotate(localRotation);
+				newPosition.add(parent.getTransform().position);
+				
+				this.position.set(newPosition);
+				positionComponent.setPosition(newPosition);
 			}
-		} else {
+		} else {//Physic is usage this object
 			position.set(positionComponent.getPosition());
 			if (parent != null)
 				updateLocalPosition(parent);
@@ -68,10 +93,14 @@ public class Transform extends NativeComponent {
 		return scale;
 	}
 
-	public void setScale(Vector2 scale) {
-		this.scale = scale;
-		if (positionComponent != null)
-			positionComponent.setScale(position);
+	public void setScale(Vector2 newScale) {
+		float scaleDeltaX = newScale.x / scale.x;
+		float scaleDeltaY = newScale.y / scale.y;
+		this.scale.set(newScale);
+		if (positionComponent != null){
+			localPosition.x *= scaleDeltaX;
+			localPosition.y *= scaleDeltaY;
+		}
 	}
 
 	public float getRotation() {
@@ -80,12 +109,13 @@ public class Transform extends NativeComponent {
 
 	public void setRotation(float rotation) {
 		this.rotation = rotation;
-		if (positionComponent != null)
-			positionComponent.setRotation(rotation);
+//		if (positionComponent != null)
+//			positionComponent.setRotation(rotation);
 	}
 
 	public void setParent(GameObject parent) {
 		this.parent = parent;
+		localScale.set(parent.getTransform().scale);
 		updateLocalPosition(parent);
 	}
 
@@ -95,7 +125,7 @@ public class Transform extends NativeComponent {
 
 	private void updateLocalPosition(GameObject parent) {
 		Vector2 parentPosition = parent.getTransform().position;
-		Vector2 thisPosition = getTransform().position;
+		Vector2 thisPosition = this.position;
 		localPosition.x = thisPosition.x - parentPosition.x;
 		localPosition.y = thisPosition.y - parentPosition.y;
 	}
