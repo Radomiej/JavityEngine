@@ -94,6 +94,10 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void render(float delta) {
+		//Update general variables
+		JTime.delta = delta;
+		
+		//Update game objects
 		for (GameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getComponents();
 			for(Component component : components){
@@ -106,6 +110,7 @@ public class JavityScreen extends RapidArtemisScreen {
 				component.lateUpdate();
 			}
 		}
+		
 		super.render(delta);
 	}
 	

@@ -24,9 +24,9 @@ public class Transform extends NativeComponent {
 	@Override
 	public void awake() {
 		positionComponent = new PositionComponent();
-		positionComponent.setPosition(position);
+		positionComponent.setPosition(position.cpy());
 		positionComponent.setRotation(rotation);
-		positionComponent.setScale(scale);
+		positionComponent.setScale(scale.cpy());
 		addNativeComponent(positionComponent);
 	}
 
@@ -37,7 +37,26 @@ public class Transform extends NativeComponent {
 
 	@Override
 	public void update() {
+		//Scale
+		if (parent != null) {
+			Vector2 parentScale = parent.getTransform().getScale();
+			if(!localScale.equals(parentScale)){
+				float scaleDeltaX = parentScale.x / scale.x;
+				float scaleDeltaY = parentScale.y / scale.y;
+				
+				if (parent != null){
+					localPosition.x *= scaleDeltaX;
+					localPosition.y *= scaleDeltaY;
+				}
+			}
+			localScale.set(parent.getTransform().getScale());
+		}else{
+			localScale.set(1, 1);
+		}
+		Vector2 absoluteScale = scale.cpy().scl(localScale);
+		positionComponent.getScale().set(absoluteScale);
 		
+		//Rotation
 		absoluteRotation = positionComponent.getRotation();
 		if(absoluteRotation != rotation + localRotation){
 			rotation = absoluteRotation - localRotation;
@@ -89,18 +108,19 @@ public class Transform extends NativeComponent {
 		setPosition(newPosition);
 	}
 
+	private void updateLocalPosition(GameObject parent) {
+		Vector2 parentPosition = parent.getTransform().position;
+		Vector2 thisPosition = this.position;
+		localPosition.x = thisPosition.x - parentPosition.x;
+		localPosition.y = thisPosition.y - parentPosition.y;
+	}
+
 	public Vector2 getScale() {
 		return scale;
 	}
 
 	public void setScale(Vector2 newScale) {
-		float scaleDeltaX = newScale.x / scale.x;
-		float scaleDeltaY = newScale.y / scale.y;
 		this.scale.set(newScale);
-		if (positionComponent != null){
-			localPosition.x *= scaleDeltaX;
-			localPosition.y *= scaleDeltaY;
-		}
 	}
 
 	public float getRotation() {
@@ -121,13 +141,6 @@ public class Transform extends NativeComponent {
 
 	public GameObject getParent() {
 		return parent;
-	}
-
-	private void updateLocalPosition(GameObject parent) {
-		Vector2 parentPosition = parent.getTransform().position;
-		Vector2 thisPosition = this.position;
-		localPosition.x = thisPosition.x - parentPosition.x;
-		localPosition.y = thisPosition.y - parentPosition.y;
 	}
 
 	public Vector2 getLocalPosition() {
