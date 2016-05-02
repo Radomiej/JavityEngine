@@ -37,53 +37,54 @@ public class Transform extends NativeComponent {
 
 	@Override
 	public void update() {
-		//Scale
+		// Scale
 		if (parent != null) {
 			Vector2 parentScale = parent.getTransform().getScale();
-			if(!localScale.equals(parentScale)){
+			if (!localScale.equals(parentScale)) {
 				float scaleDeltaX = parentScale.x / scale.x;
 				float scaleDeltaY = parentScale.y / scale.y;
-				
-				if (parent != null){
+
+				if (parent != null) {
 					localPosition.x *= scaleDeltaX;
 					localPosition.y *= scaleDeltaY;
 				}
 			}
 			localScale.set(parent.getTransform().getScale());
-		}else{
+		} else {
 			localScale.set(1, 1);
 		}
 		Vector2 absoluteScale = scale.cpy().scl(localScale);
 		positionComponent.getScale().set(absoluteScale);
-		
-		//Rotation
+
+		// Rotation
 		absoluteRotation = positionComponent.getRotation();
-		if(absoluteRotation != rotation + localRotation){
+		if (absoluteRotation != rotation + localRotation) {
 			rotation = absoluteRotation - localRotation;
 		}
-		
+
 		if (parent != null) {
 			localRotation = parent.getTransform().rotation;
 			positionComponent.setRotation(rotation + localRotation);
-		}else{
+		} else {
 			localRotation = 0;
 		}
-		
-//		if(rotation + localRotation != positionComponent.getRotation()){
-//			absolute = positionComponent.getRotation() - localRotation;
-//		}
-		
+
+		// if(rotation + localRotation != positionComponent.getRotation()){
+		// absolute = positionComponent.getRotation() - localRotation;
+		// }
+
 		if (position.equals(positionComponent.getPosition())) {
 			if (parent != null) {
-//				System.out.println("Pozycja rodzica: " + parent.getTransform().position);
+				// System.out.println("Pozycja rodzica: " +
+				// parent.getTransform().position);
 				localRotation = parent.getTransform().rotation;
 				Vector2 newPosition = localPosition.cpy().rotate(localRotation);
 				newPosition.add(parent.getTransform().position);
-				
+
 				this.position.set(newPosition);
 				positionComponent.setPosition(newPosition);
 			}
-		} else {//Physic is usage this object
+		} else {// Physic is usage this object
 			position.set(positionComponent.getPosition());
 			if (parent != null)
 				updateLocalPosition(parent);
@@ -129,14 +130,20 @@ public class Transform extends NativeComponent {
 
 	public void setRotation(float rotation) {
 		this.rotation = rotation;
-//		if (positionComponent != null)
-//			positionComponent.setRotation(rotation);
+		// if (positionComponent != null)
+		// positionComponent.setRotation(rotation);
 	}
 
 	public void setParent(GameObject parent) {
 		this.parent = parent;
-		localScale.set(parent.getTransform().scale);
-		updateLocalPosition(parent);
+		localScale.set(getParentScale(parent));
+		if (parent != null) {
+			updateLocalPosition(parent);
+		}
+	}
+
+	private Vector2 getParentScale(GameObject parent) {
+		return parent != null ? parent.getTransform().scale : new Vector2(1, 1);
 	}
 
 	public GameObject getParent() {

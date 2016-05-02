@@ -32,7 +32,6 @@ public class CustomScene implements Scene {
 	public GameObject instantiateGameObject(GameObject gameObject, Vector2 position) {
 		Json json = JSceneManager.json;
 		String gameObjectJson = json.toJson(gameObject);
-		System.out.println("parse objet: " + gameObjectJson);
 		GameObject newObject = json.fromJson(GameObject.class, gameObjectJson);
 		Transform transform = newObject.getComponent(Transform.class);
 		transform.setPosition(position);

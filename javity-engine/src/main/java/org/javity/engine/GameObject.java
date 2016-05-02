@@ -49,6 +49,9 @@ public class GameObject {
 
 	public void start() {
 		started = true;
+	}
+
+	public void awake() {
 		transform = getComponent(Transform.class);
 	}
 
@@ -135,5 +138,9 @@ public class GameObject {
 
 	public boolean isStarted() {
 		return started;
+	}
+
+	public static void dontDestroyOnLoad(GameObject gameObject) {
+		gameObject.setNotDestroyOnLoad(true);
 	}
 }

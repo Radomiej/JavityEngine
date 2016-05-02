@@ -16,12 +16,13 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	public JavityScreen(Scene newScene, Scene current) {
 		this.scene = newScene;
-		transformDontDestroyedObjects(current, newScene);
+		if(current != null) transformDontDestroyedObjects(current, newScene);
 	}
 
 	private void transformDontDestroyedObjects(Scene current, Scene newScene2) {
 		for (GameObject gameObject : current.getGameObjects()) {
 			if (gameObject.isDontDestroy()) {
+				gameObject.getTransform().setParent(null);
 				scene.getGameObjects().add(gameObject);
 			}
 		}
@@ -41,14 +42,14 @@ public class JavityScreen extends RapidArtemisScreen {
 		System.out.println("injectWorld");
 
 		JSceneManager.current = scene;
-		JEngine.rapidEventBus = rapidBus;
+		JEngine.rapidEventBus = masterEventBus;
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
 		//Awake all GameObjects
 		for (GameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isStarted()) {
-				gameObject.start();
+				gameObject.awake();
 				awakesComponents(gameObject);
 			}
 			Collection<com.artemis.Component> artemisComponents = getArtemisComponents(gameObject);
@@ -61,6 +62,7 @@ public class JavityScreen extends RapidArtemisScreen {
 		for (GameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isStarted()) {
 				startsComponents(gameObject);
+				gameObject.start();
 			}
 		}
 
@@ -92,7 +94,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	private Entity createEntity(Collection<com.artemis.Component> artemisComponents, EntityEngine world) {
 		Entity entity = world.createEntity();
 		for (com.artemis.Component nativeComponent : artemisComponents) {
-			System.out.println("Dodaje: " + nativeComponent.getClass().getSimpleName());
+//			System.out.println("Dodaje: " + nativeComponent.getClass().getSimpleName());
 			entity.edit().add(nativeComponent);
 		}
 		return entity;
@@ -101,7 +103,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	private Collection<com.artemis.Component> getArtemisComponents(GameObject gameObject) {
 		List<com.artemis.Component> artemisComponents = new ArrayList<com.artemis.Component>();
 		for (Component javityComponent : gameObject.getComponents()) {
-			System.out.println("check component: " + javityComponent.getClass().getSimpleName());
+//			System.out.println("check component: " + javityComponent.getClass().getSimpleName());
 			if (javityComponent instanceof NativeComponent) {
 				NativeComponent nativeComponent = (NativeComponent) javityComponent;
 				artemisComponents.addAll(nativeComponent.getNativeComponents());
