@@ -1,30 +1,14 @@
 package org.javity.engine;
 
-import java.io.NotSerializableException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import org.javity.components.RectangleCollider;
-import org.javity.components.Rigidbody;
-import org.javity.components.SpriteRenderer;
-import org.javity.components.Transform;
 import org.javity.components.reflection.GameObjectsMonoReference;
 import org.javity.engine.serializer.JsonSceneSerializer;
 import org.javity.engine.serializer.KryoSceneSerializer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
-import com.badlogic.gdx.utils.ObjectMap.Keys;
 
-import jdk.nashorn.internal.runtime.JSONListAdapter;
+import galaxy.rapid.screen.ChangeScreenEvent;
 
-import com.badlogic.gdx.utils.OrderedMap;
-
-public class SceneManager {
+public class JSceneManager {
 	public static Scene current;
 
 	static Json json = JsonSceneSerializer.json;
@@ -56,5 +40,10 @@ public class SceneManager {
 				component.setGameObject(gameObject);
 			}
 		}
+	}
+
+	public static void loadScene(SceneBulider sceneBulider) {
+		Scene newScene = loadSceneFromJson(sceneBulider.getSceneJson());
+		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, current)));
 	}
 }

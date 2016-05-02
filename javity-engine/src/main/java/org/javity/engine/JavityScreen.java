@@ -12,11 +12,19 @@ import com.artemis.WorldConfiguration;
 
 public class JavityScreen extends RapidArtemisScreen {
 
-	private Scene scene;
+	private final Scene scene;
 
-	public JavityScreen(Scene scene) {
-		this.scene = scene;
-		SceneManager.current = scene;
+	public JavityScreen(Scene newScene, Scene current) {
+		this.scene = newScene;
+		transformDontDestroyedObjects(current, newScene);
+	}
+
+	private void transformDontDestroyedObjects(Scene current, Scene newScene2) {
+		for (GameObject gameObject : current.getGameObjects()) {
+			if (gameObject.isDontDestroy()) {
+				scene.getGameObjects().add(gameObject);
+			}
+		}
 	}
 
 	@Override
@@ -27,30 +35,40 @@ public class JavityScreen extends RapidArtemisScreen {
 	protected void processBeforeRenderWorldConfiguration(WorldConfiguration worldConfiguration) {
 		worldConfiguration.setSystem(new JavitySystem());
 	}
-	
+
 	@Override
 	protected void injectWorld(EntityEngine world) {
 		System.out.println("injectWorld");
+
+		JSceneManager.current = scene;
+		JEngine.rapidEventBus = rapidBus;
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
-		
+
+		//Awake all GameObjects
 		for (GameObject gameObject : scene.getGameObjects()) {
-			gameObject.start();
-			awakesComponents(gameObject);
+			if (!gameObject.isStarted()) {
+				gameObject.start();
+				awakesComponents(gameObject);
+			}
 			Collection<com.artemis.Component> artemisComponents = getArtemisComponents(gameObject);
 			registerInRapidBusAllNativeComponents(gameObject);
-			
 			Entity entity = createEntity(artemisComponents, world);
 			gameObject.setEntity(entity);
-			startsComponents(gameObject);
 		}
 		
-		
+		//Start all GameObjects
+		for (GameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isStarted()) {
+				startsComponents(gameObject);
+			}
+		}
+
 	}
 
 	private void registerInRapidBusAllNativeComponents(GameObject gameObject) {
-		for(Component component : gameObject.getComponents()){
-			if(component instanceof NativeComponent){
+		for (Component component : gameObject.getComponents()) {
+			if (component instanceof NativeComponent) {
 				NativeComponent nativeComponent = (NativeComponent) component;
 				nativeComponent.setRapidBus(rapidBus);
 				rapidBus.register(nativeComponent);
@@ -59,13 +77,13 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private void awakesComponents(GameObject gameObject) {
-		for(Component component : gameObject.getComponents()){
+		for (Component component : gameObject.getComponents()) {
 			component.awake();
 		}
 	}
-	
+
 	private void startsComponents(GameObject gameObject) {
-		for(Component component : gameObject.getComponents()){
+		for (Component component : gameObject.getComponents()) {
 			component.start();
 			component.onEnabled();
 		}
@@ -94,41 +112,41 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void render(float delta) {
-		//Update general variables
+		// Update general variables
 		JTime.delta = delta;
-		
-		//Update game objects
+
+		// Update game objects
 		for (GameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getComponents();
-			for(Component component : components){
+			for (Component component : components) {
 				component.update();
 			}
 		}
 		for (GameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getComponents();
-			for(Component component : components){
+			for (Component component : components) {
 				component.lateUpdate();
 			}
 		}
-		
+
 		super.render(delta);
 	}
-	
+
 	@Override
 	public void pause() {
 		for (GameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getComponents();
-			for(Component component : components){
+			for (Component component : components) {
 				component.onPause();
 			}
 		}
 	}
-	
+
 	@Override
 	public void resume() {
 		for (GameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getComponents();
-			for(Component component : components){
+			for (Component component : components) {
 				component.onResume();
 			}
 		}

@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 public class GameObject {
 	private String name = "GameObject";
 	private String prefabId = UUID.randomUUID().toString();
-	private transient boolean started;
+	private transient boolean started, notDestroyOnLoad;
 	private transient Entity entity;
 	// private Map<Class<? extends Component>, Component> componentsMap =
 	// Collections.synchronizedMap(new HashMap<Class<? extends Component>,
@@ -27,7 +27,7 @@ public class GameObject {
 	OrderedMap<String, Component> componentsMap = new OrderedMap<String, Component>();
 
 	private transient Transform transform;
-	
+
 	public GameObject(String name) {
 		this();
 		this.name = name;
@@ -75,7 +75,7 @@ public class GameObject {
 	}
 
 	static void destroy(Component componentToRemove) {
-		if(componentToRemove == null){
+		if (componentToRemove == null) {
 			Gdx.app.error("GameObject:destroy", "componentToRemove is null");
 			return;
 		}
@@ -123,5 +123,17 @@ public class GameObject {
 
 	public Transform getTransform() {
 		return transform;
+	}
+
+	void setNotDestroyOnLoad(boolean notDestroyOnLoad) {
+		this.notDestroyOnLoad = notDestroyOnLoad;
+	}
+
+	boolean isDontDestroy() {
+		return notDestroyOnLoad;
+	}
+
+	public boolean isStarted() {
+		return started;
 	}
 }

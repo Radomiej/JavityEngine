@@ -34,7 +34,7 @@ public class Prefabs {
 		}
 		
 		String json = file.readString();
-		GameObject jsonObject = SceneManager.json.fromJson(GameObject.class, json);
+		GameObject jsonObject = JSceneManager.json.fromJson(GameObject.class, json);
 		return jsonObject;
 	}
 }

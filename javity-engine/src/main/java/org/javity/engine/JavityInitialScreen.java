@@ -23,7 +23,7 @@ public class JavityInitialScreen extends RapidScreen{
 
 	@Override
 	protected void create() {
-		Scene scene = SceneManager.loadSceneFromJson(sceneBulider.getSceneJson());
-		super.eventBus.post(new ChangeScreenEvent(new JavityScreen(scene)));
+		Scene scene = JSceneManager.loadSceneFromJson(sceneBulider.getSceneJson());
+		super.eventBus.post(new ChangeScreenEvent(new JavityScreen(scene, null)));
 	}
 }
