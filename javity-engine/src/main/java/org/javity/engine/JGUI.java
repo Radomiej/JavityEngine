@@ -7,6 +7,5 @@ public class JGUI {
 	
 	public void addGUIComponent(GUIComponent guiComponent){
 		
-		guiComponent.getScene2dActor();
 	}
 }

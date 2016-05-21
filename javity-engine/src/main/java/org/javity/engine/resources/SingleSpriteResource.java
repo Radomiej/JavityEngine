@@ -13,6 +13,7 @@ public class SingleSpriteResource implements SpriteResource{
 	
 	public SingleSpriteResource(String resourcePath){
 		this.resourcePath = resourcePath;
+		RapidAsset.INSTANCE.loadSprite(resourcePath);
 	}
 	
 	@Override

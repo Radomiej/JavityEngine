@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.javity.engine.rapid.systems.Scene2dSystem;
+
 import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
 
@@ -30,6 +32,8 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	protected void processWorldConfiguration(WorldConfiguration worldConfiguration) {
+		JGUI.guiSystem = new Scene2dSystem();
+		worldConfiguration.setSystem(JGUI.guiSystem);
 	}
 
 	@Override

@@ -18,6 +18,7 @@ public class SpriteAtlasResource implements SpriteResource{
 		String[] path = resourcePath.split("#");
 		atlasPath = path[0];
 		regionName = path[1];
+		RapidAsset.INSTANCE.loadTextureAtlas(atlasPath);
 	}
 	
 	@Override
