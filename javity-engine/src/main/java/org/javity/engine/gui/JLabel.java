@@ -40,4 +40,8 @@ public class JLabel extends GUIComponent {
 		label = new Label(text, style);
 	}
 
+	public void setText(String text){
+		this.text = text;
+		label.setText(text);
+	}
 }

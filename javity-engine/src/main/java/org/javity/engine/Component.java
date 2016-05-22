@@ -2,6 +2,7 @@ package org.javity.engine;
 
 import org.javity.components.Transform;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -33,4 +34,8 @@ public interface Component {
 	public void onCollisionTriggerEnter(Contact contact);
 	public void onCollisionTriggerExit(Contact contact);
 	public void onCollisionTriggerStay(Contact contact);
+	public void onMousePressed();
+	public void onMouseRelased();
+	public void onMouseClicked();
+	public void onMouseDragged(Vector2 draggedDelta);
 }

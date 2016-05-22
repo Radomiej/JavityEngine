@@ -5,12 +5,16 @@ import galaxy.rapid.screen.RapidArtemisScreen;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.javity.engine.physic.RaycastHit;
 import org.javity.engine.rapid.systems.Scene2dSystem;
 
 import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
+import com.badlogic.gdx.math.Vector2;
 
 public class JavityScreen extends RapidArtemisScreen {
 
@@ -18,7 +22,8 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	public JavityScreen(Scene newScene, Scene current) {
 		this.scene = newScene;
-		if(current != null) transformDontDestroyedObjects(current, newScene);
+		if (current != null)
+			transformDontDestroyedObjects(current, newScene);
 	}
 
 	private void transformDontDestroyedObjects(Scene current, Scene newScene2) {
@@ -50,7 +55,7 @@ public class JavityScreen extends RapidArtemisScreen {
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
-		//Awake all GameObjects
+		// Awake all GameObjects
 		for (GameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isStarted()) {
 				gameObject.awake();
@@ -61,8 +66,8 @@ public class JavityScreen extends RapidArtemisScreen {
 			Entity entity = createEntity(artemisComponents, world);
 			gameObject.setEntity(entity);
 		}
-		
-		//Start all GameObjects
+
+		// Start all GameObjects
 		for (GameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isStarted()) {
 				startsComponents(gameObject);
@@ -98,7 +103,8 @@ public class JavityScreen extends RapidArtemisScreen {
 	private Entity createEntity(Collection<com.artemis.Component> artemisComponents, EntityEngine world) {
 		Entity entity = world.createEntity();
 		for (com.artemis.Component nativeComponent : artemisComponents) {
-//			System.out.println("Dodaje: " + nativeComponent.getClass().getSimpleName());
+			// System.out.println("Dodaje: " +
+			// nativeComponent.getClass().getSimpleName());
 			entity.edit().add(nativeComponent);
 		}
 		return entity;
@@ -107,7 +113,8 @@ public class JavityScreen extends RapidArtemisScreen {
 	private Collection<com.artemis.Component> getArtemisComponents(GameObject gameObject) {
 		List<com.artemis.Component> artemisComponents = new ArrayList<com.artemis.Component>();
 		for (Component javityComponent : gameObject.getComponents()) {
-//			System.out.println("check component: " + javityComponent.getClass().getSimpleName());
+			// System.out.println("check component: " +
+			// javityComponent.getClass().getSimpleName());
 			if (javityComponent instanceof NativeComponent) {
 				NativeComponent nativeComponent = (NativeComponent) javityComponent;
 				artemisComponents.addAll(nativeComponent.getNativeComponents());
@@ -120,6 +127,9 @@ public class JavityScreen extends RapidArtemisScreen {
 	public void render(float delta) {
 		// Update general variables
 		JTime.delta = delta;
+
+		// Update Mouse Input
+		updateMouseXXX();
 
 		// Update game objects
 		for (GameObject gameObject : scene.getGameObjects()) {
@@ -136,6 +146,35 @@ public class JavityScreen extends RapidArtemisScreen {
 		}
 
 		super.render(delta);
+		JInput.saveOldStatus();
+	}
+
+	private Set<GameObject> pressedObjects = new HashSet<GameObject>();
+
+	private void updateMouseXXX() {
+		Vector2 worldPosition = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
+		List<RaycastHit> hits = JPhysic.raycastPoint(worldPosition);
+		for (RaycastHit hit : hits) {
+
+			GameObject hitGameObject = hit.collider.getGameObject();
+			for (Component component : hitGameObject.componentsMap.values()) {
+				if (JInput.isJustPressed()) {
+					component.onMousePressed();
+					pressedObjects.add(hitGameObject);
+				} else if (JInput.isJustRelased()) {
+					component.onMouseRelased();
+					if (pressedObjects.contains(hitGameObject)) {
+						component.onMouseClicked();
+					}
+				} else if (JInput.isClicked()) {
+					component.onMouseDragged(JInput.getMouseDragged());
+				}
+			}
+		}
+
+		if (JInput.isJustRelased()) {
+			pressedObjects.clear();
+		}
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.javity.engine;
 
 import org.javity.components.Transform;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -104,4 +105,16 @@ public abstract class DefaultComponent implements Component {
 	
 	@Override
 	public void lateUpdate() {}
+	
+	@Override
+	public void onMouseClicked() {}
+	
+	@Override
+	public void onMouseDragged(Vector2 draggedDelta) {}
+	
+	@Override
+	public void onMousePressed() {}
+	
+	@Override
+	public void onMouseRelased() {}
 }
