@@ -38,4 +38,5 @@ public interface Component {
 	public void onMouseRelased();
 	public void onMouseClicked();
 	public void onMouseDragged(Vector2 draggedDelta);
+	public void onMouseOver();
 }

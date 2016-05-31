@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.javity.components.RectangleCollider;
 import org.javity.components.Transform;
+import org.javity.engine.gui.JCanvas;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
@@ -68,7 +69,26 @@ public class GameObject {
 		this.entity = entity;
 	}
 
-	public Iterable<Component> getComponents() {
+	public <T extends Component> T getComponentInParent(Class<T> class1) {
+		return transform.getParent().getComponent(class1);
+	}
+
+	public <T extends Component> Iterable<T> getComponentsInParent(Class<T> class1) {
+		return transform.getParent().getComponents(class1);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Component> Iterable<T> getComponents(Class<T> componentType) {
+		ArrayList<T> validComponents = new ArrayList<T>();
+		for (Component component : componentsMap.values()) {
+			if (componentType.equals(component)) {
+				validComponents.add((T) component);
+			}
+		}
+		return validComponents;
+	}
+
+	public Iterable<Component> getAllComponents() {
 		// return new ArrayList<Component>(componentsMap.values());
 		return componentsMap.values();
 	}

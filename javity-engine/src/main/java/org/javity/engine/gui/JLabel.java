@@ -23,7 +23,7 @@ public class JLabel extends GUIComponent {
 	public String text;
 
 	@Override
-	public void awake() {
+	public void start() {
 		actorComponent = new ActorComponent();
 		createButton();
 		actorComponent.setActor(label);

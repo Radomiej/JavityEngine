@@ -29,7 +29,7 @@ public class RemoteInvoker {
 	}
 
 	public void invoke(GameObject clickTarget) {
-		for (Component component : clickTarget.getComponents()) {
+		for (Component component : clickTarget.getAllComponents()) {
 			if (component.getClass().getName().equals(invokeComponent)) {
 				Object[] parameters = args.toArray(new Object[args.size()]);
 				Class[] parametersType = new Class[args.size()];

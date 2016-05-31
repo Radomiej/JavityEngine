@@ -41,19 +41,19 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 			return;
 		}
 		if (fixtureA.isSensor()) {
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionTriggerEnter(contact);
 			}
 		} else if (fixtureB.isSensor()) {
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionTriggerEnter(contact);
 			}
 		} else {
 
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionEnter(contact);
 			}
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionEnter(contact);
 			}
 		}
@@ -71,19 +71,19 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 			return;
 		}
 		if (fixtureA.isSensor()) {
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionTriggerExit(contact);
 			}
 		} else if (fixtureB.isSensor()) {
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionTriggerExit(contact);
 			}
 		} else {
 
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionExit(contact);
 			}
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionExit(contact);
 			}
 		}
@@ -102,10 +102,10 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 			return;
 		}
 
-		for (Component component : object1.getComponents()) {
+		for (Component component : object1.getAllComponents()) {
 			component.onCollisionPreSolve(contact, oldManifold);
 		}
-		for (Component component : object2.getComponents()) {
+		for (Component component : object2.getAllComponents()) {
 			component.onCollisionPreSolve(contact, oldManifold);
 		}
 	}
@@ -122,19 +122,19 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 			return;
 		}
 		if (fixtureA.isSensor()) {
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionTriggerStay(contact);
 			}
 		} else if (fixtureB.isSensor()) {
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionTriggerStay(contact);
 			}
 		} else {
 
-			for (Component component : object1.getComponents()) {
+			for (Component component : object1.getAllComponents()) {
 				component.onCollisionStay(contact, impulse);
 			}
-			for (Component component : object2.getComponents()) {
+			for (Component component : object2.getAllComponents()) {
 				component.onCollisionStay(contact, impulse);
 			}
 		}

@@ -25,7 +25,7 @@ public class GameObjectsMonoReference {
 			scene.getLoadSceneObjects().put(uuid, gameObject);
 		}
 		for(GameObject go : scene.getGameObjects()){
-			for(Component component : go.getComponents()){
+			for(Component component : go.getAllComponents()){
 				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
 				for(SilverField field : componentBean.getPublicAccesFields()){
 					if(field.getFieldName().equals("gameObject")) continue;

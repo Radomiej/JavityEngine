@@ -78,7 +78,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private void registerInRapidBusAllNativeComponents(GameObject gameObject) {
-		for (Component component : gameObject.getComponents()) {
+		for (Component component : gameObject.getAllComponents()) {
 			if (component instanceof NativeComponent) {
 				NativeComponent nativeComponent = (NativeComponent) component;
 				nativeComponent.setRapidBus(rapidBus);
@@ -88,13 +88,13 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private void awakesComponents(GameObject gameObject) {
-		for (Component component : gameObject.getComponents()) {
+		for (Component component : gameObject.getAllComponents()) {
 			component.awake();
 		}
 	}
 
 	private void startsComponents(GameObject gameObject) {
-		for (Component component : gameObject.getComponents()) {
+		for (Component component : gameObject.getAllComponents()) {
 			component.start();
 			component.onEnabled();
 		}
@@ -112,7 +112,7 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	private Collection<com.artemis.Component> getArtemisComponents(GameObject gameObject) {
 		List<com.artemis.Component> artemisComponents = new ArrayList<com.artemis.Component>();
-		for (Component javityComponent : gameObject.getComponents()) {
+		for (Component javityComponent : gameObject.getAllComponents()) {
 			// System.out.println("check component: " +
 			// javityComponent.getClass().getSimpleName());
 			if (javityComponent instanceof NativeComponent) {
@@ -133,13 +133,13 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		// Update game objects
 		for (GameObject gameObject : scene.getGameObjects()) {
-			Iterable<Component> components = gameObject.getComponents();
+			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.update();
 			}
 		}
 		for (GameObject gameObject : scene.getGameObjects()) {
-			Iterable<Component> components = gameObject.getComponents();
+			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.lateUpdate();
 			}
@@ -168,6 +168,8 @@ public class JavityScreen extends RapidArtemisScreen {
 					}
 				} else if (JInput.isClicked()) {
 					component.onMouseDragged(JInput.getMouseDragged());
+				}else if(!JInput.isClicked()){
+					component.onMouseOver();
 				}
 			}
 		}
@@ -180,7 +182,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	@Override
 	public void pause() {
 		for (GameObject gameObject : scene.getGameObjects()) {
-			Iterable<Component> components = gameObject.getComponents();
+			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.onPause();
 			}
@@ -190,7 +192,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	@Override
 	public void resume() {
 		for (GameObject gameObject : scene.getGameObjects()) {
-			Iterable<Component> components = gameObject.getComponents();
+			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.onResume();
 			}

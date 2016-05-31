@@ -117,4 +117,7 @@ public abstract class DefaultComponent implements Component {
 	
 	@Override
 	public void onMouseRelased() {}
+	
+	@Override
+	public void onMouseOver() {}
 }
