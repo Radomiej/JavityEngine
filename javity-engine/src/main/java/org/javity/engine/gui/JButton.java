@@ -1,7 +1,7 @@
 package org.javity.engine.gui;
 
 import org.javity.engine.GUIComponent;
-import org.javity.engine.GameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.gui.remote.RemoteInvoker;
 import org.javity.engine.resources.SpriteResource;
 import org.javity.engine.resources.TextureResource;
@@ -23,7 +23,7 @@ public class JButton extends GUIComponent {
 	public float sizeX, sizeY;
 	public SpriteResource up, down, checked;
 	
-	public GameObject clickTarget;
+	public JGameObjectImpl clickTarget;
 	public RemoteInvoker clickInvoke;
 	
 	@Override

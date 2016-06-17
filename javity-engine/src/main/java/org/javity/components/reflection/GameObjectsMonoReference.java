@@ -4,8 +4,12 @@ import java.util.UUID;
 
 import org.javity.engine.Component;
 import org.javity.engine.CustomScene;
-import org.javity.engine.GameObject;
+import org.javity.engine.GameObjectProxy;
+import org.javity.engine.JGameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.Scene;
+
+import com.badlogic.gdx.Gdx;
 
 import pl.silver.reflection.ReflectionBean;
 import pl.silver.reflection.SilverField;
@@ -17,30 +21,55 @@ public class GameObjectsMonoReference {
 	public GameObjectsMonoReference(CustomScene scene) {
 		this.scene = scene;
 	}
-	
-	public void procces(){
+
+	public void procces() {
 		scene.getLoadSceneObjects().clear();
-		for(GameObject gameObject : scene.getGameObjects()){
-			UUID uuid = UUID.fromString(gameObject.getPrefabId());
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
+			UUID uuid = UUID.fromString(gameObject.getObjectId());
 			scene.getLoadSceneObjects().put(uuid, gameObject);
 		}
-		for(GameObject go : scene.getGameObjects()){
-			for(Component component : go.getAllComponents()){
+		for (JGameObjectImpl go : scene.getGameObjects()) {
+			for (Component component : go.getAllComponents()) {
 				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
-				for(SilverField field : componentBean.getPublicAccesFields()){
-					if(field.getFieldName().equals("gameObject")) continue;
-					if(field.getFieldValueClass().equals(GameObject.class)){
-						GameObject gameObject = field.getFieldValue(component, GameObject.class);
-						if(gameObject == null) continue;
-						UUID uuid = UUID.fromString(gameObject.getPrefabId());
-						if(scene.getLoadSceneObjects().containsKey(uuid)){
-							
-							GameObject existGameObject = scene.getLoadSceneObjects().get(uuid);
+				for (SilverField field : componentBean.getPublicAccesFields()) {
+					if (field.getFieldName().equals("gameObject"))
+						continue;
+					if (field.getFieldValueClass().equals(JGameObject.class)) {
+						JGameObject gameObject = field.getFieldValue(component, JGameObject.class);
+						if (gameObject == null)
+							continue;
+						UUID uuid = UUID.fromString(gameObject.getObjectId());
+						if (scene.getLoadSceneObjects().containsKey(uuid)) {
+
+							JGameObjectImpl existGameObject = scene.getLoadSceneObjects().get(uuid);
 							field.setFieldValue(component, existGameObject);
-							gameObject = field.getFieldValue(component, GameObject.class);
-						}else{
-							scene.getLoadSceneObjects().put(uuid, gameObject);
+							gameObject = field.getFieldValue(component, JGameObjectImpl.class);
+						} else {
+							// scene.getLoadSceneObjects().put(uuid,
+							// gameObject);
+							Gdx.app.error("GameObjectsMonoReference", "Proxy to non exist object! " + gameObject);
 						}
+					}
+				}
+			}
+		}
+	}
+
+	public void proxyProcces() {
+		for (JGameObjectImpl go : scene.getGameObjects()) {
+			for (Component component : go.getAllComponents()) {
+				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
+				for (SilverField field : componentBean.getPublicAccesFields()) {
+					if (field.getFieldName().equals("gameObject"))
+						continue;
+					if (field.getFieldValueClass().equals(JGameObject.class)) {
+						JGameObject gameObject = field.getFieldValue(component, JGameObject.class);
+						if (gameObject == null)
+							continue;
+
+						GameObjectProxy proxyGameObject = new GameObjectProxy(gameObject);
+						field.setFieldValue(component, proxyGameObject);
+
 					}
 				}
 			}

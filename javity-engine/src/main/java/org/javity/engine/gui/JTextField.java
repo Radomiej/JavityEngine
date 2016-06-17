@@ -36,7 +36,7 @@ public class JTextField extends GUIComponent {
 	private void createButton() {
 
 		
-		Skin skin  = getGameObject().getComponentInParent(JCanvas.class).skin;
+		Skin skin  = getGameObject().getComponentInParent(JCanvas.class).getSkin();
 		TextFieldStyle style = new TextFieldStyle(skin.get("default", TextFieldStyle.class));
 		style.fontColor = fontColor;
 		textField = new TextField(text, style);

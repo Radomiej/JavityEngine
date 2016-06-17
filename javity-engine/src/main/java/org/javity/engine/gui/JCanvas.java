@@ -7,10 +7,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class JCanvas extends GUIComponent {
 	public transient Skin skin;
-	public String skinPath;
+	private String skinPath;
 	
 	@Override
 	public void awake() {
-		skin = new Skin(Gdx.files.internal("internal/ui/uiskin.json"));
+		skin = new Skin(Gdx.files.internal(skinPath));
+	}
+
+	public void setSkinPath(String resourcePath) {
+		skinPath = resourcePath;
+	}
+
+	public Skin getSkin() {
+		if(skin == null){
+			skin = new Skin(Gdx.files.internal(skinPath));
+		}
+		return skin;
 	}
 }

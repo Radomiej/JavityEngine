@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.javity.engine.Component;
-import org.javity.engine.GameObject;
+import org.javity.engine.JGameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.gui.JLabel;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
@@ -28,7 +29,7 @@ public class RemoteInvoker {
 		}
 	}
 
-	public void invoke(GameObject clickTarget) {
+	public void invoke(JGameObject clickTarget) {
 		for (Component component : clickTarget.getAllComponents()) {
 			if (component.getClass().getName().equals(invokeComponent)) {
 				Object[] parameters = args.toArray(new Object[args.size()]);

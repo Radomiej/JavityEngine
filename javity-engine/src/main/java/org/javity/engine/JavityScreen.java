@@ -27,7 +27,7 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private void transformDontDestroyedObjects(Scene current, Scene newScene2) {
-		for (GameObject gameObject : current.getGameObjects()) {
+		for (JGameObjectImpl gameObject : current.getGameObjects()) {
 			if (gameObject.isDontDestroy()) {
 				gameObject.getTransform().setParent(null);
 				scene.getGameObjects().add(gameObject);
@@ -60,15 +60,15 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		System.out.println("awakes");
 		// Awake all GameObjects
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			scene.awakeGameObject(gameObject);
 		}
 		
 		System.out.println("startes");
 		// Start all GameObjects
-		List<GameObject> gameObjects = scene.getGameObjects();
+		List<JGameObjectImpl> gameObjects = scene.getGameObjects();
 		for(int x = 0; x < gameObjects.size(); x++){
-			GameObject gameObject = gameObjects.get(x);
+			JGameObjectImpl gameObject = gameObjects.get(x);
 			scene.startGameObject(gameObject);
 		}
 	}
@@ -83,13 +83,13 @@ public class JavityScreen extends RapidArtemisScreen {
 		updateMouseXXX();
 
 		// Update game objects
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.update();
 			}
 		}
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.lateUpdate();
@@ -100,14 +100,14 @@ public class JavityScreen extends RapidArtemisScreen {
 		JInput.saveOldStatus();
 	}
 
-	private Set<GameObject> pressedObjects = new HashSet<GameObject>();
+	private Set<JGameObjectImpl> pressedObjects = new HashSet<JGameObjectImpl>();
 
 	private void updateMouseXXX() {
 		Vector2 worldPosition = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
 		List<RaycastHit> hits = JPhysic.raycastPoint(worldPosition);
 		for (RaycastHit hit : hits) {
 
-			GameObject hitGameObject = hit.collider.getGameObject();
+			JGameObjectImpl hitGameObject = hit.collider.getGameObject();
 			for (Component component : hitGameObject.componentsMap.values()) {
 				if (JInput.isJustPressed()) {
 					component.onMousePressed();
@@ -132,7 +132,7 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void pause() {
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.onPause();
@@ -142,7 +142,7 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void resume() {
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.onResume();

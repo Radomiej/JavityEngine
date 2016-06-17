@@ -13,17 +13,16 @@ public class JSceneManager {
 
 	static Json json = JsonSceneSerializer.json;
 	
-	private static KryoSceneSerializer kryoSceneSerializer = new KryoSceneSerializer();
-	
 	public static String saveToJson(Scene scene) {
-//		return kryoSceneSerializer.serialize(scene);
-		return json.prettyPrint(scene);
+		prepareReferenceToGameObjectProxyInComponentsVariables(scene);
+		String jsonScene = json.prettyPrint(scene);
+		prepareReferenceToGameObject(scene);
+		return jsonScene;
 	}
 
 	public static Scene loadSceneFromJson(String jsonScene) {
 //		System.out.println("load json: " + jsonScene);
 		Scene scene = json.fromJson(CustomScene.class, jsonScene);
-//		Scene scene = kryoSceneSerializer.deserialize(jsonScene);
 		
 		prepareReferenceToGameObject(scene);
 		relinkComponentsToGameObject(scene);
@@ -35,13 +34,18 @@ public class JSceneManager {
 	}
 
 	private static void relinkComponentsToGameObject(Scene scene) {
-		for (GameObject gameObject : scene.getGameObjects()) {
+		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
 			for (Component component : gameObject.getAllComponents()) {
 				component.setGameObject(gameObject);
 			}
 		}
 	}
 
+	private static void prepareReferenceToGameObjectProxyInComponentsVariables(Scene scene) {
+		new GameObjectsMonoReference((CustomScene) scene).proxyProcces();		
+	}
+
+	
 	public static void loadScene(SceneBulider sceneBulider) {
 		InternalScene newScene = (InternalScene) loadSceneFromJson(sceneBulider.getSceneJson());
 		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, (InternalScene) current)));

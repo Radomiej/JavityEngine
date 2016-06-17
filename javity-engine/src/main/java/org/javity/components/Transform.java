@@ -1,6 +1,6 @@
 package org.javity.components;
 
-import org.javity.engine.GameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.NativeComponent;
 
 import com.badlogic.gdx.math.Vector2;
@@ -14,7 +14,7 @@ public class Transform extends NativeComponent {
 	private float rotation;
 	private int orderZ = 0;
 	private transient PositionComponent positionComponent;
-	private GameObject parent;
+	private JGameObjectImpl parent;
 	private Vector2 localPosition = new Vector2();
 	private float localRotation = 0;
 	private float absoluteRotation = 0;
@@ -109,7 +109,7 @@ public class Transform extends NativeComponent {
 		setPosition(newPosition);
 	}
 
-	private void updateLocalPosition(GameObject parent) {
+	private void updateLocalPosition(JGameObjectImpl parent) {
 		Vector2 parentPosition = parent.getTransform().position;
 		Vector2 thisPosition = this.position;
 		localPosition.x = thisPosition.x - parentPosition.x;
@@ -134,7 +134,7 @@ public class Transform extends NativeComponent {
 		// positionComponent.setRotation(rotation);
 	}
 
-	public void setParent(GameObject parent) {
+	public void setParent(JGameObjectImpl parent) {
 		this.parent = parent;
 		localScale.set(getParentScale(parent));
 		if (parent != null) {
@@ -142,11 +142,11 @@ public class Transform extends NativeComponent {
 		}
 	}
 
-	private Vector2 getParentScale(GameObject parent) {
+	private Vector2 getParentScale(JGameObjectImpl parent) {
 		return parent != null ? parent.getTransform().scale : new Vector2(1, 1);
 	}
 
-	public GameObject getParent() {
+	public JGameObjectImpl getParent() {
 		return parent;
 	}
 

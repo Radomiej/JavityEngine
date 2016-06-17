@@ -1,7 +1,7 @@
 package org.javity.engine.serializer;
 
 import org.javity.engine.CustomScene;
-import org.javity.engine.GameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.Scene;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -15,7 +15,7 @@ public class KryoSceneSerializer {
 
 	public KryoSceneSerializer() {
 		kryo.register(CustomScene.class);
-		kryo.register(GameObject.class);
+		kryo.register(JGameObjectImpl.class);
 	}
 
 	public String serialize(Scene sceneToSerialize) {

@@ -8,25 +8,25 @@ import com.badlogic.gdx.files.FileHandle;
 
 public class Prefabs {
 
-	public static GameObject createGameObject() {
-		return new GameObject();
+	public static JGameObjectImpl createGameObject() {
+		return new JGameObjectImpl();
 	}
 
-	public static void addComponent(GameObject logo, Component component) {
+	public static void addComponent(JGameObjectImpl logo, Component component) {
 		logo.addComponent(component);
 	}
 
-	private List<GameObject> prefabs = new ArrayList<GameObject>();
+	private List<JGameObjectImpl> prefabs = new ArrayList<JGameObjectImpl>();
 
-	public void addPrefab(GameObject gameObject) {
+	public void addPrefab(JGameObjectImpl gameObject) {
 		prefabs.add(gameObject);
 	}
 
-	public void removePrefab(GameObject gameObject) {
+	public void removePrefab(JGameObjectImpl gameObject) {
 		prefabs.remove(gameObject);
 	}
 
-	public static GameObject createGameObjectFromResource(String resource) {
+	public static JGameObjectImpl createGameObjectFromResource(String resource) {
 		
 		FileHandle file = Gdx.files.local(resource);
 		if(!file.exists()){
@@ -34,7 +34,7 @@ public class Prefabs {
 		}
 		
 		String json = file.readString();
-		GameObject jsonObject = JSceneManager.json.fromJson(GameObject.class, json);
+		JGameObjectImpl jsonObject = JSceneManager.json.fromJson(JGameObjectImpl.class, json);
 		return jsonObject;
 	}
 }

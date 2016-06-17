@@ -17,10 +17,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
 
-public class GameObject {
-	private String name = "GameObject";
-	private String prefabId = UUID.randomUUID().toString();
+public class JGameObjectImpl extends JGameObject{
 	private transient boolean started, notDestroyOnLoad;
+	private String tag;
 	private transient Entity entity;
 	// private Map<Class<? extends Component>, Component> componentsMap =
 	// Collections.synchronizedMap(new HashMap<Class<? extends Component>,
@@ -29,12 +28,13 @@ public class GameObject {
 
 	private transient Transform transform;
 
-	public GameObject(String name) {
+	public JGameObjectImpl(String name) {
 		this();
 		this.name = name;
 	}
 
-	public GameObject() {
+	public JGameObjectImpl() {
+		objectId = UUID.randomUUID().toString();
 		createTransform();
 	}
 
@@ -48,10 +48,12 @@ public class GameObject {
 		}
 	}
 
+	@Override
 	public void start() {
 		started = true;
 	}
-
+	
+	@Override
 	public void awake() {
 		transform = getComponent(Transform.class);
 	}
@@ -69,14 +71,17 @@ public class GameObject {
 		this.entity = entity;
 	}
 
+	@Override
 	public <T extends Component> T getComponentInParent(Class<T> class1) {
 		return transform.getParent().getComponent(class1);
 	}
-
+	
+	@Override
 	public <T extends Component> Iterable<T> getComponentsInParent(Class<T> class1) {
 		return transform.getParent().getComponents(class1);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Component> Iterable<T> getComponents(Class<T> componentType) {
 		ArrayList<T> validComponents = new ArrayList<T>();
@@ -88,11 +93,13 @@ public class GameObject {
 		return validComponents;
 	}
 
+	@Override
 	public Iterable<Component> getAllComponents() {
 		// return new ArrayList<Component>(componentsMap.values());
 		return componentsMap.values();
 	}
-
+	
+	@Override
 	public <T extends Component> T getComponent(Class<T> componentType) {
 		return componentType.cast(componentsMap.get(componentType.getName()));
 	}
@@ -128,22 +135,7 @@ public class GameObject {
 		return getName();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPrefabId() {
-		return prefabId;
-	}
-
-	public void setPrefabId(String prefabId) {
-		this.prefabId = prefabId;
-	}
-
+	@Override
 	public Transform getTransform() {
 		return transform;
 	}
@@ -155,12 +147,21 @@ public class GameObject {
 	boolean isDontDestroy() {
 		return notDestroyOnLoad;
 	}
-
+	
+	@Override
 	public boolean isStarted() {
 		return started;
 	}
 
-	public static void dontDestroyOnLoad(GameObject gameObject) {
+	public static void dontDestroyOnLoad(JGameObjectImpl gameObject) {
 		gameObject.setNotDestroyOnLoad(true);
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 }

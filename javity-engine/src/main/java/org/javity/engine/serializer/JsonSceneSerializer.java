@@ -9,7 +9,7 @@ import org.javity.components.Rigidbody;
 import org.javity.components.SpriteRenderer;
 import org.javity.components.Transform;
 import org.javity.engine.CustomScene;
-import org.javity.engine.GameObject;
+import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.RawMap;
 
 import com.artemis.annotations.UnstableApi;
@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.ObjectMap.Keys;
 public class JsonSceneSerializer {
 	public static Json json;
 	static Json sceneReadJson;
-	private static HashMap<UUID, GameObject> loadSceneObjects = new HashMap<UUID, GameObject>();
+	private static HashMap<UUID, JGameObjectImpl> loadSceneObjects = new HashMap<UUID, JGameObjectImpl>();
 	static {
 		json = new Json();
 		sceneReadJson = new Json();

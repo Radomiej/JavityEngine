@@ -34,8 +34,8 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 
-		GameObject object1 = (GameObject) fixtureA.getBody().getUserData();
-		GameObject object2 = (GameObject) fixtureB.getBody().getUserData();
+		JGameObjectImpl object1 = (JGameObjectImpl) fixtureA.getBody().getUserData();
+		JGameObjectImpl object2 = (JGameObjectImpl) fixtureB.getBody().getUserData();
 
 		if (fixtureA.isSensor() && fixtureB.isSensor()) {
 			return;
@@ -64,8 +64,8 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 
-		GameObject object1 = (GameObject) fixtureA.getBody().getUserData();
-		GameObject object2 = (GameObject) fixtureB.getBody().getUserData();
+		JGameObjectImpl object1 = (JGameObjectImpl) fixtureA.getBody().getUserData();
+		JGameObjectImpl object2 = (JGameObjectImpl) fixtureB.getBody().getUserData();
 
 		if (fixtureA.isSensor() && fixtureB.isSensor()) {
 			return;
@@ -95,8 +95,8 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 
-		GameObject object1 = (GameObject) fixtureA.getBody().getUserData();
-		GameObject object2 = (GameObject) fixtureB.getBody().getUserData();
+		JGameObjectImpl object1 = (JGameObjectImpl) fixtureA.getBody().getUserData();
+		JGameObjectImpl object2 = (JGameObjectImpl) fixtureB.getBody().getUserData();
 
 		if (fixtureA.isSensor() || fixtureB.isSensor()) {
 			return;
@@ -115,8 +115,8 @@ public class JavitySystem extends BaseSystem implements ContactListener {
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 
-		GameObject object1 = (GameObject) fixtureA.getBody().getUserData();
-		GameObject object2 = (GameObject) fixtureB.getBody().getUserData();
+		JGameObjectImpl object1 = (JGameObjectImpl) fixtureA.getBody().getUserData();
+		JGameObjectImpl object2 = (JGameObjectImpl) fixtureB.getBody().getUserData();
 
 		if (fixtureA.isSensor() && fixtureB.isSensor()) {
 			return;
