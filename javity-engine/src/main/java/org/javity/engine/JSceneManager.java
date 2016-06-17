@@ -43,7 +43,7 @@ public class JSceneManager {
 	}
 
 	public static void loadScene(SceneBulider sceneBulider) {
-		Scene newScene = loadSceneFromJson(sceneBulider.getSceneJson());
-		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, current)));
+		InternalScene newScene = (InternalScene) loadSceneFromJson(sceneBulider.getSceneJson());
+		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, (InternalScene) current)));
 	}
 }

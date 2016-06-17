@@ -18,9 +18,9 @@ import com.badlogic.gdx.math.Vector2;
 
 public class JavityScreen extends RapidArtemisScreen {
 
-	private final Scene scene;
+	private final InternalScene scene;
 
-	public JavityScreen(Scene newScene, Scene current) {
+	public JavityScreen(InternalScene newScene, InternalScene current) {
 		this.scene = newScene;
 		if (current != null)
 			transformDontDestroyedObjects(current, newScene);
@@ -50,78 +50,29 @@ public class JavityScreen extends RapidArtemisScreen {
 	protected void injectWorld(EntityEngine world) {
 		System.out.println("injectWorld");
 
+		scene.setNativeRapidBus(rapidBus);
+		scene.setWorld(world);
 		JSceneManager.current = scene;
+		scene.initialize();
 		JEngine.rapidEventBus = masterEventBus;
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
+		System.out.println("awakes");
 		// Awake all GameObjects
 		for (GameObject gameObject : scene.getGameObjects()) {
-			if (!gameObject.isStarted()) {
-				gameObject.awake();
-				awakesComponents(gameObject);
-			}
-			Collection<com.artemis.Component> artemisComponents = getArtemisComponents(gameObject);
-			registerInRapidBusAllNativeComponents(gameObject);
-			Entity entity = createEntity(artemisComponents, world);
-			gameObject.setEntity(entity);
+			scene.awakeGameObject(gameObject);
 		}
-
+		
+		System.out.println("startes");
 		// Start all GameObjects
-		for (GameObject gameObject : scene.getGameObjects()) {
-			if (!gameObject.isStarted()) {
-				startsComponents(gameObject);
-				gameObject.start();
-			}
-		}
-
-	}
-
-	private void registerInRapidBusAllNativeComponents(GameObject gameObject) {
-		for (Component component : gameObject.getAllComponents()) {
-			if (component instanceof NativeComponent) {
-				NativeComponent nativeComponent = (NativeComponent) component;
-				nativeComponent.setRapidBus(rapidBus);
-				rapidBus.register(nativeComponent);
-			}
+		List<GameObject> gameObjects = scene.getGameObjects();
+		for(int x = 0; x < gameObjects.size(); x++){
+			GameObject gameObject = gameObjects.get(x);
+			scene.startGameObject(gameObject);
 		}
 	}
 
-	private void awakesComponents(GameObject gameObject) {
-		for (Component component : gameObject.getAllComponents()) {
-			component.awake();
-		}
-	}
-
-	private void startsComponents(GameObject gameObject) {
-		for (Component component : gameObject.getAllComponents()) {
-			component.start();
-			component.onEnabled();
-		}
-	}
-
-	private Entity createEntity(Collection<com.artemis.Component> artemisComponents, EntityEngine world) {
-		Entity entity = world.createEntity();
-		for (com.artemis.Component nativeComponent : artemisComponents) {
-			// System.out.println("Dodaje: " +
-			// nativeComponent.getClass().getSimpleName());
-			entity.edit().add(nativeComponent);
-		}
-		return entity;
-	}
-
-	private Collection<com.artemis.Component> getArtemisComponents(GameObject gameObject) {
-		List<com.artemis.Component> artemisComponents = new ArrayList<com.artemis.Component>();
-		for (Component javityComponent : gameObject.getAllComponents()) {
-			// System.out.println("check component: " +
-			// javityComponent.getClass().getSimpleName());
-			if (javityComponent instanceof NativeComponent) {
-				NativeComponent nativeComponent = (NativeComponent) javityComponent;
-				artemisComponents.addAll(nativeComponent.getNativeComponents());
-			}
-		}
-		return artemisComponents;
-	}
 
 	@Override
 	public void render(float delta) {
