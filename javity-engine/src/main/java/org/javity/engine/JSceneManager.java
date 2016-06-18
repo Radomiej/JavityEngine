@@ -34,7 +34,7 @@ public class JSceneManager {
 	}
 
 	private static void relinkComponentsToGameObject(Scene scene) {
-		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
 			for (Component component : gameObject.getAllComponents()) {
 				component.setGameObject(gameObject);
 			}

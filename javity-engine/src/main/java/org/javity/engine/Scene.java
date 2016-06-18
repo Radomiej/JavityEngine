@@ -9,6 +9,6 @@ import galaxy.rapid.eventbus.RapidBus;
 public interface Scene {
 
 	public void initialize();
-	public JGameObjectImpl instantiateGameObject(JGameObjectImpl gameObject, Vector2 position);
-	public List<JGameObjectImpl> getGameObjects();
+	public JGameObject instantiateGameObject(JGameObject gameObject, Vector2 position);
+	public List<JGameObject> getGameObjects();
 }

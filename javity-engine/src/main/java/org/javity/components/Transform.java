@@ -1,5 +1,6 @@
 package org.javity.components;
 
+import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.NativeComponent;
 
@@ -14,7 +15,7 @@ public class Transform extends NativeComponent {
 	private float rotation;
 	private int orderZ = 0;
 	private transient PositionComponent positionComponent;
-	private JGameObjectImpl parent;
+	private JGameObject parent;
 	private Vector2 localPosition = new Vector2();
 	private float localRotation = 0;
 	private float absoluteRotation = 0;
@@ -75,8 +76,8 @@ public class Transform extends NativeComponent {
 
 		if (position.equals(positionComponent.getPosition())) {
 			if (parent != null) {
-				// System.out.println("Pozycja rodzica: " +
-				// parent.getTransform().position);
+//				 System.out.println("Pozycja rodzica: " +
+//				 parent.getTransform().position);
 				localRotation = parent.getTransform().rotation;
 				Vector2 newPosition = localPosition.cpy().rotate(localRotation);
 				newPosition.add(parent.getTransform().position);
@@ -109,7 +110,7 @@ public class Transform extends NativeComponent {
 		setPosition(newPosition);
 	}
 
-	private void updateLocalPosition(JGameObjectImpl parent) {
+	private void updateLocalPosition(JGameObject parent) {
 		Vector2 parentPosition = parent.getTransform().position;
 		Vector2 thisPosition = this.position;
 		localPosition.x = thisPosition.x - parentPosition.x;
@@ -134,7 +135,7 @@ public class Transform extends NativeComponent {
 		// positionComponent.setRotation(rotation);
 	}
 
-	public void setParent(JGameObjectImpl parent) {
+	public void setParent(JGameObject parent) {
 		this.parent = parent;
 		localScale.set(getParentScale(parent));
 		if (parent != null) {
@@ -142,11 +143,11 @@ public class Transform extends NativeComponent {
 		}
 	}
 
-	private Vector2 getParentScale(JGameObjectImpl parent) {
+	private Vector2 getParentScale(JGameObject parent) {
 		return parent != null ? parent.getTransform().scale : new Vector2(1, 1);
 	}
 
-	public JGameObjectImpl getParent() {
+	public JGameObject getParent() {
 		return parent;
 	}
 

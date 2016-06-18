@@ -4,6 +4,7 @@ import org.javity.engine.NativeComponent;
 import org.javity.engine.Resource;
 import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpriteResource;
+import org.javity.engine.resources.MemorySpriteResource;
 import org.javity.engine.resources.SingleSpriteResource;
 
 import galaxy.rapid.asset.RapidAsset;
@@ -22,6 +23,8 @@ public class SpriteRenderer extends NativeComponent {
 	public SpriteRenderer(String sprite) {
 		if (sprite.contains("#")) {
 			this.sprite = new SpriteAtlasResource(sprite);
+		} else if (sprite.contains("%")) {
+			this.sprite = new MemorySpriteResource(sprite);
 		} else {
 			this.sprite = new SingleSpriteResource(sprite);
 		}
@@ -48,10 +51,15 @@ public class SpriteRenderer extends NativeComponent {
 	public void setSprite(SpriteResource sprite) {
 		this.sprite = sprite;
 		if (spriteComponent != null) {
+			spriteComponent.setAtlas(false);
+			spriteComponent.setMemory(false);
+			
 			spriteComponent.setSpriteAsset(sprite.getResourcePath());
 			if (sprite instanceof SpriteAtlasResource) {
 				spriteComponent.setAtlas(true);
 				RapidAsset.INSTANCE.loadTextureAtlas(sprite.getResourcePath().split("#")[0]);
+			}else if(sprite instanceof MemorySpriteResource){
+				spriteComponent.setMemory(true);
 			}else{
 				spriteComponent.setAtlas(false);
 				RapidAsset.INSTANCE.loadSprite(sprite.getResourcePath());

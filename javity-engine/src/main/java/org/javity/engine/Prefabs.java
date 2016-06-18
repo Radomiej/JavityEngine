@@ -8,11 +8,11 @@ import com.badlogic.gdx.files.FileHandle;
 
 public class Prefabs {
 
-	public static JGameObjectImpl createGameObject() {
+	public static JGameObject createGameObject() {
 		return new JGameObjectImpl();
 	}
 
-	public static void addComponent(JGameObjectImpl logo, Component component) {
+	public static void addComponent(JGameObject logo, Component component) {
 		logo.addComponent(component);
 	}
 

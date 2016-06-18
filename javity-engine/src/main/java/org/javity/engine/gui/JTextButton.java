@@ -80,7 +80,7 @@ public class JTextButton extends GUIComponent {
 
 	public void setText(String text) {
 		this.text = text;
-		button.setText(text);
+		if(button != null)button.setText(text);
 	}
 
 	public void setClickTarget(JGameObject target) {

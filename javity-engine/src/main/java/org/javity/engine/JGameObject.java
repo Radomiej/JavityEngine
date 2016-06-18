@@ -4,7 +4,14 @@ import java.util.UUID;
 
 import org.javity.components.Transform;
 
+import com.artemis.Entity;
+
 public abstract class JGameObject {
+	
+	public static void dontDestroyOnLoad(JGameObject gameObject) {
+		gameObject.setNotDestroyOnLoad(true);
+	}
+	
 	protected String name = "GameObject";
 	protected String objectId;
 
@@ -26,6 +33,8 @@ public abstract class JGameObject {
 	
 	public abstract Transform getTransform();
 	
+	public abstract void addComponent(Component component);
+	
 	public String getName() {
 		return name;
 	}
@@ -41,5 +50,17 @@ public abstract class JGameObject {
 	public void setObjectId(String prefabId) {
 		this.objectId = prefabId;
 	}
+
+	public abstract void setEntity(Entity entity);
+
+	public abstract boolean isDontDestroy();
+
+	abstract void removeComponent(Component componentToRemove);
+
+	public abstract void setNotDestroyOnLoad(boolean notDestroyOnLoad);
+
+	public abstract Entity getEntity();
+
+	
 
 }

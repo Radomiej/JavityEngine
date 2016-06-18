@@ -44,42 +44,67 @@ public class GameObjectProxy extends JGameObject{
 
 	@Override
 	public <T extends Component> T getComponentInParent(Class<T> class1) {
-		return null;
+		return orginalObject.getComponentInParent(class1);
 	}
 
 	@Override
 	public <T extends Component> Iterable<T> getComponentsInParent(Class<T> class1) {
-		// TODO Auto-generated method stub
-		return null;
+		return orginalObject.getComponentsInParent(class1);
 	}
 
 	@Override
 	public <T extends Component> Iterable<T> getComponents(Class<T> componentType) {
-		// TODO Auto-generated method stub
-		return null;
+		return orginalObject.getComponents(componentType);
 	}
 
 	@Override
 	public <T extends Component> T getComponent(Class<T> componentType) {
-		// TODO Auto-generated method stub
-		return null;
+		return orginalObject.getComponent(componentType);
 	}
 
 	@Override
 	public boolean isStarted() {
-		// TODO Auto-generated method stub
-		return false;
+		return orginalObject.isStarted();
 	}
 
 	@Override
 	public Transform getTransform() {
-		// TODO Auto-generated method stub
-		return null;
+		if(orginalObject == null) return null;
+		return orginalObject.getTransform();
 	}
 
 	@Override
 	public Iterable<Component> getAllComponents() {
-		// TODO Auto-generated method stub
-		return null;
+		return orginalObject.getAllComponents();
+	}
+
+	@Override
+	public void addComponent(Component component) {
+		orginalObject.addComponent(component);
+	}
+
+	@Override
+	public void setEntity(Entity entity) {
+		orginalObject.setEntity(entity);
+	}
+
+	@Override
+	public boolean isDontDestroy() {
+		return orginalObject.isDontDestroy();
+	}
+
+	@Override
+	void removeComponent(Component componentToRemove) {
+		orginalObject.removeComponent(componentToRemove);
+	}
+
+	@Override
+	public void setNotDestroyOnLoad(boolean notDestroyOnLoad) {
+		orginalObject.setNotDestroyOnLoad(notDestroyOnLoad);
+	}
+
+	@Override
+	public Entity getEntity() {
+		return orginalObject.getEntity();
 	}
 }

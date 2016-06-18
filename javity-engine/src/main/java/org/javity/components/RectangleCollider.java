@@ -35,7 +35,7 @@ public class RectangleCollider extends NativeComponent {
 		System.out.println("GO: " + getGameObject());
 		System.out.println("ENT: " + getGameObject().getEntity());
 		Entity entity = getGameObject().getEntity();
-		getRapidBus().post(new AddRectangleColliderComponent(rectangleColliderComponent, getGameObject().getEntity()));
+		getRapidBus().post(new AddRectangleColliderComponent(rectangleColliderComponent, entity));
 	}
 
 	@Override

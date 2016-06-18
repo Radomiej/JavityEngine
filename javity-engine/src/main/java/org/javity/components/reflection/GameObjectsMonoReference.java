@@ -24,11 +24,11 @@ public class GameObjectsMonoReference {
 
 	public void procces() {
 		scene.getLoadSceneObjects().clear();
-		for (JGameObjectImpl gameObject : scene.getGameObjects()) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
 			UUID uuid = UUID.fromString(gameObject.getObjectId());
 			scene.getLoadSceneObjects().put(uuid, gameObject);
 		}
-		for (JGameObjectImpl go : scene.getGameObjects()) {
+		for (JGameObject go : scene.getGameObjects()) {
 			for (Component component : go.getAllComponents()) {
 				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
 				for (SilverField field : componentBean.getPublicAccesFields()) {
@@ -41,9 +41,9 @@ public class GameObjectsMonoReference {
 						UUID uuid = UUID.fromString(gameObject.getObjectId());
 						if (scene.getLoadSceneObjects().containsKey(uuid)) {
 
-							JGameObjectImpl existGameObject = scene.getLoadSceneObjects().get(uuid);
+							JGameObject existGameObject = scene.getLoadSceneObjects().get(uuid);
 							field.setFieldValue(component, existGameObject);
-							gameObject = field.getFieldValue(component, JGameObjectImpl.class);
+//							gameObject = field.getFieldValue(component, JGameObjectImpl.class);
 						} else {
 							// scene.getLoadSceneObjects().put(uuid,
 							// gameObject);
@@ -56,7 +56,7 @@ public class GameObjectsMonoReference {
 	}
 
 	public void proxyProcces() {
-		for (JGameObjectImpl go : scene.getGameObjects()) {
+		for (JGameObject go : scene.getGameObjects()) {
 			for (Component component : go.getAllComponents()) {
 				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
 				for (SilverField field : componentBean.getPublicAccesFields()) {

@@ -20,12 +20,12 @@ import galaxy.rapid.eventbus.RapidBus;
 
 public class CustomScene implements InternalScene {
 
-	private List<JGameObjectImpl> gameObjects = new ArrayList<JGameObjectImpl>();
-	private HashMap<UUID, JGameObjectImpl> loadSceneObjects = new HashMap<UUID, JGameObjectImpl>();
+	private List<JGameObject> gameObjects = new ArrayList<JGameObject>();
+	private HashMap<UUID, JGameObject> loadSceneObjects = new HashMap<UUID, JGameObject>();
 	private RapidBus nativeRapidBus;
 	private EntityEngine world;
 	private boolean run;
-	private GameObjectProxator proxator = new GameObjectProxator();
+	private transient GameObjectProxator proxator = new GameObjectProxator();
 	
 	@Override
 	public void initialize() {
@@ -33,18 +33,19 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
-	public List<JGameObjectImpl> getGameObjects() {
+	public List<JGameObject> getGameObjects() {
 		return gameObjects;
 	}
 
 	@Override
-	public JGameObjectImpl instantiateGameObject(JGameObjectImpl gameObject, Vector2 position) {
+	public JGameObjectImpl instantiateGameObject(JGameObject gameObject, Vector2 position) {
 		Json json = JSceneManager.json;
 		proxyGameObject(gameObject);
 		String gameObjectJson = json.toJson(gameObject);
 		unproxyGameObject(gameObject);
 		
 		JGameObjectImpl newObject = json.fromJson(JGameObjectImpl.class, gameObjectJson);
+		unproxyGameObject(newObject);
 		Transform transform = newObject.getComponent(Transform.class);
 		transform.setPosition(position);
 		registerInRapidBusAllNativeComponents(gameObject);
@@ -61,19 +62,19 @@ public class CustomScene implements InternalScene {
 		return newObject;
 	}
 
-	private void unproxyGameObject(JGameObjectImpl gameObject) {
+	private void unproxyGameObject(JGameObject gameObject) {
 		proxator.unproxy(gameObject, this);
 	}
 
-	private void proxyGameObject(JGameObjectImpl gameObject) {
+	private void proxyGameObject(JGameObject gameObject) {
 		proxator.proxy(gameObject, this);
 	}
 
-	public HashMap<UUID, JGameObjectImpl> getLoadSceneObjects() {
+	public HashMap<UUID, JGameObject> getLoadSceneObjects() {
 		return loadSceneObjects;
 	}
 
-	public void registerInRapidBusAllNativeComponents(JGameObjectImpl gameObject) {
+	public void registerInRapidBusAllNativeComponents(JGameObject gameObject) {
 		if (nativeRapidBus == null)
 			return;
 
@@ -96,7 +97,7 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
-	public void awakeGameObject(JGameObjectImpl gameObject) {
+	public void awakeGameObject(JGameObject gameObject) {
 		if (!gameObject.isStarted()) {
 			gameObject.awake();
 			for (Component component : gameObject.getAllComponents()) {
@@ -111,7 +112,7 @@ public class CustomScene implements InternalScene {
 
 	}
 
-	private Collection<com.artemis.Component> getArtemisComponents(JGameObjectImpl gameObject) {
+	private Collection<com.artemis.Component> getArtemisComponents(JGameObject gameObject) {
 		List<com.artemis.Component> artemisComponents = new ArrayList<com.artemis.Component>();
 		for (Component javityComponent : gameObject.getAllComponents()) {
 			// System.out.println("check component: " +
@@ -135,11 +136,11 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
-	public void startGameObject(JGameObjectImpl gameObject) {
+	public void startGameObject(JGameObject gameObject) {
 		if (!gameObject.isStarted()) {
 			for (Component component : gameObject.getAllComponents()) {
 				component.start();
-				component.setEnabled(true);
+				if(component.isEnabled()) component.onEnabled();
 			}
 			gameObject.start();
 		}

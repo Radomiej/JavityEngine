@@ -9,7 +9,11 @@ import org.javity.engine.resources.TextureResource;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
@@ -36,11 +40,19 @@ public class JButton extends GUIComponent {
 
 	private void createButton() {
 		
-		Drawable upDrawable = up == null ? null : DrawableHelper.getDrawableFromAsset(up.getResourcePath());
-		Drawable downDrawable = down == null ? null : DrawableHelper.getDrawableFromAsset(down.getResourcePath());
-		Drawable checkedDrawable = checked == null ? null : DrawableHelper.getDrawableFromAsset(checked.getResourcePath());
+		Skin skin = getGameObject().getComponentInParent(JCanvas.class).getSkin();
+		ButtonStyle style = new ImageButtonStyle(skin.get("default", ButtonStyle.class));
+
+		if (up != null) {
+			style.up = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
+		}
+		if (down != null) {
+			style.down = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
+		}
+		if (checked != null) {
+			style.checked = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
+		}
 		
-		ButtonStyle style = new ButtonStyle(upDrawable, downDrawable, checkedDrawable);
 		button = new Button(style);
 		button.addCaptureListener(new ClickListener(){
 			@Override

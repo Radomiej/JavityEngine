@@ -17,7 +17,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
 
-public class JGameObjectImpl extends JGameObject{
+public class JGameObjectImpl extends JGameObject {
 	private transient boolean started, notDestroyOnLoad;
 	private String tag;
 	private transient Entity entity;
@@ -52,7 +52,7 @@ public class JGameObjectImpl extends JGameObject{
 	public void start() {
 		started = true;
 	}
-	
+
 	@Override
 	public void awake() {
 		transform = getComponent(Transform.class);
@@ -75,7 +75,7 @@ public class JGameObjectImpl extends JGameObject{
 	public <T extends Component> T getComponentInParent(Class<T> class1) {
 		return transform.getParent().getComponent(class1);
 	}
-	
+
 	@Override
 	public <T extends Component> Iterable<T> getComponentsInParent(Class<T> class1) {
 		return transform.getParent().getComponents(class1);
@@ -98,7 +98,7 @@ public class JGameObjectImpl extends JGameObject{
 		// return new ArrayList<Component>(componentsMap.values());
 		return componentsMap.values();
 	}
-	
+
 	@Override
 	public <T extends Component> T getComponent(Class<T> componentType) {
 		return componentType.cast(componentsMap.get(componentType.getName()));
@@ -118,7 +118,8 @@ public class JGameObjectImpl extends JGameObject{
 		componentToRemove.getGameObject().removeComponent(componentToRemove);
 	}
 
-	private void removeComponent(Component componentToRemove) {
+	@Override
+	void removeComponent(Component componentToRemove) {
 		Component remove = componentsMap.remove(componentToRemove.getClass().getName());
 		if (remove == null) {
 			Gdx.app.error("GameObject:removeComponent", "Remove components isn`t exist");
@@ -140,21 +141,19 @@ public class JGameObjectImpl extends JGameObject{
 		return transform;
 	}
 
-	void setNotDestroyOnLoad(boolean notDestroyOnLoad) {
+	@Override
+	public void setNotDestroyOnLoad(boolean notDestroyOnLoad) {
 		this.notDestroyOnLoad = notDestroyOnLoad;
 	}
 
-	boolean isDontDestroy() {
+	@Override
+	public boolean isDontDestroy() {
 		return notDestroyOnLoad;
 	}
-	
+
 	@Override
 	public boolean isStarted() {
 		return started;
-	}
-
-	public static void dontDestroyOnLoad(JGameObjectImpl gameObject) {
-		gameObject.setNotDestroyOnLoad(true);
 	}
 
 	public String getTag() {

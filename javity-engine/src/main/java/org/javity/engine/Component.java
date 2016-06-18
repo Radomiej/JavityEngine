@@ -8,8 +8,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public interface Component {
-	public void setGameObject(JGameObjectImpl gameObject);
-	public JGameObjectImpl getGameObject();
+	public void setGameObject(JGameObject gameObject);
+	public JGameObject getGameObject();
 	public void awake();
 	public void start();
 	public void update();

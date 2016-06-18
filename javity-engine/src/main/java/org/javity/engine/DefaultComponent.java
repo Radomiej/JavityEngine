@@ -8,19 +8,19 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public abstract class DefaultComponent implements Component {
-	private transient JGameObjectImpl gameObject;
+	private transient JGameObject gameObject;
 	private transient Transform transform;
 	private boolean enabled = true;
 	
 	
 	@Override
-	public void setGameObject(JGameObjectImpl gameObject) {
+	public void setGameObject(JGameObject gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.getComponent(Transform.class);
 	}
 
 	@Override
-	public JGameObjectImpl getGameObject() {
+	public JGameObject getGameObject() {
 		return gameObject;
 	}
 

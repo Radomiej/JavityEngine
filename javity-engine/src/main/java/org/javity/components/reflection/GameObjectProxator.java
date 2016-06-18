@@ -1,5 +1,7 @@
 package org.javity.components.reflection;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.javity.engine.Component;
@@ -16,6 +18,8 @@ import pl.silver.reflection.SilverField;
 import pl.silver.reflection.SilverReflectionUtills;
 
 public class GameObjectProxator {
+	private Map<String, JGameObjectImpl> orginalObjects = new HashMap<String, JGameObjectImpl>();
+	
 	public void proxy(JGameObject masterGameObject, CustomScene scene) {
 		for (Component component : masterGameObject.getAllComponents()) {
 			ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
@@ -27,6 +31,7 @@ public class GameObjectProxator {
 					if (gameObject == null)
 						continue;
 
+					orginalObjects.put(gameObject.getObjectId(), (JGameObjectImpl) gameObject);
 					GameObjectProxy proxyGameObject = new GameObjectProxy(gameObject);
 					field.setFieldValue(component, proxyGameObject);
 
@@ -46,11 +51,11 @@ public class GameObjectProxator {
 					if (gameObject == null)
 						continue;
 					UUID uuid = UUID.fromString(gameObject.getObjectId());
-					if (scene.getLoadSceneObjects().containsKey(uuid)) {
+					if (orginalObjects.containsKey(gameObject.getObjectId())) {
 
-						JGameObjectImpl existGameObject = scene.getLoadSceneObjects().get(uuid);
+						JGameObject existGameObject = orginalObjects.get(gameObject.getObjectId());
 						field.setFieldValue(component, existGameObject);
-						gameObject = field.getFieldValue(component, JGameObjectImpl.class);
+//						gameObject = field.getFieldValue(component, JGameObjectImpl.class);
 					} else {
 						Gdx.app.error("GameObjectProxator", "Proxy to non exist object! uuid: " + uuid);
 					}

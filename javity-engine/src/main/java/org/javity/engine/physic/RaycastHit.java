@@ -3,6 +3,7 @@ package org.javity.engine.physic;
 import org.javity.components.Rigidbody;
 import org.javity.components.Transform;
 import org.javity.engine.Component;
+import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
 
 import com.badlogic.gdx.math.Vector2;
@@ -22,7 +23,7 @@ public class RaycastHit {
 
 	public RaycastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 		this.collider = (Component) fixture.getUserData();
-		JGameObjectImpl gameObject = collider.getGameObject();
+		JGameObject gameObject = collider.getGameObject();
 		this.transform = gameObject.getTransform();
 		this.point = point;
 		this.normal = normal;
