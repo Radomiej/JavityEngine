@@ -1,5 +1,6 @@
 package org.javity.components;
 
+import org.javity.engine.JTime;
 import org.javity.engine.NativeComponent;
 import org.javity.engine.resources.SpineResource;
 import org.javity.engine.resources.SpriteAtlasResource;
@@ -20,7 +21,8 @@ public class SpineRenderer extends NativeComponent {
 	}
 	
 	public SpineRenderer(String spinePath) {
-		spine = new SpineResource(spinePath);
+		String[] spinePathParts = spinePath.split("#");
+		spine = new SpineResource(spinePathParts[0], spinePathParts[1] != null ? spinePathParts[1] : "default");
 	}
 	
 	public SpineRenderer(SpineResource spineResource) {
@@ -34,11 +36,23 @@ public class SpineRenderer extends NativeComponent {
 		
 
 		RapidAsset.INSTANCE.loadSpine(spine.getResourcePath());
-		SpineAssetModel spineAssetModel = RapidAsset.INSTANCE.getSpine(spine.getResourcePath(), "bandit");
+		SpineAssetModel spineAssetModel = RapidAsset.INSTANCE.getSpine(spine.getResourcePath(), spine.getSkinName());
 		spineComponent = new SpineComponent(spineAssetModel);
 		addNativeComponent(spineComponent);
 	}
 
+	public void setAnimation(String animationName, boolean loop){
+		spineComponent.getAnimationState().setAnimation(0, animationName, loop);
+	}
+	
+	public void setAnimation(int index, String animationName, boolean loop){
+		spineComponent.getAnimationState().setAnimation(index, animationName, loop);
+	}
+	
+	public void addAnimation(int index, String animationName, boolean loop, float delay){
+		spineComponent.getAnimationState().addAnimation(index, animationName, loop, delay);
+	}
+	
 	public SpineResource getSpine() {
 		return spine;
 	}

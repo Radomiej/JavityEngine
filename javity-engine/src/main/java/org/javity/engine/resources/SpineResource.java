@@ -4,18 +4,23 @@ import org.javity.engine.Resource;
 
 public class SpineResource implements Resource {
 
-	private String resourcePath;
+	private String resourceJsonPath;
+	private String skinName;
 
 	public SpineResource() {
 	}
 
-	public SpineResource(String resourcePath){
-		this.resourcePath = resourcePath;
+	public SpineResource(String resourceJsonPath, String skinName) {
+		this.resourceJsonPath = resourceJsonPath;
+		this.skinName = skinName;
 	}
 
 	@Override
 	public String getResourcePath() {
-		return resourcePath;
+		return resourceJsonPath;
 	}
 
+	public String getSkinName() {
+		return skinName;
+	}
 }
