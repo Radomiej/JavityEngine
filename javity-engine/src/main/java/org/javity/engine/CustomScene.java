@@ -26,6 +26,7 @@ public class CustomScene implements InternalScene {
 	private EntityEngine world;
 	private boolean run;
 	private transient GameObjectProxator proxator = new GameObjectProxator();
+	private transient List<JGameObject> objectToRemove = new ArrayList<JGameObject>();
 	
 	@Override
 	public void initialize() {
@@ -38,7 +39,21 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
+	public void destroyGameObject(JGameObject gameObject) {
+		objectToRemove.add(gameObject);
+	}
+	
+	@Override
+	public void proccessGameObjectDestroy(JGameObject gameObject){
+		gameObjects.remove(gameObject);
+		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
+		gameObject.setEnabled(false);
+		fullObject.destroy(nativeRapidBus);
+	}
+	
+	@Override
 	public JGameObjectImpl instantiateGameObject(JGameObject gameObject, Vector2 position) {
+		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
 		Json json = JSceneManager.json;
 		proxyGameObject(gameObject);
 		String gameObjectJson = json.toJson(gameObject);
@@ -46,7 +61,11 @@ public class CustomScene implements InternalScene {
 		
 		JGameObjectImpl newObject = json.fromJson(JGameObjectImpl.class, gameObjectJson);
 		unproxyGameObject(newObject);
+		
+		
 		Transform transform = newObject.getComponent(Transform.class);
+		newObject.setTransform(transform);
+		if(fullObject.isPrefab()) transform.setParent(null);
 		transform.setPosition(position);
 		registerInRapidBusAllNativeComponents(gameObject);
 
@@ -149,6 +168,11 @@ public class CustomScene implements InternalScene {
 	@Override
 	public void setWorld(EntityEngine world) {
 		this.world = world;
+	}
+
+	@Override
+	public Collection<JGameObject> getRemoveGameObjects() {
+		return objectToRemove;
 	}
 
 }

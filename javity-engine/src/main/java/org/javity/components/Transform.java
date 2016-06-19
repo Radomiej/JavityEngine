@@ -111,6 +111,11 @@ public class Transform extends NativeComponent {
 	}
 
 	private void updateLocalPosition(JGameObject parent) {
+		if(parent.isDestroy()){
+			setParent(null);
+			return;
+		}
+		
 		Vector2 parentPosition = parent.getTransform().position;
 		Vector2 thisPosition = this.position;
 		localPosition.x = thisPosition.x - parentPosition.x;

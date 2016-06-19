@@ -96,6 +96,13 @@ public class JavityScreen extends RapidArtemisScreen {
 			}
 		}
 
+		//Destroy Objects to remove
+		for (JGameObject gameObject : scene.getRemoveGameObjects()) {
+			scene.proccessGameObjectDestroy(gameObject);
+		}
+		scene.getRemoveGameObjects().clear();
+		
+		
 		super.render(delta);
 		JInput.saveOldStatus();
 	}

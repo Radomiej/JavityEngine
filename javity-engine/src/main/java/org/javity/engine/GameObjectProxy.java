@@ -1,21 +1,11 @@
 package org.javity.engine;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import org.javity.components.RectangleCollider;
 import org.javity.components.Transform;
-import org.javity.engine.gui.JCanvas;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.OrderedMap;
 
 public class GameObjectProxy extends JGameObject{
 
@@ -74,7 +64,7 @@ public class GameObjectProxy extends JGameObject{
 	}
 
 	@Override
-	public Iterable<Component> getAllComponents() {
+	public Collection<Component> getAllComponents() {
 		return orginalObject.getAllComponents();
 	}
 
@@ -106,5 +96,20 @@ public class GameObjectProxy extends JGameObject{
 	@Override
 	public Entity getEntity() {
 		return orginalObject.getEntity();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		orginalObject.setEnabled(enabled);		
+	}
+
+	@Override
+	public boolean isDestroy() {
+		return orginalObject.isDestroy();
+	}
+	
+	@Override
+	public String toString() {
+		return "GameObject Proxy uuid: " + getObjectId();
 	}
 }

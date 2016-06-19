@@ -1,6 +1,6 @@
 package org.javity.engine;
 
-import java.util.UUID;
+import java.util.Collection;
 
 import org.javity.components.Transform;
 
@@ -13,13 +13,38 @@ public abstract class JGameObject {
 	}
 	
 	protected String name = "GameObject";
+	protected String tag;
 	protected String objectId;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(String prefabId) {
+		this.objectId = prefabId;
+	}
 
 	public abstract void start();
 
 	public abstract void awake();
 
-	public abstract Iterable<Component> getAllComponents();
+	public abstract Collection<Component> getAllComponents();
 	
 	public abstract <T extends Component> T getComponentInParent(Class<T> class1);
 
@@ -35,22 +60,6 @@ public abstract class JGameObject {
 	
 	public abstract void addComponent(Component component);
 	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public void setObjectId(String prefabId) {
-		this.objectId = prefabId;
-	}
-
 	public abstract void setEntity(Entity entity);
 
 	public abstract boolean isDontDestroy();
@@ -61,6 +70,9 @@ public abstract class JGameObject {
 
 	public abstract Entity getEntity();
 
+	public abstract void setEnabled(boolean enabled);
+
+	public abstract boolean isDestroy();
 	
 
 }
