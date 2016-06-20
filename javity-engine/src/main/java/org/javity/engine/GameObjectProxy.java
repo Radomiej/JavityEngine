@@ -112,4 +112,9 @@ public class GameObjectProxy extends JGameObject{
 	public String toString() {
 		return "GameObject Proxy uuid: " + getObjectId();
 	}
+
+	@Override
+	public boolean isEnabled() {
+		return orginalObject.isEnabled();
+	}
 }

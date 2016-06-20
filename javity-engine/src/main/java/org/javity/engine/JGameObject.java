@@ -40,9 +40,9 @@ public abstract class JGameObject {
 		this.objectId = prefabId;
 	}
 
-	public abstract void start();
+	abstract void start();
 
-	public abstract void awake();
+	abstract void awake();
 
 	public abstract Collection<Component> getAllComponents();
 	
@@ -60,7 +60,7 @@ public abstract class JGameObject {
 	
 	public abstract void addComponent(Component component);
 	
-	public abstract void setEntity(Entity entity);
+	abstract void setEntity(Entity entity);
 
 	public abstract boolean isDontDestroy();
 
@@ -71,6 +71,8 @@ public abstract class JGameObject {
 	public abstract Entity getEntity();
 
 	public abstract void setEnabled(boolean enabled);
+	
+	public abstract boolean isEnabled();
 
 	public abstract boolean isDestroy();
 	

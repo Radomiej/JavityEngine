@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx;
 
 import galaxy.rapid.eventbus.RapidBus;
 
-public abstract class NativeComponent extends DefaultComponent {
+public abstract class NativeComponent extends JComponent {
 	private transient Collection<Component> nativeComponents = new ArrayList<Component>();
 	private transient RapidBus rapidBus;
 

@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-public abstract class DefaultComponent implements Component {
+public abstract class JComponent implements Component {
 	private transient JGameObject gameObject;
 	private transient Transform transform;
 	private boolean enabled = true;

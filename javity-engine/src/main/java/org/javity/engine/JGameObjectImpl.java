@@ -221,4 +221,9 @@ public class JGameObjectImpl extends JGameObject {
 		this.transform = transform2;
 	}
 
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 }
