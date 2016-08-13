@@ -1,5 +1,6 @@
 package org.javity.engine.gui;
 
+import org.javity.components.Transform;
 import org.javity.engine.GUIComponent;
 import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
@@ -43,6 +44,9 @@ public class JTextButton extends GUIComponent {
 		createButton();
 		actorComponent.setActor(button);
 		addNativeComponent(actorComponent);
+		
+		Gdx.app.log("JTextButton position", getTransform().getPosition().toString());
+		
 	}
 
 	private void createButton() {

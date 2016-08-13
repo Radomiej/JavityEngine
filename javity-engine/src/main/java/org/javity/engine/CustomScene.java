@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.javity.components.Transform;
 import org.javity.components.reflection.GameObjectProxator;
+import org.javity.engine.serializer.JsonSceneSerializer;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
@@ -27,7 +28,8 @@ public class CustomScene implements InternalScene {
 	private boolean run;
 	private transient GameObjectProxator proxator = new GameObjectProxator();
 	private transient List<JGameObject> objectToRemove = new ArrayList<JGameObject>();
-	
+	private transient List<JGameObject> objectToAdd = new ArrayList<JGameObject>();
+
 	@Override
 	public void initialize() {
 		run = true;
@@ -42,33 +44,42 @@ public class CustomScene implements InternalScene {
 	public void destroyGameObject(JGameObject gameObject) {
 		objectToRemove.add(gameObject);
 	}
-	
+
 	@Override
-	public void proccessGameObjectDestroy(JGameObject gameObject){
+	public void proccessGameObjectDestroy(JGameObject gameObject) {
 		gameObjects.remove(gameObject);
 		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
 		gameObject.setEnabled(false);
 		fullObject.destroy(nativeRapidBus);
 	}
-	
+
+	@Override
+	public void proccessGameObjectAdd(JGameObject gameObject) {
+		awakeGameObject(gameObject);
+		gameObjects.add(gameObject);
+		startGameObject(gameObject);
+	}
+
 	@Override
 	public JGameObjectImpl instantiateGameObject(JGameObject gameObject, Vector2 position) {
 		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
-		Json json = JSceneManager.json;
+		Json json = JsonSceneSerializer.json;
 		proxyGameObject(gameObject);
 		String gameObjectJson = json.toJson(gameObject);
 		unproxyGameObject(gameObject);
-		
+
 		JGameObjectImpl newObject = json.fromJson(JGameObjectImpl.class, gameObjectJson);
 		unproxyGameObject(newObject);
-		
-		
+
 		Transform transform = newObject.getComponent(Transform.class);
 		newObject.setTransform(transform);
-		if(fullObject.isPrefab()) transform.setParent(null);
+		if (fullObject.isPrefab())
+			transform.setParent(null);
 		transform.setPosition(position);
 		registerInRapidBusAllNativeComponents(gameObject);
 
+		// TODO przenieœc to do managera inicjializacji obiektów w nastepnej
+		// frame
 		if (run) {
 			awakeGameObject(newObject);
 		}
@@ -77,6 +88,21 @@ public class CustomScene implements InternalScene {
 
 		if (run) {
 			startGameObject(newObject);
+		}
+		return newObject;
+	}
+
+	@Override
+	public JGameObject instantiateGameObject(Vector2 position) {
+		JGameObjectImpl newObject = new JGameObjectImpl();
+
+		Transform transform = newObject.getComponent(Transform.class);
+		transform.setPosition(position.cpy());
+
+		if (run) {
+			objectToAdd.add(newObject);
+		} else {
+			gameObjects.add(newObject);
 		}
 		return newObject;
 	}
@@ -147,8 +173,8 @@ public class CustomScene implements InternalScene {
 	private Entity createEntity(Collection<com.artemis.Component> artemisComponents, EntityEngine world) {
 		Entity entity = world.createEntity();
 		for (com.artemis.Component nativeComponent : artemisComponents) {
-//			 System.out.println("Dodaje: " +
-//			 nativeComponent.getClass().getSimpleName());
+			// System.out.println("Dodaje: " +
+			// nativeComponent.getClass().getSimpleName());
 			entity.edit().add(nativeComponent);
 		}
 		return entity;
@@ -159,7 +185,8 @@ public class CustomScene implements InternalScene {
 		if (!gameObject.isStarted()) {
 			for (Component component : gameObject.getAllComponents()) {
 				component.start();
-				if(component.isEnabled()) component.onEnabled();
+				if (component.isEnabled())
+					component.onEnabled();
 			}
 			gameObject.start();
 		}
@@ -170,9 +197,20 @@ public class CustomScene implements InternalScene {
 		this.world = world;
 	}
 
+	/**
+	 * @return the objectToRemove
+	 */
 	@Override
-	public Collection<JGameObject> getRemoveGameObjects() {
+	public List<JGameObject> getObjectToRemove() {
 		return objectToRemove;
+	}
+
+	/**
+	 * @return the objectToAdd
+	 */
+	@Override
+	public List<JGameObject> getObjectToAdd() {
+		return objectToAdd;
 	}
 
 }

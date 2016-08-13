@@ -9,9 +9,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import galaxy.rapid.common.DrawableHelper;
@@ -24,7 +28,7 @@ public class JTextField extends GUIComponent {
 	public float sizeX, sizeY;
 	public Color fontColor = Color.WHITE;
 	public String text;
-	
+
 	@Override
 	public void awake() {
 		actorComponent = new ActorComponent();
@@ -35,14 +39,22 @@ public class JTextField extends GUIComponent {
 
 	private void createButton() {
 
-		
-		Skin skin  = getGameObject().getComponentInParent(JCanvas.class).getSkin();
+		Skin skin = getGameObject().getComponentInParent(JCanvas.class).getSkin();
 		TextFieldStyle style = new TextFieldStyle(skin.get("default", TextFieldStyle.class));
 		style.fontColor = fontColor;
 		textField = new TextField(text, style);
+		textField.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				text = textField.getText();				
+			}
+
+		});
+
 	}
 
-	public void setText(String text){
+	public void setText(String text) {
 		this.text = text;
 		textField.setText(text);
 	}

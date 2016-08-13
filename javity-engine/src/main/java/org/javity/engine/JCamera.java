@@ -44,5 +44,13 @@ public class JCamera {
 		Vector2 worldPoint = new Vector2(worldPoint3.x, worldPoint3.y);
 		return worldPoint;
 	}
+
+	public void setZoom(float zoom) {
+		main.nativeCamera.setZoom(zoom);
+	}
+
+	public float getZoom() {
+		return main.nativeCamera.getZoom();
+	}
 	
 }

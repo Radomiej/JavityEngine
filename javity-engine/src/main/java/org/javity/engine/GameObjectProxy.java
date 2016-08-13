@@ -18,10 +18,6 @@ public class GameObjectProxy extends JGameObject{
 	public GameObjectProxy() {
 	}
 
-	private void initOrginalObject(){
-		
-	}
-	
 	@Override
 	public void start() {
 		Gdx.app.error("GameObjectProxy", "nothing start() mehtod is execute!"); 

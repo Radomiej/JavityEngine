@@ -18,6 +18,7 @@ import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap.Values;
 import com.badlogic.gdx.utils.OrderedMap;
 
 import galaxy.rapid.event.RemoveEntityEvent;
@@ -43,10 +44,6 @@ public class JGameObjectImpl extends JGameObject {
 	public JGameObjectImpl() {
 		objectId = UUID.randomUUID().toString();
 		createTransform();
-	}
-
-	public JGameObjectImpl(boolean isPrefab) {
-		this();
 	}
 
 	public void addComponent(Component component) {
@@ -108,7 +105,17 @@ public class JGameObjectImpl extends JGameObject {
 	public Collection<Component> getAllComponents() {
 		ArrayList<Component> components = new ArrayList<Component>();
 		
-		for(Component c : componentsMap.values()){
+		if(componentsMap == null){
+			Gdx.app.error("JGameObject", "componentsMap are null!");
+			return components;
+		}
+		
+		Values<Component> values = componentsMap.values();
+		if(values == null){
+			Gdx.app.error("JGameObject", "values in components are null!");
+			return components;
+		}
+		for(Component c : values){
 			components.add(c);
 		}
 		
@@ -187,7 +194,7 @@ public class JGameObjectImpl extends JGameObject {
 		RemoveEntityEvent removeEvent = new RemoveEntityEvent(entity);
 		nativeBus.post(removeEvent);
 		componentsMap.clear();
-		componentsMap = null;
+//		componentsMap = null;
 	}
 
 	@Override

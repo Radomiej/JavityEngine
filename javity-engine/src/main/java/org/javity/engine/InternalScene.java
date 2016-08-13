@@ -11,6 +11,8 @@ public interface InternalScene extends Scene{
 	public void awakeGameObject(JGameObject gameObject);
 	public void startGameObject(JGameObject gameObject);
 	public void setWorld(EntityEngine world);
-	public Collection<JGameObject> getRemoveGameObjects();
+	public Collection<JGameObject> getObjectToRemove();
+	public Collection<JGameObject> getObjectToAdd();
 	public void proccessGameObjectDestroy(JGameObject gameObject);
+	public void proccessGameObjectAdd(JGameObject gameObject);
 }

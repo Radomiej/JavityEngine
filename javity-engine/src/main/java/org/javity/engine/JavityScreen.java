@@ -63,16 +63,15 @@ public class JavityScreen extends RapidArtemisScreen {
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			scene.awakeGameObject(gameObject);
 		}
-		
+
 		System.out.println("startes");
 		// Start all GameObjects
 		List<JGameObject> gameObjects = scene.getGameObjects();
-		for(int x = 0; x < gameObjects.size(); x++){
+		for (int x = 0; x < gameObjects.size(); x++) {
 			JGameObject gameObject = gameObjects.get(x);
 			scene.startGameObject(gameObject);
 		}
 	}
-
 
 	@Override
 	public void render(float delta) {
@@ -82,6 +81,13 @@ public class JavityScreen extends RapidArtemisScreen {
 		// Update Mouse Input
 		updateMouseXXX();
 
+		// Add Objects to add
+		for (JGameObject gameObject : scene.getObjectToAdd()) {
+			scene.proccessGameObjectAdd(gameObject);
+		}
+		scene.getObjectToAdd().clear();
+		
+		
 		// Update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
@@ -96,13 +102,12 @@ public class JavityScreen extends RapidArtemisScreen {
 			}
 		}
 
-		//Destroy Objects to remove
-		for (JGameObject gameObject : scene.getRemoveGameObjects()) {
+		// Destroy Objects to remove
+		for (JGameObject gameObject : scene.getObjectToRemove()) {
 			scene.proccessGameObjectDestroy(gameObject);
 		}
-		scene.getRemoveGameObjects().clear();
-		
-		
+		scene.getObjectToRemove().clear();
+
 		super.render(delta);
 		JInput.saveOldStatus();
 	}
@@ -124,9 +129,9 @@ public class JavityScreen extends RapidArtemisScreen {
 					if (pressedObjects.contains(hitGameObject)) {
 						component.onMouseClicked();
 					}
-				} else if (JInput.isClicked()) {
+				} else if (JInput.isTouch()) {
 					component.onMouseDragged(JInput.getMouseDragged());
-				}else if(!JInput.isClicked()){
+				} else if (!JInput.isTouch()) {
 					component.onMouseOver();
 				}
 			}
