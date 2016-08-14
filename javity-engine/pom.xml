@@ -24,12 +24,6 @@
 			<name>SilverRepo</name>
 			<url>http://maven.ra-studio.ovh</url>
 		</repository>
-		<!-- still needed for some other dependencies not yet available in central 
-			like jglfont -->
-		<repository>
-			<id>nifty-maven-repo.sourceforge.net</id>
-			<url>http://nifty-gui.sourceforge.net/nifty-maven-repo</url>
-		</repository>
 	</repositories>
 
 	<dependencies>

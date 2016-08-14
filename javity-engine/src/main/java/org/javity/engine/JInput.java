@@ -1,11 +1,15 @@
 package org.javity.engine;
 
+import org.javity.engine.utilities.JGeolocation;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import galaxy.rapid.input.RapidInput;
 
 public class JInput {
+	public static JGeolocation geolocation;
+	
 	public static Vector2 getMousePosition(){
 		return new Vector2(Gdx.input.getX(), Gdx.input.getY());
 	}

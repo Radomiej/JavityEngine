@@ -23,7 +23,7 @@ public class JResources {
 	}
 
 	public static MemorySpriteResource addMemorySprite(String tileName, Texture texture) {
-		RapidAsset.INSTANCE.addMemoryTexture("%" + tileName, new Sprite(texture));
+		RapidAsset.INSTANCE.addMemorySprite("%" + tileName, new Sprite(texture));
 		return new MemorySpriteResource("%" + tileName);
 	}
 
