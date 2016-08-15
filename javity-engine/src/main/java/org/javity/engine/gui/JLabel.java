@@ -14,16 +14,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import galaxy.rapid.components.ActorComponent;
 
 public class JLabel extends GUIComponent {
-
+	public static BitmapFontResource defaultFontResource = new BitmapFontResource("LiberationMono-Regular.ttf");
+	
 	private transient ActorComponent actorComponent;
 	private transient Label label;
 	public float sizeX, sizeY;
 	public Color fontColor;
 	public BitmapFontResource fontResource;
+	public int fontSize = 24;
 	public String text;
 
 	@Override
 	public void awake() {
+		if (fontResource == null) {
+			fontResource = defaultFontResource;
+		}
+
 		actorComponent = new ActorComponent();
 		createButton();
 		actorComponent.setActor(label);
@@ -32,16 +38,31 @@ public class JLabel extends GUIComponent {
 
 	private void createButton() {
 
+		int realSize = (int) (((getTransform().getScale().x + getTransform().getScale().y) / 2) * fontSize);
+		Gdx.app.log("JLabel", "font size: " + realSize);
+
 		SmartFontGenerator fontGen = new SmartFontGenerator();
-		FileHandle exoFile = Gdx.files.local("LiberationMono-Regular.ttf");
-		BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 24);
+		FileHandle exoFile = Gdx.files.internal(fontResource.getResourcePath());
+		BitmapFont fontBitmap = fontGen.createFont(exoFile, fontResource.getResourcePath() + realSize, realSize);
 		
-		LabelStyle style = new LabelStyle(fontSmall, fontColor);
+		LabelStyle style = new LabelStyle(fontBitmap, fontColor);
 		label = new Label(text, style);
+		label.setScale(getTransform().getScale().x, getTransform().getScale().y);
 	}
 
-	public void setText(String text){
+	@Override
+	public void onEnabled() {
+		label.setVisible(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		label.setVisible(false);
+	}
+	
+	public void setText(String text) {
 		this.text = text;
-		if(label != null) label.setText(text);
+		if (label != null)
+			label.setText(text);
 	}
 }

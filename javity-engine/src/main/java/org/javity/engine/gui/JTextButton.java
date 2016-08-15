@@ -5,6 +5,7 @@ import org.javity.engine.GUIComponent;
 import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.gui.remote.RemoteInvoker;
+import org.javity.engine.resources.BitmapFontResource;
 import org.javity.engine.resources.SpriteResource;
 import org.javity.engine.resources.TextureResource;
 import org.jrenner.smartfont.SmartFontGenerator;
@@ -37,9 +38,16 @@ public class JTextButton extends GUIComponent {
 	public RemoteInvoker clickInvoke;
 	public String text;
 	public boolean useSkin;
+	public BitmapFontResource fontResource;
+	public int fontSize = 24;
+	private boolean active;
 
 	@Override
 	public void awake() {
+		if (fontResource == null) {
+			fontResource = JLabel.defaultFontResource;
+		}
+		
 		actorComponent = new ActorComponent();
 		createButton();
 		actorComponent.setActor(button);
@@ -63,15 +71,20 @@ public class JTextButton extends GUIComponent {
 		if (checked != null) {
 			style.checked = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
 		}
+		
+		
+		int realSize = (int) (((getTransform().getScale().x + getTransform().getScale().y) / 2) * fontSize);
 		SmartFontGenerator fontGen = new SmartFontGenerator();
-		FileHandle exoFile = Gdx.files.local("LiberationMono-Regular.ttf");
-		BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 24);
-
+		FileHandle exoFile = Gdx.files.internal(fontResource.getResourcePath());
+		BitmapFont fontBitmap = fontGen.createFont(exoFile, fontResource.getResourcePath() + realSize, realSize);
+		style.font = fontBitmap;
+		
 		if (checked != null) {
-			style.font = fontSmall;
+			
 		}
 
 		button = new TextButton(text, style);
+		button.setScale(getTransform().getScale().x, getTransform().getScale().y);
 		button.addCaptureListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -82,6 +95,21 @@ public class JTextButton extends GUIComponent {
 		});
 	}
 
+	@Override
+	public void onEnabled() {
+		button.setVisible(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		button.setVisible(false);
+	}
+	
+	public void setActive(boolean active) {
+		this.active = active;
+		button.setDisabled(!active);
+	}
+	
 	public void setText(String text) {
 		this.text = text;
 		if(button != null)button.setText(text);

@@ -54,6 +54,7 @@ public class JButton extends GUIComponent {
 		}
 		
 		button = new Button(style);
+//		button.setScale(getTransform().getScale().x, getTransform().getScale().y);
 		button.addCaptureListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -64,6 +65,17 @@ public class JButton extends GUIComponent {
 		});
 	}
 
+	@Override
+	public void onEnabled() {
+		button.setVisible(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		button.setVisible(false);
+	}
+	
+	
 	public void addClickListener(ClickListener clickListener) {
 		
 	}

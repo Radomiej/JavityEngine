@@ -28,9 +28,16 @@ public class JTextField extends GUIComponent {
 	public float sizeX, sizeY;
 	public Color fontColor = Color.WHITE;
 	public String text;
-
+	
+	public BitmapFontResource fontResource;
+	public int fontSize = 24;
+	
 	@Override
 	public void awake() {
+		if (fontResource == null) {
+			fontResource = JLabel.defaultFontResource;
+		}
+		
 		actorComponent = new ActorComponent();
 		createButton();
 		actorComponent.setActor(textField);
@@ -40,7 +47,16 @@ public class JTextField extends GUIComponent {
 	private void createButton() {
 
 		Skin skin = getGameObject().getComponentInParent(JCanvas.class).getSkin();
-		TextFieldStyle style = new TextFieldStyle(skin.get("default", TextFieldStyle.class));
+//		TextFieldStyle style = new TextFieldStyle(skin.get("default", TextFieldStyle.class));
+		
+		int realSize = (int) (((getTransform().getScale().x + getTransform().getScale().y) / 2) * fontSize);
+		SmartFontGenerator fontGen = new SmartFontGenerator();
+		FileHandle exoFile = Gdx.files.internal(fontResource.getResourcePath());
+		BitmapFont fontBitmap = fontGen.createFont(exoFile, fontResource.getResourcePath() + realSize, realSize);
+	
+		TextFieldStyle styleDefault = skin.get("default", TextFieldStyle.class);
+		TextFieldStyle style = new TextFieldStyle(fontBitmap, fontColor, styleDefault.cursor, styleDefault.selection, styleDefault.background);
+		
 		style.fontColor = fontColor;
 		textField = new TextField(text, style);
 		textField.addListener(new ChangeListener() {
@@ -54,6 +70,17 @@ public class JTextField extends GUIComponent {
 
 	}
 
+	@Override
+	public void onEnabled() {
+		textField.setVisible(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		textField.setVisible(false);
+	}
+	
+	
 	public void setText(String text) {
 		this.text = text;
 		textField.setText(text);
