@@ -128,6 +128,16 @@ public class JGameObjectImpl extends JGameObject {
 		return componentType.cast(componentsMap.get(componentType.getName()));
 	}
 
+	@Override
+	public Component getComponent(String componentName) {
+		for(Component component : componentsMap.values()){
+			if(component.getClass().getSimpleName().equalsIgnoreCase(componentName)){
+				return component;
+			}
+		}
+		return null;
+	}
+
 	static void destroy(Component componentToRemove) {
 		if (componentToRemove == null) {
 			Gdx.app.error("GameObject:destroy", "componentToRemove is null");

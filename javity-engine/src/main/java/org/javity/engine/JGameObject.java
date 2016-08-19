@@ -53,6 +53,8 @@ public abstract class JGameObject {
 	public abstract <T extends Component> Iterable<T> getComponents(Class<T> componentType);
 
 	public abstract <T extends Component> T getComponent(Class<T> componentType);
+	
+	public abstract Component getComponent(String componentName);
 
 	public abstract boolean isStarted();
 	

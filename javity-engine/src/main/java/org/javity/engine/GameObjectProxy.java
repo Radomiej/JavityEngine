@@ -113,4 +113,10 @@ public class GameObjectProxy extends JGameObject{
 	public boolean isEnabled() {
 		return orginalObject.isEnabled();
 	}
+
+	@Override
+	public Component getComponent(String componentName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
