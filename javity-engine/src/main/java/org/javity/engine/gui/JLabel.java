@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import galaxy.rapid.components.ActorComponent;
 
 public class JLabel extends GUIComponent {
-	public static BitmapFontResource defaultFontResource = new BitmapFontResource("LiberationMono-Regular.ttf");
+	public static String defaultFontResource = "LiberationMono-Regular.ttf";
 	
 	private transient ActorComponent actorComponent;
 	private transient Label label;
@@ -27,7 +27,7 @@ public class JLabel extends GUIComponent {
 	@Override
 	public void awake() {
 		if (fontResource == null) {
-			fontResource = defaultFontResource;
+			fontResource = new BitmapFontResource(defaultFontResource);
 		}
 
 		actorComponent = new ActorComponent();

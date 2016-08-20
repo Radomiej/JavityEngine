@@ -45,7 +45,7 @@ public class JTextButton extends GUIComponent {
 	@Override
 	public void awake() {
 		if (fontResource == null) {
-			fontResource = JLabel.defaultFontResource;
+			fontResource = new BitmapFontResource(JLabel.defaultFontResource);
 		}
 		
 		actorComponent = new ActorComponent();

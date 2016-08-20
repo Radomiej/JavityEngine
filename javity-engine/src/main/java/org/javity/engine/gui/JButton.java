@@ -47,14 +47,14 @@ public class JButton extends GUIComponent {
 			style.up = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
 		}
 		if (down != null) {
-			style.down = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
+			style.down = DrawableHelper.getDrawableFromAsset(down.getResourcePath());
 		}
 		if (checked != null) {
-			style.checked = DrawableHelper.getDrawableFromAsset(up.getResourcePath());
+			style.checked = DrawableHelper.getDrawableFromAsset(checked.getResourcePath());
 		}
 		
 		button = new Button(style);
-//		button.setScale(getTransform().getScale().x, getTransform().getScale().y);
+		button.setScale(getTransform().getScale().x, getTransform().getScale().y);
 		button.addCaptureListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
