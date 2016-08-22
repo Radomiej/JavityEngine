@@ -21,7 +21,7 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	private ComponentMapper<PositionComponent> positionMapper;
 
 	public Scene2dSystem() {
-		super(Aspect.all(ActorComponent.class, PositionComponent.class));
+		super(Aspect.all(ActorComponent.class));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class Scene2dSystem extends EntityProcessingSystem {
 		ActorComponent actorComponent = actorMapper.get(e);
 		actorComponent.getActor().remove();
 	}
-	
+
 	@Override
 	protected void begin() {
 		stage.act(getWorld().getDelta());
@@ -50,10 +50,12 @@ public class Scene2dSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		PositionComponent positionComponent = positionMapper.get(e);
 		ActorComponent actorComponent = actorMapper.get(e);
-		
-		actorComponent.getActor().setPosition(positionComponent.getPosition().x, positionComponent.getPosition().y);
+
+		if (positionMapper.has(e)) {
+			PositionComponent positionComponent = positionMapper.get(e);
+			actorComponent.getActor().setPosition(positionComponent.getPosition().x, positionComponent.getPosition().y);
+		}
 	}
 
 	@Override

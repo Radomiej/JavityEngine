@@ -37,7 +37,7 @@ public class CustomScene implements InternalScene {
 
 	@Override
 	public List<JGameObject> getGameObjects() {
-		return gameObjects;
+		return new ArrayList<JGameObject>(gameObjects);
 	}
 
 	@Override
@@ -211,6 +211,23 @@ public class CustomScene implements InternalScene {
 	@Override
 	public List<JGameObject> getObjectToAdd() {
 		return objectToAdd;
+	}
+
+	@Override
+	public List<JGameObject> getGameObjectsByTag(String tag) {
+		List<JGameObject> results = new ArrayList<JGameObject>();
+		for(JGameObject gameObject : gameObjects){
+			if(gameObject.getTag().equalsIgnoreCase(tag)) results.add(gameObject);
+		}
+		return results;
+	}
+
+	@Override
+	public JGameObject getGameObjectByTag(String tag) {
+		for(JGameObject gameObject : gameObjects){
+			if(gameObject.getTag().equalsIgnoreCase(tag)) return gameObject;
+		}
+		return null;
 	}
 
 }

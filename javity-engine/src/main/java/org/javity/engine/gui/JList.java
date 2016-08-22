@@ -35,7 +35,7 @@ public class JList<T> extends GUIComponent {
 	public SpriteResource selection, background;
 
 	private Array<T> tempItems = new Array<T>();
-	
+
 	@Override
 	public void awake() {
 		if (fontResource == null) {
@@ -80,28 +80,21 @@ public class JList<T> extends GUIComponent {
 		list.setItems(tempItems);
 		list.getSelection().setMultiple(false);
 		list.getSelection().setRequired(true);
-		if(list.getItems().size > 0){
+		if (list.getItems().size > 0) {
 			list.setSelectedIndex(1);
 		}
-		
+
 		list.addListener(new EventListener() {
-			
+
 			@Override
 			public boolean handle(Event event) {
-				Gdx.app.log("JList", "event: " + event);;
-				
+				Gdx.app.log("JList", "event: " + event);
+				;
+
 				return false;
 			}
 		});
-		list.addCaptureListener(new EventListener() {
-			
-			@Override
-			public boolean handle(Event event) {
-				Gdx.app.log("JList", "capture event: " + event);;
-				return false;
-			}
-		});
-		
+
 		scrollPane = new ScrollPane(list, skin);
 		scrollPane.setFlickScroll(false);
 	}
@@ -117,14 +110,8 @@ public class JList<T> extends GUIComponent {
 	}
 
 	public void addElement(T elementToAdd) {
-		if(list == null){
-			tempItems.add(elementToAdd);
-			return;
-		}
-		
-		Array<T> items = list.getItems();
-		items.add(elementToAdd);
-		list.setItems(items);
+		tempItems.add(elementToAdd);
+		if(list != null) list.setItems(tempItems);
 	}
 
 	/**
@@ -138,39 +125,35 @@ public class JList<T> extends GUIComponent {
 	 * @return true if value was found and removed, false otherwise
 	 */
 	public boolean removeElement(T elementToRemove, boolean useIdentity) {
-		if(list == null){
-			return tempItems.removeValue(elementToRemove, useIdentity);
-		}
-		
-		Array<T> items = list.getItems();
-		boolean remove = items.removeValue(elementToRemove, useIdentity);
-		list.setItems(items);
+		boolean remove = tempItems.removeValue(elementToRemove, useIdentity);
+
+		if(list != null) list.setItems(tempItems);
 		return remove;
 	}
 
 	public Array<T> getAllElements() {
-		if(list == null){
+		if (list == null) {
 			return tempItems;
 		}
-		
+
 		return list.getItems();
 	}
 
 	public T getElement(int index) {
-		if(list == null){
+		if (list == null) {
 			return tempItems.get(index);
 		}
-		
+
 		return list.getItems().get(index);
 	}
 
 	public T getSelectedElement() {
-		if(list == null){
+		if (list == null) {
 			return null;
 		}
 		return list.getSelected();
 	}
-	
-	public void addChangeSelectionItemEvent(){
+
+	public void addChangeSelectionItemEvent() {
 	}
 }
