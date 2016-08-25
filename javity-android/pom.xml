@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<targetJdk>1.6</targetJdk>
+		<targetJdk>1.7</targetJdk>
 	</properties>
 
 	<dependencies>

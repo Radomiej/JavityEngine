@@ -182,4 +182,12 @@ public class Transform extends NativeComponent {
 	public void setLocalScale(float scaleX, float scaleY) {
 		localScale.set(scaleX, scaleX);
 	}
+
+	public void setZ(int z) {
+		orderZ = z;
+	}
+
+	public int getOrderZ() {
+		return orderZ;
+	}
 }

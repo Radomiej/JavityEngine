@@ -94,7 +94,7 @@ public class JGameObjectImpl extends JGameObject {
 	public <T extends Component> Iterable<T> getComponents(Class<T> componentType) {
 		ArrayList<T> validComponents = new ArrayList<T>();
 		for (Component component : componentsMap.values()) {
-			if (componentType.equals(component)) {
+			if (component.getClass().isAssignableFrom(componentType)) {
 				validComponents.add((T) component);
 			}
 		}

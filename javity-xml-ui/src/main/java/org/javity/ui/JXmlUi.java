@@ -1,9 +1,12 @@
 package org.javity.ui;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.javity.engine.JComponent;
 import org.javity.engine.NativeComponent;
+import org.javity.engine.gui.JTextField;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +28,7 @@ import com.badlogic.gdx.utils.XmlReader.Element;
 import galaxy.rapid.components.ActorComponent;
 
 public class JXmlUi extends NativeComponent {
+	private Map<String, Actor> actorsMap = new HashMap<String, Actor>();
 	private ActorComponent actorComponent;
 	private Actor rootActor;
 	private Skin skin;
@@ -59,6 +63,8 @@ public class JXmlUi extends NativeComponent {
 		Table table = new Table(skin);
 		rootActor = table;
 		parseTable(element, table);
+		actorsMap.put(table.getName(), table);
+		
 		Gdx.app.log("JXmlUi", "Parsing complete");
 
 		actorComponent = new ActorComponent();
@@ -146,11 +152,22 @@ public class JXmlUi extends NativeComponent {
 			atrributes = new ObjectMap<String, String>();
 
 		List<String> list = new List<String>(skin);
+		list.getSelection().setMultiple(false);
+		
 		ScrollPane scrollPane = new ScrollPane(list, skin);
 
 		Cell<ScrollPane> cell = table.add(scrollPane);
+		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				list.setName(atrributes.get(key));
+				scrollPane.setName(atrributes.get(key) + "-scroll-panel");
+			}
+		}
 		cellPrepare(cell, atrributes);
 
+		actorsMap.put(list.getName(), list);
+		actorsMap.put(scrollPane.getName(), scrollPane);
+		
 		addElementsInList(element, list);
 	}
 
@@ -162,7 +179,7 @@ public class JXmlUi extends NativeComponent {
 			Element child = element.getChild(x);
 			if (!child.getName().equalsIgnoreCase("list-element"))
 				continue;
-			Gdx.app.log("JXmlUi", "addListElement");
+//			Gdx.app.log("JXmlUi", "addListElement");
 			String text = child.getAttribute("text");
 			items.add(text);
 
@@ -239,9 +256,14 @@ public class JXmlUi extends NativeComponent {
 				button.setVisible(Boolean.parseBoolean(atrributes.get(key)));
 			} else if (key.equalsIgnoreCase("enable")) {
 				button.setDisabled(!Boolean.parseBoolean(atrributes.get(key)));
+			} else if (key.equalsIgnoreCase("name")) {
+				button.setName(atrributes.get(key));
 			}
 		}
 		cellPrepare(cell, atrributes);
+		
+//		System.out.println("Dodaje button: " + button.getName());
+		actorsMap.put(button.getName(), button);
 	}
 
 	private void addImage(Table table, Element element) {
@@ -250,7 +272,17 @@ public class JXmlUi extends NativeComponent {
 
 		ObjectMap<String, String> atrributes = element.getAttributes();
 		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				image.setName(atrributes.get(key));
+			}
 		}
 		cellPrepare(cell, atrributes);
+		actorsMap.put(image.getName(), image);
+	}
+
+	public <T extends Actor> T getActor(String key) {
+		T result = (T) actorsMap.get(key);
+//		System.out.println("Pobieram actora: " + key + " value: " + result);
+		return result;
 	}
 }

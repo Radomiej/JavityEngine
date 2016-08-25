@@ -44,6 +44,11 @@ public class SpriteRenderer extends NativeComponent {
 		setSprite(sprite);
 	}
 
+	@Override
+	public void update() {
+		renderComponent.setOrderZ(getTransform().getOrderZ());
+	}
+	
 	public SpriteResource getSprite() {
 		return sprite;
 	}
