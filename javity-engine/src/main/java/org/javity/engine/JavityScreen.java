@@ -52,7 +52,6 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		scene.setNativeRapidBus(rapidBus);
 		scene.setWorld(world);
-		JSceneManager.current = scene;
 		scene.initialize();
 		JEngine.rapidEventBus = masterEventBus;
 		JCamera.setMain(camera);

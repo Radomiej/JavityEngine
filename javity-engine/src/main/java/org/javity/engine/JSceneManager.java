@@ -6,7 +6,10 @@ public class JSceneManager {
 	public static Scene current;
 
 	public static void loadScene(SceneBulider sceneBulider) {
-		InternalScene newScene = (InternalScene) sceneBulider.getScene();
-		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, (InternalScene) current)));
+		CustomScene old = (CustomScene) current;
+		InternalScene newScene = new CustomScene();
+		current = newScene;
+		sceneBulider.buildScene(newScene);
+		JEngine.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, old)));
 	}
 }

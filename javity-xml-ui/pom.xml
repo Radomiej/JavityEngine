@@ -17,12 +17,7 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.javity.net</groupId>
-			<artifactId>web-service-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
+		
 	</dependencies>
 
 	<build>

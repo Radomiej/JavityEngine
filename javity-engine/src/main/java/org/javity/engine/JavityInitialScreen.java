@@ -23,7 +23,9 @@ public class JavityInitialScreen extends RapidScreen{
 
 	@Override
 	protected void create() {
-		InternalScene scene = (InternalScene) sceneBulider.getScene();
-		masterEventBus.post(new ChangeScreenEvent(new JavityScreen(scene, null)));
+		InternalScene newScene = new CustomScene();
+		JSceneManager.current = newScene;
+		sceneBulider.buildScene(newScene);
+		masterEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, null)));
 	}
 }
