@@ -50,5 +50,40 @@ public class TileComponent extends JComponent {
 			SpriteResource spriteResource = JResources.addMemorySprite(tileName, texture);
 			getGameObject().getComponent(SpriteRenderer.class).setSprite(spriteResource);
 		}
+		System.out.println("order z: " + getTransform().getOrderZ());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (x ^ (x >>> 32));
+		result = prime * result + (int) (y ^ (y >>> 32));
+		result = prime * result + zoom;
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TileComponent other = (TileComponent) obj;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		if (zoom != other.zoom)
+			return false;
+		return true;
 	}
 }

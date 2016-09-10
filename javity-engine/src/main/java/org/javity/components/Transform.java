@@ -188,6 +188,8 @@ public class Transform extends NativeComponent {
 	}
 
 	public int getOrderZ() {
-		return orderZ;
+		int realZ = orderZ;
+		if(parent != null) realZ += parent.getTransform().getOrderZ();
+		return realZ;
 	}
 }

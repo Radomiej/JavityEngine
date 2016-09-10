@@ -10,7 +10,6 @@ import org.javity.components.SpriteRenderer;
 import org.javity.components.Transform;
 import org.javity.engine.CustomScene;
 import org.javity.engine.JGameObjectImpl;
-import org.javity.engine.RawMap;
 
 import com.artemis.annotations.UnstableApi;
 import com.badlogic.gdx.Gdx;

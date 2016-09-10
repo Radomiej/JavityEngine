@@ -1,4 +1,4 @@
-package org.javity.engine;
+package org.javity.engine.serializer;
 
 import java.util.ArrayList;
 

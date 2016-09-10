@@ -92,12 +92,16 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		// Update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
+			if(!gameObject.isEnabled()) continue;
+			
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.update();
 			}
 		}
 		for (JGameObject gameObject : scene.getGameObjects()) {
+			if(!gameObject.isEnabled()) continue;
+			
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.lateUpdate();

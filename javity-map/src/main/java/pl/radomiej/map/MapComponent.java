@@ -25,15 +25,16 @@ public class MapComponent extends JComponent {
 	int minZoom = 2;
 	int maxZoom = 17;
 	int currentZoom;
-
+	int oldZoom;
+	
 	private float draggedSpeed = 1;
 	private List<LayerComponent> layers = new ArrayList<LayerComponent>();
 	private float targetCameraZoom = 1;
-	
+
 	@Override
 	public void start() {
 		currentZoom = minZoom;
-		
+
 		JCamera.getMain().setZoom(32000f);
 
 		System.out.println("start Map");
@@ -56,61 +57,87 @@ public class MapComponent extends JComponent {
 		}
 		System.out.println("layers create");
 
-		changeZoom();
+		oldZoom = minZoom;
+		currentZoom = minZoom;
+		changeZoom(minZoom);
 	}
 
 	@Override
 	public void update() {
 		if (JInput.getMouseWheelDelta() != 0) {
 			int scrollDelta = JInput.getMouseWheelDelta() > 0 ? 1 : -1;
-			currentZoom -= scrollDelta;
-			if (currentZoom <= minZoom)
-				currentZoom = minZoom;
-			if (currentZoom > maxZoom )
-				currentZoom = maxZoom;
+			int newZoom = currentZoom - scrollDelta;
+			if (newZoom <= minZoom)
+				newZoom = minZoom;
+			if (newZoom > maxZoom)
+				newZoom = maxZoom;
 
-			changeZoom();
+			changeZoom(newZoom);
 
 		}
-		if(JCamera.getMain().getZoom() != targetCameraZoom){
-		
+		if (JCamera.getMain().getZoom() != targetCameraZoom) {
+
 			float deltaChange = JCamera.getMain().getZoom() - targetCameraZoom;
 			int dir = deltaChange > 0 ? -1 : 1;
 			float currendZoomSpeed = zoomSpeed * JTime.getDelta() * (float) Math.pow(2, getZoomLevel());
-			if(Math.abs(deltaChange) < currendZoomSpeed){
+			if (Math.abs(deltaChange) < currendZoomSpeed) {
 				currendZoomSpeed = Math.abs(deltaChange);
 			}
-			currendZoomSpeed *= (float)dir;
-						
+			currendZoomSpeed *= (float) dir;
+
 			float newZoom = JCamera.getMain().getZoom() + currendZoomSpeed;
-//			Gdx.app.log(this.getClass().getSimpleName(), "target zoom: " + targetCameraZoom + "zoom new: " + newZoom + " currentZoom: " + JCamera.getMain().getZoom());
+			// Gdx.app.log(this.getClass().getSimpleName(), "target zoom: " +
+			// targetCameraZoom + "zoom new: " + newZoom + " currentZoom: " +
+			// JCamera.getMain().getZoom());
 			JCamera.getMain().setZoom(newZoom);
 		}
 	}
 
-	private void changeZoom() {
+	private void changeZoom(int newZoom) {
+		if(currentZoom != oldZoom) {
+			zoomLayer(oldZoom).hide();
+		}
+		zoomLayer(oldZoom).getTransform().setZ(oldZoom);
+		
+		currentLayer().getTransform().setZ(currentZoom);
+		oldZoom = currentZoom;
+		currentZoom = newZoom;
+		
 		int zoomLevel = getZoomLevel();
 		draggedSpeed = (float) Math.pow(2, zoomLevel);
-		targetCameraZoom =  (int)Math.pow(2, zoomLevel);
+		targetCameraZoom = (int) Math.pow(2, zoomLevel);
 		System.out.println("Zoom: " + currentZoom + " zoom level: " + zoomLevel + " target zoom: " + targetCameraZoom);
 
+		if(currentZoom < oldZoom){
+			currentLayer().getTransform().setZ(oldZoom + 1 );
+		}else{
+			currentLayer().getTransform().setZ(currentZoom);
+		}
 		currentLayer().show(JCamera.getMain().getPosition());
 	}
 
-	private int getZoomLevel(){
+	private int getZoomLevel() {
 		return (maxZoom - minZoom) - (currentZoom - minZoom);
 	}
+
 	public LayerComponent currentLayer() {
 		return layers.get(currentZoom - minZoom);
+	}
+	
+	public LayerComponent zoomLayer(int zoom) {
+		return layers.get(zoom - minZoom);
 	}
 
 	@Override
 	public void onMouseDragged(Vector2 draggedDelta) {
-		if(JGUI.INSTANCE.isStageHandleInput()) return;
-		 System.out.println("dragged: " + draggedSpeed);
+		if (JGUI.INSTANCE.isStageHandleInput())
+			return;
+		
+//		System.out.println("dragged: " + draggedSpeed);
 		Vector2 position = JCamera.getMain().getPosition();
 		position.add(-draggedDelta.x * draggedSpeed, draggedDelta.y * draggedSpeed);
 		JCamera.getMain().setPosition(position);
+		this.currentLayer().show(JCamera.getMain().getPosition());
 	}
 
 }

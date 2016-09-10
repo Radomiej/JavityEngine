@@ -21,6 +21,7 @@ public class LayerComponent extends JComponent {
 	private long size;
 	public int rangeShow = 2;
 	private transient Map<String, File> tempsFiles = new HashMap<String, File>();
+	private transient Map<Long, TileComponent> tiles = new HashMap<Long, TileComponent>();
 
 	public LayerComponent() {
 	}
@@ -42,7 +43,7 @@ public class LayerComponent extends JComponent {
 		Vector2 tilePos = getTileVector(showPosition);
 		size = (long) Math.pow(2, zoom);
 
-		Gdx.app.log(LayerComponent.class.getSimpleName(), "Show Layer: " + zoom);
+//		Gdx.app.log(LayerComponent.class.getSimpleName(), "Show Layer: " + zoom);
 		int minX = (int) Math.floor(tilePos.x - rangeShow);
 		if (minX < 0)
 			minX = 0;
@@ -59,7 +60,7 @@ public class LayerComponent extends JComponent {
 		if (maxY >= size)
 			maxY = (int) size;
 
-		System.out.println("minX: " + minX + "maxX: " + maxX + "minY: " + minY + "maxY: " + maxY);
+//		System.out.println("minX: " + minX + " maxX: " + maxX + " minY: " + minY + " maxY: " + maxY);
 		for (int x = minX; x < maxX; x++) {
 			for (int y = minY; y < maxY; y++) {
 				Vector2 position = getTransform().getPosition();
@@ -74,13 +75,27 @@ public class LayerComponent extends JComponent {
 					System.out.println("POS: " + position);
 				}
 
-				final JGameObject tile = JSceneManager.current.instantiateGameObject(position);
-				tile.addComponent(new SpriteRenderer("resources/atlas/images.atlas#babel"));
-				tile.addComponent(new TileComponent(x, y, zoom));
-				tile.getTransform().setParent(getGameObject());
+				long tileId = getTileId(x, y);
+				if (tiles.containsKey(tileId)) {
+					tiles.get(tileId).getGameObject().setEnabled(true);
+					continue;
+				} else {
+					final JGameObject tile = JSceneManager.current.instantiateGameObject(position);
+					TileComponent tileComponent = new TileComponent(x, y, zoom);
+					tile.addComponent(new SpriteRenderer("resources/atlas/images.atlas#babel"));
+					tile.addComponent(tileComponent);
+					tile.getTransform().setParent(getGameObject());
+					
+					tiles.put(tileId, tileComponent);
+				}
 
 			}
 		}
+	}
+
+	private long getTileId(int x, int y) {
+		long id = x * size + y;
+		return id;
 	}
 
 	private Vector2 getTileVector(Vector2 showPosition) {
@@ -125,5 +140,11 @@ public class LayerComponent extends JComponent {
 	static double tile2lat(int y, int z) {
 		double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
 		return Math.toDegrees(Math.atan(Math.sinh(n)));
+	}
+
+	public void hide() {
+		for(TileComponent tile : tiles.values()){
+			tile.getGameObject().setEnabled(false);
+		}
 	}
 }

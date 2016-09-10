@@ -87,4 +87,13 @@ public class SpriteRenderer extends NativeComponent {
 	public void remove() {
 	}
 
+	@Override
+	public void onEnabled() {
+		renderComponent.setRender(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		renderComponent.setRender(false);
+	}
 }
