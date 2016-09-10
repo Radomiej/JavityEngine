@@ -8,6 +8,7 @@ import org.javity.components.Rigidbody;
 import org.javity.components.SpriteRenderer;
 import org.javity.engine.JCamera;
 import org.javity.engine.JComponent;
+import org.javity.engine.JGUI;
 import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.JInput;
@@ -105,7 +106,8 @@ public class MapComponent extends JComponent {
 
 	@Override
 	public void onMouseDragged(Vector2 draggedDelta) {
-		// System.out.println("dragged: " + draggedSpeed);
+		if(JGUI.INSTANCE.isStageHandleInput()) return;
+		 System.out.println("dragged: " + draggedSpeed);
 		Vector2 position = JCamera.getMain().getPosition();
 		position.add(-draggedDelta.x * draggedSpeed, draggedDelta.y * draggedSpeed);
 		JCamera.getMain().setPosition(position);

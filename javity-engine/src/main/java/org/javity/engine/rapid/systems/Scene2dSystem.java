@@ -7,7 +7,11 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import galaxy.rapid.RapidEngine;
 import galaxy.rapid.components.ActorComponent;
@@ -19,7 +23,8 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	private Stage stage;
 	private ComponentMapper<ActorComponent> actorMapper;
 	private ComponentMapper<PositionComponent> positionMapper;
-
+	private boolean handleInput;
+	
 	public Scene2dSystem() {
 		super(Aspect.all(ActorComponent.class));
 	}
@@ -45,7 +50,7 @@ public class Scene2dSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void begin() {
-		stage.act(getWorld().getDelta());
+//		stage.act(getWorld().getDelta());
 	}
 
 	@Override
@@ -61,6 +66,23 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	@Override
 	protected void end() {
 		stage.draw();
+		handleInput = false;
+	}
+
+	/**
+	 * Native LibGDX API
+	 * @return Scene2d Stage Object
+	 */
+	public Stage getStage() {
+		return stage;
+	}
+
+	public boolean isHandleInput() {
+		return handleInput;
+	}
+
+	public void setHandleInput(boolean b) {
+		handleInput = b;
 	}
 
 }

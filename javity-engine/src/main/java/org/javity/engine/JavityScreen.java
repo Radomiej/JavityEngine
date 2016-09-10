@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.javity.engine.physic.RaycastHit;
+import org.javity.engine.rapid.systems.JavityPhysicSystem;
 import org.javity.engine.rapid.systems.Scene2dSystem;
 
 import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class JavityScreen extends RapidArtemisScreen {
 
@@ -37,13 +39,13 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	protected void processWorldConfiguration(WorldConfiguration worldConfiguration) {
-		JGUI.guiSystem = new Scene2dSystem();
-		worldConfiguration.setSystem(JGUI.guiSystem);
+		JGUI.INSTANCE.guiSystem = new Scene2dSystem();
+		worldConfiguration.setSystem(JGUI.INSTANCE.guiSystem);
 	}
 
 	@Override
 	protected void processBeforeRenderWorldConfiguration(WorldConfiguration worldConfiguration) {
-		worldConfiguration.setSystem(new JavitySystem());
+		worldConfiguration.setSystem(new JavityPhysicSystem());
 	}
 
 	@Override
@@ -77,16 +79,17 @@ public class JavityScreen extends RapidArtemisScreen {
 		// Update general variables
 		JTime.delta = delta;
 
-		// Update Mouse Input
-		updateMouseXXX();
-
 		// Add Objects to add
 		for (JGameObject gameObject : scene.getObjectToAdd()) {
 			scene.proccessGameObjectAdd(gameObject);
 		}
 		scene.getObjectToAdd().clear();
-		
-		
+
+		updateGUIStage();
+
+		// Update Mouse Input
+		updateMouseXXX();
+
 		// Update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
@@ -109,6 +112,17 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		super.render(delta);
 		JInput.saveOldStatus();
+	}
+
+	private void updateGUIStage() {
+		JGUI.INSTANCE.guiSystem.getStage().act(JTime.delta);
+
+		Vector2 stagePosition = JGUI.INSTANCE.guiSystem.getStage().screenToStageCoordinates(JInput.getMousePosition());
+		Actor hitActor = JGUI.INSTANCE.guiSystem.getStage().hit(stagePosition.x, stagePosition.y, true);
+		if (hitActor != null) {
+			System.out.println("Set handled true");
+			JGUI.INSTANCE.guiSystem.setHandleInput(true);
+		}
 	}
 
 	private Set<JGameObject> pressedObjects = new HashSet<JGameObject>();

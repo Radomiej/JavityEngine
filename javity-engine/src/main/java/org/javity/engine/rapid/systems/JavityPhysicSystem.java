@@ -1,4 +1,7 @@
-package org.javity.engine;
+package org.javity.engine.rapid.systems;
+
+import org.javity.engine.Component;
+import org.javity.engine.JGameObjectImpl;
 
 import com.artemis.BaseSystem;
 import com.artemis.annotations.Wire;
@@ -11,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import galaxy.rapid.systems.PhysicSystem;
 
-public class JavitySystem extends BaseSystem implements ContactListener {
+public class JavityPhysicSystem extends BaseSystem implements ContactListener {
 
 	private PhysicSystem physicSystem;
 	
