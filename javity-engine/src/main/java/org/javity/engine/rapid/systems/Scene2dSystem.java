@@ -84,5 +84,11 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	public void setHandleInput(boolean b) {
 		handleInput = b;
 	}
+	
+	@Override
+	protected void dispose() {
+		InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+		inputMultiplexer.removeProcessor(stage);
+	}
 
 }

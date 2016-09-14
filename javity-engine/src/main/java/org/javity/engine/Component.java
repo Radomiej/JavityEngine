@@ -39,4 +39,8 @@ public interface Component {
 	public void onMouseClicked();
 	public void onMouseDragged(Vector2 draggedDelta);
 	public void onMouseOver();
+	
+	public JGameObject instantiateGameObject(Vector2 position);
+	public void destroyGameObject(JGameObject gameObject);
+	public void destroyGameObject(JGameObject gameObject, float timeToDestroy);
 }

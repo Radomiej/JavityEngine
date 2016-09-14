@@ -105,6 +105,11 @@ public class Transform extends NativeComponent {
 		return position.cpy();
 	}
 
+	public void setPosition(float x, float y){
+		Vector2 newPosition = new Vector2(x, y);
+		setPosition(newPosition);
+	}
+	
 	public void setPosition(Vector2 position) {
 		this.position.set(position);
 		if (positionComponent != null)

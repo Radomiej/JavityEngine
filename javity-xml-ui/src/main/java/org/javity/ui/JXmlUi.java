@@ -6,9 +6,13 @@ import java.util.Map;
 
 import org.javity.engine.JComponent;
 import org.javity.engine.JGameObject;
+import org.javity.engine.JResources;
 import org.javity.engine.JSceneManager;
 import org.javity.engine.NativeComponent;
 import org.javity.engine.gui.JTextField;
+import org.javity.engine.resources.SingleSpriteResource;
+import org.javity.engine.resources.SpriteAtlasResource;
+import org.javity.engine.resources.SpriteResource;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -26,11 +30,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
+import galaxy.rapid.common.DrawableHelper;
 import galaxy.rapid.components.ActorComponent;
 
 public class JXmlUi extends NativeComponent {
@@ -42,18 +49,18 @@ public class JXmlUi extends NativeComponent {
 	public String xmlPath;
 	public String skinPath = "internal/ui/uiskin.json";
 
-	static{
+	static {
 		defaultSkinPath = "internal/ui/uiskin.json";
 	}
 	public static String defaultSkinPath = "internal/ui/uiskin.json";
-	
-	public static JGameObject loadUi(String xmlPath){
+
+	public static JGameObject loadUi(String xmlPath) {
 		JGameObject gameObject = JSceneManager.current.instantiateGameObject(new Vector2());
 		JXmlUi jCanvas = new JXmlUi(xmlPath, "internal/ui/uiskin.json");
 		gameObject.addComponent(jCanvas);
 		return gameObject;
 	}
-	
+
 	public JXmlUi() {
 	}
 
@@ -80,7 +87,9 @@ public class JXmlUi extends NativeComponent {
 
 		Table table = new Table(skin);
 		rootActor = table;
+
 		parseTable(element, table);
+		addChildrens(element, table);
 		actorsMap.put(table.getName(), table);
 
 		Gdx.app.log("JXmlUi", "Parsing complete");
@@ -103,6 +112,12 @@ public class JXmlUi extends NativeComponent {
 				table.setDebug(Boolean.parseBoolean(atrributes.get(key)), debugRecursively);
 			} else if (key.equalsIgnoreCase("background")) {
 				table.setBackground(atrributes.get(key));
+			} else if (key.equalsIgnoreCase("background-resource")) {
+				String imagePath = element.get(key);
+				SpriteResource spriteResource = JResources.getSprite(imagePath);
+
+				Drawable drawable = DrawableHelper.getDrawableFromAsset(spriteResource.getResourcePath());
+				table.setBackground(drawable);
 			} else if (key.equalsIgnoreCase("clip")) {
 				table.setClip(Boolean.parseBoolean(atrributes.get(key)));
 			} else if (key.equalsIgnoreCase("red")) {
@@ -122,7 +137,7 @@ public class JXmlUi extends NativeComponent {
 			}
 		}
 
-		addChildrens(element, table);
+		// addChildrens(element, table);
 
 	}
 
@@ -146,8 +161,10 @@ public class JXmlUi extends NativeComponent {
 				addTextArea(table, child);
 			} else if (child.getName().equalsIgnoreCase("table")) {
 				addTable(table, child);
-			}else if (child.getName().equalsIgnoreCase("text-field")) {
+			} else if (child.getName().equalsIgnoreCase("text-field")) {
 				addTextField(table, child);
+			} else if (child.getName().equalsIgnoreCase("window")) {
+				addWindow(table, child);
 			}
 
 		}
@@ -166,13 +183,36 @@ public class JXmlUi extends NativeComponent {
 		if (atrributes == null) {
 			atrributes = new ObjectMap<String, String>();
 		}
+
+		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				tableScroll.setName(atrributes.get(key));
+			}
+		}
 		cellPrepare(cell, atrributes);
 		addChildrens(element, tableScroll);
 
+		actorsMap.put(tableScroll.getName(), tableScroll);
 	}
 
 	private void addTable(Table table, Element element) {
 		Table newTable = new Table(skin);
+		parseTable(element, newTable);
+
+		Cell<Table> cell = table.add(newTable);
+		ObjectMap<String, String> atrributes = element.getAttributes();
+		if (atrributes == null) {
+			atrributes = new ObjectMap<String, String>();
+		}
+		cellPrepare(cell, atrributes);
+		addChildrens(element, newTable);
+
+	}
+
+	private void addWindow(Table table, Element element) {
+		Gdx.app.log("JXmlUi", "addWindow");
+		String title = element.get("title", "");
+		Table newTable = new Window(title, skin);
 
 		Cell<Table> cell = table.add(newTable);
 		ObjectMap<String, String> atrributes = element.getAttributes();
@@ -380,12 +420,16 @@ public class JXmlUi extends NativeComponent {
 		}
 		cellPrepare(cell, atrributes);
 		actorsMap.put(textField.getName(), textField);
-		
+
 	}
 
 	public <T extends Actor> T getActor(String key) {
 		T result = (T) actorsMap.get(key);
 		// System.out.println("Pobieram actora: " + key + " value: " + result);
 		return result;
+	}
+
+	public Skin getSkin() {
+		return skin;
 	}
 }

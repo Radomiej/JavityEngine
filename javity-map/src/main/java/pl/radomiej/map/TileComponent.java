@@ -3,6 +3,8 @@ package pl.radomiej.map;
 import java.net.URL;
 import java.util.Random;
 
+import org.geojson.GeoJsonObject;
+import org.geojson.GeoJsonObjectVisitor;
 import org.javity.components.SpriteRenderer;
 import org.javity.engine.JComponent;
 import org.javity.engine.JResources;
@@ -46,11 +48,16 @@ public class TileComponent extends JComponent {
 		if(waitToDownload && !www.isWork()){
 			waitToDownload = false;
 			Texture texture = www.getTexture();
+			
+			if(texture == null){
+				www.GET();
+				return;
+			}
+			
 			String tileName = "tile-" + zoom + "-" + x + "-" + y;
 			SpriteResource spriteResource = JResources.addMemorySprite(tileName, texture);
 			getGameObject().getComponent(SpriteRenderer.class).setSprite(spriteResource);
 		}
-		System.out.println("order z: " + getTransform().getOrderZ());
 	}
 
 	/* (non-Javadoc)

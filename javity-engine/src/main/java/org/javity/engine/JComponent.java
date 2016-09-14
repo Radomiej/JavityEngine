@@ -1,6 +1,7 @@
 package org.javity.engine;
 
 import org.javity.components.Transform;
+import org.javity.engine.timer.Task;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -120,4 +121,25 @@ public abstract class JComponent implements Component {
 	
 	@Override
 	public void onMouseOver() {}
+	
+	@Override
+	public JGameObject instantiateGameObject(Vector2 position) {
+		return JSceneManager.current.instantiateGameObject(position);
+	}
+	
+	@Override
+	public void destroyGameObject(JGameObject gameObject) {
+		JSceneManager.current.destroyGameObject(gameObject);		
+	}
+	
+	@Override
+	public void destroyGameObject(final JGameObject gameObject, float timeToDestroy) {
+		JTime.INSTANCE.addTimer(new Task(){
+			@Override
+			public void invoke() {
+				JSceneManager.current.destroyGameObject(gameObject);		
+			}
+			
+		}, timeToDestroy);
+	}
 }

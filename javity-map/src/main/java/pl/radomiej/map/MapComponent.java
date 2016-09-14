@@ -3,6 +3,7 @@ package pl.radomiej.map;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geojson.Point;
 import org.javity.components.RectangleCollider;
 import org.javity.components.Rigidbody;
 import org.javity.components.SpriteRenderer;
@@ -26,7 +27,7 @@ public class MapComponent extends JComponent {
 	int maxZoom = 17;
 	int currentZoom;
 	int oldZoom;
-	
+
 	private float draggedSpeed = 1;
 	private List<LayerComponent> layers = new ArrayList<LayerComponent>();
 	private float targetCameraZoom = 1;
@@ -79,7 +80,7 @@ public class MapComponent extends JComponent {
 
 			float deltaChange = JCamera.getMain().getZoom() - targetCameraZoom;
 			int dir = deltaChange > 0 ? -1 : 1;
-			float currendZoomSpeed = zoomSpeed * JTime.getDelta() * (float) Math.pow(2, getZoomLevel());
+			float currendZoomSpeed = zoomSpeed * JTime.INSTANCE.getDelta() * (float) Math.pow(2, getZoomLevel());
 			if (Math.abs(deltaChange) < currendZoomSpeed) {
 				currendZoomSpeed = Math.abs(deltaChange);
 			}
@@ -93,24 +94,37 @@ public class MapComponent extends JComponent {
 		}
 	}
 
+	public void setZoom(int zoom) {
+		if (zoom <= minZoom)
+			zoom = minZoom;
+		if (zoom > maxZoom)
+			zoom = maxZoom;
+
+		changeZoom(zoom);
+	}
+
+	public int getZoom() {
+		return currentZoom;
+	}
+
 	private void changeZoom(int newZoom) {
-		if(currentZoom != oldZoom) {
+		if (currentZoom != oldZoom) {
 			zoomLayer(oldZoom).hide();
 		}
 		zoomLayer(oldZoom).getTransform().setZ(oldZoom);
-		
+
 		currentLayer().getTransform().setZ(currentZoom);
 		oldZoom = currentZoom;
 		currentZoom = newZoom;
-		
+
 		int zoomLevel = getZoomLevel();
 		draggedSpeed = (float) Math.pow(2, zoomLevel);
 		targetCameraZoom = (int) Math.pow(2, zoomLevel);
 		System.out.println("Zoom: " + currentZoom + " zoom level: " + zoomLevel + " target zoom: " + targetCameraZoom);
 
-		if(currentZoom < oldZoom){
-			currentLayer().getTransform().setZ(oldZoom + 1 );
-		}else{
+		if (currentZoom < oldZoom) {
+			currentLayer().getTransform().setZ(oldZoom + 1);
+		} else {
 			currentLayer().getTransform().setZ(currentZoom);
 		}
 		currentLayer().show(JCamera.getMain().getPosition());
@@ -123,21 +137,53 @@ public class MapComponent extends JComponent {
 	public LayerComponent currentLayer() {
 		return layers.get(currentZoom - minZoom);
 	}
-	
+
 	public LayerComponent zoomLayer(int zoom) {
 		return layers.get(zoom - minZoom);
 	}
 
 	@Override
-	public void onMouseDragged(Vector2 draggedDelta) {
-		if (JGUI.INSTANCE.isStageHandleInput())
-			return;
+	public void onMouseClicked() {
 		
-//		System.out.println("dragged: " + draggedSpeed);
+		LayerComponent layer = zoomLayer(maxZoom);
+		Vector2 clickWorld = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
+		Point geo = layer.getGeoFromWorldPosition(clickWorld);
+		Vector2 world = layer.getWorldFromGeoPosition(geo.getCoordinates().getLatitude(), geo.getCoordinates().getLongitude());
+		
+		System.out.println("click world: " + clickWorld);
+		System.out.println("geo: " + geo);
+		System.out.println("world: " + world);
+		
+	}
+	
+	@Override
+	public void onMouseDragged(Vector2 draggedDelta) {
+		if (JGUI.INSTANCE.isStageHandleInput()) {
+			// System.out.println("dragged blocked ");
+			return;
+		}
+		System.out.println("camera pos: " + JCamera.getMain().getPosition());
+		// System.out.println("dragged: " + draggedSpeed);
 		Vector2 position = JCamera.getMain().getPosition();
 		position.add(-draggedDelta.x * draggedSpeed, draggedDelta.y * draggedSpeed);
 		JCamera.getMain().setPosition(position);
 		this.currentLayer().show(JCamera.getMain().getPosition());
 	}
 
+	public void centerOn(double latitude, double longitude) {
+		LayerComponent layerComponent = zoomLayer(maxZoom);
+		Vector2 world = layerComponent.getWorldFromGeoPosition(latitude, longitude);
+		JCamera.getMain().setPosition(world);
+//		int zoom = maxZoom - minZoom + 1;
+//		Vector2 tile = getTileVector(latitude, longitude, zoom);
+//		System.out.println("center on: " + tile + " zoom: " + zoom);
+//		long size = (long) Math.pow(2, zoom);
+//		tile.x -= size / 2;
+//		tile.y -= size / 2;
+//		
+//		tile.x *= 256;
+//		tile.y *= 256;
+//		System.out.println("camera pos: " + tile);
+//		JCamera.getMain().setPosition(tile);
+	}
 }

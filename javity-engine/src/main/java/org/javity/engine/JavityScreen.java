@@ -77,8 +77,8 @@ public class JavityScreen extends RapidArtemisScreen {
 	@Override
 	public void render(float delta) {
 		// Update general variables
-		JTime.delta = delta;
-
+		JTime.INSTANCE.delta = delta;
+		JTime.INSTANCE.tick();
 		// Add Objects to add
 		for (JGameObject gameObject : scene.getObjectToAdd()) {
 			scene.proccessGameObjectAdd(gameObject);
@@ -119,12 +119,15 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private void updateGUIStage() {
-		JGUI.INSTANCE.guiSystem.getStage().act(JTime.delta);
+		
+		
+		
+		JGUI.INSTANCE.guiSystem.getStage().act(JTime.INSTANCE.delta);
 
 		Vector2 stagePosition = JGUI.INSTANCE.guiSystem.getStage().screenToStageCoordinates(JInput.getMousePosition());
 		Actor hitActor = JGUI.INSTANCE.guiSystem.getStage().hit(stagePosition.x, stagePosition.y, true);
 		if (hitActor != null) {
-			System.out.println("Set handled true");
+//			System.out.println("handle input true");
 			JGUI.INSTANCE.guiSystem.setHandleInput(true);
 		}
 	}

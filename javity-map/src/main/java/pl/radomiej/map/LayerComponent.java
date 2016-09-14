@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geojson.Point;
 import org.javity.components.SpriteRenderer;
 import org.javity.engine.JComponent;
 import org.javity.engine.JGameObject;
@@ -43,7 +44,8 @@ public class LayerComponent extends JComponent {
 		Vector2 tilePos = getTileVector(showPosition);
 		size = (long) Math.pow(2, zoom);
 
-//		Gdx.app.log(LayerComponent.class.getSimpleName(), "Show Layer: " + zoom);
+		// Gdx.app.log(LayerComponent.class.getSimpleName(), "Show Layer: " +
+		// zoom);
 		int minX = (int) Math.floor(tilePos.x - rangeShow);
 		if (minX < 0)
 			minX = 0;
@@ -60,7 +62,8 @@ public class LayerComponent extends JComponent {
 		if (maxY >= size)
 			maxY = (int) size;
 
-//		System.out.println("minX: " + minX + " maxX: " + maxX + " minY: " + minY + " maxY: " + maxY);
+		// System.out.println("minX: " + minX + " maxX: " + maxX + " minY: " +
+		// minY + " maxY: " + maxY);
 		for (int x = minX; x < maxX; x++) {
 			for (int y = minY; y < maxY; y++) {
 				Vector2 position = getTransform().getPosition();
@@ -85,7 +88,7 @@ public class LayerComponent extends JComponent {
 					tile.addComponent(new SpriteRenderer("resources/atlas/images.atlas#babel"));
 					tile.addComponent(tileComponent);
 					tile.getTransform().setParent(getGameObject());
-					
+
 					tiles.put(tileId, tileComponent);
 				}
 
@@ -110,6 +113,20 @@ public class LayerComponent extends JComponent {
 		return tilePosition;
 	}
 
+	private Vector2 getWorldVector(Vector2 tile) {
+		Vector2 worldPosition = tile.cpy();
+		worldPosition.x -= size / 2f;
+		worldPosition.y -= size / 2f;
+		
+		worldPosition.x *= 256;
+		worldPosition.y *= -256;
+		
+		worldPosition.x += 256 / 2f + 192;
+		worldPosition.y -= (256 + 16);
+
+		return worldPosition;
+	}
+
 	private void addTempTiles(File tempFile, String tileName, JGameObject logoObject) {
 		FileHandle fileHandler = Gdx.files.absolute(tempFile.getAbsolutePath());
 		Texture texture = new Texture(fileHandler);
@@ -118,8 +135,8 @@ public class LayerComponent extends JComponent {
 	}
 
 	public static Vector2 getTileNumber(final double lat, final double lon, final int zoom) {
-		int xtile = (int) Math.floor((lon + 180) / 360 * (1 << zoom));
-		int ytile = (int) Math
+		double xtile = Math.floor((lon + 180) / 360 * (1 << zoom));
+		double ytile = Math
 				.floor((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2
 						* (1 << zoom));
 		if (xtile < 0)
@@ -130,11 +147,11 @@ public class LayerComponent extends JComponent {
 			ytile = 0;
 		if (ytile >= (1 << zoom))
 			ytile = ((1 << zoom) - 1);
-		return new Vector2(xtile, ytile);
+		return new Vector2((float)xtile, (float)ytile);
 	}
 
 	static double tile2lon(int x, int z) {
-		return x / Math.pow(2.0, z) * 360.0 - 180;
+		return x / Math.pow(2.0, z) * 360.0f - 180f;
 	}
 
 	static double tile2lat(int y, int z) {
@@ -143,8 +160,29 @@ public class LayerComponent extends JComponent {
 	}
 
 	public void hide() {
-		for(TileComponent tile : tiles.values()){
+		for (TileComponent tile : tiles.values()) {
 			tile.getGameObject().setEnabled(false);
 		}
+	}
+
+	public Point getGeoFromWorldPosition(Vector2 worldPosition) {
+
+		System.out.println("tile: " + getTileVector(worldPosition));
+		Point point = new Point(tile2lon((int) getTileVector(worldPosition).x, zoom), tile2lat((int) getTileVector(worldPosition).y, zoom));
+		return point;
+	}
+
+	public Point getGeoFromTilePosition(int tileX, int tileY) {
+
+		Point point = new Point(tile2lon(tileY, zoom), tile2lat(tileX, zoom));
+		return point;
+	}
+	
+	public Vector2 getWorldFromGeoPosition(double lat, double lon) {
+
+		Vector2 tile = getTileNumber(lat, lon, zoom);
+		Vector2 world = getWorldVector(tile);
+		
+		return world;
 	}
 }
