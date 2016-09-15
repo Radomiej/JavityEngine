@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.javity.engine.NativeComponent;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
 import galaxy.rapid.components.RenderComponent;
@@ -15,6 +16,9 @@ public class LineRenderer extends NativeComponent {
 	private transient RenderComponent renderComponent;
 	private List<Vector2> polygons = new ArrayList<Vector2>();
 	private Vector2 tempVector = new Vector2();
+	private float width = 1;
+	private Color color = new Color(Color.WHITE);
+	
 	
 	public LineRenderer() {
 	}
@@ -29,6 +33,16 @@ public class LineRenderer extends NativeComponent {
 
 	@Override
 	public void update() {
+		
+		renderComponent.setOrderZ(getTransform().getOrderZ());
+		
+		if(shapeComponent.getWidth() != width){
+			shapeComponent.setWidth(width);
+		}
+		if(!shapeComponent.getColor().equals(color)){
+			shapeComponent.setColor(color);
+		}
+		
 		Vector2 positionObject = getTransform().getPosition();
 		for (int x = 0; x < polygons.size(); x++) {
 			Vector2 relativePoint = polygons.get(x);
@@ -46,6 +60,7 @@ public class LineRenderer extends NativeComponent {
 			shapeComponent.getPolygonPoints().add(point.cpy());
 		}
 	}
+	
 	
 	public void drawLine(Vector2 start, Vector2 end) {
 		clearPolygons();
@@ -89,5 +104,31 @@ public class LineRenderer extends NativeComponent {
 	public void addPoint(Vector2 point) {
 		polygons.add(point);
 		if(shapeComponent != null) shapeComponent.getPolygonPoints().add(point.cpy());
+	}
+	
+	@Override
+	public void onEnabled() {
+		renderComponent.setRender(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		renderComponent.setRender(false);
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color.set(color);
 	}
 }

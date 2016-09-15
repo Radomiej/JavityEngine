@@ -30,7 +30,7 @@ public class SpriteRenderer extends NativeComponent {
 		}
 	}
 
-	public SpriteRenderer(SingleSpriteResource sprite) {
+	public SpriteRenderer(SpriteResource sprite) {
 		this.sprite = sprite;
 	}
 

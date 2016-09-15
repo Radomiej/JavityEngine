@@ -17,9 +17,10 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.javity.net</groupId>
-			<artifactId>web-service-client</artifactId>
+			<groupId>org.javity</groupId>
+			<artifactId>javity-net</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>

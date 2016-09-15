@@ -146,6 +146,10 @@ public class Transform extends NativeComponent {
 		}
 	}
 
+	public void setScale(float scaleX, float scaleY) {
+		this.scale.set(scaleX, scaleY);
+	}
+	
 	public void setScale(Vector2 newScale) {
 		this.scale.set(newScale);
 	}
@@ -185,7 +189,10 @@ public class Transform extends NativeComponent {
 	}
 
 	public void setLocalScale(float scaleX, float scaleY) {
-		localScale.set(scaleX, scaleX);
+		localScale.set(scaleX, scaleY);
+		if(parent == null){
+			setScale(scaleX, scaleY);
+		}
 	}
 
 	public void setZ(int z) {

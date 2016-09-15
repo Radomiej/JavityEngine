@@ -166,20 +166,16 @@ public class LayerComponent extends JComponent {
 	}
 
 	public Point getGeoFromWorldPosition(Vector2 worldPosition) {
-
-		System.out.println("tile: " + getTileVector(worldPosition));
 		Point point = new Point(tile2lon((int) getTileVector(worldPosition).x, zoom), tile2lat((int) getTileVector(worldPosition).y, zoom));
 		return point;
 	}
 
 	public Point getGeoFromTilePosition(int tileX, int tileY) {
-
 		Point point = new Point(tile2lon(tileY, zoom), tile2lat(tileX, zoom));
 		return point;
 	}
 	
 	public Vector2 getWorldFromGeoPosition(double lat, double lon) {
-
 		Vector2 tile = getTileNumber(lat, lon, zoom);
 		Vector2 world = getWorldVector(tile);
 		

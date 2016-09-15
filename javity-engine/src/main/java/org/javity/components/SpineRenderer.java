@@ -41,6 +41,11 @@ public class SpineRenderer extends NativeComponent {
 		addNativeComponent(spineComponent);
 	}
 
+	@Override
+	public void update() {
+		renderComponent.setOrderZ(getTransform().getOrderZ());
+	}
+	
 	public void setAnimation(String animationName, boolean loop){
 		spineComponent.getAnimationState().setAnimation(0, animationName, loop);
 	}
@@ -55,5 +60,15 @@ public class SpineRenderer extends NativeComponent {
 	
 	public SpineResource getSpine() {
 		return spine;
+	}
+	
+	@Override
+	public void onEnabled() {
+		renderComponent.setRender(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		renderComponent.setRender(false);
 	}
 }

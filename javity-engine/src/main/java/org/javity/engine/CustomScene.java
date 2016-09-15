@@ -76,14 +76,13 @@ public class CustomScene implements InternalScene {
 		if (fullObject.isPrefab())
 			transform.setParent(null);
 		transform.setPosition(position);
-		registerInRapidBusAllNativeComponents(gameObject);
-
+		
 		// TODO przenieœc to do managera inicjializacji obiektów w nastepnej
 		// frame
 		if (run) {
 			awakeGameObject(newObject);
 		}
-
+		
 		gameObjects.add(newObject);
 
 		if (run) {
@@ -152,6 +151,11 @@ public class CustomScene implements InternalScene {
 		}
 		Collection<com.artemis.Component> artemisComponents = getArtemisComponents(gameObject);
 		registerInRapidBusAllNativeComponents(gameObject);
+		for(com.artemis.Component component : artemisComponents){
+			System.out.print(component.getClass().getSimpleName() + " ");
+		}
+		System.out.println();
+		
 		Entity entity = createEntity(artemisComponents, world);
 		gameObject.setEntity(entity);
 

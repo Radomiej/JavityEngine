@@ -55,6 +55,11 @@ public class TextRenderer extends NativeComponent {
 	}
 
 	@Override
+	public void update() {
+		renderComponent.setOrderZ(getTransform().getOrderZ());
+	}
+	
+	@Override
 	public void remove() {
 	}
 
@@ -75,4 +80,13 @@ public class TextRenderer extends NativeComponent {
 		if(textComponent != null) textComponent.setText(text);
 	}
 
+	@Override
+	public void onEnabled() {
+		renderComponent.setRender(true);
+	}
+	
+	@Override
+	public void onDisable() {
+		renderComponent.setRender(false);
+	}
 }
