@@ -37,7 +37,7 @@ public class TileComponent extends JComponent {
 		String url = "http://" + subdomain + ".tile.openstreetmap.org/" + zoom + "/" + x + "/" + y + ".png";
 		www = new WWW(url);
 		www.GET();
-		Gdx.app.log(TileComponent.class.getSimpleName(), "Tile zoom: " + zoom + " x: " + x + " y: " + y);
+//		Gdx.app.debug(TileComponent.class.getSimpleName(), "Tile zoom: " + zoom + " x: " + x + " y: " + y);
 		
 		
 	}

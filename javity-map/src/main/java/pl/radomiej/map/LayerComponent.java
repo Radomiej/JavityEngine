@@ -74,10 +74,6 @@ public class LayerComponent extends JComponent {
 				position.x += 256 / 2f;
 				position.y -= 256 / 2f;
 
-				if (x == 0 && y == 0) {
-					System.out.println("POS: " + position);
-				}
-
 				long tileId = getTileId(x, y);
 				if (tiles.containsKey(tileId)) {
 					tiles.get(tileId).getGameObject().setEnabled(true);

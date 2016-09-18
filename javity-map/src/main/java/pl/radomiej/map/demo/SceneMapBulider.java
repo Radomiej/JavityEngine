@@ -13,6 +13,7 @@ import org.javity.engine.SceneBulider;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
+import pl.radomiej.map.GeoPoint;
 import pl.radomiej.map.MapCache;
 import pl.radomiej.map.MapComponent;
 import pl.radomiej.map.Marker;
@@ -21,7 +22,6 @@ public class SceneMapBulider implements SceneBulider {
 
 	@Override
 	public void buildScene(Scene scene) {
-		
 		long size = (long) Math.pow(2, 28);
 		JGameObject map = scene.instantiateGameObject(new Vector2(100, 100));
 		map.addComponent(new SpriteRenderer("badlogic.jpg"));
@@ -29,16 +29,16 @@ public class SceneMapBulider implements SceneBulider {
 		map.addComponent(new MapCache());
 		map.addComponent(new RectangleCollider(size, size));
 		map.addComponent(new Rigidbody(true));
+		map.addComponent(new AddMarkerComponent());
 		map.getTransform().setScale(new Vector2(1, 1));	
 		
-		List<Vector2> path = new ArrayList<Vector2>();
-		path.add(new Vector2(52, 17));
-		path.add(new Vector2(52, 18));
-		path.add(new Vector2(53, 18));
-		path.add(new Vector2(53, 17));
+		List<GeoPoint> path = new ArrayList<GeoPoint>();
+		path.add(new GeoPoint(52.7576313, 15.2621716));
+		path.add(new GeoPoint(52.757214, 15.2618817));
+		path.add(new GeoPoint(52.7570431, 15.2624595));
 		MapComponent mapComponent = map.getComponent(MapComponent.class);
-		mapComponent.addPath("line-viaToll", path, Color.GREEN);
-		mapComponent.addMarker("viaToll", new Marker( 52.5d, 17.5d, "badlogic.jpg", new Vector2(0.1f, 0.1f)));
+		mapComponent.addPath("line-viaToll", path, Color.GREEN, 20);
+		mapComponent.addMarker("viaToll", new Marker( 52.7576313, 15.2621716, "badlogic.jpg", new Vector2(0.1f, 0.1f)));
 	}
 
 }

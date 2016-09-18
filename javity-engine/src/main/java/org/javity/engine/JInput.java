@@ -13,7 +13,6 @@ public class JInput {
 	public static Vector2 getMousePosition(){
 		return new Vector2(Gdx.input.getX(), Gdx.input.getY());
 	}
-
 	private static boolean isTouchedOld = false;
 	static void saveOldStatus(){
 		isTouchedOld = Gdx.input.isTouched();

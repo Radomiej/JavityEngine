@@ -1,5 +1,8 @@
 package pl.radomiej.map;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,14 +178,14 @@ public class MapComponent extends JComponent {
 
 		LayerComponent layer = zoomLayer(maxZoom);
 		Vector2 clickWorld = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
-		Point geoMap = getGeoFromWorldPosition(clickWorld);
+		GeoPoint geoMap = getGeoFromWorldPosition(clickWorld);
 		Point geo = layer.getGeoFromWorldPosition(clickWorld);
 		Vector2 world = layer.getWorldFromGeoPosition(geo.getCoordinates().getLatitude(),
 				geo.getCoordinates().getLongitude());
 
 		System.out.println("click world: " + clickWorld);
 		System.out.println("geo: " + geo);
-		System.out.println("geoMap" + geoMap);
+		System.out.println("geoMap: " + geoMap);
 		System.out.println("world: " + world);
 
 	}
@@ -218,7 +221,7 @@ public class MapComponent extends JComponent {
 		// JCamera.getMain().setPosition(tile);
 	}
 
-	public void addPath(String name, List<Vector2> path, Color color) {
+	public void addPath(String name, List<GeoPoint> path, Color color, float width) {
 
 		JGameObject line = instantiateGameObject(getTransform().getPosition());
 		line.getTransform().setZ(100);
@@ -226,51 +229,57 @@ public class MapComponent extends JComponent {
 		line.getTransform().setParent(getGameObject());
 		LineRenderer lineRenderer = new LineRenderer();
 		lineRenderer.setColor(color);
-		lineRenderer.setWidth(100);
+		lineRenderer.setWidth(width);
 		line.addComponent(lineRenderer);
 
-		for (Vector2 step : path) {
-			step = getWorldFromGeoPosition(step.x, step.y);
-			lineRenderer.addPoint(step);
+		for (GeoPoint step : path) {
+			GeoPoint stepWorld = getWorldFromGeoPosition(step.getLat(), step.getLon());
+			System.out.println("geoStep: " + stepWorld);
+			System.out.println("vectorStep: " + stepWorld.toVector2());
+			lineRenderer.addPoint(stepWorld.toVector2());
 		}
 	}
-
+	
 	public void addMarker(String name, Marker marker) {
 		JGameObject markerObj = instantiateGameObject(getTransform().getPosition());
 
-		Vector2 step = getWorldFromGeoPosition(marker.getLatitude(), marker.getLongitude());
+		GeoPoint step = getWorldFromGeoPosition(marker.getLatitude(), marker.getLongitude());
 		markerObj.getTransform().setZ(100);
-		markerObj.getTransform().setPosition(step);
-		markerObj.getTransform().setParent(getGameObject());
+		markerObj.getTransform().setPosition(step.toVector2());
+//		markerObj.getTransform().setParent(getGameObject());
 		markerObj.setName(name);
 		SpriteRenderer spriteRenderer = new SpriteRenderer(marker.getResource());
 		markerObj.addComponent(spriteRenderer);
 		markerObj.addComponent(marker);
 	}
 
-	public Point getGeoFromWorldPosition(Vector2 worldPosition) {
-		Point point = new Point(tile2lon((int) getTileVector(worldPosition).x, maxZoom),
-				tile2lat((int) getTileVector(worldPosition).y, maxZoom));
+	public GeoPoint getGeoFromWorldPosition(Vector2 worldPosition) {
+		GeoPoint geoPoint = new GeoPoint(worldPosition.y, worldPosition.x);
+		
+		GeoPoint point = new GeoPoint(tile2lat(getTileVector(geoPoint).lat, maxZoom),
+				tile2lon(getTileVector(geoPoint).lon, maxZoom));
 		return point;
 	}
 
-	public Point getGeoFromTilePosition(int tileX, int tileY) {
-		Point point = new Point(tile2lon(tileY, maxZoom), tile2lat(tileX, maxZoom));
+	public GeoPoint getGeoFromTilePosition(int tileX, int tileY) {
+		GeoPoint point = new GeoPoint(tile2lon(tileY, maxZoom), tile2lat(tileX, maxZoom));
 		return point;
 	}
 
-	public Vector2 getWorldFromGeoPosition(double lat, double lon) {
-		Vector2 tile = getTileNumber(lat, lon, maxZoom);
-		Vector2 world = getWorldVector(tile);
+	public GeoPoint getWorldFromGeoPosition(double lat, double lon) {
+		GeoPoint tile = getTileNumber(lat, lon, maxZoom);
+		System.out.println("tile: " + tile);
+		GeoPoint world = getWorldVector(tile);
 
 		return world;
 	}
 
-	static private Vector2 getTileNumber(final double lat, final double lon, final int zoom) {
-		double xtile = Math.floor((lon + 180) / 360 * (1 << zoom));
-		double ytile = Math
-				.floor((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2
-						* (1 << zoom));
+	static private GeoPoint getTileNumber(final double lat, final double lon, final int zoom) {
+		
+		double xtile = (lon + 180) / 360d * (double)(1 << zoom);
+		
+		double ytile = (1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2
+						* (1 << zoom);
 		if (xtile < 0)
 			xtile = 0;
 		if (xtile >= (1 << zoom))
@@ -279,40 +288,48 @@ public class MapComponent extends JComponent {
 			ytile = 0;
 		if (ytile >= (1 << zoom))
 			ytile = ((1 << zoom) - 1);
-		return new Vector2((float) xtile, (float) ytile);
+		return new GeoPoint(xtile, ytile);
 	}
 
-	static private double tile2lon(int x, int z) {
+	static private double tile2lon(double x, double z) {
 		return x / Math.pow(2.0, z) * 360.0f - 180f;
 	}
 
-	static private double tile2lat(int y, int z) {
+	static private double tile2lat(double y, double z) {
 		double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
 		return Math.toDegrees(Math.atan(Math.sinh(n)));
 	}
 
-	private Vector2 getTileVector(Vector2 showPosition) {
-		Vector2 tilePosition = showPosition.cpy();
-		tilePosition.x -= 256 / 2f;
-		tilePosition.y += 256 / 2f;
-		tilePosition.x /= 256;
-		tilePosition.y /= -256;
-		tilePosition.x += size / 2f;
-		tilePosition.y += size / 2f;
+	private GeoPoint getTileVector(GeoPoint showPosition) {
+		GeoPoint tilePosition = showPosition.cpy();
+		tilePosition.lat -= 256 / 2f;
+		tilePosition.lat += 32;
+		
+		tilePosition.lon -= 256 / 2f;
+		tilePosition.lon += 24;
+		
+		
+		tilePosition.lat /= -256;
+		tilePosition.lon /= 256;
+		tilePosition.lat += size / 2f;
+		tilePosition.lon += size / 2f;
 
 		return tilePosition;
 	}
 
-	private Vector2 getWorldVector(Vector2 tile) {
-		Vector2 worldPosition = tile.cpy();
-		worldPosition.x -= size / 2f;
-		worldPosition.y -= size / 2f;
+	private GeoPoint getWorldVector(GeoPoint tile) {
+		GeoPoint worldPosition = tile.cpy();
+		worldPosition.lat -= size / 2f;
+		worldPosition.lon -= size / 2f;
 
-		worldPosition.x *= 256;
-		worldPosition.y *= -256;
+		worldPosition.lat *= 256;
+		worldPosition.lon *= -256;
 
-		worldPosition.x += 256 / 2f + 192;
-		worldPosition.y -= (256 + 16);
+//		worldPosition.lat += 256;
+//		worldPosition.lon -= (256 + 16);
+		
+//		worldPosition.lat += 256 / 2f;
+//		worldPosition.lon += 256 / 2f;
 
 		return worldPosition;
 	}
