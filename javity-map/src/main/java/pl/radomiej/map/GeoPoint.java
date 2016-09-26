@@ -87,7 +87,7 @@ public class GeoPoint
     }
     
     public Vector2 toVector2(){
-    	return new Vector2((float)lat, (float)lon);
+    	return new Vector2((float)lon, (float)lat);
     }
     
     public static GeoPoint parse( String str )

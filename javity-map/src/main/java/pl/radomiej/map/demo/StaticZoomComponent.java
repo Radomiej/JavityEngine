@@ -10,12 +10,19 @@ import com.badlogic.gdx.math.Vector2;
 public class StaticZoomComponent extends JComponent {
 	private float scaleX = 1f, scaleY = 1f;
 
-	public StaticZoomComponent() {
+	public StaticZoomComponent(float sx, float sy) {
+		scaleX = sx;
+		scaleY = sy;
 	}
 	
 	public StaticZoomComponent(Vector2 scale){
-		scaleX = scale.x;
-		scaleY = scale.y;
+		this(scale.x, scale.y);
+	}
+	
+	@Override
+	public void start() {
+		float camerZoom = JCamera.getMain().getZoom();
+		getTransform().setLocalScale(camerZoom * scaleX, camerZoom * scaleY);
 	}
 	
 	@Override

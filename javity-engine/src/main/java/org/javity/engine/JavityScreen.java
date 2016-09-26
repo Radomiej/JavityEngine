@@ -133,8 +133,11 @@ public class JavityScreen extends RapidArtemisScreen {
 	}
 
 	private Set<JGameObject> pressedObjects = new HashSet<JGameObject>();
-
+	private Vector2 deltaMouse = new Vector2();
+	
 	private void updateMouseXXX() {
+		if(JInput.isTouch()) addDeltaMouse();
+		
 		Vector2 worldPosition = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
 		List<RaycastHit> hits = JPhysic.raycastPoint(worldPosition);
 		for (RaycastHit hit : hits) {
@@ -142,11 +145,12 @@ public class JavityScreen extends RapidArtemisScreen {
 			JGameObject hitGameObject = hit.collider.getGameObject();
 			for (Component component : hitGameObject.getAllComponents()) {
 				if (JInput.isJustPressed()) {
+					deltaMouse.setZero();
 					component.onMousePressed();
 					pressedObjects.add(hitGameObject);
 				} else if (JInput.isJustRelased()) {
 					component.onMouseRelased();
-					if (pressedObjects.contains(hitGameObject)) {
+					if (pressedObjects.contains(hitGameObject) && !isDragMouseGest(deltaMouse)) {
 						component.onMouseClicked();
 					}
 				} else if (JInput.isTouch()) {
@@ -160,6 +164,14 @@ public class JavityScreen extends RapidArtemisScreen {
 		if (JInput.isJustRelased()) {
 			pressedObjects.clear();
 		}
+	}
+
+	private void addDeltaMouse() {
+		deltaMouse.add(JInput.getMouseDragged());
+	}
+
+	private boolean isDragMouseGest(Vector2 deltaMouse2) {
+		return deltaMouse2.dst(0, 0) > 5;
 	}
 
 	@Override

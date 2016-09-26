@@ -26,12 +26,11 @@ public class AddMarkerComponent extends JComponent{
 		
 		JGameObject markerWorld = instantiateGameObject(clickWorld);
 		markerWorld.addComponent(new SpriteRenderer("badlogic.jpg"));
-		markerWorld.addComponent(new StaticZoomComponent());
+		markerWorld.addComponent(new StaticZoomComponent(0.1f, 0.1f));
 		markerWorld.getTransform().setZ(99);
-		
 		
 		GeoPoint geo = map.getGeoFromWorldPosition(clickWorld);
 		System.out.println("geo marker: " + geo);
-		map.addMarker("test-clickWorld", new Marker(geo.lat, geo.lon, "map-marker-icon.png", new Vector2(1, 1)));
+		map.addMarker("test-clickWorld", new Marker(geo.lat, geo.lon, "map-marker-icon.png", new Vector2(0.1f, 0.1f)));
 	}
 }

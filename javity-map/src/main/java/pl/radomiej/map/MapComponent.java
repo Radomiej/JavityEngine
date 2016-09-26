@@ -149,7 +149,7 @@ public class MapComponent extends JComponent {
 		float newChangeZoomSpeed = zoomSpeed * (float) Math.pow(2, getZoomLevel());
 		if(currentZoomSpeed < newChangeZoomSpeed) currentZoomSpeed = newChangeZoomSpeed;
 		
-		System.out.println("Zoom: " + currentZoom + " zoom level: " + zoomLevel + " target zoom: " + targetCameraZoom);
+//		System.out.println("Zoom: " + currentZoom + " zoom level: " + zoomLevel + " target zoom: " + targetCameraZoom);
 
 		if (currentZoom < oldZoom) {
 			currentLayer().getTransform().setZ(oldZoom + 1);
@@ -183,10 +183,10 @@ public class MapComponent extends JComponent {
 		Vector2 world = layer.getWorldFromGeoPosition(geo.getCoordinates().getLatitude(),
 				geo.getCoordinates().getLongitude());
 
-		System.out.println("click world: " + clickWorld);
-		System.out.println("geo: " + geo);
-		System.out.println("geoMap: " + geoMap);
-		System.out.println("world: " + world);
+//		System.out.println("click world: " + clickWorld);
+//		System.out.println("geo: " + geo);
+//		System.out.println("geoMap: " + geoMap);
+//		System.out.println("world: " + world);
 
 	}
 
@@ -234,8 +234,8 @@ public class MapComponent extends JComponent {
 
 		for (GeoPoint step : path) {
 			GeoPoint stepWorld = getWorldFromGeoPosition(step.getLat(), step.getLon());
-			System.out.println("geoStep: " + stepWorld);
-			System.out.println("vectorStep: " + stepWorld.toVector2());
+//			System.out.println("geoStep: " + stepWorld);
+//			System.out.println("vectorStep: " + stepWorld.toVector2());
 			lineRenderer.addPoint(stepWorld.toVector2());
 		}
 	}
@@ -244,9 +244,14 @@ public class MapComponent extends JComponent {
 		JGameObject markerObj = instantiateGameObject(getTransform().getPosition());
 
 		GeoPoint step = getWorldFromGeoPosition(marker.getLatitude(), marker.getLongitude());
+		
+		
+		step.lon += 104;
+		step.lat += 96;
+		
 		markerObj.getTransform().setZ(100);
 		markerObj.getTransform().setPosition(step.toVector2());
-//		markerObj.getTransform().setParent(getGameObject());
+		markerObj.getTransform().setParent(getGameObject());
 		markerObj.setName(name);
 		SpriteRenderer spriteRenderer = new SpriteRenderer(marker.getResource());
 		markerObj.addComponent(spriteRenderer);
@@ -268,9 +273,8 @@ public class MapComponent extends JComponent {
 
 	public GeoPoint getWorldFromGeoPosition(double lat, double lon) {
 		GeoPoint tile = getTileNumber(lat, lon, maxZoom);
-		System.out.println("tile: " + tile);
+		
 		GeoPoint world = getWorldVector(tile);
-
 		return world;
 	}
 
@@ -288,7 +292,7 @@ public class MapComponent extends JComponent {
 			ytile = 0;
 		if (ytile >= (1 << zoom))
 			ytile = ((1 << zoom) - 1);
-		return new GeoPoint(xtile, ytile);
+		return new GeoPoint(ytile, xtile);
 	}
 
 	static private double tile2lon(double x, double z) {
@@ -322,14 +326,8 @@ public class MapComponent extends JComponent {
 		worldPosition.lat -= size / 2f;
 		worldPosition.lon -= size / 2f;
 
-		worldPosition.lat *= 256;
-		worldPosition.lon *= -256;
-
-//		worldPosition.lat += 256;
-//		worldPosition.lon -= (256 + 16);
-		
-//		worldPosition.lat += 256 / 2f;
-//		worldPosition.lon += 256 / 2f;
+		worldPosition.lat *= -256;
+		worldPosition.lon *= 256;
 
 		return worldPosition;
 	}
