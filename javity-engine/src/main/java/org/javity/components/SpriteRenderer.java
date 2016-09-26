@@ -3,6 +3,7 @@ package org.javity.components;
 import org.javity.engine.NativeComponent;
 import org.javity.engine.Resource;
 import org.javity.engine.resources.SpriteAtlasResource;
+import org.javity.engine.resources.SpritePivot;
 import org.javity.engine.resources.SpriteResource;
 import org.javity.engine.resources.MemorySpriteResource;
 import org.javity.engine.resources.SingleSpriteResource;
@@ -16,11 +17,14 @@ public class SpriteRenderer extends NativeComponent {
 	private SpriteResource sprite;
 	private transient RenderComponent renderComponent;
 	private transient SpriteComponent spriteComponent;
-
+	private SpritePivot pivot = SpritePivot.CENTER;
+	
 	public SpriteRenderer() {
 	}
 
-	public SpriteRenderer(String sprite) {
+	public SpriteRenderer(String sprite, SpritePivot pivot) {
+		this.setPivot(pivot);
+		
 		if (sprite.contains("#")) {
 			this.sprite = new SpriteAtlasResource(sprite);
 		} else if (sprite.contains("%")) {
@@ -29,8 +33,17 @@ public class SpriteRenderer extends NativeComponent {
 			this.sprite = new SingleSpriteResource(sprite);
 		}
 	}
+	
+	public SpriteRenderer(String sprite) {
+		this(sprite, SpritePivot.CENTER);
+	}
 
 	public SpriteRenderer(SpriteResource sprite) {
+		this(sprite, SpritePivot.CENTER);
+	}
+	
+	public SpriteRenderer(SpriteResource sprite,  SpritePivot pivot) {
+		this.setPivot(pivot);
 		this.sprite = sprite;
 	}
 
@@ -38,10 +51,27 @@ public class SpriteRenderer extends NativeComponent {
 	public void awake() {
 		renderComponent = new RenderComponent();
 		spriteComponent = new SpriteComponent();
+		prepareSpriteComponent(spriteComponent);
 		addNativeComponent(renderComponent);
 		addNativeComponent(spriteComponent);
 
 		setSprite(sprite);
+	}
+
+	private void prepareSpriteComponent(SpriteComponent sprite) {
+		if(getPivot() == SpritePivot.CENTER) return;
+		
+		if(getPivot() == SpritePivot.LEFT || getPivot() == SpritePivot.LEFT_BOTTOM || getPivot() == SpritePivot.LEFT_TOP){
+			sprite.setLeft(true);
+		}else if(getPivot() == SpritePivot.RIGHT || getPivot() == SpritePivot.RIGHT_BOTTOM || getPivot() == SpritePivot.RIGHT_TOP){
+			sprite.setRight(true);
+		}
+		
+		if(getPivot() == SpritePivot.TOP || getPivot() == SpritePivot.LEFT_TOP || getPivot() == SpritePivot.RIGHT_TOP){
+			sprite.setTop(true);
+		}else if(getPivot() == SpritePivot.BOTTOM || getPivot() == SpritePivot.RIGHT_BOTTOM || getPivot() == SpritePivot.LEFT_BOTTOM){
+			sprite.setBottom(true);
+		}
 	}
 
 	@Override
@@ -95,5 +125,14 @@ public class SpriteRenderer extends NativeComponent {
 	@Override
 	public void onDisable() {
 		renderComponent.setRender(false);
+	}
+
+	public SpritePivot getPivot() {
+		return pivot;
+	}
+
+	public void setPivot(SpritePivot pivot) {
+		this.pivot = pivot;
+		prepareSpriteComponent(spriteComponent);
 	}
 }

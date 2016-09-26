@@ -1,9 +1,11 @@
 package pl.radomiej.map;
 
+import org.javity.components.SpriteRenderer;
 import org.javity.engine.JCamera;
 import org.javity.engine.JComponent;
 import org.javity.engine.JResources;
 import org.javity.engine.Resource;
+import org.javity.engine.resources.SpritePivot;
 import org.javity.engine.resources.SpriteResource;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -31,6 +33,7 @@ public class Marker extends JComponent {
 	public void start() {
 		float camerZoom = JCamera.getMain().getZoom();
 		getTransform().setLocalScale(camerZoom * scaleX, camerZoom * scaleY);
+		getGameObject().getComponent(SpriteRenderer.class).setPivot(SpritePivot.TOP);
 	}
 
 	@Override
