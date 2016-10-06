@@ -29,12 +29,12 @@ public class LayerComponent extends JComponent {
 
 	public LayerComponent(int x) {
 		zoom = x;
+		size = (long) Math.pow(2, zoom);
 	}
 
 	@Override
-	public void start() {
-		size = (long) Math.pow(2, zoom);
-		Gdx.app.log(LayerComponent.class.getSimpleName(), "Layer: " + zoom);
+	public void awake() {
+//		Gdx.app.log(LayerComponent.class.getSimpleName(), "Layer: " + zoom);
 	}
 
 	public void show(Vector2 showPosition) {

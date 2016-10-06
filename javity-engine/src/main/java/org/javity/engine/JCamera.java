@@ -45,6 +45,13 @@ public class JCamera {
 		return worldPoint;
 	}
 
+	public Vector2 worldToScreenPoint(Vector2 worldPoint){
+		Vector3 screenPoint3 = nativeCamera.project(new Vector3(worldPoint.x, worldPoint.y, 0));
+		Vector2 screenPoint = new Vector2(screenPoint3.x, screenPoint3.y);
+		return screenPoint;
+	}
+
+	
 	public void setZoom(float zoom) {
 		main.nativeCamera.setZoom(zoom);
 	}

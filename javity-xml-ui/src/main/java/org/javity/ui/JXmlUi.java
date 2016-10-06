@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
@@ -165,16 +167,59 @@ public class JXmlUi extends NativeComponent {
 				addTextField(table, child);
 			} else if (child.getName().equalsIgnoreCase("window")) {
 				addWindow(table, child);
+			} else if (child.getName().equalsIgnoreCase("vertical-group")) {
+				addVerticalGroup(table, child);
+			} else if (child.getName().equalsIgnoreCase("horizontal-group")) {
+				addHorizontalGroup(table, child);
 			}
 
 		}
 	}
 
-	private void addScrollPanel(Table table, Element element) {
-		if (element.getChildCount() > 1) {
-			Gdx.app.error("JXmlUi",
-					"ScrollPanel has more than one element. Pleace use Table if you need add multiple elements");
+	private void addHorizontalGroup(Table table, Element element) {
+		HorizontalGroup horizontalGroup = new HorizontalGroup();
+		ScrollPane scrollPane = new ScrollPane(horizontalGroup, skin);
+
+		Cell<ScrollPane> cell = table.add(scrollPane);
+		ObjectMap<String, String> atrributes = element.getAttributes();
+		if (atrributes == null) {
+			atrributes = new ObjectMap<String, String>();
 		}
+
+		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				horizontalGroup.setName(atrributes.get(key));
+			}
+		}
+		cellPrepare(cell, atrributes);
+//		addChildrens(element, horizontalGroup);
+
+		actorsMap.put(horizontalGroup.getName(), horizontalGroup);
+		
+	}
+
+	private void addVerticalGroup(Table table, Element element) {
+		VerticalGroup verticalGroup = new VerticalGroup();
+		ScrollPane scrollPane = new ScrollPane(verticalGroup, skin);
+
+		Cell<ScrollPane> cell = table.add(scrollPane);
+		ObjectMap<String, String> atrributes = element.getAttributes();
+		if (atrributes == null) {
+			atrributes = new ObjectMap<String, String>();
+		}
+
+		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				verticalGroup.setName(atrributes.get(key));
+			}
+		}
+		cellPrepare(cell, atrributes);
+//		addChildrens(element, horizontalGroup);
+
+		actorsMap.put(verticalGroup.getName(), verticalGroup);		
+	}
+
+	private void addScrollPanel(Table table, Element element) {
 		Table tableScroll = new Table(skin);
 		ScrollPane scrollPane = new ScrollPane(tableScroll, skin);
 
@@ -204,9 +249,15 @@ public class JXmlUi extends NativeComponent {
 		if (atrributes == null) {
 			atrributes = new ObjectMap<String, String>();
 		}
+		for (String key : atrributes.keys()) {
+			if (key.equalsIgnoreCase("name")) {
+				newTable.setName(atrributes.get(key));
+			}
+		}
+		
 		cellPrepare(cell, atrributes);
 		addChildrens(element, newTable);
-
+		actorsMap.put(newTable.getName(), newTable);
 	}
 
 	private void addWindow(Table table, Element element) {

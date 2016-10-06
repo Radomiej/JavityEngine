@@ -114,4 +114,16 @@ public class GeolocationData {
 	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
+	
+	public GeolocationData copy(){
+		GeolocationData geolocationData  = new GeolocationData();
+		geolocationData.latitude = latitude;
+		geolocationData.altitude = altitude;
+		geolocationData.longitude = longitude;
+		geolocationData.bearing = bearing;
+		geolocationData.speed = speed;
+		geolocationData.timestamp = timestamp;
+		
+		return geolocationData;
+	}
 }

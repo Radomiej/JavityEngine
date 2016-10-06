@@ -6,6 +6,8 @@ import org.javity.engine.JComponent;
 import org.javity.engine.JGameObject;
 import org.javity.engine.JInput;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
 
 import pl.radomiej.map.GeoPoint;
@@ -31,6 +33,6 @@ public class AddMarkerComponent extends JComponent{
 		
 		GeoPoint geo = map.getGeoFromWorldPosition(clickWorld);
 		System.out.println("geo marker: " + geo);
-		map.addMarker("test-clickWorld", new Marker(geo.lat, geo.lon, "map-marker-icon.png", new Vector2(0.1f, 0.1f)));
+		map.addMarker("test-clickWorld", new Marker(geo.getLat(), geo.getLon(), "map-marker-icon.png", new Vector2(0.1f, 0.1f)));
 	}
 }

@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+import galaxy.rapid.components.Box2dComponent;
 import galaxy.rapid.components.ShapeComponent;
 
 public class MapComponent extends JComponent {
@@ -55,7 +56,7 @@ public class MapComponent extends JComponent {
 	}
 
 	@Override
-	public void start() {
+	public void awake() {
 		JCamera.getMain().setZoom(32000f);
 
 		System.out.println("start Map");
@@ -81,6 +82,11 @@ public class MapComponent extends JComponent {
 		oldZoom = minZoom;
 		currentZoom = minZoom;
 		changeZoom(minZoom);
+	}
+	
+	@Override
+	public void start() {
+		this.currentLayer().show(JCamera.getMain().getPosition());
 	}
 
 	@Override
@@ -156,8 +162,7 @@ public class MapComponent extends JComponent {
 		} else {
 			currentLayer().getTransform().setZ(currentZoom);
 		}
-		currentLayer().show(JCamera.getMain().getPosition());
-		
+		currentLayer().show(JCamera.getMain().getPosition());		
 		
 	}
 
@@ -205,23 +210,12 @@ public class MapComponent extends JComponent {
 	}
 
 	public void centerOn(double latitude, double longitude) {
-		LayerComponent layerComponent = zoomLayer(maxZoom);
-		Vector2 world = layerComponent.getWorldFromGeoPosition(latitude, longitude);
-		JCamera.getMain().setPosition(world);
-		// int zoom = maxZoom - minZoom + 1;
-		// Vector2 tile = getTileVector(latitude, longitude, zoom);
-		// System.out.println("center on: " + tile + " zoom: " + zoom);
-		// long size = (long) Math.pow(2, zoom);
-		// tile.x -= size / 2;
-		// tile.y -= size / 2;
-		//
-		// tile.x *= 256;
-		// tile.y *= 256;
-		// System.out.println("camera pos: " + tile);
-		// JCamera.getMain().setPosition(tile);
+		GeoPoint world = getWorldFromGeoPosition(latitude, longitude);
+		JCamera.getMain().setPosition(world.toVector2());
+		 this.currentLayer().show(JCamera.getMain().getPosition());
 	}
 
-	public void addPath(String name, List<GeoPoint> path, Color color, float width) {
+	public JGameObject addPath(String name, List<GeoPoint> path, Color color, float width) {
 
 		JGameObject line = instantiateGameObject(getTransform().getPosition());
 		line.getTransform().setZ(100);
@@ -238,16 +232,19 @@ public class MapComponent extends JComponent {
 //			System.out.println("vectorStep: " + stepWorld.toVector2());
 			lineRenderer.addPoint(stepWorld.toVector2());
 		}
+		
+		return line;
 	}
 	
-	public void addMarker(String name, Marker marker) {
+	public JGameObject addMarker(String name, Marker marker) {
+		marker.setMap(this);
 		JGameObject markerObj = instantiateGameObject(getTransform().getPosition());
 
 		GeoPoint step = getWorldFromGeoPosition(marker.getLatitude(), marker.getLongitude());
 		
-		
-		step.lon += 104;
-		step.lat += 96;
+//		
+//		step.lon += 104;
+//		step.lat += 96;
 		
 		markerObj.getTransform().setZ(100);
 		markerObj.getTransform().setPosition(step.toVector2());
@@ -256,13 +253,17 @@ public class MapComponent extends JComponent {
 		SpriteRenderer spriteRenderer = new SpriteRenderer(marker.getResource());
 		markerObj.addComponent(spriteRenderer);
 		markerObj.addComponent(marker);
+		
+		return markerObj;
 	}
 
 	public GeoPoint getGeoFromWorldPosition(Vector2 worldPosition) {
+		worldPosition.x += 104;
+		worldPosition.y += 96;
 		GeoPoint geoPoint = new GeoPoint(worldPosition.y, worldPosition.x);
 		
-		GeoPoint point = new GeoPoint(tile2lat(getTileVector(geoPoint).lat, maxZoom),
-				tile2lon(getTileVector(geoPoint).lon, maxZoom));
+		GeoPoint point = new GeoPoint(tile2lat(getTileVector(geoPoint).getLat(), maxZoom),
+				tile2lon(getTileVector(geoPoint).getLon(), maxZoom));
 		return point;
 	}
 
@@ -305,30 +306,34 @@ public class MapComponent extends JComponent {
 	}
 
 	private GeoPoint getTileVector(GeoPoint showPosition) {
-		GeoPoint tilePosition = showPosition.cpy();
-		tilePosition.lat -= 256 / 2f;
-		tilePosition.lat += 32;
+		double latitude = showPosition.getLat();
+		double longitude = showPosition.getLon();
 		
-		tilePosition.lon -= 256 / 2f;
-		tilePosition.lon += 24;
+		latitude -= 256 / 2f;
+		latitude += 32;
+		
+		longitude -= 256 / 2f;
+		longitude += 24;
 		
 		
-		tilePosition.lat /= -256;
-		tilePosition.lon /= 256;
-		tilePosition.lat += size / 2f;
-		tilePosition.lon += size / 2f;
+		latitude /= -256;
+		longitude /= 256;
+		latitude += size / 2f;
+		longitude += size / 2f;
 
-		return tilePosition;
+		return new GeoPoint(latitude, longitude);
 	}
 
 	private GeoPoint getWorldVector(GeoPoint tile) {
-		GeoPoint worldPosition = tile.cpy();
-		worldPosition.lat -= size / 2f;
-		worldPosition.lon -= size / 2f;
+		double latitude = tile.getLat();
+		double longitude = tile.getLon();
+		
+		latitude -= size / 2f;
+		longitude -= size / 2f;
 
-		worldPosition.lat *= -256;
-		worldPosition.lon *= 256;
+		latitude *= -256;
+		longitude *= 256;
 
-		return worldPosition;
+		return new GeoPoint(latitude, longitude);
 	}
 }

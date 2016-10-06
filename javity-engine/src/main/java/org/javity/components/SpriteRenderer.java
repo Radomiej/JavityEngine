@@ -5,6 +5,9 @@ import org.javity.engine.Resource;
 import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpritePivot;
 import org.javity.engine.resources.SpriteResource;
+
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
 import org.javity.engine.resources.MemorySpriteResource;
 import org.javity.engine.resources.SingleSpriteResource;
 
@@ -134,5 +137,15 @@ public class SpriteRenderer extends NativeComponent {
 	public void setPivot(SpritePivot pivot) {
 		this.pivot = pivot;
 		prepareSpriteComponent(spriteComponent);
+	}
+
+	public float getSpriteWidth() {
+		Sprite spriteImg = RapidAsset.INSTANCE.getSprite(sprite.getResourcePath());
+		return spriteImg.getWidth();
+	}
+
+	public float getSpriteHeight() {
+		Sprite spriteImg = RapidAsset.INSTANCE.getSprite(sprite.getResourcePath());
+		return spriteImg.getHeight();
 	}
 }

@@ -13,6 +13,7 @@ import galaxy.rapid.event.RemoveRectangleColliderComponent;
 
 public class RectangleCollider extends NativeComponent {
 	public float width = 100, height = 100;
+	public float offsetX = 0, offsetY = 0;
 	private transient RectangleColliderComponent rectangleColliderComponent;
 	private List<String> logs = new ArrayList<String>();
 	
