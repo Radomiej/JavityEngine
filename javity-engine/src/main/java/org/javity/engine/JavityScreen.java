@@ -71,6 +71,7 @@ public class JavityScreen extends RapidArtemisScreen {
 		for (int x = 0; x < gameObjects.size(); x++) {
 			JGameObject gameObject = gameObjects.get(x);
 			scene.startGameObject(gameObject);
+			scene.enableGameObject(gameObject);
 		}
 	}
 
@@ -79,11 +80,6 @@ public class JavityScreen extends RapidArtemisScreen {
 		// Update general variables
 		JTime.INSTANCE.delta = delta;
 		JTime.INSTANCE.tick();
-		// Add Objects to add
-		for (JGameObject gameObject : scene.getObjectToAdd()) {
-			scene.proccessGameObjectAdd(gameObject);
-		}
-		scene.getObjectToAdd().clear();
 
 		updateGUIStage();
 
@@ -92,16 +88,18 @@ public class JavityScreen extends RapidArtemisScreen {
 
 		// Update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
-			if(!gameObject.isEnabled()) continue;
-			
+			if (!gameObject.isEnabled())
+				continue;
+
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.update();
 			}
 		}
 		for (JGameObject gameObject : scene.getGameObjects()) {
-			if(!gameObject.isEnabled()) continue;
-			
+			if (!gameObject.isEnabled())
+				continue;
+
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
 				component.lateUpdate();
@@ -114,30 +112,35 @@ public class JavityScreen extends RapidArtemisScreen {
 		}
 		scene.getObjectToRemove().clear();
 
+		// Add Objects to add
+		for (JGameObject gameObject : scene.getObjectToAdd()) {
+			scene.proccessGameObjectAdd(gameObject);
+		}
+		scene.getObjectToAdd().clear();
+
 		super.render(delta);
 		JInput.saveOldStatus();
 	}
 
 	private void updateGUIStage() {
-		
-		
-		
+
 		JGUI.INSTANCE.guiSystem.getStage().act(JTime.INSTANCE.delta);
 
 		Vector2 stagePosition = JGUI.INSTANCE.guiSystem.getStage().screenToStageCoordinates(JInput.getMousePosition());
 		Actor hitActor = JGUI.INSTANCE.guiSystem.getStage().hit(stagePosition.x, stagePosition.y, true);
 		if (hitActor != null) {
-//			System.out.println("handle input true");
+			// System.out.println("handle input true");
 			JGUI.INSTANCE.guiSystem.setHandleInput(true);
 		}
 	}
 
 	private Set<JGameObject> pressedObjects = new HashSet<JGameObject>();
 	private Vector2 deltaMouse = new Vector2();
-	
+
 	private void updateMouseXXX() {
-		if(JInput.isTouch()) addDeltaMouse();
-		
+		if (JInput.isTouch())
+			addDeltaMouse();
+
 		Vector2 worldPosition = JCamera.getMain().screenToWorldPoint(JInput.getMousePosition());
 		List<RaycastHit> hits = JPhysic.raycastPoint(worldPosition);
 		for (RaycastHit hit : hits) {

@@ -52,7 +52,8 @@ public class WWW {
 	private int statusCode;
 
 	private WWWResponseListener wwwResponseListener;
-
+	private int timeout = 20000;
+	
 	public WWW(String url) {
 		this.urlString = url;
 	}
@@ -73,7 +74,7 @@ public class WWW {
 		work = true;
 
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
-		HttpRequest request = requestBuilder.newRequest().url(urlString).timeout(10000).jsonContent(form).method(HttpMethods.POST)
+		HttpRequest request = requestBuilder.newRequest().url(urlString).timeout(timeout).jsonContent(form).method(HttpMethods.POST)
 				.build();
 
 		final WWW my = this;
@@ -119,7 +120,7 @@ public class WWW {
 		work = true;
 
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
-		HttpRequest request = requestBuilder.newRequest().url(urlString).timeout(10000).content(query).method(HttpMethods.GET).build();
+		HttpRequest request = requestBuilder.newRequest().url(urlString).timeout(timeout).content(query).method(HttpMethods.GET).build();
 
 		final WWW my = this;
 		Gdx.net.sendHttpRequest(request, new HttpResponseListener() {
@@ -231,5 +232,13 @@ public class WWW {
 	public <T> T getJsonObjectResponse(Class<T> componentType) {
 		if(responseBytes.length == 0) return null;
 		return RapidJson.INSTANCE.parseJsonSingle(getStringResponse(), componentType);
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 }

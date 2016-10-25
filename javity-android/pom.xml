@@ -9,6 +9,21 @@
 		<targetJdk>1.7</targetJdk>
 	</properties>
 
+	<distributionManagement>
+		<repository>
+			<id>fpsystem-maven-ftp</id>
+			<url>ftp://ns364990.ovh.net</url>
+		</repository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>fpsystem-maven-ftp</id>
+			<url>ftp://ns364990.ovh.net</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.javity</groupId>

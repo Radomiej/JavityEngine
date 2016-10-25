@@ -15,4 +15,5 @@ public interface InternalScene extends Scene{
 	public Collection<JGameObject> getObjectToAdd();
 	public void proccessGameObjectDestroy(JGameObject gameObject);
 	public void proccessGameObjectAdd(JGameObject gameObject);
+	public void enableGameObject(JGameObject gameObject);
 }

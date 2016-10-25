@@ -1,5 +1,8 @@
 package pl.radomiej.map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.javity.components.SpriteRenderer;
 import org.javity.engine.JCamera;
 import org.javity.engine.JComponent;
@@ -17,6 +20,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import pl.radomiej.map.events.ClickMarkerListener;
+
 public class Marker extends JComponent {
 	private String name;
 	private SpriteResource resource;
@@ -25,7 +30,8 @@ public class Marker extends JComponent {
 	private float scaleX = 1f, scaleY = 1f;
 	private MapComponent map;
 	private SpritePivot spritePivot = SpritePivot.TOP;
-
+	private List<ClickMarkerListener> clicksListeners = new ArrayList<ClickMarkerListener>();
+	
 	public Marker(double latitude, double longitude, String resourceName) {
 		this(latitude, longitude, resourceName, new Vector2(1, 1));
 	}
@@ -71,11 +77,11 @@ public class Marker extends JComponent {
 			}
 
 			if (spritePivot.isBottom()) {
-				posY -= 1.5 * height;
+				posY += 1.5 * height;
 			} else if (spritePivot.isTop()) {
-				posY += 0.5 * height;
-			} else {
 				posY -= 0.5 * height;
+			} else {
+				posY += 0.5 * height;
 			}
 
 			Rectangle marker = new Rectangle(posX, posY, width, height);
@@ -108,10 +114,19 @@ public class Marker extends JComponent {
 	@Override
 	public void onMouseClicked() {
 		System.out.println("Click marker!");
-		JGameObject markerToast = instantiateGameObject(new Vector2());
-		markerToast.addComponent(new ToastComponent(this, "Test"));
+		for(ClickMarkerListener clickMarkerListener : clicksListeners){
+			clickMarkerListener.click();
+		}
 	}
 
+	public void addClickMarkerListener(ClickMarkerListener clickMarkerListenr ){
+		clicksListeners.add(clickMarkerListenr);
+	}
+	
+	public void removeAllClickListeners(){
+		clicksListeners.clear();
+	}
+	
 	/**
 	 * @return the name
 	 */

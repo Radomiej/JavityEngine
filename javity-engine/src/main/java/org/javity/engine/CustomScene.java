@@ -58,6 +58,7 @@ public class CustomScene implements InternalScene {
 		awakeGameObject(gameObject);
 		gameObjects.add(gameObject);
 		startGameObject(gameObject);
+		enableGameObject(gameObject);
 	}
 
 	@Override
@@ -76,17 +77,18 @@ public class CustomScene implements InternalScene {
 		if (fullObject.isPrefab())
 			transform.setParent(null);
 		transform.setPosition(position);
-		
+
 		// TODO przenieœc to do managera inicjializacji obiektów w nastepnej
 		// frame
 		if (run) {
 			awakeGameObject(newObject);
 		}
-		
+
 		gameObjects.add(newObject);
 
 		if (run) {
 			startGameObject(newObject);
+			enableGameObject(newObject);
 		}
 		return newObject;
 	}
@@ -98,6 +100,11 @@ public class CustomScene implements InternalScene {
 		Transform transform = newObject.getComponent(Transform.class);
 		transform.setPosition(position.cpy());
 
+		/**
+		 * If scene is running add to queue new game objects.
+		 * Otherwise simple add to gameObjects list, then they will be auto prepare on initialize scene
+		 * after run bulider method. 
+		 */
 		if (run) {
 			objectToAdd.add(newObject);
 		} else {
@@ -151,7 +158,7 @@ public class CustomScene implements InternalScene {
 		}
 		Collection<com.artemis.Component> artemisComponents = getArtemisComponents(gameObject);
 		registerInRapidBusAllNativeComponents(gameObject);
-		
+
 		Entity entity = createEntity(artemisComponents, world);
 		gameObject.setEntity(entity);
 
@@ -184,11 +191,18 @@ public class CustomScene implements InternalScene {
 	public void startGameObject(JGameObject gameObject) {
 		if (!gameObject.isStarted()) {
 			for (Component component : gameObject.getAllComponents()) {
-				component.start();
-				if (component.isEnabled())
-					component.onEnabled();
+				component.start();				
 			}
 			gameObject.start();
+		}
+	}
+	
+	@Override
+	public void enableGameObject(JGameObject gameObject) {
+		for (Component component : gameObject.getAllComponents()) {
+			if (component.isEnabled()) {
+				 component.onEnabled();
+			}
 		}
 	}
 
@@ -216,16 +230,18 @@ public class CustomScene implements InternalScene {
 	@Override
 	public List<JGameObject> getGameObjectsByTag(String tag) {
 		List<JGameObject> results = new ArrayList<JGameObject>();
-		for(JGameObject gameObject : gameObjects){
-			if(gameObject.getTag() != null && gameObject.getTag().equalsIgnoreCase(tag)) results.add(gameObject);
+		for (JGameObject gameObject : gameObjects) {
+			if (gameObject.getTag() != null && gameObject.getTag().equalsIgnoreCase(tag))
+				results.add(gameObject);
 		}
 		return results;
 	}
 
 	@Override
 	public JGameObject getGameObjectByTag(String tag) {
-		for(JGameObject gameObject : gameObjects){
-			if(gameObject.getTag() != null && gameObject.getTag().equalsIgnoreCase(tag)) return gameObject;
+		for (JGameObject gameObject : gameObjects) {
+			if (gameObject.getTag() != null && gameObject.getTag().equalsIgnoreCase(tag))
+				return gameObject;
 		}
 		return null;
 	}
