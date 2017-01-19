@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.javity</groupId>
 	<artifactId>javity-engine</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.5.0</version>
 	<name>Javity Engine</name>
 	<description>2D Engine based on libGDX</description>
 
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>galaxy.rapid</groupId>
 			<artifactId>galaxy-rapid-engine</artifactId>
-			<version>0.3.1-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>silver-reflection</groupId>
@@ -67,12 +67,12 @@
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-freetype</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-box2d</artifactId>
-			<version>1.9.4</version>
+			<version>1.9.5</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

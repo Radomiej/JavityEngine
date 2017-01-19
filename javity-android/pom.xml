@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.javity</groupId>
 	<artifactId>javity-android</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.5.0</version>
 
 	<properties>
 		<targetJdk>1.7</targetJdk>
@@ -28,7 +28,13 @@
 		<dependency>
 			<groupId>org.javity</groupId>
 			<artifactId>javity-engine</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>4.1.1.4</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -48,5 +54,12 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
 	</build>
 </project>

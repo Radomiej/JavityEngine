@@ -22,6 +22,16 @@ public class LineRenderer extends NativeComponent {
 	
 	public LineRenderer() {
 	}
+	
+	public LineRenderer(Vector2... polygons) {
+		for(Vector2 point : polygons){
+			this.polygons.add(point);
+		}
+	}
+	
+	public LineRenderer(List<Vector2> polygons) {
+		this.polygons.addAll(polygons);
+	}
 
 	@Override
 	public void awake() {

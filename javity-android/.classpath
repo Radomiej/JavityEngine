@@ -32,6 +32,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Radomiej/android-sdks/platforms/android-22/android.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
