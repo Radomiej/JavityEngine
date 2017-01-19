@@ -1,0 +1,11 @@
+package %PACKAGE%;
+
+import org.javity.engine.Scene;
+import org.javity.engine.SceneBulider;
+
+public class %MAIN_CLASS% implements SceneBulider {
+	@Override
+	public void buildScene(Scene scene) {
+		//Build first scene here!
+	}
+}
