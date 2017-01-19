@@ -1,0 +1,6 @@
+{
+  "name": "Javity Engine",
+  "tagline": "2D Game Engine for Java, based on LibGdx and Unity concepts",
+  "body": "### Welcome to JavityEngine Pages.\r\nJavityEngine is 2D Game Engine that allow you perform game development process. It support components system and parent-child structure game objects. Underneath it based on LibGDX and around libraries\r\n\r\n### Download\r\n\r\nGet last javity-setup.jar for fast project prepare: [javity-setup.jar](https://github.com/Radomiej/JavityEngine/releases/download/0.5.0/javity-setup.jar)\r\nor check [releases](https://github.com/Radomiej/JavityEngine/releases)\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
