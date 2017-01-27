@@ -279,7 +279,7 @@ public class GdxSetup {
 
 		// Assets
 		String assetPath = "core/assets";
-		project.files.add(new ProjectFile("android/assets/mini2Dx.png", assetPath + "/mini2Dx.png", false));
+		project.files.add(new ProjectFile("android/assets/javity.png", assetPath + "/javity.png", false));
 
 		// android project
 		if (builder.modules.contains(ProjectType.ANDROID)) {

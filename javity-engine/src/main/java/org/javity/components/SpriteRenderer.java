@@ -6,6 +6,7 @@ import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpritePivot;
 import org.javity.engine.resources.SpriteResource;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import org.javity.engine.resources.MemorySpriteResource;
@@ -21,6 +22,7 @@ public class SpriteRenderer extends NativeComponent {
 	private transient RenderComponent renderComponent;
 	private transient SpriteComponent spriteComponent;
 	private SpritePivot pivot = SpritePivot.CENTER;
+	private Color color = Color.WHITE;
 	
 	public SpriteRenderer() {
 	}
@@ -50,6 +52,11 @@ public class SpriteRenderer extends NativeComponent {
 		this.sprite = sprite;
 	}
 
+	public SpriteRenderer(String sprite, Color color) {
+		this(sprite);
+		this.color = color;
+	}
+
 	@Override
 	public void awake() {
 		renderComponent = new RenderComponent();
@@ -58,6 +65,7 @@ public class SpriteRenderer extends NativeComponent {
 		addNativeComponent(renderComponent);
 		addNativeComponent(spriteComponent);
 
+		renderComponent.setColor(color);
 		setSprite(sprite);
 	}
 

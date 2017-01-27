@@ -49,25 +49,21 @@ public class JXmlUi extends NativeComponent {
 	private Skin skin;
 
 	public String xmlPath;
-	public String skinPath = "internal/ui/uiskin.json";
+	public String skinPath;
 
-	static {
-		defaultSkinPath = "internal/ui/uiskin.json";
-	}
-	public static String defaultSkinPath = "internal/ui/uiskin.json";
 
 	public static JGameObject loadUi(String xmlPath) {
 		JGameObject gameObject = JSceneManager.current.instantiateGameObject(new Vector2());
-		JXmlUi jCanvas = new JXmlUi(xmlPath, "internal/ui/uiskin.json");
+		JXmlUi jCanvas = new JXmlUi(xmlPath);
 		gameObject.addComponent(jCanvas);
 		return gameObject;
 	}
 
-	public JXmlUi() {
+	private JXmlUi() {
 	}
 
 	public JXmlUi(String xmlPath) {
-		this.xmlPath = xmlPath;
+		this(xmlPath, SkinsManager.INSTANCE.getDefaultSkin());
 	}
 
 	public JXmlUi(String xmlPath, String skinPath) {
@@ -75,9 +71,14 @@ public class JXmlUi extends NativeComponent {
 		this.skinPath = skinPath;
 	}
 
+	public JXmlUi(String xmlPath, Skin uiSkin) {
+		this.xmlPath = xmlPath;
+		skin = uiSkin;
+	}
+
 	@Override
 	public void awake() {
-		skin = new Skin(Gdx.files.internal(skinPath));
+		if(skin == null) skin = new Skin(Gdx.files.internal(skinPath));
 		XmlReader reader = new XmlReader();
 		Element element = null;
 		try {
@@ -94,7 +95,7 @@ public class JXmlUi extends NativeComponent {
 		addChildrens(element, table);
 		actorsMap.put(table.getName(), table);
 
-		Gdx.app.log("JXmlUi", "Parsing complete");
+//		Gdx.app.log("JXmlUi", "Parsing complete");
 
 		actorComponent = new ActorComponent();
 		actorComponent.setActor(rootActor);

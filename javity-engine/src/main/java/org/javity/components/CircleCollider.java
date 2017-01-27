@@ -7,29 +7,28 @@ import org.javity.engine.NativeComponent;
 
 import com.artemis.Entity;
 
+import galaxy.rapid.components.CircleColliderComponent;
 import galaxy.rapid.components.RectangleColliderComponent;
 import galaxy.rapid.event.AddColliderComponent;
 import galaxy.rapid.event.RemoveColliderComponent;
 
-public class RectangleCollider extends NativeComponent {
-	public float width = 100, height = 100;
+public class CircleCollider extends NativeComponent {
+	public float radius = 100;
 	public float offsetX = 0, offsetY = 0;
-	private transient RectangleColliderComponent rectangleColliderComponent;
+	private transient CircleColliderComponent circleColliderComponent;
 	
-	public RectangleCollider() {
-		this(100, 100);
+	public CircleCollider() {
+		this(50);
 	}
 
-	public RectangleCollider(float width, float height) {
-		this.width = width;
-		this.height = height;
+	public CircleCollider(float radius) {
+		this.radius = radius;
 	}
 
 	@Override
 	public void awake() {
-		rectangleColliderComponent = new RectangleColliderComponent();
-		rectangleColliderComponent.setWidth(width);
-		rectangleColliderComponent.setHeight(height);
+		circleColliderComponent = new CircleColliderComponent();
+		circleColliderComponent.setRadius(radius);
 		// addNativeComponent(rectangleColliderComponent);
 	}
 
@@ -42,12 +41,12 @@ public class RectangleCollider extends NativeComponent {
 //		System.out.println("GO: " + getGameObject());
 //		System.out.println("ENT: " + getGameObject().getEntity());
 		Entity entity = getGameObject().getEntity();
-		getRapidBus().post(new AddColliderComponent(rectangleColliderComponent, entity));
+		getRapidBus().post(new AddColliderComponent(circleColliderComponent, entity));
 	}
 
 	@Override
 	public void onDisable() {
-		getRapidBus().post(new RemoveColliderComponent(rectangleColliderComponent));
+		getRapidBus().post(new RemoveColliderComponent(circleColliderComponent));
 	}
 
 	@Override
