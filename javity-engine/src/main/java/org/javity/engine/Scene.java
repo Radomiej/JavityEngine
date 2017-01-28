@@ -2,6 +2,8 @@ package org.javity.engine;
 
 import java.util.List;
 
+import org.javity.engine.utilities.SceneSettings;
+
 import com.badlogic.gdx.math.Vector2;
 
 import galaxy.rapid.eventbus.RapidBus;
@@ -15,4 +17,5 @@ public interface Scene {
 	public List<JGameObject> getGameObjectsByTag(String tag);
 	public JGameObject getGameObjectByTag(String tag);
 	public void destroyGameObject(JGameObject gameObject);
+	public SceneSettings getSettings();
 }

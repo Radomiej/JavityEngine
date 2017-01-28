@@ -2,6 +2,7 @@ package org.javity.engine;
 
 import java.util.Collection;
 
+import org.javity.components.Rigidbody;
 import org.javity.components.Transform;
 
 import com.artemis.Entity;
@@ -38,6 +39,14 @@ public abstract class JGameObject {
 
 	public void setObjectId(String prefabId) {
 		this.objectId = prefabId;
+	}
+
+	public boolean hasPhysic(){
+		return hasComponent(Rigidbody.class);
+	}
+	
+	public <T extends Component> boolean hasComponent(Class<T> component) {
+		return getComponent(component) != null;
 	}
 
 	abstract void start();

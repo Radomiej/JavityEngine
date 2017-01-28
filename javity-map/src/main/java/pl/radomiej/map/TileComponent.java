@@ -57,6 +57,7 @@ public class TileComponent extends JComponent {
 			String tileName = "tile-" + zoom + "-" + x + "-" + y;
 			SpriteResource spriteResource = JResources.addMemorySprite(tileName, texture);
 			getGameObject().getComponent(SpriteRenderer.class).setSprite(spriteResource);
+			getTransform().setLocalScale(1f, 1f);
 		}
 	}
 

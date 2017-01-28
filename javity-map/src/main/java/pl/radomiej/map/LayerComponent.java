@@ -81,10 +81,10 @@ public class LayerComponent extends JComponent {
 				} else {
 					final JGameObject tile = JSceneManager.current.instantiateGameObject(position);
 					TileComponent tileComponent = new TileComponent(x, y, zoom);
-					tile.addComponent(new SpriteRenderer("resources/atlas/images.atlas#babel"));
+					tile.addComponent(new SpriteRenderer("javity.png"));
 					tile.addComponent(tileComponent);
 					tile.getTransform().setParent(getGameObject());
-
+					tile.getTransform().setLocalScale(0.5f, 0.5f);
 					tiles.put(tileId, tileComponent);
 				}
 

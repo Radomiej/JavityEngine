@@ -15,7 +15,7 @@ import galaxy.rapid.components.PositionComponent;
 public class Transform extends NativeComponent {
 	private Vector2 position = new Vector2();
 	private Vector2 scale = new Vector2(1, 1);
-	private float rotation;
+//	private float rotation;
 	private int orderZ = 0;
 	private transient PositionComponent positionComponent;
 	private JGameObject parent;
@@ -30,7 +30,7 @@ public class Transform extends NativeComponent {
 	public Transform() {
 		positionComponent = new PositionComponent();
 		positionComponent.setPosition(position.cpy());
-		positionComponent.setRotation(rotation);
+		positionComponent.setRotation(localRotation);
 		positionComponent.setScale(scale.cpy());
 		addNativeComponent(positionComponent);
 	}
@@ -61,17 +61,19 @@ public class Transform extends NativeComponent {
 		positionComponent.getScale().set(absoluteScale);
 
 		// Rotation
-		absoluteRotation = positionComponent.getRotation();
-		if (absoluteRotation != rotation + localRotation) {
-			rotation = absoluteRotation - localRotation;
-		}
-
-		if (parent != null) {
-			localRotation = parent.getTransform().rotation;
-			positionComponent.setRotation(rotation + localRotation);
-		} else {
-			localRotation = 0;
-		}
+		positionComponent.setRotation(getRotation());
+		
+//		absoluteRotation = positionComponent.getRotation();
+//		if (absoluteRotation != rotation + localRotation) {
+//			rotation = absoluteRotation - localRotation;
+//		}
+//
+//		if (parent != null) {
+//			localRotation = parent.getTransform().rotation;
+//			positionComponent.setRotation(rotation + localRotation);
+//		} else {
+//			localRotation = 0;
+//		}
 
 		// if(rotation + localRotation != positionComponent.getRotation()){
 		// absolute = positionComponent.getRotation() - localRotation;
@@ -79,10 +81,7 @@ public class Transform extends NativeComponent {
 
 		if (position.equals(positionComponent.getPosition())) {
 			if (parent != null) {
-				// System.out.println("Pozycja rodzica: " +
-				// parent.getTransform().position);
-				localRotation = parent.getTransform().rotation;
-				
+
 				Vector2 parentScale = parent.getTransform().getScale();
 				Vector2 newPosition = localPosition.cpy();
 				newPosition.x *= parentScale.x;
@@ -155,11 +154,15 @@ public class Transform extends NativeComponent {
 	}
 
 	public float getRotation() {
+		float rotation = localRotation;
+		if(parent != null){
+			rotation += parent.getTransform().getRotation();
+		}
 		return rotation;
 	}
 
 	public void setRotation(float rotation) {
-		this.rotation = rotation;
+		this.localRotation = rotation;
 		// if (positionComponent != null)
 		// positionComponent.setRotation(rotation);
 	}

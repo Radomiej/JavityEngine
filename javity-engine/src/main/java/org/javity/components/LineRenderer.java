@@ -43,7 +43,7 @@ public class LineRenderer extends NativeComponent {
 
 	@Override
 	public void update() {
-		
+//		System.out.println("2 rotation: " + getTransform().getRotation() + " uuid: " + getGameObject().getObjectId());
 		renderComponent.setOrderZ(getTransform().getOrderZ());
 		
 		if(shapeComponent.getWidth() != width){
@@ -54,12 +54,14 @@ public class LineRenderer extends NativeComponent {
 		}
 		
 		Vector2 positionObject = getTransform().getPosition();
+//		System.out.println("position " + positionObject + " rotation: " + getTransform().getRotation());
 		for (int x = 0; x < polygons.size(); x++) {
 			Vector2 relativePoint = polygons.get(x);
 			tempVector.set(relativePoint);
 			relativePoint = tempVector.rotate(getTransform().getRotation());
 			Vector2 drawPoint = shapeComponent.getPolygonPoints().get(x);
 			drawPoint.set(relativePoint.x + positionObject.x, relativePoint.y + positionObject.y);
+			System.out.println("pos: " + drawPoint);
 		}
 	}
 

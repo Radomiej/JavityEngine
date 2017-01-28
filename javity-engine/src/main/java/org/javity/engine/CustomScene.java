@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.javity.components.Transform;
 import org.javity.components.reflection.GameObjectProxator;
 import org.javity.engine.serializer.JsonSceneSerializer;
+import org.javity.engine.utilities.SceneSettings;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
@@ -29,7 +30,8 @@ public class CustomScene implements InternalScene {
 	private transient GameObjectProxator proxator = new GameObjectProxator();
 	private transient List<JGameObject> objectToRemove = new ArrayList<JGameObject>();
 	private transient List<JGameObject> objectToAdd = new ArrayList<JGameObject>();
-
+	private SceneSettings settings = new SceneSettings();
+	
 	@Override
 	public void initialize() {
 		run = true;
@@ -244,6 +246,11 @@ public class CustomScene implements InternalScene {
 				return gameObject;
 		}
 		return null;
+	}
+
+	@Override
+	public SceneSettings getSettings() {
+		return settings;
 	}
 
 }

@@ -18,13 +18,13 @@ import pl.radomiej.map.MapCache;
 import pl.radomiej.map.MapComponent;
 import pl.radomiej.map.Marker;
 
-public class SceneMapBulider implements SceneBulider {
+public class MapScene implements SceneBulider {
 
 	@Override
 	public void buildScene(Scene scene) {
 		long size = (long) Math.pow(2, 28);
 		JGameObject map = scene.instantiateGameObject(new Vector2(100, 100));
-		map.addComponent(new SpriteRenderer("badlogic.jpg"));
+		map.addComponent(new SpriteRenderer("javity.png"));
 		map.addComponent(new MapComponent());
 		map.addComponent(new MapCache());
 		map.addComponent(new RectangleCollider(size, size));
@@ -38,7 +38,7 @@ public class SceneMapBulider implements SceneBulider {
 		path.add(new GeoPoint(52.7570431, 15.2624595));
 		MapComponent mapComponent = map.getComponent(MapComponent.class);
 		mapComponent.addPath("line-viaToll", path, Color.GREEN, 20);
-		mapComponent.addMarker("viaToll", new Marker( 52.7576313, 15.2621716, "badlogic.jpg", new Vector2(0.1f, 0.1f)));
+		mapComponent.addMarker("viaToll", new Marker( 52.7576313, 15.2621716, "javity.png", new Vector2(0.1f, 0.1f)));
 	}
 
 }
