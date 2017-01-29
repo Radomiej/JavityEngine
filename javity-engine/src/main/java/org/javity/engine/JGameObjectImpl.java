@@ -46,7 +46,7 @@ public class JGameObjectImpl extends JGameObject {
 		createTransform();
 	}
 
-	public void addComponent(Component component) {
+	public void addComponent(JComponent component) {
 		component.setGameObject(this);
 		componentsMap.put(component.getClass().getName(), component);
 

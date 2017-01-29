@@ -60,8 +60,6 @@ public class Transform extends NativeComponent {
 		}
 		positionComponent.getScale().set(absoluteScale);
 
-		// Rotation
-		positionComponent.setRotation(getRotation());
 		
 //		absoluteRotation = positionComponent.getRotation();
 //		if (absoluteRotation != rotation + localRotation) {
@@ -79,14 +77,15 @@ public class Transform extends NativeComponent {
 		// absolute = positionComponent.getRotation() - localRotation;
 		// }
 
-		if (position.equals(positionComponent.getPosition())) {
+		if (!getGameObject().hasPhysic()) {
+			positionComponent.setRotation(localRotation);
 			if (parent != null) {
 
 				Vector2 parentScale = parent.getTransform().getScale();
 				Vector2 newPosition = localPosition.cpy();
 				newPosition.x *= parentScale.x;
 				newPosition.y *= parentScale.y;
-				newPosition = newPosition.rotate(localRotation);
+				newPosition = newPosition.rotate(parent.getTransform().getRotation());
 				newPosition.add(parent.getTransform().position);
 
 				this.position.set(newPosition);
@@ -94,10 +93,14 @@ public class Transform extends NativeComponent {
 			}
 		} else {// Physic is usage this object
 			position.set(positionComponent.getPosition());
+			localRotation = positionComponent.getRotation();
+			if(parent != null){
+				localRotation -= parent.getTransform().getRotation();
+			}
+			
 			if (parent != null)
 				updateLocalPosition(parent);
 		}
-
 	}
 
 	public Vector2 getPosition() {
@@ -163,6 +166,9 @@ public class Transform extends NativeComponent {
 
 	public void setRotation(float rotation) {
 		this.localRotation = rotation;
+		if(parent != null){
+			this.localRotation -= parent.getTransform().getRotation();
+		}
 		// if (positionComponent != null)
 		// positionComponent.setRotation(rotation);
 	}

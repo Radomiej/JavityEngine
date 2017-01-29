@@ -65,7 +65,7 @@ public class GameObjectProxy extends JGameObject{
 	}
 
 	@Override
-	public void addComponent(Component component) {
+	public void addComponent(JComponent component) {
 		orginalObject.addComponent(component);
 	}
 

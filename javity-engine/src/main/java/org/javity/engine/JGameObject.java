@@ -69,7 +69,7 @@ public abstract class JGameObject {
 	
 	public abstract Transform getTransform();
 	
-	public abstract void addComponent(Component component);
+	public abstract void addComponent(JComponent component);
 	
 	abstract void setEntity(Entity entity);
 
