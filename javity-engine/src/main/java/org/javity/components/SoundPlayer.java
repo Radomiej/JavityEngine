@@ -1,5 +1,8 @@
 package org.javity.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.javity.engine.Component;
 import org.javity.engine.JComponent;
 import org.javity.engine.resources.MusicResource;
@@ -18,7 +21,7 @@ public class SoundPlayer extends JComponent {
 	private SoundResource sound;
 	private MusicResource music;
 	private boolean loop;
-	private LongArray soundIds = new LongArray(2);
+	private List<Long> soundIds = new ArrayList<Long>(2);
 
 	public SoundPlayer(String path) {
 		this(path, false);
@@ -77,8 +80,22 @@ public class SoundPlayer extends JComponent {
 		}
 
 		Sound soundAsset = RapidAsset.INSTANCE.getSound(sound.getResourcePath());
-		for (long id : soundIds.items) {
+		for (long id : soundIds) {
 			soundAsset.setLooping(id, false);
+		}
+	}
+	
+	@Override
+	public void onDisable() {
+		if (backgroundMusic) {
+			Music musicAsset = RapidAsset.INSTANCE.getMusic(music.getResourcePath());
+			musicAsset.stop();
+			return;
+		}
+
+		Sound soundAsset = RapidAsset.INSTANCE.getSound(sound.getResourcePath());
+		for (long id : soundIds) {
+			soundAsset.stop(id);
 		}
 	}
 }

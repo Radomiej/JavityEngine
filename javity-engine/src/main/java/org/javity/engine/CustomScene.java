@@ -51,7 +51,7 @@ public class CustomScene implements InternalScene {
 	public void proccessGameObjectDestroy(JGameObject gameObject) {
 		gameObjects.remove(gameObject);
 		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
-		gameObject.setEnabled(false);
+		fullObject.setEnabled(false);
 		fullObject.destroy(nativeRapidBus);
 	}
 
@@ -251,6 +251,18 @@ public class CustomScene implements InternalScene {
 	@Override
 	public SceneSettings getSettings() {
 		return settings;
+	}
+
+	public void dispose() {
+		for(JGameObject go : gameObjects){
+			destroyGameObject(go);
+		}
+		run = false;
+	}
+
+	@Override
+	public boolean isRun() {
+		return run;
 	}
 
 }

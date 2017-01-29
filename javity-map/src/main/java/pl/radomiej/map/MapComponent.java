@@ -59,7 +59,7 @@ public class MapComponent extends JComponent {
 	public void awake() {
 		JCamera.getMain().setZoom(32000f);
 
-		System.out.println("start Map");
+//		System.out.println("start Map");
 		for (int x = minZoom; x <= maxZoom; x++) {
 			int zoomLevel = (maxZoom - minZoom) - (x - minZoom);
 			int localScale = (int) Math.pow(2, zoomLevel);
@@ -77,7 +77,7 @@ public class MapComponent extends JComponent {
 			// layer.getComponent(LayerComponent.class).show();
 			// }
 		}
-		System.out.println("layers create");
+//		System.out.println("layers create");
 
 		oldZoom = minZoom;
 		currentZoom = minZoom;

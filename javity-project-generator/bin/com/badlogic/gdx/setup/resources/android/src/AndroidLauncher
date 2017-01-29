@@ -1,0 +1,20 @@
+package %PACKAGE%.android;
+
+import org.javity.engine.ext.JavityApplication;
+
+import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+
+import android.os.Bundle;
+
+import %PACKAGE%.%MAIN_CLASS%;
+
+public class AndroidLauncher extends AndroidApplication {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		initialize(new JavityApplication(new %MAIN_CLASS%()), config);
+    }
+}

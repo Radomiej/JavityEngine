@@ -35,7 +35,6 @@ public enum SkinsManager {
 		String defaultName = "lml";
 		Skin defaultSkin = skinsMap.get(defaultName);
 		if (defaultSkin == null) {
-			System.out.println("start loading skin");
 			defaultSkin = new SmartSkin(Gdx.files.internal("gdx-skins-master/lml/skin/skin.json"));
 			skinsMap.put(defaultName, defaultSkin);
 		}

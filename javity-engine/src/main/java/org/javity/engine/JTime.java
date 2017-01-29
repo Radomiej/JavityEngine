@@ -34,4 +34,8 @@ public enum JTime {
 			}
 		}
 	}
+
+	public void clearTasks() {
+		timerTasks.clear();
+	}
 }

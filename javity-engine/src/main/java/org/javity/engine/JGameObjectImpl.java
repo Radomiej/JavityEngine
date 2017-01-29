@@ -32,7 +32,7 @@ public class JGameObjectImpl extends JGameObject {
 	// private Map<Class<? extends Component>, Component> componentsMap =
 	// Collections.synchronizedMap(new HashMap<Class<? extends Component>,
 	// Component>());//new HashMap<Class<? extends Component>, Component>();
-	private OrderedMap<String, Component> componentsMap = new OrderedMap<String, Component>();
+	private Map<String, Component> componentsMap = new HashMap<String, Component>();
 
 	private transient Transform transform;
 
@@ -110,7 +110,7 @@ public class JGameObjectImpl extends JGameObject {
 			return components;
 		}
 		
-		Values<Component> values = componentsMap.values();
+		Collection<Component> values = componentsMap.values();
 		if(values == null){
 			Gdx.app.error("JGameObject", "values in components are null!");
 			return components;
@@ -147,7 +147,7 @@ public class JGameObjectImpl extends JGameObject {
 			Gdx.app.error("GameObject:destroy", "GameObject is null for Component");
 			return;
 		}
-		componentToRemove.onDisable();
+		if(componentToRemove.isEnabled()) componentToRemove.onDisable();
 		componentToRemove.remove();
 		componentToRemove.getGameObject().removeComponent(componentToRemove);
 	}
@@ -201,6 +201,11 @@ public class JGameObjectImpl extends JGameObject {
 
 	public void destroy(RapidBus nativeBus) {
 		destroy = true;
+		
+		for (Component component : getAllComponents()) {
+			destroy(component);
+		}
+		
 		RemoveEntityEvent removeEvent = new RemoveEntityEvent(entity);
 		nativeBus.post(removeEvent);
 		componentsMap.clear();

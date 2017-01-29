@@ -54,7 +54,7 @@ public class GameObjectProxator {
 					if (orginalObjects.containsKey(gameObject.getObjectId())) {
 
 						JGameObject existGameObject = orginalObjects.get(gameObject.getObjectId());
-						System.out.println("orginal object: " + existGameObject);
+//						System.out.println("orginal object: " + existGameObject);
 						field.setFieldValue(component, existGameObject);
 //						gameObject = field.getFieldValue(component, JGameObjectImpl.class);
 					} else {

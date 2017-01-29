@@ -16,4 +16,5 @@ public interface InternalScene extends Scene{
 	public void proccessGameObjectDestroy(JGameObject gameObject);
 	public void proccessGameObjectAdd(JGameObject gameObject);
 	public void enableGameObject(JGameObject gameObject);
+	public boolean isRun();
 }

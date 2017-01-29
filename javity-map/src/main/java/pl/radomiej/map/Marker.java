@@ -113,7 +113,7 @@ public class Marker extends JComponent {
 
 	@Override
 	public void onMouseClicked() {
-		System.out.println("Click marker!");
+//		System.out.println("Click marker!");
 		for(ClickMarkerListener clickMarkerListener : clicksListeners){
 			clickMarkerListener.click();
 		}

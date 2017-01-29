@@ -61,7 +61,6 @@ public class LineRenderer extends NativeComponent {
 			relativePoint = tempVector.rotate(getTransform().getRotation());
 			Vector2 drawPoint = shapeComponent.getPolygonPoints().get(x);
 			drawPoint.set(relativePoint.x + positionObject.x, relativePoint.y + positionObject.y);
-			System.out.println("pos: " + drawPoint);
 		}
 	}
 

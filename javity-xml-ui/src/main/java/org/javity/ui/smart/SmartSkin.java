@@ -82,10 +82,10 @@ public class SmartSkin extends Skin {
 				if (!fontFile.exists()) fontFile = Gdx.files.internal(path);
 				if (!fontFile.exists()) throw new SerializationException("Font file not found: " + fontFile);
 
-				System.out.println("font: " + path + " ext: " + fontFile.extension());
+//				System.out.println("font: " + path + " ext: " + fontFile.extension());
 				//Support .ttf
 				if(fontFile.extension().equals("otf") || fontFile.extension().equals("ttf")){
-					System.out.println("Generate smart font size: " + fontSize);
+					Gdx.app.debug(SmartSkin.class.getSimpleName(), "Generate smart font: " + path + " size: " + fontSize);
 					SmartFontGenerator sfg = new SmartFontGenerator();
 					BitmapFont font = sfg.createFont(fontFile, fontFile.nameWithoutExtension() + fontSize, fontSize);
 					font.getData().setScale(2f);

@@ -18,8 +18,18 @@ import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+/**
+ * Screen is hook to GalaxyRapidEngine backend. And is over JScene and provide
+ * mix between libgdx(galaxyRapidEngine with artemis-ecs) and JavityAPI
+ * 
+ * @author Radomiej
+ *
+ */
 public class JavityScreen extends RapidArtemisScreen {
 
+	/**
+	 * This is JScene customize by external user.
+	 */
 	private final InternalScene scene;
 
 	public JavityScreen(InternalScene newScene, InternalScene current) {
@@ -50,7 +60,7 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	protected void injectWorld(EntityEngine world) {
-		System.out.println("injectWorld");
+//		System.out.println("injectWorld");
 
 		scene.setNativeRapidBus(rapidBus);
 		scene.setWorld(world);
@@ -59,13 +69,13 @@ public class JavityScreen extends RapidArtemisScreen {
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
-		System.out.println("awakes");
+//		System.out.println("awakes");
 		// Awake all GameObjects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			scene.awakeGameObject(gameObject);
 		}
 
-		System.out.println("startes");
+//		System.out.println("startes");
 		// Start all GameObjects
 		List<JGameObject> gameObjects = scene.getGameObjects();
 		for (int x = 0; x < gameObjects.size(); x++) {
@@ -77,6 +87,12 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void render(float delta) {
+
+		if (!scene.isRun()) {
+			processDeleteScreen();
+			return;
+		}
+
 		// Update general variables
 		JTime.INSTANCE.delta = delta;
 		JTime.INSTANCE.tick();
@@ -106,20 +122,31 @@ public class JavityScreen extends RapidArtemisScreen {
 			}
 		}
 
+		destroyObjectsToScene();
+		addObjectsToScene();
+
+		super.render(delta);
+		JInput.saveOldStatus();
+	}
+
+	private void processDeleteScreen() {
+		destroyObjectsToScene();
+	}
+
+	private void destroyObjectsToScene() {
 		// Destroy Objects to remove
 		for (JGameObject gameObject : scene.getObjectToRemove()) {
 			scene.proccessGameObjectDestroy(gameObject);
 		}
 		scene.getObjectToRemove().clear();
+	}
 
+	private void addObjectsToScene() {
 		// Add Objects to add
 		for (JGameObject gameObject : scene.getObjectToAdd()) {
 			scene.proccessGameObjectAdd(gameObject);
 		}
 		scene.getObjectToAdd().clear();
-
-		super.render(delta);
-		JInput.saveOldStatus();
 	}
 
 	private void updateGUIStage() {
