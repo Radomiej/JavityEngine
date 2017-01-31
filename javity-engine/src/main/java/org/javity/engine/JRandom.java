@@ -9,7 +9,7 @@ public enum JRandom {
 	private Random random = new Random(0);
 
 	/**
-	 * Set seed on random and unique. After invoke this method repeatability is lost in all next* methods.
+	 * Set seed on random and unique. After invoke this method repeatability is lost in all next*** methods.
 	 */
 	public void randomSeed() {
 		random.setSeed(System.currentTimeMillis());
