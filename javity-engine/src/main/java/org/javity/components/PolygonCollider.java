@@ -1,8 +1,5 @@
 package org.javity.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.javity.engine.NativeComponent;
 
 import com.artemis.Entity;
@@ -11,12 +8,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import galaxy.rapid.components.PolygonColliderComponent;
-import galaxy.rapid.components.RectangleColliderComponent;
 import galaxy.rapid.event.AddColliderComponent;
 import galaxy.rapid.event.RemoveColliderComponent;
 
 public class PolygonCollider extends NativeComponent {
 	public float offsetX = 0, offsetY = 0;
+	private float friction = 0.5f, density = 0.3f, restitution = 0.3f;
 	private transient PolygonColliderComponent polygonColliderComponent;
 	private Array<Vector2> vertex;
 
@@ -37,6 +34,9 @@ public class PolygonCollider extends NativeComponent {
 	public void awake() {
 		polygonColliderComponent = new PolygonColliderComponent();
 		polygonColliderComponent.setVertex(vertex);
+		polygonColliderComponent.setDensity(density);
+		polygonColliderComponent.setFriction(friction);
+		polygonColliderComponent.setRestitution(restitution);
 	}
 
 	@Override

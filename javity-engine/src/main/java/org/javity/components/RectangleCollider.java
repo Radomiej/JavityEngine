@@ -1,8 +1,5 @@
 package org.javity.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.javity.engine.NativeComponent;
 
 import com.artemis.Entity;
@@ -14,6 +11,7 @@ import galaxy.rapid.event.RemoveColliderComponent;
 public class RectangleCollider extends NativeComponent {
 	public float width = 100, height = 100;
 	public float offsetX = 0, offsetY = 0;
+	private float friction = 0.5f, density = 0.3f, restitution = 0.3f;
 	private transient RectangleColliderComponent rectangleColliderComponent;
 	
 	public RectangleCollider() {
@@ -30,7 +28,9 @@ public class RectangleCollider extends NativeComponent {
 		rectangleColliderComponent = new RectangleColliderComponent();
 		rectangleColliderComponent.setWidth(width);
 		rectangleColliderComponent.setHeight(height);
-		// addNativeComponent(rectangleColliderComponent);
+		rectangleColliderComponent.setDensity(density);
+		rectangleColliderComponent.setFriction(friction);
+		rectangleColliderComponent.setRestitution(restitution);
 	}
 
 	@Override
