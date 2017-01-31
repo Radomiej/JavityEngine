@@ -60,4 +60,8 @@ public class JCamera {
 		return main.nativeCamera.getZoom();
 	}
 	
+	public RapidCamera getNative(){
+		return nativeCamera;
+	}
+	
 }

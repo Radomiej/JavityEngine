@@ -348,4 +348,12 @@ public class LibGdxCanvas implements SilverCanvas {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
+	public OrthographicCamera getCamera() {
+		return camera;
+	}
+
+	public void setCamera(OrthographicCamera camera) {
+		this.camera = camera;
+	}
+
 }
