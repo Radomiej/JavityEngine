@@ -1,13 +1,28 @@
 package org.javity.engine;
 
+import java.io.IOException;
 import java.util.Random;
+
+import org.javity.engine.utilities.NameGenerator;
 
 import com.badlogic.gdx.Gdx;
 
 public enum JRandom {
 	INSTANCE;
-	private Random random = new Random(0);
+	private Random random = new Random(123);
+	private NameGenerator nameGenerator;
 
+	private JRandom() {
+		try {
+			nameGenerator = new NameGenerator("randomes/romans.txt");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String randomName(int maxSylabs){
+		return nameGenerator.compose(1 + random.nextInt(maxSylabs - 1));
+	}
 	/**
 	 * Set seed on random and unique. After invoke this method repeatability is lost in all next*** methods.
 	 */
@@ -93,7 +108,7 @@ public enum JRandom {
 	 *         pseudorandomly generated and returned. The values true and false
 	 *         are produced with (approximately) equal probability.
 	 */
-	public boolean nextBoolean(int bound) {
+	public boolean nextBoolean() {
 		return random.nextBoolean();
 	}
 
@@ -105,8 +120,20 @@ public enum JRandom {
 	 *         double value with mean 0.0 and standard deviation 1.0 from this
 	 *         random number generator's sequence.
 	 */
-	public double nextGaussian(int bound) {
+	public double nextGaussian() {
 		return random.nextGaussian();
+	}
+
+	/**
+	 * The same as {@link java.util.Random#nextGaussian(int) nextGaussian}
+	 * method in {@link java.util.Random}
+	 * 
+	 * @return RReturns the next pseudorandom, Gaussian ("normally") distributed
+	 *         double value with mean 0.0 and standard deviation 1.0 from this
+	 *         random number generator's sequence.
+	 */
+	public double nextDouble() {
+		return random.nextDouble();
 	}
 
 	/**
@@ -118,7 +145,7 @@ public enum JRandom {
 	 *         contract of nextLong is that one long value is pseudorandomly
 	 *         generated and returned.
 	 */
-	public long nextLong(int bound) {
+	public long nextLong() {
 		return random.nextLong();
 	}
 }
