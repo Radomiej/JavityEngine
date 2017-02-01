@@ -61,6 +61,22 @@ public abstract class JComponent implements Component {
 	}
 
 	@Override
+	public void preRender() {}
+	
+
+	@Override
+	public void postRender() {}
+
+	@Override
+	public void preGuiRender() {}
+
+	@Override
+	public void postGuiRender() {}
+
+	@Override
+	public void lateUpdate() {}
+
+	@Override
 	public void remove() {
 	}
 
@@ -103,9 +119,6 @@ public abstract class JComponent implements Component {
 	
 	@Override
 	public void onResume() {}
-	
-	@Override
-	public void lateUpdate() {}
 	
 	@Override
 	public void onMouseClicked() {}

@@ -1,6 +1,6 @@
 package org.javity.engine;
 
-import galaxy.rapid.screen.ChangeScreenEvent;
+import galaxy.rapid.event.ChangeScreenEvent;
 import galaxy.rapid.screen.RapidScreen;
 
 public class JavityInitialScreen extends RapidScreen{

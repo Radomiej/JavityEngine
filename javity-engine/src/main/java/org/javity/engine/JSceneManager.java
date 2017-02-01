@@ -2,7 +2,7 @@ package org.javity.engine;
 
 import com.badlogic.gdx.Gdx;
 
-import galaxy.rapid.screen.ChangeScreenEvent;
+import galaxy.rapid.event.ChangeScreenEvent;
 
 public class JSceneManager {
 	public static Scene current;

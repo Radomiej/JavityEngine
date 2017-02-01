@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pl.javity.plugins</groupId>
 	<artifactId>map</artifactId>
-	<version>0.6.0</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<name>Map rendering library for Javity Engine</name>
 
 	<properties>
@@ -29,13 +29,13 @@
 		<dependency>
 			<groupId>pl.javity</groupId>
 			<artifactId>javity-engine</artifactId>
-			<version>0.6.0</version>
+			<version>0.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>pl.javity.plugins</groupId>
 			<artifactId>net</artifactId>
-			<version>0.6.0</version>
+			<version>0.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

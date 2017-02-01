@@ -14,6 +14,10 @@ public interface Component {
 	public void start();
 	public void update();
 	public void lateUpdate();
+	public void preRender();
+	public void postRender();
+	public void preGuiRender();
+	public void postGuiRender();
 	public void remove();
 	public void setEnabled(boolean enable);
 	public boolean isEnabled();

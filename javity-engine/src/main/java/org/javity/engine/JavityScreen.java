@@ -1,6 +1,8 @@
 package org.javity.engine;
 
 import galaxy.rapid.common.EntityEngine;
+import galaxy.rapid.event.PostRenderEvent;
+import galaxy.rapid.event.PreRenderEvent;
 import galaxy.rapid.screen.RapidArtemisScreen;
 
 import java.util.ArrayList;
@@ -12,11 +14,14 @@ import java.util.Set;
 import org.javity.engine.physic.RaycastHit;
 import org.javity.engine.rapid.systems.JavityPhysicSystem;
 import org.javity.engine.rapid.systems.Scene2dSystem;
+import org.javity.engine.rapid.systems.scene2d.PostGuiRenderEvent;
+import org.javity.engine.rapid.systems.scene2d.PreGuiRenderEvent;
 
 import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.google.common.eventbus.Subscribe;
 
 /**
  * Screen is hook to GalaxyRapidEngine backend. And is over JScene and provide
@@ -51,6 +56,63 @@ public class JavityScreen extends RapidArtemisScreen {
 	protected void processWorldConfiguration(WorldConfiguration worldConfiguration) {
 		JGUI.INSTANCE.guiSystem = new Scene2dSystem();
 		worldConfiguration.setSystem(JGUI.INSTANCE.guiSystem);
+		rapidBus.register(this);
+	}
+
+	@Subscribe
+	public void preRenderListener(PreRenderEvent event) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isEnabled())
+				continue;
+
+			Iterable<Component> components = gameObject.getAllComponents();
+			for (Component component : components) {
+				if (component.isEnabled())
+					component.preRender();
+			}
+		}
+	}
+
+	@Subscribe
+	public void postRenderListener(PostRenderEvent event) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isEnabled())
+				continue;
+
+			Iterable<Component> components = gameObject.getAllComponents();
+			for (Component component : components) {
+				if (component.isEnabled())
+					component.postRender();
+			}
+		}
+	}
+
+	@Subscribe
+	public void preGuiRenderListener(PreGuiRenderEvent event) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isEnabled())
+				continue;
+
+			Iterable<Component> components = gameObject.getAllComponents();
+			for (Component component : components) {
+				if (component.isEnabled())
+					component.preGuiRender();
+			}
+		}
+	}
+
+	@Subscribe
+	public void postGuiRenderListener(PostGuiRenderEvent event) {
+		for (JGameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isEnabled())
+				continue;
+
+			Iterable<Component> components = gameObject.getAllComponents();
+			for (Component component : components) {
+				if (component.isEnabled())
+					component.postGuiRender();
+			}
+		}
 	}
 
 	@Override
@@ -60,7 +122,7 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	protected void injectWorld(EntityEngine world) {
-//		System.out.println("injectWorld");
+		// System.out.println("injectWorld");
 
 		scene.setNativeRapidBus(rapidBus);
 		scene.setWorld(world);
@@ -69,13 +131,13 @@ public class JavityScreen extends RapidArtemisScreen {
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
-//		System.out.println("awakes");
+		// System.out.println("awakes");
 		// Awake all GameObjects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			scene.awakeGameObject(gameObject);
 		}
 
-//		System.out.println("startes");
+		// System.out.println("startes");
 		// Start all GameObjects
 		List<JGameObject> gameObjects = scene.getGameObjects();
 		for (int x = 0; x < gameObjects.size(); x++) {
@@ -109,7 +171,8 @@ public class JavityScreen extends RapidArtemisScreen {
 
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
-				component.update();
+				if (component.isEnabled())
+					component.update();
 			}
 		}
 		for (JGameObject gameObject : scene.getGameObjects()) {
@@ -118,7 +181,8 @@ public class JavityScreen extends RapidArtemisScreen {
 
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
-				component.lateUpdate();
+				if (component.isEnabled())
+					component.lateUpdate();
 			}
 		}
 
@@ -135,18 +199,22 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	private void destroyObjectsToScene() {
 		// Destroy Objects to remove
-		for (JGameObject gameObject : scene.getObjectToRemove()) {
+		List<JGameObject> gameObjects = scene.getObjectToRemove();
+		for (int x = 0; x < gameObjects.size(); x++) {
+			JGameObject gameObject = gameObjects.get(x);
 			scene.proccessGameObjectDestroy(gameObject);
 		}
-		scene.getObjectToRemove().clear();
+		scene.clearObjectsToDestroy();
 	}
 
 	private void addObjectsToScene() {
 		// Add Objects to add
-		for (JGameObject gameObject : scene.getObjectToAdd()) {
+		List<JGameObject> gameObjects = scene.getObjectToAdd();
+		for (int x = 0; x < gameObjects.size(); x++) {
+			JGameObject gameObject = gameObjects.get(x);
 			scene.proccessGameObjectAdd(gameObject);
 		}
-		scene.getObjectToAdd().clear();
+		scene.clearObjectsToAdd();
 	}
 
 	private void updateGUIStage() {
@@ -176,17 +244,22 @@ public class JavityScreen extends RapidArtemisScreen {
 			for (Component component : hitGameObject.getAllComponents()) {
 				if (JInput.isJustPressed()) {
 					deltaMouse.setZero();
-					component.onMousePressed();
+					if (component.isEnabled())
+						component.onMousePressed();
 					pressedObjects.add(hitGameObject);
 				} else if (JInput.isJustRelased()) {
-					component.onMouseRelased();
+					if (component.isEnabled())
+						component.onMouseRelased();
 					if (pressedObjects.contains(hitGameObject) && !isDragMouseGest(deltaMouse)) {
-						component.onMouseClicked();
+						if (component.isEnabled())
+							component.onMouseClicked();
 					}
 				} else if (JInput.isTouch()) {
-					component.onMouseDragged(JInput.getMouseDragged());
+					if (component.isEnabled())
+						component.onMouseDragged(JInput.getMouseDragged());
 				} else if (!JInput.isTouch()) {
-					component.onMouseOver();
+					if (component.isEnabled())
+						component.onMouseOver();
 				}
 			}
 		}
@@ -209,7 +282,8 @@ public class JavityScreen extends RapidArtemisScreen {
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
-				component.onPause();
+				if (component.isEnabled())
+					component.onPause();
 			}
 		}
 	}
@@ -219,7 +293,8 @@ public class JavityScreen extends RapidArtemisScreen {
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			Iterable<Component> components = gameObject.getAllComponents();
 			for (Component component : components) {
-				component.onResume();
+				if (component.isEnabled())
+					component.onResume();
 			}
 		}
 	}

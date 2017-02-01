@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pl.javity.plugins</groupId>
 	<artifactId>android</artifactId>
-	<version>0.6.0</version>
+	<version>0.6.0-SNAPSHOT</version>
 
 	<properties>
 		<targetJdk>1.7</targetJdk>
@@ -26,9 +26,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.javity</groupId>
+			<groupId>pl.javity</groupId>
 			<artifactId>javity-engine</artifactId>
-			<version>0.5.0</version>
+			<version>0.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

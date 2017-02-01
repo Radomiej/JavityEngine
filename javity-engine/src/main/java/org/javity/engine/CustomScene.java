@@ -230,6 +230,16 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
+	public void clearObjectsToDestroy() {
+		objectToRemove.clear();
+	}
+
+	@Override
+	public void clearObjectsToAdd() {
+		objectToAdd.clear();		
+	}
+
+	@Override
 	public List<JGameObject> getGameObjectsByTag(String tag) {
 		List<JGameObject> results = new ArrayList<JGameObject>();
 		for (JGameObject gameObject : gameObjects) {

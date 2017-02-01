@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pl.javity.plugins</groupId>
 	<artifactId>xml-scene2d-ui</artifactId>
-	<version>0.6.0</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<name>Xml UI loader for Javity</name>
 
 	<properties>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>pl.javity</groupId>
 			<artifactId>javity-engine</artifactId>
-			<version>0.6.0</version>
+			<version>0.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

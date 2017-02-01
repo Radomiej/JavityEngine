@@ -1,9 +1,13 @@
 package org.javity.engine.rapid.systems;
 
+import org.javity.engine.rapid.systems.scene2d.PostGuiRenderEvent;
+import org.javity.engine.rapid.systems.scene2d.PreGuiRenderEvent;
+
 import com.artemis.Aspect;
 import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -17,14 +21,21 @@ import galaxy.rapid.RapidEngine;
 import galaxy.rapid.components.ActorComponent;
 import galaxy.rapid.components.Box2dComponent;
 import galaxy.rapid.components.PositionComponent;
+import galaxy.rapid.eventbus.RapidBus;
 
 public class Scene2dSystem extends EntityProcessingSystem {
 
+	private final PreGuiRenderEvent preGuiRenderEvent = new PreGuiRenderEvent();
+	private final PostGuiRenderEvent postGuiRenderEvent = new PostGuiRenderEvent();
+	
 	private Stage stage;
 	private ComponentMapper<ActorComponent> actorMapper;
 	private ComponentMapper<PositionComponent> positionMapper;
 	private boolean handleInput;
-	
+
+	@Wire
+	private RapidBus rapidBus;
+
 	public Scene2dSystem() {
 		super(Aspect.all(ActorComponent.class));
 	}
@@ -50,7 +61,8 @@ public class Scene2dSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void begin() {
-//		stage.act(getWorld().getDelta());
+		rapidBus.post(preGuiRenderEvent);
+		// stage.act(getWorld().getDelta());
 	}
 
 	@Override
@@ -66,25 +78,42 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	@Override
 	protected void end() {
 		stage.draw();
+		rapidBus.post(postGuiRenderEvent);
+		
+		/**
+		 * Reset handleInput in this pleace becouse GUI system is the last
+		 * logical system that should handle to this params and 
+		 */
 		handleInput = false;
 	}
 
 	/**
 	 * Native LibGDX API
+	 * 
 	 * @return Scene2d Stage Object
 	 */
 	public Stage getStage() {
 		return stage;
 	}
 
+	/**
+	 * 
+	 * @return true if any actor handle input from current frame.
+	 */
 	public boolean isHandleInput() {
 		return handleInput;
 	}
 
+	/**
+	 * Set handle input for this frame
+	 * 
+	 * @param b
+	 *            input occured on actor this stage
+	 */
 	public void setHandleInput(boolean b) {
 		handleInput = b;
 	}
-	
+
 	@Override
 	protected void dispose() {
 		InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();

@@ -1,20 +1,23 @@
 package org.javity.engine;
 
 import java.util.Collection;
+import java.util.List;
 
 import galaxy.rapid.common.EntityEngine;
 import galaxy.rapid.eventbus.RapidBus;
 
 public interface InternalScene extends Scene{
-	public void setNativeRapidBus(RapidBus nativeRapidBus);
-	public void registerInRapidBusAllNativeComponents(JGameObject gameObject);
-	public void awakeGameObject(JGameObject gameObject);
-	public void startGameObject(JGameObject gameObject);
-	public void setWorld(EntityEngine world);
-	public Collection<JGameObject> getObjectToRemove();
-	public Collection<JGameObject> getObjectToAdd();
-	public void proccessGameObjectDestroy(JGameObject gameObject);
-	public void proccessGameObjectAdd(JGameObject gameObject);
-	public void enableGameObject(JGameObject gameObject);
-	public boolean isRun();
+	void setNativeRapidBus(RapidBus nativeRapidBus);
+	void registerInRapidBusAllNativeComponents(JGameObject gameObject);
+	void awakeGameObject(JGameObject gameObject);
+	void startGameObject(JGameObject gameObject);
+	void setWorld(EntityEngine world);
+	List<JGameObject> getObjectToRemove();
+	List<JGameObject> getObjectToAdd();
+	void proccessGameObjectDestroy(JGameObject gameObject);
+	void proccessGameObjectAdd(JGameObject gameObject);
+	void enableGameObject(JGameObject gameObject);
+	boolean isRun();
+	void clearObjectsToDestroy();
+	void clearObjectsToAdd();
 }
