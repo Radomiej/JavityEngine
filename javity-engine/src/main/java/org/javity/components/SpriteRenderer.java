@@ -54,7 +54,7 @@ public class SpriteRenderer extends NativeComponent {
 
 	public SpriteRenderer(String sprite, Color color) {
 		this(sprite);
-		this.color = color;
+		this.setColor(color);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class SpriteRenderer extends NativeComponent {
 		addNativeComponent(renderComponent);
 		addNativeComponent(spriteComponent);
 
-		renderComponent.setColor(color);
+		renderComponent.setColor(getColor());
 		setSprite(sprite);
 	}
 
@@ -144,7 +144,7 @@ public class SpriteRenderer extends NativeComponent {
 
 	public void setPivot(SpritePivot pivot) {
 		this.pivot = pivot;
-		prepareSpriteComponent(spriteComponent);
+		if(spriteComponent != null) prepareSpriteComponent(spriteComponent);
 	}
 
 	public float getSpriteWidth() {
@@ -155,5 +155,14 @@ public class SpriteRenderer extends NativeComponent {
 	public float getSpriteHeight() {
 		Sprite spriteImg = RapidAsset.INSTANCE.getSprite(sprite.getResourcePath());
 		return spriteImg.getHeight();
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+		if(renderComponent != null) renderComponent.setColor(getColor());
 	}
 }

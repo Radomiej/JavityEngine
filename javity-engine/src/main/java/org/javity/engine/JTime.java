@@ -17,14 +17,14 @@ public enum JTime {
 		return delta;
 	}
 	
-	public void addTimer(Task task, float timeToDestroy) {
+	public void addTimer(Task task, float timeToInvoke) {
 		TimerTask timerTask = new TimerTask();
 		timerTask.setTask(task);
-		timerTask.setTimeToInvoke(timeToDestroy);
+		timerTask.setTimeToInvoke(timeToInvoke);
 		timerTasks.add(timerTask);
 	}
 	
-	public void tick(){
+	void tick(){
 		for(int x = timerTasks.size() - 1; x >= 0; x--){
 			TimerTask timerTask = timerTasks.get(x);
 			timerTask.setTimeToInvoke(timerTask.getTimeToInvoke() - delta);

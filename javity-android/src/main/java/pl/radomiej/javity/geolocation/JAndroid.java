@@ -1,7 +1,7 @@
 package pl.radomiej.javity.geolocation;
 
 import org.javity.engine.JInput;
-import org.javity.engine.utilities.JNavigation;
+import org.javity.engine.mobile.JNavigation;
 
 import android.app.Activity;
 import pl.radomiej.javity.intent.AndroidIntent;

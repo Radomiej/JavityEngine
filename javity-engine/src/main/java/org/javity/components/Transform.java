@@ -148,6 +148,10 @@ public class Transform extends NativeComponent {
 		}
 	}
 
+	public void setScale(float scale) {
+		setScale(scale, scale);
+	}
+
 	public void setScale(float scaleX, float scaleY) {
 		this.scale.set(scaleX, scaleY);
 	}

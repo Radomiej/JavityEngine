@@ -15,7 +15,8 @@ public abstract class JComponent implements Component {
 	
 	
 	@Override
-	public void setGameObject(JGameObject gameObject) {
+	public
+	void setGameObject(JGameObject gameObject) {
 		this.gameObject = gameObject;
 		this.transform = gameObject.getComponent(Transform.class);
 	}

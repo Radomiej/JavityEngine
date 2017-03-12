@@ -14,7 +14,7 @@ public class BitmapFontResource implements Resource {
 	public BitmapFontResource(String resourcePath){
 		this.resourcePath = resourcePath;
 		RapidAsset.INSTANCE.loadBitmapFont(resourcePath);
-	}
+	}	
 
 	@Override
 	public String getResourcePath() {

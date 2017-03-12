@@ -1,7 +1,7 @@
 package pl.radomiej.javity.intent;
 
 
-import org.javity.engine.utilities.Intent;
+import org.javity.engine.mobile.Intent;
 
 import android.app.Activity;
 import android.content.Context;

@@ -88,7 +88,7 @@ public class SmartSkin extends Skin {
 					Gdx.app.debug(SmartSkin.class.getSimpleName(), "Generate smart font: " + path + " size: " + fontSize);
 					SmartFontGenerator sfg = new SmartFontGenerator();
 					BitmapFont font = sfg.createFont(fontFile, fontFile.nameWithoutExtension() + fontSize, fontSize);
-					font.getData().setScale(2f);
+//					font.getData().setScale(2f);
 					return font;
 				}
 				

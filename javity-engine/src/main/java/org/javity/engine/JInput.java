@@ -1,6 +1,6 @@
 package org.javity.engine;
 
-import org.javity.engine.utilities.JGeolocation;
+import org.javity.engine.mobile.JGeolocation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;

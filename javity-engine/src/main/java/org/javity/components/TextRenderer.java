@@ -5,6 +5,12 @@ import org.javity.engine.Resource;
 import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpriteResource;
 import org.javity.engine.resources.TextureResource;
+import org.jrenner.smartfont.SmartFontGenerator;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 import org.javity.engine.resources.BitmapFontResource;
 import org.javity.engine.resources.MemorySpriteResource;
 import org.javity.engine.resources.SingleSpriteResource;
@@ -20,12 +26,29 @@ public class TextRenderer extends NativeComponent {
 	private transient RenderComponent renderComponent;
 	private transient TextComponent textComponent;
 	private String text;
-	
+
 	public TextRenderer() {
 	}
 
 	public TextRenderer(String fontResourcePath, String text) {
-		fontResource = new BitmapFontResource(fontResourcePath);
+		this(fontResourcePath, text, 0);
+	}
+
+	public TextRenderer(String fontResourcePath, String text, int fontSize) {
+		if (fontResourcePath.endsWith(".otf") || fontResourcePath.endsWith(".ttf")) {
+			if (!RapidAsset.INSTANCE.isBitmapFontLoaded(fontResourcePath)) {
+				System.out.println("generate font:");
+				FileHandle fontFile = Gdx.files.internal(fontResourcePath);
+				SmartFontGenerator sfg = new SmartFontGenerator();
+
+				String fontAssetName = fontFile.nameWithoutExtension() + fontSize;
+				BitmapFont font = sfg.createFont(fontFile, fontAssetName, fontSize);
+				RapidAsset.INSTANCE.putBitmapFont(fontAssetName, font);
+				fontResource = new BitmapFontResource(fontAssetName);
+			}
+		} else {
+			fontResource = new BitmapFontResource(fontResourcePath);
+		}
 		this.text = text;
 	}
 
@@ -46,7 +69,7 @@ public class TextRenderer extends NativeComponent {
 	public void setBitmapFont(BitmapFontResource fontResource2) {
 		this.fontResource = fontResource2;
 		if (textComponent != null)
-			textComponent.setBitmapAsset(fontResource.getResourcePath());		
+			textComponent.setBitmapAsset(fontResource.getResourcePath());
 	}
 
 	@Override
@@ -58,7 +81,7 @@ public class TextRenderer extends NativeComponent {
 	public void update() {
 		renderComponent.setOrderZ(getTransform().getOrderZ());
 	}
-	
+
 	@Override
 	public void remove() {
 	}
@@ -77,14 +100,15 @@ public class TextRenderer extends NativeComponent {
 
 	public void setText(String text) {
 		this.text = text;
-		if(textComponent != null) textComponent.setText(text);
+		if (textComponent != null)
+			textComponent.setText(text);
 	}
 
 	@Override
 	public void onEnabled() {
 		renderComponent.setRender(true);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		renderComponent.setRender(false);

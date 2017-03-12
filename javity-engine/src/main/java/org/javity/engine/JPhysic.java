@@ -46,6 +46,7 @@ public class JPhysic {
 	public static List<RaycastHit> raycastPoint(final Vector2 pointToTest) {
 		final List<RaycastHit> hits = new ArrayList<RaycastHit>();
 		Vector2 end = pointToTest.add(new Vector2(1, 1));
+		//TODO move to static single object
 		physic.physicWorld.QueryAABB(new QueryCallback() {
 			@Override
 			public boolean reportFixture(Fixture fixture) {
@@ -63,6 +64,7 @@ public class JPhysic {
 	public static List<RaycastHit> raycast(Vector2 start, Vector2 direction) {
 		final List<RaycastHit> hits = new ArrayList<RaycastHit>();
 		Vector2 end = start.add(direction);
+		//TODO move to static single object
 		physic.physicWorld.rayCast(new RayCastCallback() {
 
 			@Override

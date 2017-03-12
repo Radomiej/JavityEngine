@@ -3,10 +3,10 @@ package pl.radomiej.javity.geolocation;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.javity.engine.utilities.GeolocationData;
-import org.javity.engine.utilities.GeolocationListener;
-import org.javity.engine.utilities.GeolocationStatus;
-import org.javity.engine.utilities.JGeolocation;
+import org.javity.engine.mobile.GeolocationData;
+import org.javity.engine.mobile.GeolocationListener;
+import org.javity.engine.mobile.GeolocationStatus;
+import org.javity.engine.mobile.JGeolocation;
 
 import com.badlogic.gdx.Gdx;
 
