@@ -127,7 +127,7 @@ public class JavityScreen extends RapidArtemisScreen {
 		scene.setNativeRapidBus(rapidBus);
 		scene.setWorld(world);
 		scene.initialize();
-		JEngine.rapidEventBus = masterEventBus;
+		JEngine.INSTANCE.rapidEventBus = masterEventBus;
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
@@ -164,6 +164,17 @@ public class JavityScreen extends RapidArtemisScreen {
 		// Update Mouse Input
 		updateMouseXXX();
 
+		// Pre update game objects
+		for (JGameObject gameObject : scene.getGameObjects()) {
+			if (!gameObject.isEnabled())
+				continue;
+
+			Iterable<Component> components = gameObject.getAllComponents();
+			for (Component component : components) {
+				if (component.isEnabled())
+					component.preUpdate();
+			}
+		}
 		// Update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isEnabled())

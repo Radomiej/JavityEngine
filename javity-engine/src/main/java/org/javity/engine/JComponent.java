@@ -58,6 +58,10 @@ public abstract class JComponent implements Component {
 	}
 
 	@Override
+	public void preUpdate() {
+	}
+	
+	@Override
 	public void update() {
 	}
 

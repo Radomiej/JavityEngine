@@ -12,6 +12,7 @@ public interface Component {
 	public JGameObject getGameObject();
 	public void awake();
 	public void start();
+	public void preUpdate();
 	public void update();
 	public void lateUpdate();
 	public void preRender();

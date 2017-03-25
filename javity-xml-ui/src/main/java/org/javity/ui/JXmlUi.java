@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
@@ -177,8 +178,9 @@ public class JXmlUi extends NativeComponent {
 		}
 	}
 
+
 	private void addHorizontalGroup(Table table, Element element) {
-		HorizontalGroup horizontalGroup = new HorizontalGroup();
+		Table horizontalGroup = new Table();
 		ScrollPane scrollPane = new ScrollPane(horizontalGroup, skin);
 
 		Cell<ScrollPane> cell = table.add(scrollPane);
@@ -193,7 +195,7 @@ public class JXmlUi extends NativeComponent {
 			}
 		}
 		cellPrepare(cell, atrributes);
-//		addChildrens(element, horizontalGroup);
+		addChildrens(element, horizontalGroup);
 
 		actorsMap.put(horizontalGroup.getName(), horizontalGroup);
 		

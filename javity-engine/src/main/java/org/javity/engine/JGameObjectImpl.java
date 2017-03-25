@@ -47,6 +47,11 @@ public class JGameObjectImpl extends JGameObject {
 	}
 
 	public void addComponent(JComponent component) {
+		if(hasComponent(component.getClass())) {
+			Gdx.app.error("JGameObject", "Component current exist in this object: " + this + " component: " + component);
+			return;
+		}
+		
 		component.setGameObject(this);
 		componentsMap.put(component.getClass().getName(), component);
 
