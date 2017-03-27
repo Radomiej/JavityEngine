@@ -155,6 +155,8 @@ public class CustomScene implements InternalScene {
 			gameObject.awake();
 			for (Component component : gameObject.getAllComponents()) {
 				component.setGameObject(gameObject);
+			}
+			for (Component component : gameObject.getAllComponents()) {
 				component.awake();
 			}
 		}

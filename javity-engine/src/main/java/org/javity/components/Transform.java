@@ -15,7 +15,7 @@ import galaxy.rapid.components.PositionComponent;
 public class Transform extends NativeComponent {
 	private Vector2 position = new Vector2();
 	private Vector2 scale = new Vector2(1, 1);
-//	private float rotation;
+	// private float rotation;
 	private int orderZ = 0;
 	private transient PositionComponent positionComponent;
 	private JGameObject parent;
@@ -47,31 +47,30 @@ public class Transform extends NativeComponent {
 
 	@Override
 	public void update() {
-		
+
 		// Scale
 		if (parent != null) {
 			Vector2 parentScale = parent.getTransform().getScale();
 			absoluteScale.x = parentScale.x * localScale.x;
 			absoluteScale.y = parentScale.y * localScale.y;
 			scale.set(absoluteScale);
-			
+
 		} else {
 			absoluteScale.set(scale);
 		}
 		positionComponent.getScale().set(absoluteScale);
 
-		
-//		absoluteRotation = positionComponent.getRotation();
-//		if (absoluteRotation != rotation + localRotation) {
-//			rotation = absoluteRotation - localRotation;
-//		}
-//
-//		if (parent != null) {
-//			localRotation = parent.getTransform().rotation;
-//			positionComponent.setRotation(rotation + localRotation);
-//		} else {
-//			localRotation = 0;
-//		}
+		// absoluteRotation = positionComponent.getRotation();
+		// if (absoluteRotation != rotation + localRotation) {
+		// rotation = absoluteRotation - localRotation;
+		// }
+		//
+		// if (parent != null) {
+		// localRotation = parent.getTransform().rotation;
+		// positionComponent.setRotation(rotation + localRotation);
+		// } else {
+		// localRotation = 0;
+		// }
 
 		// if(rotation + localRotation != positionComponent.getRotation()){
 		// absolute = positionComponent.getRotation() - localRotation;
@@ -94,10 +93,10 @@ public class Transform extends NativeComponent {
 		} else {// Physic is usage this object
 			position.set(positionComponent.getPosition());
 			localRotation = positionComponent.getRotation();
-			if(parent != null){
+			if (parent != null) {
 				localRotation -= parent.getTransform().getRotation();
 			}
-			
+
 			if (parent != null)
 				updateLocalPosition(parent);
 		}
@@ -107,11 +106,11 @@ public class Transform extends NativeComponent {
 		return position.cpy();
 	}
 
-	public void setPosition(float x, float y){
+	public void setPosition(float x, float y) {
 		Vector2 newPosition = new Vector2(x, y);
 		setPosition(newPosition);
 	}
-	
+
 	public void setPosition(Vector2 position) {
 		this.position.set(position);
 		if (positionComponent != null)
@@ -138,9 +137,9 @@ public class Transform extends NativeComponent {
 	}
 
 	public Vector2 getScale() {
-		if(parent == null){
+		if (parent == null) {
 			return scale.cpy();
-		}else{
+		} else {
 			Vector2 parentScale = parent.getTransform().getScale();
 			absoluteScale.x = parentScale.x * localScale.x;
 			absoluteScale.y = parentScale.y * localScale.y;
@@ -155,14 +154,14 @@ public class Transform extends NativeComponent {
 	public void setScale(float scaleX, float scaleY) {
 		this.scale.set(scaleX, scaleY);
 	}
-	
+
 	public void setScale(Vector2 newScale) {
 		this.scale.set(newScale);
 	}
 
 	public float getRotation() {
 		float rotation = localRotation;
-		if(parent != null){
+		if (parent != null) {
 			rotation += parent.getTransform().getRotation();
 		}
 		return rotation;
@@ -170,7 +169,7 @@ public class Transform extends NativeComponent {
 
 	public void setRotation(float rotation) {
 		this.localRotation = rotation;
-		if(parent != null){
+		if (parent != null) {
 			this.localRotation -= parent.getTransform().getRotation();
 		}
 		// if (positionComponent != null)
@@ -203,18 +202,30 @@ public class Transform extends NativeComponent {
 
 	public void setLocalScale(float scaleX, float scaleY) {
 		localScale.set(scaleX, scaleY);
-		if(parent == null){
+		if (parent == null) {
 			setScale(scaleX, scaleY);
 		}
 	}
 
+	public void setLocalScale(float scaleXY) {
+		setLocalScale(scaleXY, scaleXY);
+	}
+
+	public void setLocalZ(int z) {
+		orderZ = z;
+	}
+	
 	public void setZ(int z) {
 		orderZ = z;
+		if (parent != null) {
+			orderZ = z - parent.getTransform().getOrderZ();
+		}
 	}
 
 	public int getOrderZ() {
 		int realZ = orderZ;
-		if(parent != null) realZ += parent.getTransform().getOrderZ();
+		if (parent != null)
+			realZ += parent.getTransform().getOrderZ();
 		return realZ;
 	}
 }

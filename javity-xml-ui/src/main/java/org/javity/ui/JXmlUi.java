@@ -103,6 +103,14 @@ public class JXmlUi extends NativeComponent {
 		addNativeComponent(actorComponent);
 	}
 
+	public void hide() {
+		rootActor.setVisible(false);
+	}
+	
+	public void show() {
+		rootActor.setVisible(true);
+	}
+
 	private void parseTable(Element element, Table table) {
 		ObjectMap<String, String> atrributes = element.getAttributes();
 		for (String key : atrributes.keys()) {

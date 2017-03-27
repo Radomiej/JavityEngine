@@ -55,6 +55,7 @@ public class JGameObjectImpl extends JGameObject {
 		component.setGameObject(this);
 		componentsMap.put(component.getClass().getName(), component);
 
+		//TODO move invoke these status to next frame? 
 		if (started) {
 			component.awake();
 			component.start();
