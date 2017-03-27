@@ -5,7 +5,16 @@ Site: http://radomiej.github.io/JavityEngine
 
 Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
-##Changelog:
+## Fast installation
+
+Download setup-app: 
+Run it.
+Select needed dependencies.
+Generate project.
+Import into your IDE.
+
+
+## Changelog:
 0.5.0:
 * Basic functionality done.
 * Add XML-UI plugin.
