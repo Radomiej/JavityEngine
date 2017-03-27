@@ -8,9 +8,12 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 ## Fast installation
 
 Download setup-app: 
+
 Run it.
 Select needed dependencies.
+
 Generate project.
+
 Import into your IDE.
 
 
