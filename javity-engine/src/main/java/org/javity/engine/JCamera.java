@@ -12,7 +12,7 @@ public class JCamera {
 	private static JCamera main;
 
 	/**
-	 * Main camera of current scene
+	 * @return Main camera of current scene
 	 */
 	public static JCamera getMain() {
 		return main;

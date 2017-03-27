@@ -30,12 +30,21 @@ public class SmartFontGenerator {
 		pageSize = 512; // size of atlas pages for font pngs
 	}
 
-
-	/** Will load font from file. If that fails, font will be generated and saved to file.
-	 * @param fontFile the actual font (.otf, .ttf)
-	 * @param fontName the name of the font, i.e. "arial-small", "arial-large", "monospace-10"
-	 *                 This will be used for creating the font file names
-	 * @param fontSize size of font when screen width equals referenceScreenWidth */
+	/**
+	 * Will load font from file. If that fails, font will be generated and saved
+	 * to file.
+	 * 
+	 * @param fontFile
+	 *            the actual font (.otf, .ttf)
+	 * @param fontName
+	 *            the name of the font, i.e. "arial-small", "arial-large",
+	 *            "monospace-10" This will be used for creating the font file
+	 *            names
+	 * @param fontSize
+	 *            size of font when screen width equals referenceScreenWidth
+	 * 
+	 * @return created bitmap fonts object
+	 */
 	public BitmapFont createFont(FileHandle fontFile, String fontName, int fontSize) {
 		BitmapFont font = null;
 		// if fonts are already generated, just load from file
@@ -59,7 +68,8 @@ public class SmartFontGenerator {
 		if (!loaded || forceGeneration) {
 			forceGeneration = false;
 			float width = Gdx.graphics.getWidth();
-			float ratio = width / referenceScreenWidth; // use 1920x1280 as baseline, arbitrary
+			float ratio = width / referenceScreenWidth; // use 1920x1280 as
+														// baseline, arbitrary
 			float baseSize = 28f; // for 28 sized fonts at baseline width above
 
 			// store screen width for detecting screen size change
@@ -73,29 +83,34 @@ public class SmartFontGenerator {
 		return font;
 	}
 
-	/** Convenience method for generating a font, and then writing the fnt and png files.
-	 * Writing a generated font to files allows the possibility of only generating the fonts when they are missing, otherwise
-	 * loading from a previously generated file.
+	/**
+	 * Convenience method for generating a font, and then writing the fnt and
+	 * png files. Writing a generated font to files allows the possibility of
+	 * only generating the fonts when they are missing, otherwise loading from a
+	 * previously generated file.
+	 * 
 	 * @param fontFile
 	 * @param fontSize
 	 */
-	private BitmapFont generateFontWriteFiles(String fontName, FileHandle fontFile, int fontSize, int pageWidth, int pageHeight) {
+	private BitmapFont generateFontWriteFiles(String fontName, FileHandle fontFile, int fontSize, int pageWidth,
+			int pageHeight) {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
 
 		PixmapPacker packer = new PixmapPacker(pageWidth, pageHeight, Pixmap.Format.RGBA8888, 2, false);
-		
+
 		FreeTypeFontParameter freeTypeFontParameter = new FreeTypeFontParameter();
 		freeTypeFontParameter.size = fontSize;
 		freeTypeFontParameter.packer = packer;
-		
+
 		FreeTypeFontGenerator.FreeTypeBitmapFontData fontData = generator.generateData(freeTypeFontParameter);
 		Array<PixmapPacker.Page> pages = packer.getPages();
 		Array<TextureRegion> texRegions = new Array<TextureRegion>();
-		for (int i=0; i<pages.size; i++) {
+		for (int i = 0; i < pages.size; i++) {
 			PixmapPacker.Page p = pages.get(i);
-			Texture tex = new Texture(new PixmapTextureData(p.getPixmap(), p.getPixmap().getFormat(), false, false, true)) {
+			Texture tex = new Texture(
+					new PixmapTextureData(p.getPixmap(), p.getPixmap().getFormat(), false, false, true)) {
 				@Override
-				public void dispose () {
+				public void dispose() {
 					super.dispose();
 					getTextureData().consumePixmap().dispose();
 				}
@@ -103,8 +118,7 @@ public class SmartFontGenerator {
 			tex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 			texRegions.add(new TextureRegion(tex));
 		}
-		
-		
+
 		BitmapFont font = new BitmapFont(fontData, texRegions, false);
 		saveFontToFile(font, fontSize, fontName, packer);
 		generator.dispose();
@@ -118,12 +132,14 @@ public class SmartFontGenerator {
 		BitmapFontWriter.setOutputFormat(BitmapFontWriter.OutputFormat.Text);
 
 		String[] pageRefs = BitmapFontWriter.writePixmaps(packer.getPages(), pixmapDir, fontName);
-		Gdx.app.debug(TAG, String.format("Saving font [%s]: fontfile: %s, pixmapDir: %s\n", fontName, fontFile, pixmapDir));
+		Gdx.app.debug(TAG,
+				String.format("Saving font [%s]: fontfile: %s, pixmapDir: %s\n", fontName, fontFile, pixmapDir));
 		// here we must add the png dir to the page refs
 		for (int i = 0; i < pageRefs.length; i++) {
 			pageRefs[i] = fontName + "/" + pageRefs[i];
 		}
-		BitmapFontWriter.writeFont(font.getData(), pageRefs, fontFile, new BitmapFontWriter.FontInfo(fontName, fontSize), 1, 1);
+		BitmapFontWriter.writeFont(font.getData(), pageRefs, fontFile,
+				new BitmapFontWriter.FontInfo(fontName, fontSize), 1, 1);
 	}
 
 	private FileHandle getFontFile(String filename) {
@@ -131,45 +147,67 @@ public class SmartFontGenerator {
 	}
 
 	// GETTERS, SETTERS -----------------------
-	
+
 	public void setForceGeneration(boolean force) {
 		forceGeneration = force;
 	}
-	
+
 	public boolean getForceGeneration() {
 		return forceGeneration;
 	}
 
-	/** Set directory for storing generated fonts */
+	/**
+	 * Set directory for storing generated fonts
+	 * 
+	 * @param dir
+	 *            path to the directory for storing genrated fonts
+	 */
 	public void setGeneratedFontDir(String dir) {
 		generatedFontDir = dir;
 	}
 
-	/** @see org.jrenner.smartfont.SmartFontGenerator#setGeneratedFontDir(String) */
+	/**
+	 * @see org.jrenner.smartfont.SmartFontGenerator#setGeneratedFontDir(String)
+	 * @return generated font directory
+	 */
 	public String getGeneratedFontDir() {
 		return generatedFontDir;
 	}
 
-	/** Set the reference screen width for computing sizes.  If reference width is 1280, and screen width is 1280
-	 * Then the fontSize paramater will be unaltered when creating a font.  If the screen width is 720, the font size
-	 * will by scaled down to (720 / 1280) of original size. */
+	/**
+	 * @param width
+	 *            Set the reference screen width for computing sizes. If
+	 *            reference width is 1280, and screen width is 1280 Then the
+	 *            fontSize paramater will be unaltered when creating a font. If
+	 *            the screen width is 720, the font size will by scaled down to
+	 *            (720 / 1280) of original size.
+	 * 
+	 */
 	public void setReferenceScreenWidth(int width) {
 		referenceScreenWidth = width;
 	}
 
-	/** @see org.jrenner.smartfont.SmartFontGenerator#setReferenceScreenWidth(int) */
 	public int getReferenceScreenWidth() {
 		return referenceScreenWidth;
 	}
 
-	/** Set the width and height of the png files to which the fonts will be saved.
-	 * In the future it would be nice for page size to be automatically set to the optimal size
-	 * by the font generator.  In the mean time it must be set manually. */
+	/**
+	 * Set the width and height of the png files to which the fonts will be
+	 * saved. In the future it would be nice for page size to be automatically
+	 * set to the optimal size by the font generator. In the mean time it must
+	 * be set manually.
+	 * 
+	 * @param size
+	 *            page size
+	 */
 	public void setPageSize(int size) {
 		pageSize = size;
 	}
 
-	/** @see org.jrenner.smartfont.SmartFontGenerator#setPageSize(int) */
+	/**
+	 * @see org.jrenner.smartfont.SmartFontGenerator#setPageSize(int)
+	 * @return page size
+	 */
 	public int getPageSize() {
 		return pageSize;
 	}

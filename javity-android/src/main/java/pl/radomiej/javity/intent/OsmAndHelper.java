@@ -108,7 +108,7 @@ public class OsmAndHelper {
 	 */
 	public void recordAudio(double lat, double lon) {
 		// test record audio
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_LAT, String.valueOf(lat));
 		params.put(PARAM_LON, String.valueOf(lon));
 		sendRequest(new OsmAndIntentBuilder(RECORD_AUDIO).setParams(params));
@@ -126,7 +126,7 @@ public class OsmAndHelper {
 	 */
 	public void recordVideo(double lat, double lon) {
 		// test record video
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_LAT, String.valueOf(lat));
 		params.put(PARAM_LON, String.valueOf(lon));
 		sendRequest(new OsmAndIntentBuilder(RECORD_VIDEO).setParams(params));
@@ -144,7 +144,7 @@ public class OsmAndHelper {
 	 */
 	public void takePhoto(double lat, double lon) {
 		// test record photo
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_LAT, String.valueOf(lat));
 		params.put(PARAM_LON, String.valueOf(lon));
 		sendRequest(new OsmAndIntentBuilder(RECORD_PHOTO).setParams(params));
@@ -171,7 +171,7 @@ public class OsmAndHelper {
 	 */
 	public void addMapMarker(double lat, double lon, String name) {
 		// test marker
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_LAT, String.valueOf(lat));
 		params.put(PARAM_LON, String.valueOf(lon));
 		params.put(PARAM_NAME, name);
@@ -205,7 +205,7 @@ public class OsmAndHelper {
 	public void addFavorite(double lat, double lon, String name, String description, String category, String color,
 			boolean visible) {
 		// test favorite
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_LAT, String.valueOf(lat));
 		params.put(PARAM_LON, String.valueOf(lon));
 		params.put(PARAM_NAME, name);
@@ -225,7 +225,7 @@ public class OsmAndHelper {
 	 */
 	public void startGpxRec(boolean closeAfterCommand) {
 		// test start gpx recording
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_CLOSE_AFTER_COMMAND, String.valueOf(closeAfterCommand));
 		sendRequest(new OsmAndIntentBuilder(START_GPX_REC).setParams(params));
 	}
@@ -239,7 +239,7 @@ public class OsmAndHelper {
 	 */
 	public void stopGpxRec(boolean closeAfterCommand) {
 		// test stop gpx recording
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_CLOSE_AFTER_COMMAND, String.valueOf(closeAfterCommand));
 		sendRequest(new OsmAndIntentBuilder(STOP_GPX_REC).setParams(params));
 	}
@@ -253,7 +253,7 @@ public class OsmAndHelper {
 	 */
 	public void showGpxFile(File file) {
 		// test show gpx (path)
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		try {
 			params.put(PARAM_PATH, URLEncoder.encode(file.getAbsolutePath(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -272,7 +272,7 @@ public class OsmAndHelper {
 	 */
 	public void showRawGpx(String data) {
 		// test show gpx (data)
-		Map<String, String> extraData = new HashMap<>();
+		Map<String, String> extraData = new HashMap<String, String>();
 		extraData.put(PARAM_DATA, data);
 		sendRequest(new OsmAndIntentBuilder(SHOW_GPX).setExtraData(extraData));
 	}
@@ -288,7 +288,7 @@ public class OsmAndHelper {
 	 */
 	public void showGpxUri(Uri gpxUri) {
 		// test show gpx (uri)
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_URI, "true");
 		sendRequest(new OsmAndIntentBuilder(SHOW_GPX).setParams(params).setGpxUri(gpxUri)
 				.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
@@ -305,7 +305,7 @@ public class OsmAndHelper {
 	 */
 	public void navigateGpxFile(boolean force, File file) {
 		// test navigate gpx (file)
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_FORCE, String.valueOf(force));
 		try {
 			params.put(PARAM_PATH, URLEncoder.encode(file.getAbsolutePath(), "UTF-8"));
@@ -327,9 +327,9 @@ public class OsmAndHelper {
 	 */
 	public void navigateRawGpx(boolean force, String data) {
 		// test navigate gpx (data)
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_FORCE, String.valueOf(force));
-		Map<String, String> extraData = new HashMap<>();
+		Map<String, String> extraData = new HashMap<String, String>();
 		extraData.put(PARAM_DATA, data);
 		sendRequest(new OsmAndIntentBuilder(NAVIGATE_GPX).setParams(params).setExtraData(extraData));
 	}
@@ -347,7 +347,7 @@ public class OsmAndHelper {
 	 */
 	public void navigateGpxUri(boolean force, Uri gpxUri) {
 		// test navigate gpx (uri)
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_URI, "true");
 		params.put(PARAM_FORCE, String.valueOf(force));
 		sendRequest(new OsmAndIntentBuilder(NAVIGATE_GPX).setParams(params).setGpxUri(gpxUri)
@@ -379,7 +379,7 @@ public class OsmAndHelper {
 	public void navigate(String startName, double startLat, double startLon, String destName, double destLat,
 			double destLon, String profile, boolean force) {
 		// test navigate
-		Map<String, String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put(PARAM_START_LAT, String.valueOf(startLat));
 		params.put(PARAM_START_LON, String.valueOf(startLon));
 		params.put(PARAM_START_NAME, startName);

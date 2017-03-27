@@ -19,21 +19,25 @@ public enum JRandom {
 			e.printStackTrace();
 		}
 	}
-	
-	public String randomName(int maxSylabs){
+
+	public String randomName(int maxSylabs) {
 		return nameGenerator.compose(1 + random.nextInt(maxSylabs - 1));
 	}
+
 	/**
-	 * Set seed on random and unique. After invoke this method repeatability is lost in all next*** methods.
+	 * Set seed on random and unique. After invoke this method repeatability is
+	 * lost in all next*** methods.
 	 */
 	public void randomSeed() {
 		random.setSeed(System.currentTimeMillis());
 	}
-	
+
 	/**
 	 * The same as {@link java.util.Random#setSeed(long) setSeed} method in
 	 * {@link java.util.Random}
 	 * 
+	 * @param seed
+	 *            the initial seed
 	 */
 	public void setSeed(long seed) {
 		random.setSeed(seed);
@@ -88,6 +92,10 @@ public enum JRandom {
 	 * The same as {@link java.util.Random#nextInt(int) nextInt} method in
 	 * {@link java.util.Random}
 	 * 
+	 * @param bound
+	 *            the upper bound (exclusive). Must be positive.
+	 * 
+	 * 
 	 * @return Returns the next pseudorandom, uniformly distributed int value
 	 *         from this random number generator's sequence. The general
 	 *         contract of nextInt is that one int value is pseudorandomly
@@ -99,7 +107,7 @@ public enum JRandom {
 	}
 
 	/**
-	 * The same as {@link java.util.Random#nextBoolean(int) nextBoolean} method
+	 * The same as {@link java.util.Random#nextBoolean() nextBoolean} method
 	 * in {@link java.util.Random}
 	 * 
 	 * @return Returns the next pseudorandom, uniformly distributed boolean
@@ -113,7 +121,7 @@ public enum JRandom {
 	}
 
 	/**
-	 * The same as {@link java.util.Random#nextGaussian(int) nextGaussian}
+	 * The same as {@link java.util.Random#nextGaussian() nextGaussian}
 	 * method in {@link java.util.Random}
 	 * 
 	 * @return RReturns the next pseudorandom, Gaussian ("normally") distributed
@@ -125,7 +133,7 @@ public enum JRandom {
 	}
 
 	/**
-	 * The same as {@link java.util.Random#nextGaussian(int) nextGaussian}
+	 * The same as {@link java.util.Random#nextDouble() nextGaussian}
 	 * method in {@link java.util.Random}
 	 * 
 	 * @return RReturns the next pseudorandom, Gaussian ("normally") distributed
@@ -137,7 +145,7 @@ public enum JRandom {
 	}
 
 	/**
-	 * The same as {@link java.util.Random#nextLong(int) nextLong} method in
+	 * The same as {@link java.util.Random#nextLong() nextLong} method in
 	 * {@link java.util.Random}
 	 * 
 	 * @return Returns the next pseudorandom, uniformly distributed long value

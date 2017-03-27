@@ -80,8 +80,7 @@ public class CustomScene implements InternalScene {
 			transform.setParent(null);
 		transform.setPosition(position);
 
-		// TODO przenieœc to do managera inicjializacji obiektów w nastepnej
-		// frame
+		// TODO move to next frame?
 		if (run) {
 			awakeGameObject(newObject);
 		}

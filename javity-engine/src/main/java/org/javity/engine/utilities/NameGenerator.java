@@ -60,7 +60,7 @@ public class NameGenerator {
 	ArrayList<String> mid = new ArrayList<String>();
 	ArrayList<String> sur = new ArrayList<String>();
 
-	final private static char[] vocals = { 'a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'õ', 'ü', 'y' };
+	final private static char[] vocals = {'a', 'e', 'i', 'o', 'u', 'Ã¤', 'Ã¶', 'Ãµ', 'Ã¼', 'y'};
 	final private static char[] consonants = { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r',
 			's', 't', 'v', 'w', 'x', 'y' };
 
@@ -75,7 +75,7 @@ public class NameGenerator {
 	 * 
 	 * @param fileName
 	 *            insert file name, where syllables are located
-	 * @throws IOException
+	 * @throws IOException throws when cannot find or parse file
 	 */
 	public NameGenerator(String fileName) throws IOException {
 		this.fileName = fileName;
@@ -87,7 +87,7 @@ public class NameGenerator {
 	 * 
 	 * @param fileName
 	 *            insert the file name, where syllables are located.
-	 * @throws IOException
+	 * @throws IOException throws when cannot find or parse file
 	 */
 	public void changeFile(String fileName) throws IOException {
 		if (fileName == null)
@@ -102,7 +102,7 @@ public class NameGenerator {
 	 * called every time file name is changed or new NameGenerator object
 	 * created.
 	 * 
-	 * @throws IOException
+	 * @throws IOException throws when cannot find or parse file
 	 */
 	public void refresh() throws IOException {
 

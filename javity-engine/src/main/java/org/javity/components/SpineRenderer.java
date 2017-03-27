@@ -65,10 +65,10 @@ public class SpineRenderer extends NativeComponent {
 	/**
 	 * Play this animation clip after end current animation.
 	 * 
-	 * @param index
+	 * @param index animation index
 	 * @param animationName
 	 *            the name of next animation
-	 * @param loop
+	 * @param loop true if animation should be looped
 	 * @param delay
 	 *            delay between starting next animation
 	 */

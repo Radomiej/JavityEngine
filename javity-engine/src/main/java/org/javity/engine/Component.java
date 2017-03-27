@@ -32,8 +32,8 @@ public interface Component {
 	public void onCollisionPreSolve(Contact contact, Manifold oldManifold);
 	/**
 	 * In Box2d is PostSolve
-	 * @param contact
-	 * @param impulse 
+	 * @param contact the Contact object from box2d
+	 * @param impulse the ContactImpulse object from box2d
 	 */
 	public void onCollisionStay(Contact contact, ContactImpulse impulse);
 	public void onCollisionTriggerEnter(Contact contact);

@@ -28,7 +28,7 @@ public class AndroidGeolocation implements JGeolocation, LocationListener {
 	private Context context;
 	private LocationManager locationManager;
 	private GeolocationData lastGeolocationData;
-	private Set<GeolocationListener> listeners = new HashSet<>();
+	private Set<GeolocationListener> listeners = new HashSet<GeolocationListener>();
 	
 	public AndroidGeolocation(Context context) {
 		this.context = context;
