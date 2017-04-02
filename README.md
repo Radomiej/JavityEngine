@@ -7,14 +7,17 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
 ## Fast installation
 
-Download setup-app: 
+* Download setup-app: 
 
-Run it.
-Select needed dependencies.
+* Run it.
 
-Generate project.
+* Select needed dependencies.
 
-Import into your IDE.
+* Click Advenced and select your IDE(Eclipse, AndroidStudio/IntelliJ)
+
+* Generate project.
+
+* Import into your IDE.
 
 
 ## Changelog:
