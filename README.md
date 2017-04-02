@@ -24,8 +24,7 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 ```xml
 
 <repositories>
-	<repository>
-		<id>ossrh</id>
+	<repository>		
 		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 	</repository>
 </repositories>
