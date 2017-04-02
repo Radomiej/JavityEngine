@@ -34,7 +34,6 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 	<groupId>pl.javity</groupId>
 	<artifactId>javity-engine</artifactId>
 	<version>0.6.0-SNAPSHOT</version>
-	<scope>provided</scope>
 </dependency>
 
 ```
