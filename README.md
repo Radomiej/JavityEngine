@@ -7,7 +7,7 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
 ## Fast installation
 
-* Download setup-app: 
+* Download setup-app: https://github.com/Radomiej/JavityEngine/releases/download/0.6.0-SNAPSHOT/javity-setup.jar
 
 * Run it.
 
@@ -19,6 +19,27 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
 * Import into your IDE.
 
+## Maven dependencies - SNAPSHOT
+
+```xml
+
+<repositories>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+</repositories>
+
+<dependency>
+			<groupId>pl.javity</groupId>
+			<artifactId>javity-engine</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+			<scope>provided</scope>
+</dependency>
+
+```
+
+## Maven dependencies(Not yet avaiable)
 
 ## Changelog:
 0.5.0:
