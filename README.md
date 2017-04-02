@@ -24,17 +24,17 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 ```xml
 
 <repositories>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
+	<repository>
+		<id>ossrh</id>
+		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	</repository>
 </repositories>
 
 <dependency>
-			<groupId>pl.javity</groupId>
-			<artifactId>javity-engine</artifactId>
-			<version>0.6.0-SNAPSHOT</version>
-			<scope>provided</scope>
+	<groupId>pl.javity</groupId>
+	<artifactId>javity-engine</artifactId>
+	<version>0.6.0-SNAPSHOT</version>
+	<scope>provided</scope>
 </dependency>
 
 ```
