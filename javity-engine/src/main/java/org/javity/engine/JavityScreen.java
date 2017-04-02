@@ -43,7 +43,7 @@ public class JavityScreen extends RapidArtemisScreen {
 			transformDontDestroyedObjects(current, newScene);
 	}
 
-	private void transformDontDestroyedObjects(Scene current, Scene newScene2) {
+	private void transformDontDestroyedObjects(JScene current, JScene newScene2) {
 		for (JGameObject gameObject : current.getGameObjects()) {
 			if (gameObject.isDontDestroy()) {
 				gameObject.getTransform().setParent(null);

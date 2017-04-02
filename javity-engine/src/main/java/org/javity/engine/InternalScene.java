@@ -6,7 +6,7 @@ import java.util.List;
 import galaxy.rapid.common.EntityEngine;
 import galaxy.rapid.eventbus.RapidBus;
 
-public interface InternalScene extends Scene{
+public interface InternalScene extends JScene{
 	void setNativeRapidBus(RapidBus nativeRapidBus);
 	void registerInRapidBusAllNativeComponents(JGameObject gameObject);
 	void awakeGameObject(JGameObject gameObject);

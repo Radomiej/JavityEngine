@@ -1,5 +1,5 @@
 package org.javity.engine;
 
 public interface SceneBulider {
-	public void buildScene(Scene scene);
+	public void buildScene(JScene scene);
 }

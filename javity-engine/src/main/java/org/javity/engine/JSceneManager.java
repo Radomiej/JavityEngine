@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import galaxy.rapid.event.ChangeScreenEvent;
 
 public class JSceneManager {
-	public static Scene current;
+	public static JScene current;
 
 	public static void loadScene(SceneBulider sceneBulider) {
 		JTime.INSTANCE.clearTasks();

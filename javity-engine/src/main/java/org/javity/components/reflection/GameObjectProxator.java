@@ -9,7 +9,7 @@ import org.javity.engine.CustomScene;
 import org.javity.engine.GameObjectProxy;
 import org.javity.engine.JGameObject;
 import org.javity.engine.JGameObjectImpl;
-import org.javity.engine.Scene;
+import org.javity.engine.JScene;
 
 import com.badlogic.gdx.Gdx;
 
