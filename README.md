@@ -7,7 +7,7 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
 ## Fast installation
 
-* Download setup-app: https://github.com/Radomiej/JavityEngine/releases/download/0.6.0-SNAPSHOT/javity-setup.jar
+* Download setup-app: [Javity Installer][javity-setup-url]
 
 * Run it.
 
@@ -48,3 +48,5 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 * Add HTTP network plugin.
 * Add Maps plugin.
 * Add native android plugin.
+
+[javity-setup-url]: https://github.com/Radomiej/JavityEngine/releases/download/0.6.0-SNAPSHOT/javity-setup.jar
