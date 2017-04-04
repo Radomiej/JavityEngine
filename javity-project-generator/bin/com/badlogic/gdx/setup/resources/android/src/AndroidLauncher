@@ -2,6 +2,8 @@ package %PACKAGE%;
 
 import android.os.Bundle;
 
+import org.javity.engine.ext.JavityApplication;
+
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import %PACKAGE%.%MAIN_CLASS%;
