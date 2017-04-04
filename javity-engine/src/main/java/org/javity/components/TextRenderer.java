@@ -10,6 +10,9 @@ import org.jrenner.smartfont.SmartFontGenerator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
 
 import org.javity.engine.resources.BitmapFontResource;
 import org.javity.engine.resources.MemorySpriteResource;
@@ -26,7 +29,8 @@ public class TextRenderer extends NativeComponent {
 	private transient RenderComponent renderComponent;
 	private transient TextComponent textComponent;
 	private String text;
-
+	private GlyphLayout layout;
+	
 	public TextRenderer() {
 	}
 
@@ -49,6 +53,9 @@ public class TextRenderer extends NativeComponent {
 		} else {
 			fontResource = new BitmapFontResource(fontResourcePath);
 		}
+		
+		BitmapFont font = RapidAsset.INSTANCE.getBitmapFont(fontResource.getResourcePath());
+		layout = new GlyphLayout(font, text);
 		this.text = text;
 	}
 
@@ -112,5 +119,13 @@ public class TextRenderer extends NativeComponent {
 	@Override
 	public void onDisable() {
 		renderComponent.setRender(false);
+	}
+
+	public Rectangle getBounds() {
+		Rectangle bound = new Rectangle();
+		bound.setSize(layout.width, layout.height);
+		bound.setCenter(getTransform().getPosition());
+		System.out.println("font bound: " + bound);
+		return bound;
 	}
 }

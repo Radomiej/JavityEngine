@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import galaxy.rapid.common.RotatedRectangle;
+
 public class TouchableObject extends JComponent {
 	private final Rectangle intersectorRectangle = new Rectangle();
 	private final Vector2 draggedDelta = new Vector2();
@@ -47,6 +49,11 @@ public class TouchableObject extends JComponent {
 			SpriteRenderer spriteRenderer = getGameObject().getComponent(SpriteRenderer.class);
 			width = spriteRenderer.getSpriteWidth();
 			height = spriteRenderer.getSpriteHeight();
+		}else if(getGameObject().hasComponent(SpriteRenderer.class)){
+			TextRenderer textRenderer = getGameObject().getComponent(TextRenderer.class);
+			Rectangle textBound = textRenderer.getBounds();
+			width = textBound.width;
+			height = textBound.height;
 		}
 	}
 
@@ -100,6 +107,8 @@ public class TouchableObject extends JComponent {
 
 	}
 
+	private RotatedRectangle rotatedRectangle = new RotatedRectangle(new Rectangle(), 0);
+	
 	private boolean isPressedOverMe() {
 		Vector2 size = new Vector2(width, height);
 		size.scl(getTransform().getScale().x, getTransform().getScale().y);
@@ -109,9 +118,14 @@ public class TouchableObject extends JComponent {
 		
 		Vector2 screenMousePosition = JInput.getMousePosition();
 		Vector2 worldMousePosition = JCamera.getMain().screenToWorldPoint(screenMousePosition);
-		Rectangle mouseRectangle = new Rectangle(worldMousePosition.x, worldMousePosition.y, 1, 1);
+		Rectangle mouseRectangle = new Rectangle();
+		mouseRectangle.setSize(1);
+		mouseRectangle.setCenter(worldMousePosition);
 		
-		if(Intersector.intersectRectangles(mouseRectangle, bounds, intersectorRectangle)){
+		rotatedRectangle.setCenterBounds(getTransform().getPosition().x, getTransform().getPosition().y, size.x, size.y);
+		
+		
+		if(rotatedRectangle.intersects(mouseRectangle)){
 			return true;
 		}
 		
