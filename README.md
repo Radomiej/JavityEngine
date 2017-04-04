@@ -7,15 +7,37 @@ Wiki: https://github.com/Radomiej/JavityEngine/wiki
 
 ## Fast installation
 
-Download setup-app: 
+* Download setup-app: [Javity Installer][javity-setup-url]
 
-Run it.
-Select needed dependencies.
+* Run it.
 
-Generate project.
+* Select needed dependencies.
 
-Import into your IDE.
+* Click Advenced and select your IDE(Eclipse, AndroidStudio/IntelliJ)
 
+* Generate project.
+
+* Import into your IDE.
+
+## Maven dependencies - SNAPSHOT
+
+```xml
+
+<repositories>
+	<repository>		
+		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	</repository>
+</repositories>
+
+<dependency>
+	<groupId>pl.javity</groupId>
+	<artifactId>javity-engine</artifactId>
+	<version>0.6.0-SNAPSHOT</version>
+</dependency>
+
+```
+
+## Maven dependencies(Not yet avaiable)
 
 ## Changelog:
 0.5.0:
@@ -24,3 +46,5 @@ Import into your IDE.
 * Add HTTP network plugin.
 * Add Maps plugin.
 * Add native android plugin.
+
+[javity-setup-url]: https://github.com/Radomiej/JavityEngine/releases/download/0.6.0-SNAPSHOT/javity-setup.jar
