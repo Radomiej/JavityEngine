@@ -3,7 +3,7 @@ package org.javity.components;
 import org.javity.engine.JCamera;
 import org.javity.engine.NativeComponent;
 
-public class Camera extends NativeComponent {
+public class FollowCamera extends NativeComponent {
 	
 	
 	@Override

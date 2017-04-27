@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import org.jrenner.smartfont.writer.BitmapFontWriter;
 
 public class SmartFontGenerator {
 	private static final String TAG = "SmartFontGenerator";

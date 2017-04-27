@@ -7,15 +7,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.javity.components.Transform;
-import org.javity.components.reflection.GameObjectProxator;
-import org.javity.engine.serializer.JsonSceneSerializer;
 import org.javity.engine.utilities.SceneSettings;
 
 import com.artemis.Entity;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
 
 import galaxy.rapid.common.EntityEngine;
 import galaxy.rapid.eventbus.RapidBus;
@@ -27,7 +22,6 @@ public class CustomScene implements InternalScene {
 	private RapidBus nativeRapidBus;
 	private EntityEngine world;
 	private boolean run;
-	private transient GameObjectProxator proxator = new GameObjectProxator();
 	private transient List<JGameObject> objectToRemove = new ArrayList<JGameObject>();
 	private transient List<JGameObject> objectToAdd = new ArrayList<JGameObject>();
 	private SceneSettings settings = new SceneSettings();
@@ -64,37 +58,6 @@ public class CustomScene implements InternalScene {
 	}
 
 	@Override
-	public JGameObjectImpl instantiateGameObject(JGameObject gameObject, Vector2 position) {
-		JGameObjectImpl fullObject = (JGameObjectImpl) gameObject;
-		Json json = JsonSceneSerializer.json;
-		proxyGameObject(gameObject);
-		String gameObjectJson = json.toJson(gameObject);
-		unproxyGameObject(gameObject);
-
-		JGameObjectImpl newObject = json.fromJson(JGameObjectImpl.class, gameObjectJson);
-		unproxyGameObject(newObject);
-
-		Transform transform = newObject.getComponent(Transform.class);
-		newObject.setTransform(transform);
-		if (fullObject.isPrefab())
-			transform.setParent(null);
-		transform.setPosition(position);
-
-		// TODO move to next frame?
-		if (run) {
-			awakeGameObject(newObject);
-		}
-
-		gameObjects.add(newObject);
-
-		if (run) {
-			startGameObject(newObject);
-			enableGameObject(newObject);
-		}
-		return newObject;
-	}
-
-	@Override
 	public JGameObject instantiateGameObject(Vector2 position) {
 		JGameObjectImpl newObject = new JGameObjectImpl();
 
@@ -114,13 +77,6 @@ public class CustomScene implements InternalScene {
 		return newObject;
 	}
 
-	private void unproxyGameObject(JGameObject gameObject) {
-		proxator.unproxy(gameObject, this);
-	}
-
-	private void proxyGameObject(JGameObject gameObject) {
-		proxator.proxy(gameObject, this);
-	}
 
 	public HashMap<UUID, JGameObject> getLoadSceneObjects() {
 		return loadSceneObjects;
@@ -134,7 +90,7 @@ public class CustomScene implements InternalScene {
 			if (component instanceof NativeComponent) {
 				NativeComponent nativeComponent = (NativeComponent) component;
 				nativeComponent.setRapidBus(nativeRapidBus);
-				nativeRapidBus.register(nativeComponent);
+//				nativeRapidBus.register(nativeComponent);
 			}
 		}
 	}

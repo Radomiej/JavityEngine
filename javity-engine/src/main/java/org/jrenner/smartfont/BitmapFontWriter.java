@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package org.jrenner.smartfont.writer;
+package org.jrenner.smartfont;
 
 
 import com.badlogic.gdx.files.FileHandle;

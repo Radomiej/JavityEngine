@@ -1,4 +1,4 @@
-package org.javity.engine.rapid.systems.scene2d;
+package org.javity.engine.rapid.events;
 
 import galaxy.rapid.event.RapidEvent;
 

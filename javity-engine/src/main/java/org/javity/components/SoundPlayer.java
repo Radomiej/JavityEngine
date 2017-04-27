@@ -55,12 +55,13 @@ public class SoundPlayer extends JComponent {
 			musicAsset.stop();
 		} else {
 			Sound soundAsset = RapidAsset.INSTANCE.getSound(sound.getResourcePath());
-			if (loop) {
-				soundAsset.stop();
-
-			} else {
-				soundAsset.play();
-			}
+			soundAsset.stop();
+//			if (loop) {
+//				soundAsset.stop();
+//
+//			} else {
+//				soundAsset.play();
+//			}
 		}
 	}
 

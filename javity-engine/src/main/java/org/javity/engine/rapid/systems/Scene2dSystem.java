@@ -1,25 +1,18 @@
 package org.javity.engine.rapid.systems;
 
-import org.javity.engine.rapid.systems.scene2d.PostGuiRenderEvent;
-import org.javity.engine.rapid.systems.scene2d.PreGuiRenderEvent;
+import org.javity.engine.rapid.events.PostGuiRenderEvent;
+import org.javity.engine.rapid.events.PreGuiRenderEvent;
 
 import com.artemis.Aspect;
-import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import galaxy.rapid.RapidEngine;
 import galaxy.rapid.components.ActorComponent;
-import galaxy.rapid.components.Box2dComponent;
 import galaxy.rapid.components.PositionComponent;
 import galaxy.rapid.eventbus.RapidBus;
 
@@ -36,6 +29,7 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	@Wire
 	private RapidBus rapidBus;
 
+	@SuppressWarnings("unchecked")
 	public Scene2dSystem() {
 		super(Aspect.all(ActorComponent.class));
 	}

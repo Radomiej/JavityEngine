@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.javity.engine.physic.RaycastHit;
+import org.javity.engine.rapid.events.PostGuiRenderEvent;
+import org.javity.engine.rapid.events.PreGuiRenderEvent;
 import org.javity.engine.rapid.systems.JavityPhysicSystem;
 import org.javity.engine.rapid.systems.Scene2dSystem;
-import org.javity.engine.rapid.systems.scene2d.PostGuiRenderEvent;
-import org.javity.engine.rapid.systems.scene2d.PreGuiRenderEvent;
 
 import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
@@ -149,21 +149,29 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	public void render(float delta) {
-
 		if (!scene.isRun()) {
 			processDeleteScreen();
 			return;
 		}
-
+		
 		// Update general variables
 		JTime.INSTANCE.delta = delta;
 		JTime.INSTANCE.tick();
 
 		updateGUIStage();
-
 		// Update Mouse Input
 		updateMouseXXX();
 
+		updateGameObjects();
+
+		destroyObjectsToScene();
+		addObjectsToScene();
+
+		super.render(delta);
+		JInput.saveOldStatus();
+	}
+
+	private void updateGameObjects() {
 		// Pre update game objects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			if (!gameObject.isEnabled())
@@ -196,12 +204,6 @@ public class JavityScreen extends RapidArtemisScreen {
 					component.lateUpdate();
 			}
 		}
-
-		destroyObjectsToScene();
-		addObjectsToScene();
-
-		super.render(delta);
-		JInput.saveOldStatus();
 	}
 
 	private void processDeleteScreen() {
