@@ -4,7 +4,6 @@ import org.javity.components.Rigidbody;
 import org.javity.components.Transform;
 import org.javity.engine.Component;
 import org.javity.engine.JGameObject;
-import org.javity.engine.JGameObjectImpl;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;

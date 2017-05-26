@@ -3,10 +3,8 @@ package org.javity.components;
 import org.javity.engine.Component;
 import org.javity.engine.JCamera;
 import org.javity.engine.JComponent;
-import org.javity.engine.JEngine;
 import org.javity.engine.JInput;
 
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 

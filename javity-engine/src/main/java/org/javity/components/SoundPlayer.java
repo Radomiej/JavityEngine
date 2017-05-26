@@ -3,15 +3,12 @@ package org.javity.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.javity.engine.Component;
 import org.javity.engine.JComponent;
 import org.javity.engine.resources.MusicResource;
 import org.javity.engine.resources.SoundResource;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.utils.LongArray;
 
 import galaxy.rapid.asset.RapidAsset;
 

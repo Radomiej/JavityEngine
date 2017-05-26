@@ -5,9 +5,9 @@ import galaxy.rapid.screen.RapidScreen;
 
 public class JavityInitialScreen extends RapidScreen{
 
-	private SceneBulider sceneBulider;
+	private SceneBuilder sceneBulider;
 	
-	public JavityInitialScreen(SceneBulider sceneBulider) {
+	public JavityInitialScreen(SceneBuilder sceneBulider) {
 		this.sceneBulider = sceneBulider;
 	}
 	

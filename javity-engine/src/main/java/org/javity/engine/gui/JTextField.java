@@ -2,7 +2,6 @@ package org.javity.engine.gui;
 
 import org.javity.engine.GUIComponent;
 import org.javity.engine.resources.BitmapFontResource;
-import org.javity.engine.resources.SpriteResource;
 import org.jrenner.smartfont.SmartFontGenerator;
 
 import com.badlogic.gdx.Gdx;
@@ -10,15 +9,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-import galaxy.rapid.common.DrawableHelper;
 import galaxy.rapid.components.ActorComponent;
 
 public class JTextField extends GUIComponent {

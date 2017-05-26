@@ -4,11 +4,9 @@ import org.javity.engine.Component;
 import org.javity.engine.JGameObjectImpl;
 
 import com.artemis.BaseSystem;
-import com.artemis.annotations.Wire;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.DestructionListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 

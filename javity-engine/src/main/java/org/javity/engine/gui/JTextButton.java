@@ -1,28 +1,20 @@
 package org.javity.engine.gui;
 
-import org.javity.components.Transform;
 import org.javity.engine.GUIComponent;
 import org.javity.engine.JGameObject;
-import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.gui.remote.RemoteInvoker;
 import org.javity.engine.resources.BitmapFontResource;
 import org.javity.engine.resources.SpriteResource;
-import org.javity.engine.resources.TextureResource;
 import org.jrenner.smartfont.SmartFontGenerator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import galaxy.rapid.common.DrawableHelper;
 import galaxy.rapid.components.ActorComponent;

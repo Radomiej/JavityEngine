@@ -6,8 +6,6 @@ import org.javity.engine.utilities.SceneSettings;
 
 import com.badlogic.gdx.math.Vector2;
 
-import galaxy.rapid.eventbus.RapidBus;
-
 public interface JScene {
 
 	public JGameObject instantiateGameObject(Vector2 position);

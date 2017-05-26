@@ -1,16 +1,14 @@
 package org.javity.components;
 
 import org.javity.engine.NativeComponent;
-import org.javity.engine.Resource;
+import org.javity.engine.resources.MemorySpriteResource;
+import org.javity.engine.resources.SingleSpriteResource;
 import org.javity.engine.resources.SpriteAtlasResource;
 import org.javity.engine.resources.SpritePivot;
 import org.javity.engine.resources.SpriteResource;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
-import org.javity.engine.resources.MemorySpriteResource;
-import org.javity.engine.resources.SingleSpriteResource;
 
 import galaxy.rapid.asset.RapidAsset;
 import galaxy.rapid.components.RenderComponent;

@@ -1,6 +1,5 @@
 package org.javity.engine;
 
-import java.util.Collection;
 import java.util.List;
 
 import galaxy.rapid.common.EntityEngine;

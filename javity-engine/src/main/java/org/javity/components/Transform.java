@@ -3,13 +3,11 @@ package org.javity.components;
 import java.util.UUID;
 
 import org.javity.engine.JGameObject;
-import org.javity.engine.JGameObjectImpl;
 import org.javity.engine.NativeComponent;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import galaxy.rapid.common.UuidHelper;
 import galaxy.rapid.components.PositionComponent;
 
 public class Transform extends NativeComponent {

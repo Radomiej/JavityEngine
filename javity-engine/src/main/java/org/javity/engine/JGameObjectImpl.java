@@ -2,24 +2,14 @@ package org.javity.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-import org.javity.components.RectangleCollider;
 import org.javity.components.Transform;
-import org.javity.engine.gui.JCanvas;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap.Values;
-import com.badlogic.gdx.utils.OrderedMap;
 
 import galaxy.rapid.event.RemoveEntityEvent;
 import galaxy.rapid.eventbus.RapidBus;

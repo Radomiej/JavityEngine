@@ -1,26 +1,17 @@
 package org.javity.components;
 
 import org.javity.engine.NativeComponent;
-import org.javity.engine.Resource;
-import org.javity.engine.resources.SpriteAtlasResource;
-import org.javity.engine.resources.SpriteResource;
-import org.javity.engine.resources.TextureResource;
+import org.javity.engine.resources.BitmapFontResource;
 import org.jrenner.smartfont.SmartFontGenerator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 
-import org.javity.engine.resources.BitmapFontResource;
-import org.javity.engine.resources.MemorySpriteResource;
-import org.javity.engine.resources.SingleSpriteResource;
-
 import galaxy.rapid.asset.RapidAsset;
 import galaxy.rapid.components.RenderComponent;
-import galaxy.rapid.components.SpriteComponent;
 import galaxy.rapid.components.TextComponent;
 
 public class TextRenderer extends NativeComponent {

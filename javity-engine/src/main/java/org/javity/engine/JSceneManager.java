@@ -1,20 +1,18 @@
 package org.javity.engine;
 
-import com.badlogic.gdx.Gdx;
-
 import galaxy.rapid.event.ChangeScreenEvent;
 
 public class JSceneManager {
 	public static JScene current;
 
-	public static void loadScene(SceneBulider sceneBulider) {
+	public static void loadScene(SceneBuilder sceneBuilder) {
 		JTime.INSTANCE.clearTasks();
 		CustomScene old = (CustomScene) current;
 		old.dispose();
 		
 		InternalScene newScene = new CustomScene();
 		current = newScene;
-		sceneBulider.buildScene(newScene);
+		sceneBuilder.buildScene(newScene);
 		JEngine.INSTANCE.rapidEventBus.post(new ChangeScreenEvent(new JavityScreen(newScene, old)));
 	}
 }

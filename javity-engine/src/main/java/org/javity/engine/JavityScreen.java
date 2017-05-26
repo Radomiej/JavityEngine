@@ -1,12 +1,5 @@
 package org.javity.engine;
 
-import galaxy.rapid.common.EntityEngine;
-import galaxy.rapid.event.PostRenderEvent;
-import galaxy.rapid.event.PreRenderEvent;
-import galaxy.rapid.screen.RapidArtemisScreen;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +10,15 @@ import org.javity.engine.rapid.events.PreGuiRenderEvent;
 import org.javity.engine.rapid.systems.JavityPhysicSystem;
 import org.javity.engine.rapid.systems.Scene2dSystem;
 
-import com.artemis.Entity;
 import com.artemis.WorldConfiguration;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.google.common.eventbus.Subscribe;
+
+import galaxy.rapid.common.EntityEngine;
+import galaxy.rapid.event.PostRenderEvent;
+import galaxy.rapid.event.PreRenderEvent;
+import galaxy.rapid.screen.RapidArtemisScreen;
 
 /**
  * Screen is hook to GalaxyRapidEngine backend. And is over JScene and provide
