@@ -119,8 +119,6 @@ public class JavityScreen extends RapidArtemisScreen {
 
 	@Override
 	protected void injectWorld(EntityEngine world) {
-		// System.out.println("injectWorld");
-
 		scene.setNativeRapidBus(rapidBus);
 		scene.setWorld(world);
 		scene.initialize();
@@ -128,13 +126,11 @@ public class JavityScreen extends RapidArtemisScreen {
 		JCamera.setMain(camera);
 		JPhysic.setPhysic(new JPhysic(physicWorld, rapidBus));
 
-		// System.out.println("awakes");
 		// Awake all GameObjects
 		for (JGameObject gameObject : scene.getGameObjects()) {
 			scene.awakeGameObject(gameObject);
 		}
 
-		// System.out.println("startes");
 		// Start all GameObjects
 		List<JGameObject> gameObjects = scene.getGameObjects();
 		for (int x = 0; x < gameObjects.size(); x++) {
