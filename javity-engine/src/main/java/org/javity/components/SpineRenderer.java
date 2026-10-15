@@ -18,7 +18,7 @@ public class SpineRenderer extends NativeComponent {
 	private SpineResource spine;
 	private transient RenderComponent renderComponent;
 	private transient SpineComponent spineComponent;
-	private Vector2 offset;
+	private Vector2 offset = new Vector2();
 
 	public SpineRenderer() {
 	}
@@ -32,9 +32,9 @@ public class SpineRenderer extends NativeComponent {
 	}
 
 	public SpineRenderer(String spinePath, Vector2 offset) {
-		String[] spinePathParts = spinePath.split("#");
-		spine = new SpineResource(spinePathParts[0], spinePathParts[1] != null ? spinePathParts[1] : "default");
-		this.offset = offset;
+		String[] spinePathParts = spinePath.split("#", 2);
+		spine = new SpineResource(spinePathParts[0], spinePathParts.length > 1 && !spinePathParts[1].isEmpty() ? spinePathParts[1] : "default");
+		this.offset = java.util.Objects.requireNonNull(offset).cpy();
 	}
 
 	@Override

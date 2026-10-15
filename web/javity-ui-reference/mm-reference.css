@@ -1,0 +1,31 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url("../../javity-ui/src/main/resources/org/javity/ui/fonts/OpenSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+html, body, #mm-stage { width: 1280px; height: 720px; margin: 0; overflow: hidden; }
+body { font-family: "Open Sans", sans-serif; background: #07111c; color: #fff; }
+#mm-stage > .flex-row { box-sizing: border-box; }
+.mm-text { display: block; }
+.mm-image { box-sizing: border-box; object-fit: contain; image-rendering: auto; }
+.mm-button { box-sizing: border-box; padding: 0; border: 0; font: inherit; text-align: center; cursor: pointer; }
+.mm-button:disabled { cursor: default; }
+.mm-progress { box-sizing: border-box; position: relative; overflow: hidden; background: #262e38; }
+.mm-progress-trail, .mm-progress-fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; }
+.mm-progress-fill { background: #00d3f3; }
+.mm-progress-trail.gain { background: #00bc7d; }
+.mm-progress-trail.loss { background: #ffb900; }
+.mm-toggle { box-sizing: border-box; position: relative; flex: none; width: 52px; height: 32px; padding: 0; border: 0; border-radius: 0; outline: none; background: transparent; }
+.mm-toggle::before { content: ""; position: absolute; left: 50%; top: 50%; width: 34.72px; height: 19.84px; transform: translate(-50%, -50%); box-sizing: border-box; border: 1px solid #314158; border-radius: 9999px; background: #1f8ced; }
+.mm-toggle::after { content: ""; position: absolute; top: 50%; left: calc(50% + 7.44px); width: 15.84px; height: 15.84px; transform: translate(-50%, -50%); border-radius: 50%; background: #fff; }
+.mm-toggle[aria-checked="false"]::before { background: #6b788c; }
+.mm-toggle[aria-checked="false"]::after { left: calc(50% - 7.44px); }
+.mm-range-wrapper { box-sizing: border-box; position: relative; flex: none; }
+.mm-range { box-sizing: border-box; border: 0; position: absolute; inset: 0; width: 100%; height: 100%; appearance: none; -webkit-appearance: none; background: transparent; cursor: default; opacity: 0; }
+.mm-range-track, .mm-range-fill { position: absolute; top: 13px; height: 6px; box-sizing: border-box; border: 1px solid #314158; border-radius: 6px; pointer-events: none; }
+.mm-range-track { left: 9px; right: 9px; background: #57667d; }
+.mm-range-fill { left: 9px; width: calc((100% - 18px) * var(--range-ratio, 0)); background: #1f8ced; }
+.mm-range-knob { position: absolute; z-index: 1; top: 7px; left: calc((100% - 18px) * var(--range-ratio, 0)); width: 18px; height: 18px; box-sizing: border-box; border: 1px solid #314158; border-radius: 50%; background: #fff; pointer-events: none; }
+.mm-range:focus ~ .mm-range-fill { background: #00d3f3; }

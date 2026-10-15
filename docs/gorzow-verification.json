@@ -1,0 +1,16 @@
+{
+"city": "Gorzów Wielkopolski",
+"buildingHits": 188,
+"roadHits": 521,
+"waterPixelsAndGeometry": 68,
+"queriedNames": "Michała Drzymały; Dziewięciu Muz; Muzeum Lubuskie im. Jana Dekerta w Gorzowie Wielkopolskim; Armii Polskiej; Franciszka Walczaka; Skwer Malarzy; Szkoła Podstawowa nr 17 im. Adama Mickiewicza; Śródmieście; Kłodawka; Zespół Szkół Elektrycznych; Warszawska; Plac Staromiejski; Przedszkole Miejskie nr 15 \"Baśniowy Dom\"; Józefa Wybickiego; Władysława Jagiełły; Państwowe Liceum Sztuk Plastycznych; IV Liceum Ogólnokształcące; Generała Władysława Sikorskiego; Szkolna; Planty Gorzowskie; Kosynierów Gdyńskich; Park Wiosny Ludów; Skwer 31 Sierpnia 1982 r.; Stanisława Żytkowskiego; Ewarysta Estkowskiego; Strzelecka; Żłobek Miejski nr 2; Ścieżka nad Wartą; Gorzów Wielkopolski; Spichrzowa; Łużycka; Wodna; Warta; Wojewódzki Zakład Doskonalenia Zawodowego; Garbary; Młyńska; Wał Okrężny; Przychodnia zdrowia \"Dworcowa\"; Stary kanał Kłodawki; Nadbrzeżna; Zespół Szkół Elektrycznych - laboratoria i pracownie szkolne",
+"nativeMvtQuery": true,
+"offline": true,
+"dayNight": true,
+"panZoom": true,
+"frames": 80,
+"renderedFrames": 37,
+"sourceDatabaseUnmodified": true,
+"nativeTextureDeleted": true,
+"cleanup": true
+}

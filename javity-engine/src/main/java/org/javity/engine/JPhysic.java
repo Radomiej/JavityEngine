@@ -36,7 +36,7 @@ public class JPhysic {
 
 	/**
 	 * Set the debug Render for current scenes. Only working after scene is build.
-	 * Please use it in Component instead directly on SceneBulider.
+	 * Please use it in Component instead directly on SceneBuilder.
 	 * @param debugRender true if need see all physic shape on scene.
 	 */
 	public static void setDebugRender(boolean debugRender) {

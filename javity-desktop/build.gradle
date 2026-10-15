@@ -1,0 +1,132 @@
+apply plugin: 'application'
+
+application {
+    mainClass = 'org.javity.demo.DesktopLauncher'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+tasks.withType(JavaExec).configureEach {
+    workingDir rootProject.projectDir
+}
+// The native comparison demo also runs from installDist outside the checkout.
+tasks.named('processResources') {
+    from(rootProject.file('web/javity-ui-reference')) {
+        include 'fixture.json', 'reference-metrics.json', 'k1-controls-fixture.json', 'k2-wrap-fixture.json',
+                'k4-image-fixture.json', 'k4-image-fixture.png', 'mm-fixture.json'
+        into 'org/javity/demo/ui-reference'
+    }
+}
+dependencies {
+    implementation project(':javity-engine')
+    implementation project(':javity-ui')
+    implementation project(':javity-script')
+    implementation project(':javity-core')
+    implementation project(':javity-map-core')
+    implementation project(':javity-maplibre')
+    implementation project(':javity-voxel')
+    implementation project(':javity-physics2d')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:${rootProject.gdxVersion}"
+    runtimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-desktop"
+}
+tasks.register('smoke', JavaExec) {
+    group = 'verification'
+    description = 'Run the actual Javity desktop scene for 120 frames.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke'
+}
+
+tasks.register('mapSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Run offline geographic map and font smoke with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--map', '--smoke'
+}
+
+tasks.register('runtimeSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native audio and migrated runtime features with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--runtime', '--smoke'
+}
+
+tasks.register('shapesSmoke', JavaExec) {
+    group = 'verification'
+    description = 'SDF AA shapes, caps/joins, alpha and zoom pixel smoke with OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--shapes', '--smoke'
+}
+
+tasks.register('pluginsSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native React/Yoga, feedback and skeletal animation with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--plugins', '--smoke'
+}
+
+tasks.register('uiParitySmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native UI geometry/pixels against real HTML/Tailwind reference.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--ui-parity', '--smoke'
+}
+
+
+tasks.register('mmSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Playable Feel/animation/React integration with native GPU, audio and loading proofs.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--mm', '--smoke'
+}
+
+tasks.register('materialsSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Custom shape GLSL, typed uniforms, GPU resource ownership and WORLD/UI animation.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--materials', '--smoke'
+}
+
+tasks.register('voxelSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Chunked voxel meshes, atlas pixels, edits, picking and GPU cleanup with OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--voxels', '--smoke'
+}
+
+
+tasks.register('maplibreSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual MapLibre Native, offline vector MBTiles, style switch and libGDX composition.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--maplibre', '--smoke'
+}
+
+
+tasks.register('gorzowSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Real Gorzow Wielkopolski MVT city data, native pixels, picking and offline cleanup.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--gorzow', '--smoke'
+}

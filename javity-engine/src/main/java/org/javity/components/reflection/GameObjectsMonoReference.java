@@ -11,9 +11,9 @@ import org.javity.engine.JScene;
 
 import com.badlogic.gdx.Gdx;
 
-import pl.silver.reflection.ReflectionBean;
-import pl.silver.reflection.SilverField;
-import pl.silver.reflection.SilverReflectionUtills;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Field;
+
 
 public class GameObjectsMonoReference {
 	private CustomScene scene;
@@ -30,19 +30,18 @@ public class GameObjectsMonoReference {
 		}
 		for (JGameObject go : scene.getGameObjects()) {
 			for (Component component : go.getAllComponents()) {
-				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
-				for (SilverField field : componentBean.getPublicAccesFields()) {
-					if (field.getFieldName().equals("gameObject"))
+				for (Field field : ClassReflection.getFields(component.getClass())) {
+					if (field.getName().equals("gameObject"))
 						continue;
-					if (field.getFieldValueClass().equals(JGameObject.class)) {
-						JGameObject gameObject = field.getFieldValue(component, JGameObject.class);
+					if (field.getType().equals(JGameObject.class)) {
+						JGameObject gameObject = ReferenceFields.read(field, component);
 						if (gameObject == null)
 							continue;
 						UUID uuid = UUID.fromString(gameObject.getObjectId());
 						if (scene.getLoadSceneObjects().containsKey(uuid)) {
 
 							JGameObject existGameObject = scene.getLoadSceneObjects().get(uuid);
-							field.setFieldValue(component, existGameObject);
+							ReferenceFields.write(field, component, existGameObject);
 //							gameObject = field.getFieldValue(component, JGameObjectImpl.class);
 						} else {
 							// scene.getLoadSceneObjects().put(uuid,
@@ -58,17 +57,16 @@ public class GameObjectsMonoReference {
 	public void proxyProcces() {
 		for (JGameObject go : scene.getGameObjects()) {
 			for (Component component : go.getAllComponents()) {
-				ReflectionBean componentBean = SilverReflectionUtills.createReflectionBean(component.getClass());
-				for (SilverField field : componentBean.getPublicAccesFields()) {
-					if (field.getFieldName().equals("gameObject"))
+				for (Field field : ClassReflection.getFields(component.getClass())) {
+					if (field.getName().equals("gameObject"))
 						continue;
-					if (field.getFieldValueClass().equals(JGameObject.class)) {
-						JGameObject gameObject = field.getFieldValue(component, JGameObject.class);
+					if (field.getType().equals(JGameObject.class)) {
+						JGameObject gameObject = ReferenceFields.read(field, component);
 						if (gameObject == null)
 							continue;
 
 						GameObjectProxy proxyGameObject = new GameObjectProxy(gameObject);
-						field.setFieldValue(component, proxyGameObject);
+						ReferenceFields.write(field, component, proxyGameObject);
 
 					}
 				}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Javity K1 controls visual reference</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; font: 16px/24px Arial, sans-serif; color: #fff; background: #090c11; }
+  .panel { width: 260px; height: 224px; margin: 24px; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #1e293b; border-radius: 8px; }
+  h1 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 400; }
+  .switch { appearance: none; position: relative; width: 52px; height: 32px; flex: 0 0 32px; margin: 0; border: 0; background: transparent; cursor: pointer; }
+  .switch::before { content: ""; position: absolute; left: 8.6px; top: 6px; width: 34.8px; height: 19.8px; border-radius: 10px; background: #6b788c; }
+  .switch::after { content: ""; position: absolute; left: 10.6px; top: 8px; width: 15.8px; height: 15.8px; border-radius: 50%; background: #fff; transition: transform 80ms linear; }
+  .switch:checked::before { background: #1f8cee; }
+  .switch:checked::after { transform: translateX(18.8px); }
+  .switch:focus-visible, .volume:focus-visible { outline: 0; }
+  .switch:focus-visible, .volume:focus-visible { filter: drop-shadow(0 0 1px #00d3f3); }
+  .switch:focus-visible::before { border: 1px solid #00d3f3; }
+  .volume:focus-visible::-webkit-slider-runnable-track, .volume:focus-visible::-moz-range-track { box-shadow: 0 0 0 1px #00d3f3; }
+  .switch:disabled { opacity: .5; cursor: default; }
+  .volume { appearance: none; width: 220px; height: 32px; padding-inline: 9px; margin: 0; background: transparent; cursor: pointer; }
+  .volume::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, #1f8cee 0 50%, #57667d 50% 100%); }
+  .volume::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; margin-top: -6px; border-radius: 50%; background: white; }
+  .volume::-moz-range-track { height: 6px; border-radius: 3px; background: #57667d; }
+  .volume::-moz-range-progress { height: 6px; border-radius: 3px; background: #1f8cee; }
+  .volume::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: white; }
+  .muted { color: #fff; }
+  .hint { color: #fff; font-size: 14px; line-height: 20px; }
+</style>
+<main class="panel">
+  <h1>Audio settings</h1>
+  <input class="switch" aria-label="Mute audio" type="checkbox">
+  <label class="muted">Volume: 0.5</label>
+  <input class="volume" aria-label="Volume" type="range" min="0" max="1" step="0.1" value="0.5">
+  <input class="switch" aria-label="Disabled setting" type="checkbox" disabled>
+  <span class="hint"></span>
+</main>
+</html>

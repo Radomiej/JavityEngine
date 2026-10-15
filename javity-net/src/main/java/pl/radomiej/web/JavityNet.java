@@ -24,6 +24,11 @@ public class JavityNet implements Net {
 		javityNetImpl.cancelHttpRequest(httpRequest);
 	}
 
+	@Override
+	public boolean isHttpRequestPending(HttpRequest httpRequest) {
+		return javityNetImpl.isHttpRequestPending(httpRequest);
+	}
+
 	public ServerSocket newServerSocket(Protocol protocol, String hostname, int port, ServerSocketHints hints) {
 		return nativeNet.newServerSocket(protocol, port, hints);
 	}

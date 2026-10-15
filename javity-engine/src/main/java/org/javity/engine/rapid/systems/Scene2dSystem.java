@@ -48,6 +48,14 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	}
 
 	@Override
+	protected void dispose() {
+		if (Gdx.input.getInputProcessor() instanceof InputMultiplexer multiplexer) {
+			multiplexer.removeProcessor(stage);
+		}
+		stage.dispose();
+	}
+
+	@Override
 	public void inserted(Entity e) {
 		ActorComponent actorComponent = actorMapper.get(e);
 		stage.addActor(actorComponent.getActor());
@@ -112,12 +120,6 @@ public class Scene2dSystem extends EntityProcessingSystem {
 	 */
 	public void setHandleInput(boolean b) {
 		handleInput = b;
-	}
-
-	@Override
-	protected void dispose() {
-		InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-		inputMultiplexer.removeProcessor(stage);
 	}
 
 }

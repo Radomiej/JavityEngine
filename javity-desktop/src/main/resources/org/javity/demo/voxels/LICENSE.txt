@@ -1,0 +1,8 @@
+Javity voxel atlas — original project artwork
+Copyright (c) 2026 Javity contributors.
+
+This atlas and its deterministic generator were authored for JavityEngine.
+Permission is granted to use, copy, modify, and distribute these project-authored
+artwork files with JavityEngine and projects built with it, including commercially.
+No third-party artwork is included. This note does not grant rights to the Javity
+name or other project trademarks. The files are provided without warranty.

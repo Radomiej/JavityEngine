@@ -1,0 +1,17 @@
+pluginManagement { repositories { gradlePluginPortal() } }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { mavenCentral() }
+}
+rootProject.name = 'JavityEngine'
+include 'javity-backend', 'javity-engine', 'javity-net', 'javity-map', 'javity-desktop'
+include 'javity-ui'
+include 'javity-core'
+include 'javity-physics2d'
+include 'javity-map-core'
+
+include 'javity-script'
+
+include 'javity-voxel'
+
+include 'javity-maplibre'

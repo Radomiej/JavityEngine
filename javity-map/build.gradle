@@ -1,0 +1,5 @@
+dependencies {
+    api project(':javity-engine')
+    implementation project(':javity-net')
+    api 'de.grundid.opendatalab:geojson-jackson:1.6'
+}

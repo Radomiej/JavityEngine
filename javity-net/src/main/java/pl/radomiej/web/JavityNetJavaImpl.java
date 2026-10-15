@@ -115,6 +115,10 @@ public class JavityNetJavaImpl {
 		listeners = new ObjectMap<HttpRequest, HttpResponseListener>();
 	}
 
+	public synchronized boolean isHttpRequestPending(HttpRequest request) {
+		return connections.containsKey(request);
+	}
+
 	public void sendHttpRequest (final HttpRequest httpRequest, final HttpResponseListener httpResponseListener) {
 		if (httpRequest.getUrl() == null) {
 			httpResponseListener.failed(new GdxRuntimeException("can't process a HTTP request without URL set"));

@@ -1,0 +1,119 @@
+html, body {
+  width: var(--k1-viewport-width);
+  height: var(--k1-viewport-height);
+  margin: 0;
+  overflow: hidden;
+  background: #0f172a;
+  font-family: "Open Sans", sans-serif;
+}
+#fixture {
+  width: var(--k1-viewport-width);
+  height: var(--k1-viewport-height);
+  position: relative;
+}
+#k1-panel {
+  position: absolute;
+  left: var(--k1-panel-left);
+  top: var(--k1-panel-top);
+  box-sizing: border-box;
+}
+#k1-toggle, #k1-disabled-toggle, #k1-slider {
+  box-sizing: border-box;
+  flex: none;
+  padding: 0;
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+.k1-switch {
+  appearance: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  flex: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: default;
+}
+.k1-switch::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34.72px;
+  height: 19.84px;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  border: 1px solid #314158;
+  border-radius: 9999px;
+  background: #1f8cee;
+}
+.k1-switch::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 7.44px);
+  width: 15.84px;
+  height: 15.84px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+}
+.k1-switch:not(:checked)::after { left: calc(50% - 7.44px); }
+.k1-switch:hover::before { background: #155dfc; }
+.k1-switch:focus::before { border-color: #00d3f3; }
+.k1-switch:disabled { cursor: default; opacity: 1; }
+.k1-switch:disabled::before { background: rgba(107, 120, 140, .24); }
+.k1-switch:disabled::after { background: rgba(230, 232, 237, .36); }
+.k1-switch:disabled:hover::before { background: rgba(107, 120, 140, .24); }
+.k1-range-wrapper { position: relative; flex: none; }
+.k1-range {
+  box-sizing: border-box;
+  border: 0;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: default;
+  opacity: 0;
+}
+.k1-range-track, .k1-range-fill {
+  position: absolute;
+  top: 13px;
+  height: 6px;
+  box-sizing: border-box;
+  border: 1px solid #314158;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.k1-range-track {
+  left: 9px;
+  right: 9px;
+  background: #57667d;
+}
+.k1-range-fill {
+  left: 9px;
+  width: calc((100% - 18px) * var(--k1-slider-ratio, 0));
+  background: #1f8cee;
+}
+.k1-range-knob {
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: calc((100% - 18px) * var(--k1-slider-ratio, 0));
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1px solid #314158;
+  border-radius: 6px;
+  background: #fff;
+  pointer-events: none;
+}
+.k1-range:focus ~ .k1-range-track,
+.k1-range:focus ~ .k1-range-fill,
+.k1-range:focus ~ .k1-range-knob { border-color: #00d3f3; }
+.k1-range:hover ~ .k1-range-fill { background: #155dfc; }

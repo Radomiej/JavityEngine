@@ -1,0 +1,3 @@
+Open Sans: Digitized data copyright (c) 2010-2011, Google Corporation.
+Source: https://www.opensans.com/
+Bundled Regular TTF, Apache License 2.0.

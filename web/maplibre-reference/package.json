@@ -1,0 +1,10 @@
+{
+  "name": "javity-maplibre-gljs-reference",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local GL JS reference renderer for the authored Javity town fixture.",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "maplibre-gl": "6.14.0"
+  }
+}

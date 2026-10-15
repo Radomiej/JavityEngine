@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>K2 native paragraph wrapping</title>
+  <link rel="stylesheet" href="./output.css">
+  <link rel="stylesheet" href="./k2-wrap.css">
+</head>
+<body>
+  <main id="fixture" class="fixture"></main>
+  <script>
+    fetch('./k2-wrap-fixture.json').then(r => r.json()).then(data => {
+      const root = document.querySelector('#fixture');
+      const escape = value => value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+      document.documentElement.style.width = `${data.viewport.width}px`;
+      document.documentElement.style.height = `${data.viewport.height}px`;
+      document.body.style.width = `${data.viewport.width}px`;
+      document.body.style.height = `${data.viewport.height}px`;
+      root.style.width = `${data.viewport.width}px`;
+      root.style.height = `${data.viewport.height}px`;
+      root.dataset.ready = 'false';
+      root.innerHTML = data.paragraphs.map(p =>
+        `<p id="${p.id}" class="paragraph ${p.fontClass}${p.opacity ? ' opacity-50' : ''}">${escape(p.text)}</p>`).join('');
+      for (const p of data.paragraphs) {
+        const element = document.getElementById(p.id);
+        element.style.setProperty('--paragraph-width', `${p.narrow}px`);
+      }
+      window.setK2State = state => {
+        for (const p of data.paragraphs)
+          document.getElementById(p.id).style.setProperty('--paragraph-width', `${p[state]}px`);
+      };
+      window.k2Fixture = data;
+      document.fonts.ready.then(() => { root.dataset.ready = 'true'; });
+    });
+  </script>
+</body>
+</html>

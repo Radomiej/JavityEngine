@@ -1,0 +1,22 @@
+{
+  "name": "@javity/ui-react",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "React 19 reconciler host for Javity's native Scene2D UI",
+  "scripts": {
+    "build": "npm run build:runtime && npm run build:sample && npm run build:mm",
+    "build:runtime": "esbuild src/index.js --bundle --format=iife --global-name=JavityReactBundle --outfile=../../javity-script/src/main/resources/org/javity/script/javity-ui.js --minify",
+    "build:sample": "esbuild src/sample.tsx --bundle --format=iife --external:react --external:react-reconciler --outfile=../../javity-script/src/main/resources/org/javity/script/javity-sample.js --minify",
+    "build:mm": "esbuild src/mm.tsx --bundle --format=iife --external:react --external:react-reconciler --outfile=../../javity-script/src/main/resources/org/javity/script/javity-mm.js --minify",
+    "dev": "esbuild src/dev.tsx --bundle --format=iife --external:react --external:react-reconciler --watch --outfile=dist/javity-ui-dev.js",
+    "test": "node test/host-tree.test.cjs"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-reconciler": "0.31.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.0"
+  }
+}

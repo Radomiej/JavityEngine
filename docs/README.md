@@ -1,0 +1,28 @@
+# Dokumentacja JavityEngine
+
+- [Zakończenie aktualizacji bazy i API usług](finish-update.md).
+- [TODO i kolejność prac](TODO.md) — bieżący backlog; najpierw migracja, później dodatkowe technologie.
+- [Status i wyniki weryfikacji](modernization-status.md).
+- [Inwentaryzacja starego API](migration-api.md) — co przeniesiono, co nadal działa w legacy i czego brakuje.
+- [Voxele i chunki](voxels.md) — dane świata, meshing, DDA, adapter GPU i kontrola zasobów.
+- [Demo voxelowe](demo-voxels.png) i [autorski atlas tekstur](voxel-atlas.png).
+- [Mapy i MapLibre](maps-and-maplibre.md) — raster XYZ i oddzielny backend wektorowy.
+- [Gorzów Wielkopolski offline](gorzow-offline-map.md) i [rzeczywisty widok miasta](demo-gorzow.png).
+- [Komponenty względem java-lab](java-lab-component-parity.md) — sprawdzony kontrakt i konkretne braki.
+- [MapLibre Native](maplibre-native.md) — własne MBTiles/MVT, style, offline glyphy/sprites i rzeczywista tekstura GPU libGDX.
+- [Demo MapLibre](demo-maplibre.png), [referencja GL JS](demo-maplibre-reference.png) i [porównanie](maplibre-comparison.png).
+- [Kamery](camera-api.md) — 2D, śledzenie, kierunek celowania i istniejące 3D.
+- [Multiplayer](multiplayer-design-notes.md) — wstępny model serwer/klient, bez wdrożonej replikacji.
+- [Galeria materiałów Shapes](demo-shape-materials.png) — gradient, UI pulse, WORLD stripes i własne GLSL.
+- [Shapes i shadery](shapes-and-shaders.md) — działające figury SDF/AA i zakres dalszych rozszerzeń.
+- [Demo modern](demo-modern.png), [demo map offline](demo-map.png), [demo runtime](demo-runtime.png), [demo Shapes AA](demo-shapes.png), [demo pluginów](demo-plugins.png).
+- [Inspiracje Unity: OneJS, Animancer, Feel](unity-inspired-api.md) — audyt, porównanie podejść i kolejność batchy.
+- [Tworzenie gry](game-authoring.md) — praktyczne przykłady i właściciele zasobów.
+- [Relay Ward — natywny HUD](demo-mm.png) i [referencja HTML](demo-mm-html.png); [metoda porównania](ui-html-parity.md#hud-relay-ward).
+- [Pokrycie Feel/Animancer/OneJS](plugin-feature-coverage.md) — wdrożone zachowania, oddzielne dowody native i aktualny etap.
+- [Feedback/tween API](feedback-api.md), [animacje 2D/3D](animation-api.md), [deklaratywne UI](declarative-ui.md), [port OneJS/React](onejs-port.md).
+- [Audyt systemów More Mountains](mm-systems-audit.md) — przeczytane źródła, zakres wdrożenia i brakujące kontrakty.
+- [Ustalenia portów](plugin-port-decisions.md) — własność, czas i granice bridge.
+- `superpowers/specs/` i `superpowers/plans/` — projekt i checklisty poszczególnych etapów.
+
+Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Zasady pracy: [AGENTS.md](../AGENTS.md).

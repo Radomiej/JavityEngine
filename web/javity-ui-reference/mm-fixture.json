@@ -1,0 +1,422 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "dpr": 1
+  },
+  "font": "Open Sans",
+  "layout": {
+    "outerPadding": 20,
+    "sidebarWidth": 330,
+    "columnGap": 12,
+    "rowGap": 8
+  },
+  "palette": {
+    "page": "#07111c",
+    "panel": "#0c1d2c",
+    "panelInset": "#10283a",
+    "border": "#244254",
+    "cyan": "#00d3f3",
+    "green": "#00bc7d",
+    "amber": "#ffb900",
+    "red": "#ef4444",
+    "white": "#ffffff",
+    "muted": "#94a3b8",
+    "barTrack": "#262e38"
+  },
+  "states": {
+    "idle": {
+      "health": 1,
+      "droneState": "PATROL",
+      "volume": 0.7,
+      "muted": false,
+      "loadProgress": 1,
+      "loadStatus": "COMPLETE",
+      "canFire": true,
+      "canDeploy": true,
+      "canCancel": false
+    },
+    "hit": {
+      "health": 0.65,
+      "droneState": "STAGGER",
+      "volume": 0.7,
+      "muted": false,
+      "loadProgress": 1,
+      "loadStatus": "COMPLETE",
+      "canFire": false,
+      "canDeploy": true,
+      "canCancel": false,
+      "damageText": "-35",
+      "progress": {
+        "health-bar": {
+          "displayed": 0.7777778,
+          "trail": 0.8777778
+        }
+      }
+    },
+    "settings": {
+      "health": 0.85,
+      "droneState": "RECOVER",
+      "volume": 0.35,
+      "muted": true,
+      "loadProgress": 1,
+      "loadStatus": "COMPLETE",
+      "canFire": true,
+      "canDeploy": true,
+      "canCancel": false,
+      "focus": "volume-slider"
+    },
+    "loading": {
+      "health": 0.85,
+      "droneState": "RECOVER",
+      "volume": 0.35,
+      "muted": true,
+      "loadProgress": 0.7138889,
+      "loadStatus": "FADING_OUT",
+      "canFire": true,
+      "canDeploy": false,
+      "canCancel": true,
+      "progress": {
+        "load-bar": {
+          "displayed": 0.7138889,
+          "trail": 0.7138889
+        }
+      }
+    },
+    "arena": {
+      "health": 1,
+      "droneState": "PATROL",
+      "volume": 0.35,
+      "muted": true,
+      "loadProgress": 1,
+      "loadStatus": "COMPLETE",
+      "canFire": true,
+      "canDeploy": true,
+      "canCancel": false,
+      "progress": {
+        "health-bar": {
+          "displayed": 0.8785714,
+          "trail": 0.9214286
+        }
+      }
+    }
+  },
+  "tree": {
+    "type": "View",
+    "key": "mm-root",
+    "classes": "flex-row w-full h-full p-[20px]",
+    "props": {},
+    "children": [
+      {
+        "type": "View",
+        "key": "menu-column",
+        "classes": "flex-col gap-[12px] w-[330px]",
+        "props": {},
+        "children": [
+          {
+            "type": "View",
+            "key": "scene-hud",
+            "classes": "flex-col gap-[12px] w-[330px] p-[16px] bg-[#0c1d2c] rounded-xl border border-[#244254]",
+            "props": {},
+            "children": [
+              {
+                "type": "View",
+                "key": "brand-row",
+                "classes": "flex-row items-center gap-[12px]",
+                "props": {},
+                "children": [
+                  {
+                    "type": "Image",
+                    "key": "pilot-image",
+                    "classes": "w-[64px] h-[64px] rounded-lg border border-[#244254] bg-[#10283a]",
+                    "props": {
+                      "source": "../../javity-desktop/src/main/resources/runtime/avatar.png",
+                      "fit": "contain",
+                      "region": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 32
+                      }
+                    },
+                    "children": []
+                  },
+                  {
+                    "type": "View",
+                    "key": "brand-copy",
+                    "classes": "flex-col gap-[2px]",
+                    "props": {},
+                    "children": [
+                      {
+                        "type": "Text",
+                        "key": "game-title",
+                        "classes": "text-xl text-cyan-400",
+                        "text": "RELAY WARD"
+                      },
+                      {
+                        "type": "Text",
+                        "key": "mission-label",
+                        "classes": "text-sm text-slate-200",
+                        "text": "Training sector · 04"
+                      },
+                      {
+                        "type": "Text",
+                        "key": "mm-generation",
+                        "classes": "text-sm text-slate-400",
+                        "bind": "generation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "target-row",
+                "classes": "flex-row items-center justify-between p-[10px] bg-[#10283a] rounded-lg",
+                "props": {},
+                "children": [
+                  {
+                    "type": "View",
+                    "key": "target-copy",
+                    "classes": "flex-col gap-[2px]",
+                    "props": {},
+                    "children": [
+                      {
+                        "type": "Text",
+                        "key": "target-heading",
+                        "classes": "text-sm text-slate-200",
+                        "text": "TRAINING DRONE"
+                      },
+                      {
+                        "type": "Text",
+                        "key": "drone-state",
+                        "classes": "text-base text-amber-400",
+                        "bind": "droneState"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Text",
+                    "key": "health-readout",
+                    "classes": "text-lg text-white",
+                    "bind": "healthPercent"
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "health-group",
+                "classes": "flex-col gap-[6px]",
+                "props": {},
+                "children": [
+                  {
+                    "type": "View",
+                    "key": "health-label-row",
+                    "classes": "flex-row justify-between",
+                    "props": {},
+                    "children": [
+                      {
+                        "type": "Text",
+                        "key": "health-label",
+                        "classes": "text-sm text-slate-200",
+                        "text": "TARGET INTEGRITY"
+                      },
+                      {
+                        "type": "Text",
+                        "key": "health-number",
+                        "classes": "text-sm text-cyan-400",
+                        "bind": "healthNumber"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Progress",
+                    "key": "health-bar",
+                    "classes": "w-full h-[16px] rounded-full",
+                    "props": {
+                      "valueSignal": "health",
+                      "min": 0,
+                      "max": 1,
+                      "duration": 0.42,
+                      "delay": 0.12
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "action-row",
+                "classes": "flex-row gap-[8px]",
+                "props": {},
+                "children": [
+                  {
+                    "type": "Button",
+                    "key": "fire-button",
+                    "classes": "flex-1 h-[40px] bg-[#087e83] text-white rounded-md disabled:bg-slate-700 disabled:text-slate-400",
+                    "props": {
+                      "text": "Fire · Space",
+                      "action": "fire",
+                      "disabledSignal": "canFire"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "key": "heal-button",
+                    "classes": "flex-1 h-[40px] bg-[#286c54] text-white rounded-md",
+                    "props": {
+                      "text": "Heal · H",
+                      "action": "heal"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "deploy-row",
+                "classes": "flex-row gap-[8px]",
+                "props": {},
+                "children": [
+                  {
+                    "type": "Button",
+                    "key": "deploy-button",
+                    "classes": "flex-1 h-[36px] bg-[#173b50] text-cyan-400 rounded-md disabled:bg-slate-700 disabled:text-slate-400",
+                    "props": {
+                      "text": "Deploy · D",
+                      "action": "deploy",
+                      "disabledSignal": "canDeploy"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "key": "cancel-button",
+                    "classes": "flex-1 h-[36px] bg-[#452b37] text-red-500 rounded-md disabled:bg-slate-700 disabled:text-slate-400",
+                    "props": {
+                      "text": "Cancel · Esc",
+                      "action": "cancel",
+                      "disabledSignal": "canCancel"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "load-panel",
+                "classes": "flex-col gap-[6px] p-[10px] bg-[#10283a] rounded-lg",
+                "props": {},
+                "children": [
+                  {
+                    "type": "View",
+                    "key": "load-copy",
+                    "classes": "flex-row justify-between",
+                    "props": {},
+                    "children": [
+                      {
+                        "type": "Text",
+                        "key": "load-heading",
+                        "classes": "text-sm text-slate-200",
+                        "text": "SCENE TRANSFER"
+                      },
+                      {
+                        "type": "Text",
+                        "key": "load-status",
+                        "classes": "text-sm text-cyan-400",
+                        "bind": "loadStatus"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Progress",
+                    "key": "load-bar",
+                    "classes": "w-full h-[12px] rounded-full",
+                    "props": {
+                      "valueSignal": "loadProgress",
+                      "min": 0,
+                      "max": 1,
+                      "duration": 0,
+                      "delay": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "key": "input-hint",
+                "classes": "text-sm text-slate-400",
+                "text": "Arena: fire · Tab: controls"
+              }
+            ]
+          },
+          {
+            "type": "View",
+            "key": "settings-panel",
+            "classes": "flex-col gap-[8px] w-full p-[10px] bg-[#10283a] rounded-lg border border-[#244254]",
+            "props": {},
+            "children": [
+              {
+                "type": "Text",
+                "key": "settings-heading",
+                "classes": "text-sm text-slate-200",
+                "text": "AUDIO SETTINGS"
+              },
+              {
+                "type": "View",
+                "key": "mute-row",
+                "classes": "flex-row items-center justify-between",
+                "props": {},
+                "children": [
+                  {
+                    "type": "Text",
+                    "key": "mute-label",
+                    "classes": "text-base text-white",
+                    "text": "Mute effects"
+                  },
+                  {
+                    "type": "Toggle",
+                    "key": "mute-toggle",
+                    "classes": "w-[52px] h-[32px]",
+                    "props": {
+                      "checkedSignal": "muted",
+                      "action": "mute"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "View",
+                "key": "volume-copy",
+                "classes": "flex-row justify-between",
+                "props": {},
+                "children": [
+                  {
+                    "type": "Text",
+                    "key": "volume-label",
+                    "classes": "text-sm text-slate-200",
+                    "text": "Master volume"
+                  },
+                  {
+                    "type": "Text",
+                    "key": "volume-value",
+                    "classes": "text-sm text-cyan-400",
+                    "bind": "volumePercent"
+                  }
+                ]
+              },
+              {
+                "type": "Slider",
+                "key": "volume-slider",
+                "classes": "w-full h-[32px] focus:bg-cyan-400",
+                "props": {
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.05,
+                  "valueSignal": "volume",
+                  "action": "volume"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

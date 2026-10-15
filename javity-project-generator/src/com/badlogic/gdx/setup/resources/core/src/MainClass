@@ -1,9 +1,9 @@
 package %PACKAGE%;
 
 import org.javity.engine.JScene;
-import org.javity.engine.SceneBulider;
+import org.javity.engine.SceneBuilder;
 
-public class %MAIN_CLASS% implements SceneBulider {
+public class %MAIN_CLASS% implements SceneBuilder {
 	@Override
 	public void buildScene(JScene scene) {
 		//Add your JGameObject`s here

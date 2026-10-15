@@ -10,3 +10,45 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Maven output
+**/target/
+dependency-reduced-pom.xml
+
+# Local runtime configuration and smoke artifacts
+*.log
+smoke.png
+
+# Gradle output
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+/map-smoke.png
+
+/runtime-smoke.png
+/runtime-prefab.json
+
+/.superpowers/
+
+/shapes-smoke.png
+
+/shapes-failure.png
+
+/web/javity-ui/node_modules/
+/web/javity-ui/dist/
+/plugins-smoke.png
+/plugins-failure.png
+
+/web/javity-ui-reference/node_modules/
+/ui-parity-smoke.png
+/ui-parity-failure.png
+/ui-parity-metrics.json
+
+# Python screenshot verification cache
+__pycache__/
+*.pyc
+
+# Generated local QA captures; curated screenshots live in docs/.
+/artifacts/
+/web/maplibre-reference/node_modules/

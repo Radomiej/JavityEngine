@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "platform": "Linux x64, JDK25, Mesa software OpenGL",
+  "javaTests": {
+    "tests": 400,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "nativeGPU": "PASS, actual framebuffer/driver assertions",
+  "nativeScene": {
+    "frames": 38,
+    "loadedChunks": 18,
+    "visibleChunks": 8,
+    "dirtyChunks": 0,
+    "rebuilds": 29,
+    "seamOwnerRebuilds": 4,
+    "seamNeighborRebuilds": 4,
+    "faces": 10236,
+    "stationaryFrames": 3,
+    "focusLossAndRegain": true,
+    "cameraMoveAndLook": true,
+    "fpsSpawnGrounded": true,
+    "fpsWallCollision": true,
+    "fpsSprint": true,
+    "fpsJumpAndHeadCollision": true,
+    "fpsMouseRightLook": true,
+    "fpsPlacementProtection": true,
+    "fpsModeToggle": true,
+    "fpsUnsafeFlyReturnFallback": true,
+    "crossSeamRemoveAndPlace": true,
+    "smokeFixtureRestored": true,
+    "galleryTarget": {
+      "x": 8,
+      "y": 9,
+      "z": 8
+    },
+    "hudFitsViewport": true,
+    "resize": true,
+    "glErrorAfterCleanup": 0
+  },
+  "installed": {
+    "exitCode": 0,
+    "outsideCheckout": true,
+    "pathContainsSpaces": true
+  },
+  "distributionZIP": "Gradle distZip PASS; installDist outside checkout PASS",
+  "regressionModes": [
+    "modern",
+    "map",
+    "shapes",
+    "materials",
+    "legacy"
+  ],
+  "screenshotSha256": "7dcba67adbc9ddc10afc491ed5494d12a00fded5a9fda23f3a1cc4530b986bbe"
+}

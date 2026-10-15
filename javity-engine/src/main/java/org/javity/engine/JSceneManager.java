@@ -7,7 +7,7 @@ import galaxy.rapid.event.ChangeScreenEvent;
 public class JSceneManager {
 	public static JScene current;
 
-	public static void loadScene(SceneBulider sceneBulider) {
+	public static void loadScene(SceneBuilder sceneBulider) {
 		JTime.INSTANCE.clearTasks();
 		CustomScene old = (CustomScene) current;
 		old.dispose();
