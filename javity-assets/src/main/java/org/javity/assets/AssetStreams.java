@@ -22,6 +22,7 @@ public final class AssetStreams extends GameSystem {
   private Entry active;
   private Map<String, SavedAsset> baseline;
   private long sequence;
+  private long recency;
 
   public AssetStreams(AssetManager manager, StreamBudget budget) {
     this.manager = Objects.requireNonNull(manager, "manager");
@@ -32,6 +33,9 @@ public final class AssetStreams extends GameSystem {
     });
   }
 
+  /** A new root consumes one queue slot; deduplicated requests do not. Queue overflow throws
+   * IllegalStateException without changing existing leases. First request fixes priority/FIFO.
+   * Estimates include all root dependencies and may conservatively double-count shared assets. */
   public <T> AssetLease<T> request(AssetKey<T> key, int priority, long estimatedResidentBytes) {
     requireOpen();
     Objects.requireNonNull(key, "key");
@@ -46,12 +50,15 @@ public final class AssetStreams extends GameSystem {
       throw new IllegalArgumentException("Conflicting loaded dependency type for " + key.path());
     Entry entry = current.get(key.path());
     if (entry == null) {
+      if (queuedCount() >= budget.maxQueued())
+        throw new IllegalStateException("Asset streaming queue is full");
       entry = new Entry(key, priority, estimatedResidentBytes, sequence++);
       current.put(key.path(), entry);
       entries.add(entry);
     }
     Lease<T> lease = new Lease<>(key, entry);
     entry.users++;
+    if (entry.state == AssetLease.State.READY) entry.lastUse = recency++;
     leases.add(lease);
     return lease;
   }
@@ -69,9 +76,8 @@ public final class AssetStreams extends GameSystem {
   }
 
   private void admit() {
-    Entry next = entries.stream().filter(e -> e.state == AssetLease.State.QUEUED && e.users > 0)
-        .min(Comparator.<Entry>comparingInt(e -> e.priority).reversed().thenComparingLong(e -> e.sequence)).orElse(null);
-    if (next == null) return;
+    Entry next = queueHead();
+    if (next == null || !fits(next, false)) return;
     // A closed active generation must be physically released before a same-path fresh load.
     if (entries.stream().anyMatch(e -> e != next && e.key.path().equals(next.key.path()))) return;
     active = next;
@@ -89,6 +95,7 @@ public final class AssetStreams extends GameSystem {
       if (done) {
         entry.value = manager.get(entry.key.path(), entry.key.type());
         entry.state = AssetLease.State.READY;
+        entry.lastUse = recency++;
         active = null;
         baseline = null;
       }
@@ -124,14 +131,71 @@ public final class AssetStreams extends GameSystem {
       active = null;
       baseline = null;
     }
+    // Abandoned LOADING generations are never cache hits for a fresh request.
     for (Entry entry : List.copyOf(entries)) {
-      if (entry.users != 0) continue;
-      if (entry.state == AssetLease.State.READY)
-        failure = JavityAssetInternals142.append(failure, JavityAssetInternals142.releaseRoot(manager, entry.key.path()));
-      entries.remove(entry);
-      entry.value = null;
+      if (entry.users == 0 && current.get(entry.key.path()) != entry)
+        failure = JavityAssetInternals142.append(failure, evict(entry));
+    }
+    Entry next = queueHead();
+    // Do not discard useful cache when pinned roots alone make admission impossible.
+    if (next != null && fits(next, true)) {
+      List<Entry> candidates = entries.stream()
+          .filter(e -> e.state == AssetLease.State.READY && e.users == 0)
+          .sorted(Comparator.comparingLong((Entry e) -> e.lastUse).thenComparingLong(e -> e.sequence)).toList();
+      for (Entry entry : candidates) {
+        if (fits(next, false)) break;
+        failure = JavityAssetInternals142.append(failure, evict(entry));
+      }
     }
     return failure;
+  }
+
+  private Throwable evict(Entry entry) {
+    Throwable failure = null;
+    if (entry.state == AssetLease.State.READY)
+      failure = JavityAssetInternals142.releaseRoot(manager, entry.key.path());
+    entries.remove(entry);
+    current.remove(entry.key.path(), entry);
+    entry.value = null;
+    return failure;
+  }
+
+  private Entry queueHead() {
+    return entries.stream().filter(e -> e.state == AssetLease.State.QUEUED && e.users > 0)
+        .min(Comparator.<Entry>comparingInt(e -> e.priority).reversed().thenComparingLong(e -> e.sequence)).orElse(null);
+  }
+
+  private int queuedCount() {
+    return (int) entries.stream().filter(e -> e.state == AssetLease.State.QUEUED && e.users > 0).count();
+  }
+
+  /** Subtraction avoids overflow even when the configured estimate budget is Long.MAX_VALUE. */
+  private boolean fits(Entry next, boolean pinnedOnly) {
+    long remaining = budget.estimatedResidentBytes() - next.bytes;
+    int slots = budget.maxResidentEntries() - 1;
+    for (Entry entry : entries) {
+      if (entry != active && entry.state != AssetLease.State.READY) continue;
+      if (pinnedOnly && entry != active && entry.users == 0) continue;
+      if (--slots < 0 || entry.bytes > remaining) return false;
+      remaining -= entry.bytes;
+    }
+    return true;
+  }
+
+  /** Owner-thread immutable snapshot, also available after disposal (all zero). */
+  public StreamStats stats() {
+    requireOwner();
+    int ready = 0, pinned = 0;
+    long bytes = 0;
+    for (Entry entry : entries) {
+      if (entry.state == AssetLease.State.READY) {
+        ready++;
+        if (entry.users > 0) pinned++;
+      }
+      if (entry == active || entry.state == AssetLease.State.READY) bytes += entry.bytes;
+    }
+    boolean pressure = entries.stream().anyMatch(e -> e.state == AssetLease.State.QUEUED && e.users > 0 && !fits(e, false));
+    return new StreamStats(queuedCount(), active == null ? 0 : 1, ready, pinned, bytes, pressure);
   }
 
   private void requireOwner() {
@@ -173,6 +237,7 @@ public final class AssetStreams extends GameSystem {
     final int priority;
     final long bytes, sequence;
     int users;
+    long lastUse;
     AssetLease.State state = AssetLease.State.QUEUED;
     Object value;
     Throwable failure;
@@ -190,6 +255,7 @@ public final class AssetStreams extends GameSystem {
     @Override public T get() {
       requireOwner();
       if (state() != State.READY) throw new IllegalStateException("Asset is not READY: " + key.path());
+      entry.lastUse = recency++;
       return key.type().cast(entry.value);
     }
     @Override public Throwable failure() { requireOwner(); return entry.failure; }
@@ -198,7 +264,13 @@ public final class AssetStreams extends GameSystem {
       if (closed) return;
       closed = true;
       leases.remove(this);
-      if (--entry.users == 0) current.remove(key.path(), entry);
+      if (--entry.users == 0) {
+        if (entry.state == State.READY) entry.lastUse = recency++;
+        else {
+          current.remove(key.path(), entry);
+          if (entry.state == State.QUEUED) entries.remove(entry);
+        }
+      }
     }
   }
 }

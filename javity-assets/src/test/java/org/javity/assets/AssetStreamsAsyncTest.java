@@ -22,9 +22,15 @@ public class AssetStreamsAsyncTest {
     Thread syncThread;
     int preparations;
     boolean returnDependencies;
+    String dependency;
     AsyncLoader() { super(FileHandle::new); }
     public Array<AssetDescriptor> getDependencies(String name, FileHandle file, AssetLoaderParameters<AssetStreamsOwnershipTest.Item> p) {
-      if (returnDependencies) { entered.countDown(); await(release); return new Array<>(); }
+      if (returnDependencies) {
+        entered.countDown(); await(release);
+        Array<AssetDescriptor> result = new Array<>();
+        if (dependency != null && name.equals("item")) result.add(new AssetDescriptor<>(dependency, AssetStreamsOwnershipTest.Item.class));
+        return result;
+      }
       return null;
     }
     public void loadAsync(AssetManager manager, String name, FileHandle file, AssetLoaderParameters<AssetStreamsOwnershipTest.Item> p) {
@@ -62,7 +68,7 @@ public class AssetStreamsAsyncTest {
     assertEquals(1, loader.made.getLast().disposals);
   }
   @Test public void sceneCloseDrainsDependencyInjectionWithoutHoldingManagerMonitor() throws Exception {
-    AssetManager manager = new AssetManager(FileHandle::new, false); AsyncLoader loader = new AsyncLoader(); loader.returnDependencies = true;
+    AssetManager manager = new AssetManager(FileHandle::new, false); AsyncLoader loader = new AsyncLoader(); loader.returnDependencies = true; loader.dependency = "dependency";
     manager.setLoader(AssetStreamsOwnershipTest.Item.class, loader);
     AssetStreams streams = new AssetStreams(manager, AssetStreamsOwnershipTest.BUDGET);
     Game game = new Game(); game.addSystem(streams);
@@ -79,7 +85,9 @@ public class AssetStreamsAsyncTest {
     });
     releaser.start(); game.dispose(); releaser.join(5000);
     assertNull(helperFailure.get()); assertFalse(releaser.isAlive()); assertEquals(AssetLease.State.CLOSED, lease.state());
-    assertEquals(1, loader.made.size()); assertEquals(1, loader.made.getFirst().disposals);
+    assertEquals(2, loader.made.size());
+    assertEquals(Set.of("item", "dependency"), new HashSet<>(loader.made.stream().map(item -> item.name).toList()));
+    for (var item : loader.made) { assertEquals(1, item.disposals); assertSame(Thread.currentThread(), item.disposedOn); }
     assertSame(Thread.currentThread(), loader.syncThread); assertSame(Thread.currentThread(), loader.made.getFirst().disposedOn);
     assertEquals(0, manager.getLoadedAssets());
   }

@@ -55,6 +55,11 @@ public class AssetStreamsOwnershipTest {
     final AssetStreams streams;
     Fixture() { manager.setLoader(Item.class, loader); streams = new AssetStreams(manager, BUDGET); }
     AssetLease<Item> request(String name) { return streams.request(new AssetKey<>(name, Item.class), 0, 10); }
+    // Force actual admission pressure while retaining the stated number of pinned roots.
+    void evictClosed(int pinnedRoots) {
+      var pressure = streams.request(new AssetKey<>("pressure", Item.class), 0, 10000 - pinnedRoots * 10L);
+      try { streams.finishFrame(); } finally { pressure.close(); }
+    }
     void ready(AssetLease<?> lease) {
       for (int i = 0; i < 10000 && lease.state() != AssetLease.State.READY && lease.state() != AssetLease.State.FAILED; i++) {
         streams.onUiUpdate(0); streams.finishFrame(); Thread.yield();
@@ -81,7 +86,7 @@ public class AssetStreamsOwnershipTest {
     try (Fixture f = new Fixture()) {
       var a = f.request("a"); var b = f.request("a"); f.ready(a); Item item = a.get();
       a.close(); f.streams.finishFrame(); assertSame(item, b.get()); assertEquals(0, item.disposals);
-      b.close(); assertEquals(0, item.disposals); f.streams.finishFrame(); assertEquals(1, item.disposals);
+      b.close(); assertEquals(0, item.disposals); f.evictClosed(0); assertEquals(1, item.disposals);
     }
   }
   @Test public void sharedDependencySurvivesFirstRootUnload() {
@@ -89,8 +94,8 @@ public class AssetStreamsOwnershipTest {
       f.loader.edges.put("a", List.of("good")); f.loader.edges.put("b", List.of("good"));
       var a = f.request("a"); var b = f.request("b"); f.ready(a); f.ready(b);
       Item good = f.manager.get("good", Item.class); assertEquals(2, f.manager.getReferenceCount("good"));
-      a.close(); f.streams.finishFrame(); assertEquals(0, good.disposals); assertEquals(1, f.manager.getReferenceCount("good"));
-      b.close(); f.streams.finishFrame(); assertEquals(1, good.disposals); assertEquals(0, f.manager.getLoadedAssets());
+      a.close(); f.evictClosed(1); assertEquals(0, good.disposals); assertEquals(1, f.manager.getReferenceCount("good"));
+      b.close(); f.evictClosed(0); assertEquals(1, good.disposals); assertEquals(0, f.manager.getLoadedAssets());
     }
   }
   @Test public void conflictingTypeOrEstimateRefused() {
@@ -104,7 +109,7 @@ public class AssetStreamsOwnershipTest {
   @Test public void closeIdempotentAndGetAfterCloseFails() {
     try (Fixture f = new Fixture()) {
       var a = f.request("a"); f.ready(a); Item item = a.get(); a.close(); a.close();
-      assertThrows(IllegalStateException.class, a::get); f.streams.finishFrame(); assertEquals(1, item.disposals);
+      assertThrows(IllegalStateException.class, a::get); f.evictClosed(0); assertEquals(1, item.disposals);
     }
   }
   @Test public void wrongThreadRefusedBeforeDisposeMutation() throws Exception {
@@ -132,8 +137,8 @@ public class AssetStreamsOwnershipTest {
       f.loader.failures.clear(); var retry = f.request("a"); f.ready(unrelated); f.ready(retry);
       assertEquals(AssetLease.State.FAILED, a.state()); assertEquals(2, f.manager.getReferenceCount("good"));
       assertEquals(2, f.manager.getDependencies("a").size);
-      retry.close(); f.streams.finishFrame(); assertEquals(1, f.manager.getReferenceCount("good"));
-      b.close(); unrelated.close(); f.streams.finishFrame(); assertEquals(1, good.disposals); assertEquals(1, child.disposals);
+      retry.close(); f.evictClosed(2); assertEquals(1, f.manager.getReferenceCount("good"));
+      b.close(); unrelated.close(); f.evictClosed(0); assertEquals(1, good.disposals); assertEquals(1, child.disposals);
     }
   }
   @Test public void earlierCompletedSiblingAndNestedFailedMetadataAreRemoved() {
@@ -196,7 +201,7 @@ public class AssetStreamsOwnershipTest {
     Fixture f = new Fixture();
     f.loader.edges.put("root", List.of("child")); f.loader.throwingDisposers.add("root");
     var root = f.request("root"); f.ready(root); root.close();
-    assertThrows(IllegalStateException.class, f.streams::finishFrame);
+    assertThrows(IllegalStateException.class, () -> f.evictClosed(0));
     assertEquals(1, f.loader.made.get("root").getFirst().disposals);
     assertEquals(1, f.loader.made.get("child").getFirst().disposals);
     assertEquals(0, AssetMetadataProbe.dependencyKeys(f.manager)); f.close();

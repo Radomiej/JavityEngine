@@ -38,21 +38,48 @@ like libGDX descriptors; they do not canonicalize aliases or filesystem links.
 
 The estimate includes dependencies and is supplied by the application; it is not
 a measurement of GPU memory. Negative estimates or estimates above the configured
-byte capacity are rejected. Zero is valid. This ownership slice validates all
-`StreamBudget` fields, orders queued roots by descending priority/FIFO, and uses a
-soft update time allowance (zero still advances one manager step). Queue/resident
-capacity enforcement, cache policy and public diagnostics are the next scheduling
-slice; those capacity fields do not yet limit aggregate usage here.
+byte capacity are rejected. Zero is valid. `StreamBudget` limits the number of
+unique queued roots, resident root entries, and aggregate resident estimates.
+Dependencies are covered by each root's estimate, so shared dependencies may be
+counted twice. Active transactions reserve their full estimate and one entry
+before admission. Waiting roots do not consume resident capacity. A new unique
+root beyond `maxQueued` throws `IllegalStateException`; deduplicated leases and
+cache hits need no queue slot. Closing the final queued lease frees its slot.
+
+The first request fixes a generation's priority. Waiting roots run by descending
+priority and FIFO for ties; the queue head is never bypassed when it cannot fit.
+No active loader is preempted. The update time allowance is soft (zero still
+advances one manager step).
 
 Only one root is physically admitted, even when `maxInflight` exceeds one. Other
 roots stay in the wrapper queue. One manager update/upload can exceed the soft
 time allowance; uploads run on the owner thread, while a correctly implemented
 async loader prepares CPU data on its worker. Custom loaders must obey that split.
 
-Logical close is immediate; physical release waits for `finishFrame`. Closing the
-last lease of an active load lets that load finish but suppresses publication to
-closed leases. A same-path fresh request waits for the obsolete generation to be
-drained/released, then loads separately. No active lease is physically released.
+Logical close is immediate. Closing the last READY lease leaves an unpinned cache
+entry. A later request gets that same object immediately, including before the
+next frame boundary. Only `finishFrame`, outside every render batch, evicts cache
+entries: it removes the least recently released/acquired ready roots until the
+priority/FIFO queue head can fit. A monotonic owner-thread event order resolves
+recency, with original queue-entry order as the tie breaker. If pinned roots alone
+prevent the head from fitting, the cache stays intact and admission waits. With
+no pressure, unpinned cache remains resident. Prefetch uses an ordinary lease held
+by the host; closing it leaves the same cache candidate as any other consumer.
+
+`stats()` returns an immutable `StreamStats` snapshot on the owner thread (zero
+after disposal). `queued` counts live waiting roots, `inflight` reports actual
+physically admitted transactions (0/1), `ready` includes unpinned cache, and `pinned`
+counts READY roots with live leases. `estimatedResidentBytes` includes resident
+roots and the active reservation, retained through failure until rollback.
+`overBudget` reports demand pressure: at least one live queued root cannot fit
+current byte/entry reservations and residents, including reclaimable cache. It can
+be true even while admitted sums stay within limits; a busy loader alone does not
+set it. This is no measurement of actual GPU allocation.
+
+Closing the last lease of an active load lets that load finish but suppresses
+publication to closed leases. A same-path fresh request waits for the obsolete generation to be
+drained/released unconditionally at `finishFrame`, then loads separately. No active
+lease is physically released.
 During a transaction even unrelated root releases wait, preserving its rollback
 baseline. Scene disposal closes publications, drains active work on the owner
 thread, and then releases resources. It may block on I/O/preparation and may perform
