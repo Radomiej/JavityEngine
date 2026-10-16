@@ -17,10 +17,87 @@ import com.badlogic.gdx.utils.ObjectIntMap;
 import java.lang.reflect.*;
 import java.nio.IntBuffer;
 import java.util.*;
+import org.javity.core.Game;
+import org.javity.core.GameObject;
+import org.javity.core.Transform3D;
+import org.javity.render.lighting.*;
 import org.junit.Test;
 
 /** Actual libGDX owners; recording GL deliberately relocates the simulated linked program. */
 public final class RecoverableDefaultShaderProviderTest {
+  @Test
+  public void legacyStockCapacitiesStaySeparateFromSceneDefaultsAndAdvancedOverride() {
+    DefaultShader.Config stock = new DefaultShader.Config();
+    RecoverableDefaultShaderProvider defaults = new RecoverableDefaultShaderProvider(stock);
+    RecoverableDefaultShaderProvider advanced =
+        new RecoverableDefaultShaderProvider(stock, 0, 1, 0);
+    assertSame(stock, defaults.config);
+    assertEquals(2, stock.numDirectionalLights);
+    assertEquals(5, stock.numPointLights);
+    assertEquals(0, stock.numSpotLights);
+    assertEquals(2, defaults.sceneConfig.numDirectionalLights);
+    assertEquals(4, defaults.sceneConfig.numPointLights);
+    assertEquals(2, defaults.sceneConfig.numSpotLights);
+    assertEquals(0, advanced.sceneConfig.numDirectionalLights);
+    assertEquals(1, advanced.sceneConfig.numPointLights);
+    assertEquals(0, advanced.sceneConfig.numSpotLights);
+    defaults.dispose();
+    advanced.dispose();
+  }
+
+  @Test
+  public void sceneConfigIsSeparateAndSceneUniformsRecoverWithCacheIsolation() throws Exception {
+    try (Fixture f = new Fixture();
+        Game game = new Game()) {
+      assertEquals(2, f.provider.sceneConfig.numDirectionalLights);
+      assertEquals(4, f.provider.sceneConfig.numPointLights);
+      assertEquals(2, f.provider.sceneConfig.numSpotLights);
+      assertEquals(2, f.provider.config.numPointLights);
+      f.provider.sceneConfig.vertexShader = "void main(){}";
+      f.provider.sceneConfig.fragmentShader = "void main(){}";
+      RenderEnvironment3D scene = game.addSystem(new RenderEnvironment3D());
+      GameObject owner = game.createObject("lights");
+      owner.addComponent(new Transform3D());
+      owner.addComponent(new DirectionalLight3D());
+      owner.addComponent(new PointLight3D());
+      owner.addComponent(new SpotLight3D());
+      scene.setFog(.2f, .3f, .4f, 2, 10);
+      game.start();
+      DefaultShader legacy = (DefaultShader) f.provider.getShader(f.renderable);
+      Environment legacyEnvironment = f.renderable.environment;
+      f.renderable.environment = scene.snapshot(2, 4, 2);
+      DefaultShader lighting = (DefaultShader) f.provider.getShader(f.renderable);
+      assertNotSame(legacy, lighting);
+      assertFalse(legacy.canRender(f.renderable));
+      f.draw(lighting);
+      for (String alias :
+          List.of(
+              "u_sceneAmbient",
+              "u_sceneFogRange",
+              "u_scenePoint[0].range",
+              "u_sceneSpot[0].cutoff")) {
+        assertTrue("registered and active " + alias, lighting.has(lighting.getUniformID(alias)));
+        assertTrue(
+            "uploaded " + alias, f.gl.uniformUploads.contains(f.gl.uniformLocations().get(alias)));
+      }
+      f.gl.phase = 1;
+      f.relinkAndRefreshProgramMaps(lighting.program);
+      // Refresh both programs: invalidateAll relinks both retained variants.
+      f.relinkAndRefreshProgramMaps(legacy.program);
+      f.provider.contextRestored();
+      f.gl.resetDrawObservations();
+      f.draw(lighting);
+      for (int location : f.gl.uniformUploads)
+        assertTrue(
+            "scene uniform cache must relocate",
+            location < 0 || f.gl.uniformLocations().containsValue(location));
+      assertSame(lighting, f.provider.getShader(f.renderable));
+      f.renderable.environment = legacyEnvironment;
+      assertFalse(lighting.canRender(f.renderable));
+      assertSame(legacy, f.provider.getShader(f.renderable));
+    }
+  }
+
   @Test
   public void retainedDefaultShaderUsesNewUniformLightVertexAndInstanceLocations()
       throws Exception {
@@ -324,7 +401,22 @@ public final class RecoverableDefaultShaderProviderTest {
             "u_spotLights[1].direction",
             "u_spotLights[1].cutoffAngle",
             "u_spotLights[1].exponent",
-            "u_fogColor");
+            "u_fogColor",
+            "u_sceneAmbient",
+            "u_sceneFogRange",
+            "u_sceneDirectional[0].color",
+            "u_sceneDirectional[0].direction",
+            "u_scenePoint[0].color",
+            "u_scenePoint[0].position",
+            "u_scenePoint[0].intensity",
+            "u_scenePoint[0].range",
+            "u_sceneSpot[0].color",
+            "u_sceneSpot[0].position",
+            "u_sceneSpot[0].direction",
+            "u_sceneSpot[0].intensity",
+            "u_sceneSpot[0].range",
+            "u_sceneSpot[0].cutoff",
+            "u_sceneSpot[0].exponent");
 
     Map<String, Integer> uniformLocations() {
       Map<String, Integer> locations = new LinkedHashMap<>();

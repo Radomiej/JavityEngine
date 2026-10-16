@@ -18,25 +18,48 @@
  * BaseShader/DefaultShader. Bundled upstream LICENSE/AUTHORS and THIRD_PARTY.md apply. */
 package org.javity.render;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Version;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.g3d.attributes.*;
+import com.badlogic.gdx.graphics.g3d.environment.*;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.IntIntMap;
 import java.lang.reflect.Field;
+import org.javity.render.lighting.*;
 
 /** Retains ModelBatch-owned shader objects while repairing their post-link location caches. */
 final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
   private final Access access;
+  final DefaultShader.Config sceneConfig;
 
   RecoverableDefaultShaderProvider(DefaultShader.Config config) {
+    this(
+        config,
+        RenderEnvironment3D.DEFAULT_DIRECTIONAL_CAPACITY,
+        RenderEnvironment3D.DEFAULT_POINT_CAPACITY,
+        RenderEnvironment3D.DEFAULT_SPOT_CAPACITY);
+  }
+
+  RecoverableDefaultShaderProvider(
+      DefaultShader.Config config, int directional, int point, int spot) {
     super(config);
     access = new Access();
+    sceneConfig = new DefaultShader.Config();
+    sceneConfig.numBones = config.numBones;
+    sceneConfig.numBoneWeights = config.numBoneWeights;
+    sceneConfig.numDirectionalLights = directional;
+    sceneConfig.numPointLights = point;
+    sceneConfig.numSpotLights = spot;
+    sceneConfig.defaultCullFace = config.defaultCullFace;
+    sceneConfig.defaultDepthFunc = config.defaultDepthFunc;
   }
 
   @Override
@@ -44,7 +67,15 @@ final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
     // Copy descriptor values before the DefaultShader constructor allocates a ShaderProgram.
     AttributeAlias[] vertices = aliases(renderable.meshPart.mesh.getVertexAttributes());
     AttributeAlias[] instances = aliases(renderable.meshPart.mesh.getInstancedAttributes());
-    return new RecoverableDefaultShader(renderable, config, access, vertices, instances);
+    boolean scene = isScene(renderable);
+    if (scene && sceneConfig.vertexShader == null) {
+      sceneConfig.vertexShader =
+          Gdx.files.classpath("org/javity/render/scene-lighting.vertex.glsl").readString();
+      sceneConfig.fragmentShader =
+          Gdx.files.classpath("org/javity/render/scene-lighting.fragment.glsl").readString();
+    }
+    return new RecoverableDefaultShader(
+        renderable, scene ? sceneConfig : config, access, vertices, instances, scene);
   }
 
   /**
@@ -52,6 +83,11 @@ final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
    */
   void contextRestored() {
     for (Shader shader : shaders) ((RecoverableDefaultShader) shader).contextRestored();
+  }
+
+  private static boolean isScene(Renderable renderable) {
+    return renderable.environment != null
+        && renderable.environment.has(SceneLightingAttribute.Type);
   }
 
   private record AttributeAlias(int key, String alias) {}
@@ -78,17 +114,127 @@ final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
     private final Access access;
     private final AttributeAlias[] vertexAliases, instanceAliases;
     private boolean[] originallyActiveUniforms;
+    private final boolean scene;
+    private final int[][] sceneDirectional, scenePoint, sceneSpot;
+    private final int sceneAmbient, sceneFogRange;
 
     RecoverableDefaultShader(
         Renderable renderable,
         Config config,
         Access access,
         AttributeAlias[] vertices,
-        AttributeAlias[] instances) {
+        AttributeAlias[] instances,
+        boolean scene) {
       super(renderable, config);
+      this.scene = scene;
+      sceneDirectional =
+          registerLights(
+              "u_sceneDirectional", scene ? config.numDirectionalLights : 0, "color", "direction");
+      scenePoint =
+          registerLights(
+              "u_scenePoint",
+              scene ? config.numPointLights : 0,
+              "color",
+              "position",
+              "intensity",
+              "range");
+      sceneSpot =
+          registerLights(
+              "u_sceneSpot",
+              scene ? config.numSpotLights : 0,
+              "color",
+              "position",
+              "direction",
+              "intensity",
+              "range",
+              "cutoff",
+              "exponent");
+      sceneAmbient = scene ? register("u_sceneAmbient") : -1;
+      sceneFogRange = scene ? register("u_sceneFogRange") : -1;
       this.access = access;
       vertexAliases = vertices;
       instanceAliases = instances;
+    }
+
+    private int[][] registerLights(String prefix, int count, String... fields) {
+      int[][] ids = new int[count][fields.length];
+      for (int i = 0; i < count; i++)
+        for (int j = 0; j < fields.length; j++)
+          ids[i][j] = register(prefix + "[" + i + "]." + fields[j]);
+      return ids;
+    }
+
+    @Override
+    public boolean canRender(Renderable renderable) {
+      return scene == isScene(renderable) && super.canRender(renderable);
+    }
+
+    @Override
+    protected void bindLights(Renderable renderable, Attributes attributes) {
+      if (!scene) {
+        super.bindLights(renderable, attributes);
+        return;
+      }
+      SceneLightingAttribute marker =
+          renderable.environment.get(SceneLightingAttribute.class, SceneLightingAttribute.Type);
+      ColorAttribute ambient =
+          renderable.environment.get(ColorAttribute.class, ColorAttribute.AmbientLight);
+      set(sceneAmbient, ambient.color.r, ambient.color.g, ambient.color.b);
+      set(sceneFogRange, marker.fogNear(), marker.fogFar());
+      ColorAttribute fog = renderable.environment.get(ColorAttribute.class, ColorAttribute.Fog);
+      if (fog != null) set(u_fogColor, fog.color);
+      DirectionalLightsAttribute dirs =
+          renderable.environment.get(
+              DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type);
+      PointLightsAttribute points =
+          renderable.environment.get(PointLightsAttribute.class, PointLightsAttribute.Type);
+      SpotLightsAttribute spots =
+          renderable.environment.get(SpotLightsAttribute.class, SpotLightsAttribute.Type);
+      for (int i = 0; i < sceneDirectional.length; i++) {
+        int[] ids = sceneDirectional[i];
+        DirectionalLight light = dirs != null && i < dirs.lights.size ? dirs.lights.get(i) : null;
+        if (light == null) {
+          set(ids[0], 0f, 0f, 0f);
+          set(ids[1], 0f, -1f, 0f);
+        } else {
+          set(ids[0], light.color.r, light.color.g, light.color.b);
+          set(ids[1], light.direction);
+        }
+      }
+      for (int i = 0; i < scenePoint.length; i++) {
+        int[] ids = scenePoint[i];
+        PointLight light = points != null && i < points.lights.size ? points.lights.get(i) : null;
+        if (light == null) {
+          set(ids[0], 0f, 0f, 0f);
+          set(ids[1], 0f, 0f, 0f);
+          set(ids[2], 0f);
+        } else {
+          set(ids[0], light.color.r, light.color.g, light.color.b);
+          set(ids[1], light.position);
+          set(ids[2], light.intensity);
+        }
+        set(ids[3], marker.pointRange(i));
+      }
+      for (int i = 0; i < sceneSpot.length; i++) {
+        int[] ids = sceneSpot[i];
+        SpotLight light = spots != null && i < spots.lights.size ? spots.lights.get(i) : null;
+        if (light == null) {
+          set(ids[0], 0f, 0f, 0f);
+          set(ids[1], 0f, 0f, 0f);
+          set(ids[2], 0f, -1f, 0f);
+          set(ids[3], 0f);
+          set(ids[5], 1f);
+          set(ids[6], 1f);
+        } else {
+          set(ids[0], light.color.r, light.color.g, light.color.b);
+          set(ids[1], light.position);
+          set(ids[2], light.direction);
+          set(ids[3], light.intensity);
+          set(ids[5], (float) Math.cos(Math.toRadians(light.cutoffAngle)));
+          set(ids[6], light.exponent);
+        }
+        set(ids[4], marker.spotRange(i));
+      }
     }
 
     @Override

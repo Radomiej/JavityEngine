@@ -19,6 +19,7 @@ import org.javity.avatar.AvatarView;
 import org.javity.core.*;
 import org.javity.presentation.Presentation2D;
 import org.javity.presentation.Presentation3D;
+import org.javity.render.lighting.RenderEnvironment3D;
 
 /** Render passes: models with depth, sprites without depth, then caller-owned UI. */
 public final class GdxRenderer implements Disposable {
@@ -86,6 +87,7 @@ public final class GdxRenderer implements Disposable {
   private int width = 1, height = 1;
   private boolean sceneCameraActive;
   private final int maxBones, maxBoneWeights;
+  private final int directionalCapacity, pointCapacity, spotCapacity;
 
   public GdxRenderer() {
     this(12, 4);
@@ -97,6 +99,26 @@ public final class GdxRenderer implements Disposable {
    * explicitly larger capacity and hardware/shader validation.
    */
   public GdxRenderer(int maxBones, int maxBoneWeights) {
+    this(
+        maxBones,
+        maxBoneWeights,
+        RenderEnvironment3D.DEFAULT_DIRECTIONAL_CAPACITY,
+        RenderEnvironment3D.DEFAULT_POINT_CAPACITY,
+        RenderEnvironment3D.DEFAULT_SPOT_CAPACITY);
+  }
+
+  /** Explicit scene-light capacities, including zero; legacy lighting retains stock capacities. */
+  public GdxRenderer(
+      int maxBones,
+      int maxBoneWeights,
+      int directionalCapacity,
+      int pointCapacity,
+      int spotCapacity) {
+    if (directionalCapacity < 0 || pointCapacity < 0 || spotCapacity < 0)
+      throw new IllegalArgumentException("Light capacities must be nonnegative");
+    this.directionalCapacity = directionalCapacity;
+    this.pointCapacity = pointCapacity;
+    this.spotCapacity = spotCapacity;
     if (maxBones < 1 || maxBoneWeights < 0 || maxBoneWeights > 8)
       throw new IllegalArgumentException(
           "Shader capacity requires 1..N bones and 0..8 bone-weight attributes");
@@ -106,7 +128,8 @@ public final class GdxRenderer implements Disposable {
     shaderConfig.numBones = maxBones;
     shaderConfig.numBoneWeights = maxBoneWeights;
     RecoverableDefaultShaderProvider createdModelShaders =
-        new RecoverableDefaultShaderProvider(shaderConfig);
+        new RecoverableDefaultShaderProvider(
+            shaderConfig, directionalCapacity, pointCapacity, spotCapacity);
     SpriteBatch createdSprites = null;
     ShapeRenderer createdShapes = null;
     ModelBatch createdModels = null;
@@ -221,6 +244,9 @@ public final class GdxRenderer implements Disposable {
           && !target.getGameObject().hasComponent(Transform3D.class))
         throw new IllegalArgumentException("AvatarView renderer requires Transform3D");
     }
+    Environment selectedEnvironment =
+        RenderEnvironment3D.select(
+            game, environment, directionalCapacity, pointCapacity, spotCapacity);
     camera.camera.viewportWidth = width;
     camera.camera.viewportHeight = height;
     camera.camera.update();
@@ -300,17 +326,20 @@ public final class GdxRenderer implements Disposable {
       if (skinnedInstances != null)
         worldOrdinary.addAll(
             skinnedInstances.render(
-                skinnedCandidates, camera.camera, environment, skinnedOwners.toArray()));
+                skinnedCandidates, camera.camera, selectedEnvironment, skinnedOwners.toArray()));
       if (staticInstances == null && worldCandidates.size > 0)
         staticInstances = new StaticInstanceBatch(256);
       if (staticInstances != null)
         worldOrdinary.addAll(
             staticInstances.render(
-                worldCandidates, camera.camera, environment, worldCandidateOwners.toArray()));
+                worldCandidates,
+                camera.camera,
+                selectedEnvironment,
+                worldCandidateOwners.toArray()));
       models.begin(camera.camera);
       try {
         for (Renderable renderable : worldOrdinary) {
-          renderable.environment = environment;
+          renderable.environment = selectedEnvironment;
           models.render(renderable);
         }
       } finally {
@@ -542,7 +571,10 @@ public final class GdxRenderer implements Disposable {
     }
   }
 
-  /** Draws a final depth-isolated 3D overlay pass (the framebuffer color is preserved). */
+  /**
+   * Draws a final depth-isolated overlay, preserving framebuffer color. Uses legacy renderer
+   * lighting deliberately, without scene fog/sky, so FPS hands remain readable independently.
+   */
   public void renderViewmodel(Camera camera, RenderableProvider provider) {
     Objects.requireNonNull(camera, "camera");
     Objects.requireNonNull(provider, "provider");

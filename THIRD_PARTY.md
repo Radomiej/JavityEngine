@@ -98,3 +98,13 @@ authored 2026-10-16, copyright JavityEngine contributors, Apache-2.0 under the
 repository LICENSE. No external model/texture was copied.
 [Source and license notice](javity-desktop/src/main/resources/org/javity/demo/asset-streaming/NOTICE.md).
 The standard libGDX model/texture loaders retain their existing attribution above.
+
+## Scene lighting shader variant (libGDX 1.14.2)
+
+`javity-core/src/main/resources/org/javity/render/scene-lighting.vertex.glsl`
+and `scene-lighting.fragment.glsl` derive from libGDX 1.14.2
+`graphics/g3d/shaders/default.vertex.glsl` and `default.fragment.glsl`.
+The Apache-2.0 notice and existing bundled libGDX LICENSE/AUTHORS apply.
+Local changes move scene lights to fragment evaluation, add finite point/spot
+ranges and linear distance fog, retaining upstream skinning/material paths.
+Legacy environments continue using the unmodified libGDX default sources.

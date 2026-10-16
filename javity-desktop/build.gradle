@@ -263,3 +263,11 @@ tasks.register('assetStreamingSmoke', JavaExec) {
     jvmArgs '--enable-native-access=ALL-UNNAMED'
     args '--asset-streaming', '--smoke'
 }
+
+tasks.register('sceneLightingShaderSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Compile and draw scene lighting through ordinary renderer constructors on GL20 and GL30.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SceneLightingGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
