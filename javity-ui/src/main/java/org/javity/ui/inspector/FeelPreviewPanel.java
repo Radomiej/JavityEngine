@@ -139,7 +139,11 @@ public final class FeelPreviewPanel implements AutoCloseable {
   public void pause() { session.pause(); refresh(); }
   public void resume() { session.resume(); refresh(); }
   public void stop() { parameterError = null; session.stop(); refresh(); }
-  public void setVisible(boolean visible) { if (!closed) root.setVisible(visible); }
+  public void setVisible(boolean visible) {
+    if (closed) return;
+    if (!visible) stage.unfocus(root);
+    root.setVisible(visible);
+  }
   public boolean isPlaying() { return session.isPlaying(); }
   private void refresh() {
     if (closed) return;

@@ -391,10 +391,14 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
       image.setBounds(342, 240, SIZE, SIZE); stage.addActor(image);
       int borrowedChildren = stage.getRoot().getChildren().size;
       tools = new RuntimeToolsOverlay(stage, theme, () -> game);
-      final int[] gameplayClicks = {0};
+      final int[] gameplayClicks = {0}, gameplayKeys = {0};
       InputMultiplexer input = new InputMultiplexer(tools.inspector().inputProcessor(), stage,
           tools.inspector().gizmoInputProcessor(), new InputAdapter() {
             @Override public boolean touchDown(int x, int y, int p, int b) { gameplayClicks[0]++; return true; }
+            @Override public boolean keyDown(int key) {
+              if (stage.getKeyboardFocus() != null || key != Input.Keys.W) return false;
+              gameplayKeys[0]++; return true;
+            }
           });
       Gdx.input.setInputProcessor(input);
       tools.update(0);
@@ -425,6 +429,8 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
       require(stopped.greenCenterX == base.greenCenterX && stopped.greenCount == base.greenCount,
           "panel Stop did not restore model pixels");
       require(canonical(worldTransform, position, scale), "panel preview changed canonical Transform3D");
+
+      focusHandoffProof(stage, theme, tools, input, gameplayKeys);
 
       // The selected object is explicit; changing to the camera uses its existing manager/providers.
       tools.inspector().selectObject(worldCamera.getGameObject()); tools.update(0);
@@ -478,6 +484,63 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
       stage.dispose(); theme.dispose();
       Gdx.input.setInputProcessor(previousInput); Gdx.input.setCursorCatched(previousCapture);
     }
+  }
+
+  private void focusHandoffProof(Stage stage, UiTheme theme, RuntimeToolsOverlay tools,
+      InputMultiplexer input, int[] gameplayKeys) throws IOException {
+    int[] handoffs = {0};
+    tools.setInteractionChanged(() -> handoffs[0]++);
+    input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1);
+    Gdx.input.setCursorCatched(true);
+    input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1); tools.update(0);
+    require(!Gdx.input.isCursorCatched(), "F1 open did not release captured cursor");
+    click(stage, input, "feel-play");
+    var newer = worldEffects.play(PresentationEffects3D.punchPosition(1, 0, 0, 2, .7, 1));
+    try {
+      click(stage, input, "feel-parameter-Hz");
+      Actor field = stage.getRoot().findActor("feel-parameter-Hz");
+      require(stage.getKeyboardFocus() == field, "actual Feel field click did not acquire keyboard focus");
+      Vector2 hover = stage.stageToScreenCoordinates(field.localToStageCoordinates(
+          new Vector2(field.getWidth() / 2, field.getHeight() / 2)));
+      input.mouseMoved(Math.round(hover.x), Math.round(hover.y)); stage.act(0);
+      Actor panel = stage.getRoot().findActor("feel-preview-panel");
+      require(stage.getScrollFocus() != null && panel.isAscendantOf(stage.getScrollFocus()),
+          "actual Feel hover did not acquire panel scroll focus");
+      String text = ((com.badlogic.gdx.scenes.scene2d.ui.TextField) field).getText();
+      int beforeHandoff = handoffs[0], beforeGameplay = gameplayKeys[0];
+      input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1);
+      require(stage.getKeyboardFocus() == null, "hidden Feel field retained keyboard focus after F1");
+      require(stage.getScrollFocus() == null, "hidden Feel ScrollPane retained scroll focus after F1");
+      require(Gdx.input.isCursorCatched() && handoffs[0] == beforeHandoff + 1,
+          "F1 hide did not restore captured cursor and host input handoff");
+      require(!tools.feelPreview().isPlaying() && newer.isActive() && worldEffects.activeCount() == 1,
+          "F1 hide did not cancel only its exact owned playback");
+      require(input.keyDown(Input.Keys.W) && gameplayKeys[0] == beforeGameplay + 1,
+          "gameplay keyboard-focus gate stayed blocked after F1");
+      input.keyUp(Input.Keys.W); input.keyTyped('9');
+      require(((com.badlogic.gdx.scenes.scene2d.ui.TextField) field).getText().equals(text),
+          "hidden Feel field received typed gameplay input");
+    } finally { newer.cancel(); }
+
+    // A borrowed host field outside both tool panels keeps its focus across their hide.
+    var host = theme.textField("borrowed host", "text-sm text-slate-200 bg-slate-800 rounded");
+    host.setName("feel-proof-host-field"); host.setBounds(350, 140, 240, 32); stage.addActor(host);
+    try {
+      input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1); tools.update(0);
+      click(stage, input, "feel-proof-host-field");
+      stage.setScrollFocus(host);
+      require(stage.getKeyboardFocus() == host, "actual host field click did not acquire focus");
+      input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1);
+      require(stage.getKeyboardFocus() == host && stage.getScrollFocus() == host,
+          "Feel hide cleared unrelated borrowed host focus");
+      require(Gdx.input.isCursorCatched(), "borrowed-host focus test did not restore cursor");
+    } finally { host.remove(); }
+    input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1); tools.update(0);
+    tools.setInteractionChanged(() -> {});
+    Files.writeString(Path.of("docs/artifacts/feel-preview/focus-handoff.json"),
+        "{\n  \"result\": \"PASS\",\n  \"actualFieldClickAndHover\": true,\n"
+        + "  \"feelKeyboardAndScrollFocusReleased\": true,\n  \"cursorAndGameplayHandoff\": true,\n"
+        + "  \"ownedPlaybackOnlyCancelled\": true,\n  \"borrowedHostFocusPreserved\": true\n}\n");
   }
 
   private void collectFlex(Actor actor, java.util.List<org.javity.ui.flex.Flex> trees) {

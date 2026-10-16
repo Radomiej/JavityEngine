@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "actualFieldClickAndHover": true,
+  "feelKeyboardAndScrollFocusReleased": true,
+  "cursorAndGameplayHandoff": true,
+  "ownedPlaybackOnlyCancelled": true,
+  "borrowedHostFocusPreserved": true
+}
