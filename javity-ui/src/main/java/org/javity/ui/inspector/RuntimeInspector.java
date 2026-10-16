@@ -26,7 +26,11 @@ public final class RuntimeInspector implements AutoCloseable {
   private final Stage stage;
   private final UiTheme theme;
   private final Supplier<Game> currentScene;
-  private final SceneInspection inspection = new SceneInspection();
+  private final RuntimeInspectionSession session = new RuntimeInspectionSession();
+  private final SceneInspection inspection = session.inspection;
+  private final TextField search;
+  private java.util.function.Consumer<Boolean> visibilityChanged = value -> {};
+  private java.util.function.Function<GameObject, String> focusSelected = object -> "Debug camera unavailable";
   private final Flex root, panel, rows;
   private final Label status, detail;
   private final Label editStatus;
@@ -225,7 +229,7 @@ public final class RuntimeInspector implements AutoCloseable {
       root.add(new Flex("flex-col"), "flex-1");
       panel =
           root.add(
-              new Flex(theme, "flex-col p-4 gap-2 bg-slate-900 rounded-lg border border-slate-700"),
+              new Flex(theme, "flex-col p-4 gap-1 bg-slate-900 rounded-lg border border-slate-700"),
               "w-96 h-full");
       // Only the panel blocks world input. Empty overlay space remains childrenOnly.
       panel.setName("runtime-inspector-panel");
@@ -256,6 +260,20 @@ public final class RuntimeInspector implements AutoCloseable {
         heading.add(selectionButton, "w-12");
       }
       status = panel.add(theme.label("No live scene", "text-sm text-slate-400", true), "h-8");
+      Flex searchRow = panel.add(new Flex(theme, "flex-row gap-1"), "h-8");
+      search = theme.textField("", "text-sm text-slate-200 bg-slate-800 rounded");
+      search.setMessageText("Search name / ID / tag");
+      search.setName("runtime-object-search");
+      search.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener() {
+        @Override public void changed(ChangeEvent event, Actor actor) {
+          session.query = search.getText();
+          refresh();
+        }
+      });
+      searchRow.add(search, "flex-1");
+      TextButton focus = theme.button("Focus", "text-sm text-white bg-slate-700 rounded", this::focusSelected);
+      focus.setName("runtime-focus-selected");
+      searchRow.add(focus, "w-14");
       listScroll = new ScrollPane(rows);
       listScroll.setName("runtime-object-list");
       listScroll.setScrollingDisabled(true, false);
@@ -798,11 +816,13 @@ public final class RuntimeInspector implements AutoCloseable {
 
   public void setVisible(boolean value) {
     requireOpen();
+    if (root.isVisible() == value) return;
     root.setVisible(value);
     if (!value) {
       clearFocus();
       drag = null;
     } else refresh();
+    visibilityChanged.accept(value);
   }
 
   public void update(float unscaledDelta) {
@@ -822,16 +842,32 @@ public final class RuntimeInspector implements AutoCloseable {
   public void refresh() {
     requireOpen();
     Game source = currentScene.get();
-    boolean sceneChanged = source != displayedScene;
+    boolean sceneChanged = session.bind(source);
     displayedScene = source;
-    inspection.setScene(source);
+    if (sceneChanged) search.setText("");
     SceneInspection.Snapshot snapshot = inspection.capture();
     status.setText(snapshot.status());
-    if (sceneChanged || !snapshot.objects().equals(previousRows)) {
+    List<SceneInspection.Row> visible = inspection.visibleRows(session.query, session.collapsed);
+    if (sceneChanged || !visible.equals(previousRows)) {
       float scroll = listScroll.getScrollY();
+      for (Actor actor : rows.getChildren().toArray(Actor.class))
+        if (actor instanceof Flex child) child.close();
       rows.clearChildren();
       buttons.clear();
-      for (SceneInspection.Row row : snapshot.objects()) {
+      List<SceneInspection.Row> all = snapshot.objects();
+      for (SceneInspection.Row row : visible) {
+        int rowIndex = all.indexOf(row);
+        boolean hasChildren = rowIndex + 1 < all.size() && all.get(rowIndex + 1).depth() > row.depth();
+        Flex treeRow = rows.add(new Flex(theme, "flex-row gap-1"), "h-8 w-full");
+        if (hasChildren) {
+          TextButton collapse = theme.button(session.collapsed.contains(row.id()) ? "+" : "-",
+              "text-sm text-white bg-slate-700 rounded", () -> {
+                if (!closed && currentScene.get() == source)
+                  setCollapsed(row.id(), !session.collapsed.contains(row.id()));
+              });
+          collapse.setName("runtime-collapse-" + row.id());
+          treeRow.add(collapse, "w-6");
+        }
         String indent = "  ".repeat(Math.min(row.depth(), 12));
         String text =
             indent
@@ -844,7 +880,7 @@ public final class RuntimeInspector implements AutoCloseable {
                 + row.components()
                 + ")";
         TextButton button =
-            rows.add(
+            treeRow.add(
                 theme.button(
                     text,
                     "text-sm text-slate-200 bg-slate-800 rounded",
@@ -858,7 +894,7 @@ public final class RuntimeInspector implements AutoCloseable {
                       inspection.select(row.id());
                       refresh();
                     }),
-                "h-8 w-full");
+                "flex-1");
         button.setName("runtime-object-" + row.id());
         button.getLabel().setEllipsis(true);
         button.getLabel().setAlignment(com.badlogic.gdx.utils.Align.left);
@@ -867,7 +903,7 @@ public final class RuntimeInspector implements AutoCloseable {
       listScroll.invalidateHierarchy();
       listScroll.validate();
       listScroll.setScrollY(scroll);
-      previousRows = snapshot.objects();
+      previousRows = visible;
       previousSelection = null;
     }
     for (var entry : buttons.entrySet()) {
@@ -920,9 +956,51 @@ public final class RuntimeInspector implements AutoCloseable {
     return true;
   }
 
+  /** Live current selection, never an object from a replaced/disposed supplier scene. */
+  public GameObject selectedObject() {
+    if (closed || currentScene.get() != displayedScene) return null;
+    return selectedObject(displayedScene, inspection.capture().selectedId());
+  }
+
+  public void setSearchQuery(String query) {
+    requireOpen();
+    refresh();
+    search.setText(query == null ? "" : query);
+  }
+
+  public String searchQuery() { return session.query; }
+
+  public void setCollapsed(int id, boolean value) {
+    requireOpen();
+    if (currentScene.get() != displayedScene) { refresh(); return; }
+    if (value) session.collapsed.add(id); else session.collapsed.remove(id);
+    previousRows = List.of();
+    refresh();
+  }
+
+  public boolean isCollapsed(int id) { return session.collapsed.contains(id); }
+
+  /** Host callback for cursor/input ownership on every visibility transition, including X. */
+  public void setVisibilityListener(java.util.function.Consumer<Boolean> listener) {
+    visibilityChanged = Objects.requireNonNull(listener);
+  }
+
+  public void setFocusSelectedHandler(java.util.function.Function<GameObject, String> handler) {
+    focusSelected = Objects.requireNonNull(handler);
+  }
+
+  /** Null handler result means success; a refusal is shown in the panel. */
+  public boolean focusSelected() {
+    requireOpen();
+    GameObject object = selectedObject();
+    String refusal = object == null ? "Select a live object first" : focusSelected.apply(object);
+    editStatus.setText(refusal == null ? "Debug camera focused" : refusal);
+    return refusal == null;
+  }
+
   private static GameObject selectedObject(Game scene, Integer id) {
     if (scene == null || id == null || scene.isDisposed()) return null;
-    for (GameObject object : scene.getObjects()) if (object.id == id) return object;
+    for (GameObject object : scene.getObjects()) if (object.id == id && !object.isDestroyed()) return object;
     return null;
   }
 
@@ -1064,6 +1142,7 @@ public final class RuntimeInspector implements AutoCloseable {
     closed = true;
     drag = null;
     gizmoRenderer.dispose();
+    root.remove();
     rows.close();
     root.close();
     buttons.clear();

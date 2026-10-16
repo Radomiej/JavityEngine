@@ -793,6 +793,42 @@ public final class SceneInspection {
     return false;
   }
 
+  /** Pure tree projection: search retains ancestors; collapsed parents still hide descendants. */
+  public List<Row> visibleRows(String query, Set<Integer> collapsed) {
+    Objects.requireNonNull(collapsed);
+    List<Row> all = capture().objects();
+    String needle = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
+    Map<Integer, GameObject> objects = new HashMap<>();
+    if (scene != null && !scene.isDisposed())
+      for (GameObject object : scene.getObjects()) objects.put(object.id, object);
+    Set<Integer> included = new HashSet<>();
+    Deque<Row> ancestors = new ArrayDeque<>();
+    for (Row row : all) {
+      while (!ancestors.isEmpty() && ancestors.peekLast().depth() >= row.depth())
+        ancestors.removeLast();
+      GameObject object = objects.get(row.id());
+      boolean matches = needle.isEmpty()
+          || row.name().toLowerCase(Locale.ROOT).contains(needle)
+          || Integer.toString(row.id()).contains(needle)
+          || (object != null && object.getTags().stream()
+              .anyMatch(tag -> tag.toLowerCase(Locale.ROOT).contains(needle)));
+      if (matches) {
+        included.add(row.id());
+        for (Row ancestor : ancestors) included.add(ancestor.id());
+      }
+      ancestors.addLast(row);
+    }
+    List<Row> visible = new ArrayList<>();
+    int hiddenBelow = Integer.MAX_VALUE;
+    for (Row row : all) {
+      if (row.depth() > hiddenBelow) continue;
+      hiddenBelow = Integer.MAX_VALUE;
+      if (included.contains(row.id())) visible.add(row);
+      if (collapsed.contains(row.id())) hiddenBelow = row.depth();
+    }
+    return List.copyOf(visible);
+  }
+
   public Snapshot capture() {
     if (scene == null || scene.isDisposed()) {
       selectedId = null;

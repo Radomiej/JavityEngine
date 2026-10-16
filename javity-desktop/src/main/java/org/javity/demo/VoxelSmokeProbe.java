@@ -902,6 +902,7 @@ final class VoxelSmokeProbe {
     require(
         Math.abs(look.x) < .0001f && look.z < 0,
         "FPS mouse look did not return to the original -Z heading");
+    verifyDebugFocusPreservesPlayer();
     demo.dispatchKeyDownForSmoke(Input.Keys.F);
     require(demo.isFreeFlyMode(), "F did not switch the demo into collision-free free-fly");
     require(!demo.fpsController().isEnabled(), "Free-fly did not suspend the FPS controller");
@@ -943,14 +944,45 @@ final class VoxelSmokeProbe {
     phase = Phase.WAIT_REMOVE_MESHES;
   }
 
+  private void verifyDebugFocusPreservesPlayer() {
+    Vector3 before = demo.playerFeet().cpy();
+    var tools = (org.javity.ui.inspector.RuntimeToolsOverlay) field(demo, "tools");
+    var game = (org.javity.core.Game) field(demo, "game");
+    var player = (org.javity.core.GameObject) field(demo, "cameraObject");
+    demo.dispatchKeyDownForSmoke(Input.Keys.F);
+    tools.inspector().setVisible(true);
+    require(tools.inspector().selectObject(player), "Debug focus selection failed");
+    require(tools.inspector().focusSelected(), "Explicit free-fly focus refused");
+    tools.inspector().setVisible(false);
+    demo.moveFreeFly(Vector3.X, .1f, false);
+    game.step(1f / 60f);
+    require(demo.playerFeet().epsilonEquals(before, .0001f), "Debug focus/movement teleported player feet");
+    demo.dispatchKeyDownForSmoke(Input.Keys.F);
+    require(demo.playerFeet().epsilonEquals(before, .0001f), "Returning from debug focus teleported player feet");
+    Vector3 lookBefore = demo.fpsController().getLookDirection(new Vector3()).cpy();
+    // Editing while the debug camera is detached can obstruct the preserved body position.
+    BlockPos obstruction = new BlockPos((int) Math.floor(before.x),
+        (int) Math.floor(before.y + .5f), (int) Math.floor(before.z));
+    int old = demo.world().getBlock(obstruction.x(), obstruction.y(), obstruction.z());
+    demo.dispatchKeyDownForSmoke(Input.Keys.F);
+    demo.world().setBlock(obstruction.x(), obstruction.y(), obstruction.z(), demo.terrain().stoneId());
+    demo.dispatchKeyDownForSmoke(Input.Keys.F);
+    require(demo.playerFeet().dst2(before) > .01f, "Obstructed stored feet did not recover to a safe spawn");
+    require(demo.fpsController().getLookDirection(new Vector3()).epsilonEquals(lookBefore, .0001f),
+        "Debug focus changed controller look");
+    demo.world().setBlock(obstruction.x(), obstruction.y(), obstruction.z(), old);
+    Gdx.app.log("RuntimeTools", "voxel debug focus PASS: close + step + return preserved feet/look; edited-body obstruction recovered");
+  }
+
   private void requireFpsFallbackAt(Vector3 unsafeEye, String location) {
+    Vector3 preservedFeet = demo.playerFeet().cpy();
     demo.dispatchKeyDownForSmoke(Input.Keys.F);
     demo.setCameraPose(unsafeEye, Vector3.Z);
     demo.dispatchKeyDownForSmoke(Input.Keys.F);
     require(!demo.isFreeFlyMode(), "F did not restore FPS mode from " + location);
     require(
-        demo.playerFeet().dst2(demo.spawnFeet()) < .0001f,
-        "Returning from " + location + " did not use the safe FPS spawn");
+        demo.playerFeet().dst2(preservedFeet) < .0001f,
+        "Returning from debug camera at " + location + " changed the preserved player feet");
   }
 
   // Exercise real GLFW focus callbacks through DesktopLauncher configuration. Reflection only

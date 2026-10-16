@@ -43,6 +43,7 @@ import org.javity.render.GdxRenderer;
 import org.javity.render.ModelRenderer;
 import org.javity.ui.flex.Flex;
 import org.javity.ui.flex.UiTheme;
+import org.javity.ui.inspector.RuntimeToolsOverlay;
 import org.javity.voxel.AtlasLayout;
 import org.javity.voxel.BlockDefinition;
 import org.javity.voxel.BlockRegistry;
@@ -75,6 +76,8 @@ final class Physics3DDemo extends ApplicationAdapter {
   private Physics3DDebugView debugView;
   private Stage stage;
   private UiTheme theme;
+  private RuntimeToolsOverlay tools;
+  private InputMultiplexer inputMultiplexer;
   private Flex hud;
   private com.badlogic.gdx.scenes.scene2d.ui.Label status;
   private Model sphereModel, crateModel, triggerModel, platformModel, cameraWallModel;
@@ -225,17 +228,25 @@ final class Physics3DDemo extends ApplicationAdapter {
     hud.add(
         theme.label(
             "WASD move  Space jump  Shift sprint  F5 FPS/TPP\n"
-                + "F3 debug draw  E use  LMB/RMB edit  Esc cursor",
+                + "F3 debug draw  E use  LMB/RMB edit  F1 tools  Esc cursor",
             "text-sm text-slate-400",
             true),
         "h-10");
     stage.addActor(hud);
-    InputMultiplexer mux =
+    tools = new RuntimeToolsOverlay(stage, theme, () -> game);
+    tools.inspector().setGizmoCameras(cameraComponent.camera, null);
+    tools.setInteractionChanged(() -> {
+      character.clearInput();
+      cameraToggleHeld = debugToggleHeld = false;
+      discardMouse = true;
+    });
+    inputMultiplexer =
         new InputMultiplexer(
-            stage,
+            tools.inspector().inputProcessor(), stage, tools.inspector().gizmoInputProcessor(),
             new InputAdapter() {
               @Override
               public boolean keyDown(int key) {
+                if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null) return false;
                 if (key == Input.Keys.F5) {
                   if (!cameraToggleHeld) {
                     cameraToggleHeld = true;
@@ -280,6 +291,7 @@ final class Physics3DDemo extends ApplicationAdapter {
 
               @Override
               public boolean touchDown(int x, int y, int pointer, int button) {
+                if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null) return false;
                 if (!Gdx.input.isCursorCatched()) {
                   Gdx.input.setCursorCatched(true);
                   discardMouse = true;
@@ -289,7 +301,7 @@ final class Physics3DDemo extends ApplicationAdapter {
                 return true;
               }
             });
-    Gdx.input.setInputProcessor(mux);
+    Gdx.input.setInputProcessor(inputMultiplexer);
     resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
   }
 
@@ -469,6 +481,8 @@ final class Physics3DDemo extends ApplicationAdapter {
 
   @Override
   public void render() {
+    // A deferred window resize can restore this same context's raw GL binding after the callback.
+    if (smoke && glBuffers != null && Gdx.gl20 == originalGl) glBuffers.install();
     float dt = smoke ? 1f / 60f : Math.min(Gdx.graphics.getDeltaTime(), .1f);
     if (!smoke) readControls();
     boolean active = !game.isWorldFrozen() && dt > 0f;
@@ -519,6 +533,8 @@ final class Physics3DDemo extends ApplicationAdapter {
     renderer.render2D(game);
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     updateHud();
+    tools.update(stageDelta);
+    tools.drawGizmos();
     stage.act(stageDelta);
     stage.draw();
   }
@@ -530,7 +546,7 @@ final class Physics3DDemo extends ApplicationAdapter {
   }
 
   private void readControls() {
-    if (!focused) {
+    if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null) {
       character.clearInput();
       return;
     }
@@ -575,6 +591,8 @@ final class Physics3DDemo extends ApplicationAdapter {
 
   private void smokeProofFrame() {
     if (frames == 5) {
+      RuntimeToolsSmokeProbe.verify("physics3d", tools, stage, inputMultiplexer, game, avatar.object,
+          cameraComponent.camera, voxels, () -> renderSceneComposite(0), this::resize);
       Transform3D sphereTransform = sphereObject.getComponent(Transform3D.class);
       firstSpherePosition.set(sphereTransform.position);
       sphereProofScreenFirst.set(projectSphereProof(sphereTransform.position));
@@ -932,18 +950,7 @@ final class Physics3DDemo extends ApplicationAdapter {
   }
 
   private boolean renderedSocketMatches() {
-    var hand = avatar.renderer.instance.getNode("right-arm");
-    var base =
-        new com.badlogic.gdx.math.Matrix4(feetTransform.worldMatrix())
-            .mul(worldFullView.baseTransform());
-    var socket =
-        avatar.binding.socketTransform("right-hand", base, new com.badlogic.gdx.math.Matrix4());
-    var grip =
-        new com.badlogic.gdx.math.Matrix4(base)
-            .mul(hand.globalTransform)
-            .translate(-.005f, .3f - 1.27f, .25f);
-    for (int i = 0; i < 16; i++) if (Math.abs(socket.val[i] - grip.val[i]) > .0001f) return false;
-    return true;
+    return avatar.rightHandSocketMatchesTool();
   }
 
   private boolean triggerMaterialChanged() {
@@ -1086,6 +1093,7 @@ final class Physics3DDemo extends ApplicationAdapter {
 
   @Override
   public void resize(int width, int height) {
+    if (tools != null) tools.inspector().onViewportChanged();
     if (renderer != null) renderer.resize(width, height);
     if (cameraRig != null && width > 0 && height > 0) cameraRig.resize(width, height);
     if (sphereProofCamera != null && width > 0 && height > 0) {
@@ -1106,6 +1114,7 @@ final class Physics3DDemo extends ApplicationAdapter {
   @Override
   public void pause() {
     focused = false;
+    if (tools != null) tools.onFocusLost();
     if (character != null) character.clearInput();
     if (Gdx.input != null) Gdx.input.setCursorCatched(false);
     discardMouse = true;
@@ -1114,6 +1123,7 @@ final class Physics3DDemo extends ApplicationAdapter {
   @Override
   public void resume() {
     focused = true;
+    if (tools != null) tools.onFocusGained();
     discardMouse = true;
   }
 
@@ -1129,6 +1139,13 @@ final class Physics3DDemo extends ApplicationAdapter {
             ? java.util.Set.of()
             : glBuffers.liveGenerated(sceneBufferStart, glBuffers.generationCount());
     int deletionStart = verifySceneBuffers ? glBuffers.deletionCount() : 0;
+    RuntimeToolsOverlay ownedTools = tools;
+    tools = null;
+    if (ownedTools != null) {
+      inputMultiplexer.removeProcessor(ownedTools.inspector().inputProcessor());
+      inputMultiplexer.removeProcessor(ownedTools.inspector().gizmoInputProcessor());
+      failure = clean(failure, ownedTools::close);
+    }
     Physics3DDebugView ownedDebug = debugView;
     debugView = null;
     debugEnabled = false;

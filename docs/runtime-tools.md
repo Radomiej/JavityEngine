@@ -8,9 +8,13 @@ Pierwszy etap narzędzi działa w tej samej aplikacji, na istniejącym UiTheme/S
 ./gradlew :javity-desktop:inspectorSmoke
 ```
 
-F1 otwiera/zamyka panel w nowym podstawowym demie, także gdy nie podano `--inspector`. Panel pokazuje aktualne GameObjecty (również nieaktywne), ID, liczbę komponentów i hierarchię wynikającą z pierwszego Transform3D. Obiekty 2D pozostają płaskie, bo silnik nie ma ich ogólnej hierarchii. Kliknięcie pokazuje tagi, aktywność, Transform2D i lokalny Transform3D oraz wszystkie komponenty — także duplikaty, wyłączone i anonimowe. Quaternion jest pokazywany jawnie, bez podszywania się pod kąty Eulera.
+F1 otwiera/zamyka panel w podstawowym demie, także gdy nie podano `--inspector`. W `--voxels` i `--physics3d` ten sam inspektor jest dostępny przez `RuntimeToolsOverlay`; startuje zamknięty. Panel pokazuje aktualne GameObjecty (również nieaktywne), ID, liczbę komponentów i hierarchię wynikającą z pierwszego Transform3D. Obiekty 2D pozostają płaskie, bo silnik nie ma ich ogólnej hierarchii. Kliknięcie pokazuje tagi, aktywność, Transform2D i lokalny Transform3D oraz wszystkie komponenty — także duplikaty, wyłączone i anonimowe. Quaternion jest pokazywany jawnie, bez podszywania się pod kąty Eulera.
 
-Nakładka odświeża się na czasie UI, również podczas pauzy WORLD. Nie wymienia przycisków przy każdym ruchu obiektu; drzewo jest przebudowywane po zmianie struktury/nazwy/aktywności. Rozbudowane listy i szczegóły można przewijać. Tylko panel przechwytuje pointer input, a pusta reszta nakładki nie blokuje świata.
+Pole wyszukiwania dopasowuje fragment nazwy, dziesiętnego ID lub tagu bez rozróżniania wielkości liter. Dopasowane dziecko zachowuje kontekst rodziców. Przyciski `-` / `+` zwijają i rozwijają hierarchię; zwinięty rodzic nadal ukrywa potomków podczas wyszukiwania. Ukrycie wiersza przez filtr lub zwinięcie nie usuwa zaznaczenia. Zmiana instancji Game czyści wybór, historię, filtr i zwinięcia także przy powtarzających się ID. `SceneInspection.visibleRows(query, collapsed)` zwraca niemodyfikowalną projekcję i nie modyfikuje zbioru wywołującego. Obiekt chunka pozostaje jednym GameObjectem; inspektor nie tworzy obiektu na blok.
+
+W voxelach i Bullet F1 oddaje kursor panelowi, czyści zamiary ruchu i blokuje akcje oraz polling gameplay podczas otwarcia. F1 lub X przywraca wcześniejsze przechwycenie kursora i odrzuca pierwszy delta myszy. Utrata fokusu anuluje drag i nie przechwytuje kursora przy późniejszym ukryciu lub cleanup bez fokusu. `Focus` działa tylko dla kamery zwróconej jawnie przez dostawcę debugowego: w voxelach najpierw zamknij panel i włącz `F` (free-fly), potem otwórz narzędzia. FPS/TPP i Bullet pokazują odmowę. Free-fly i focus poruszają wyłącznie kamerą, zachowując stopy i kierunek gracza; powrót do FPS synchronizuje kamerę z kontrolerem. Jeśli edycja terenu zablokowała zachowane stopy, powrót wybiera bezpieczny spawn. Jest to świadoma zmiana wcześniejszego zachowania free-fly, które przenosiło gracza do kamery.
+
+Nakładka odświeża się na czasie UI, również podczas pauzy WORLD. Nie wymienia przycisków przy każdym ruchu obiektu; drzewo jest przebudowywane po zmianie struktury/nazwy/aktywności lub widocznych wierszy filtra/zwinięć. Rozbudowane listy i szczegóły można przewijać. Tylko panel przechwytuje pointer input, a pusta reszta nakładki nie blokuje świata.
 
 Inspektor edytuje jawnie typowane pola Transform2D (x/y, obrót w radianach, skala x/y) i Transform3D (pozycja/skala oraz składowe quaternionu). Wartości muszą być skończone, a quaternion jest normalizowany. Apply zapisuje jedną operację undo; undo/redo ma limit 256 wpisów i sprawdza instancję sceny, obiektu, komponentu, właściciela ruchu oraz oczekiwaną bieżącą wartość. Zmiana sceny, usunięcie komponentu, dodanie komponentu przejmującego ruch lub konflikt z późniejszą zmianą tej samej właściwości unieważnia historię bez nadpisania nowej wartości.
 
@@ -56,6 +60,31 @@ Nagłówek `RUNTIME SNAPSHOT` inspektora udostępnia `EXPORT` całej sceny oraz 
 Supplier ma zwracać aktualną `Game`; można użyć `() -> game`. To nie jest snapshot raz pobranej sceny. Wymiana instancji sceny zeruje wybór, nawet jeśli nowa scena ma obiekty z tymi samymi ID. Zniszczenie wybranego obiektu usuwa szczegóły. Nie ma globalnej referencji do main scene.
 
 Inspektor posiada własne węzły Yoga, pożycza Stage, UiTheme i Game. Pokazuje scenę gameplay i jawne transformacje; nie jest drzewem React/UiDocument ani pełnym edytorem. Przy zamykaniu usuń oba procesory (`inputProcessor()` i `gizmoInputProcessor()`) z multiplexer, wywołaj `inspector.close()`, następnie zamknij własne Stage/theme zgodnie z ich kontraktami. `close()` jest idempotentne; nie zamyka pożyczonej gry. Nie wywołuj odczytu/odświeżania z worker thread. UiTheme musi przeżyć inspektor.
+
+## RuntimeToolsOverlay w hoście 3D
+
+```java
+RuntimeToolsOverlay tools = new RuntimeToolsOverlay(stage, theme, () -> game);
+RuntimeInspector inspector = tools.inspector();
+inspector.setGizmoCameras(worldCamera, null);
+tools.setDebugCameraProvider(() -> freeFlyMode ? debugCamera : null);
+tools.setInteractionChanged(() -> { clearGameplayInput(); discardMouseDelta(); });
+InputMultiplexer input = new InputMultiplexer(
+    inspector.inputProcessor(), stage, inspector.gizmoInputProcessor(), gameplayInput);
+// Host blokuje także polling klawiszy i akcje gameplay, gdy inspector.isVisible().
+tools.update(unscaledDelta);
+renderer.render(game);
+tools.drawGizmos();
+stage.act(unscaledDelta);
+stage.draw();
+// Przed resize: inspector.onViewportChanged(); callbacki fokusu:
+// tools.onFocusLost(); tools.onFocusGained();
+// Cleanup: usuń oba procesory inspektora z input, potem tools.close(), Stage/theme.
+```
+
+Overlay pożycza Stage/theme/scenę i kamery. Posiada tylko inspektor oraz stan przekazania kursora; nie instaluje globalnego input processora ani nie zamyka zasobów hosta. `inspector.selectedObject()` zwraca wyłącznie żywy obiekt bieżącej wyświetlanej sceny albo null. Dostawca debug-camera musi zwracać null poza jawnym free-fly; overlay nie włącza tego trybu i nie pisze Transform3D. Cleanup obu procesorów pozostaje obowiązkiem hosta. Panel presetów Feel należy do osobnego etapu.
+
+Dowody dla obu hostów: [voxele](runtime-tools-voxel.png), [voxele 900×600](runtime-tools-voxel-900x600.png), [Bullet](runtime-tools-physics3d.png), [Bullet 900×600](runtime-tools-physics3d-900x600.png). Wspólny native probe klika prawdziwy Stage przez input chain, sprawdza F1 przy focusie pola, capture/restore i brak capture bez fokusu, niezmienione rewizje voxelów i TRS kontrolera, odmowę focusu oraz rzeczywisty resize okna. Porównanie zamkniętej/otwartej nakładki wymaga >15000 zmienionych pikseli. Voxel smoke dodatkowo sprawdza focus w jawnym free-fly, krok gry, powrót do FPS bez przesunięcia stóp i awaryjny spawn po edycji blokującej zachowaną pozycję.
 
 ## Weryfikacja
 

@@ -33,6 +33,7 @@ import org.javity.render.CameraRig3D;
 import org.javity.render.GdxRenderer;
 import org.javity.ui.flex.Flex;
 import org.javity.ui.flex.UiTheme;
+import org.javity.ui.inspector.RuntimeToolsOverlay;
 import org.javity.voxel.AtlasLayout;
 import org.javity.voxel.BlockPos;
 import org.javity.voxel.ChunkPos;
@@ -64,6 +65,7 @@ final class VoxelDemo extends ApplicationAdapter {
   private Stage stage;
   private InputMultiplexer inputMultiplexer;
   private UiTheme theme;
+  private RuntimeToolsOverlay tools;
   private Flex hud;
   private com.badlogic.gdx.scenes.scene2d.ui.Label status;
   private com.badlogic.gdx.scenes.scene2d.ui.Label targetStatus;
@@ -181,7 +183,17 @@ final class VoxelDemo extends ApplicationAdapter {
     stage = new Stage(new ScreenViewport());
     theme = new UiTheme();
     createHud();
-    inputMultiplexer = new InputMultiplexer(stage, createInputProcessor()) {
+    tools = new RuntimeToolsOverlay(stage, theme, () -> game);
+    tools.inspector().setGizmoCameras(camera, null);
+    tools.setDebugCameraProvider(() -> freeFlyMode ? camera : null);
+    tools.setInteractionChanged(() -> {
+      stopPlayerInput();
+      useHeld = mineHeld = freeFlyToggleHeld = cameraModeToggleHeld = false;
+      discardFirstMouseDelta = true;
+    });
+    inputMultiplexer = new InputMultiplexer(
+        tools.inspector().inputProcessor(), stage, tools.inspector().gizmoInputProcessor(),
+        createInputProcessor()) {
       @Override public boolean keyUp(int keycode) {
         // Releases must reach latches even when a UI widget consumes the event.
         if (keycode == Input.Keys.E) useHeld = false;
@@ -209,7 +221,7 @@ final class VoxelDemo extends ApplicationAdapter {
     hud.add(theme.label(
         "WASD move  Mouse look  Space jump  Shift sprint\n"
             + "LMB mine  RMB place  E swing  F5 FPS/TPP\n"
-            + "T tool  C shirt  F fly  Esc cursor  1-5 block",
+            + "T tool  C shirt  F fly  F1 tools  Esc cursor  1-5 block",
         "text-sm text-slate-400", true), "h-14");
     stage.addActor(hud);
   }
@@ -218,7 +230,7 @@ final class VoxelDemo extends ApplicationAdapter {
     return new InputAdapter() {
       @Override
       public boolean keyDown(int keycode) {
-        if (!focused || stage.getKeyboardFocus() != null) return false;
+        if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null) return false;
         if (keycode == Input.Keys.F) {
           if (!freeFlyToggleHeld) {
             freeFlyToggleHeld = true;
@@ -315,7 +327,7 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private boolean toolInputAllowed() {
-    return focused && !disposed && !game.isPaused() && !game.isWorldFrozen()
+    return focused && !disposed && !tools.inspector().isVisible() && !game.isPaused() && !game.isWorldFrozen()
         && stage.getKeyboardFocus() == null;
   }
 
@@ -357,6 +369,9 @@ final class VoxelDemo extends ApplicationAdapter {
 
     drawFrame(delta);
     frames++;
+    if (smoke && frames == 3)
+      RuntimeToolsSmokeProbe.verify("voxel", tools, stage, inputMultiplexer, game, cameraObject,
+          camera, world, () -> drawFrame(0), this::resize);
     if (smokeProbe != null) smokeProbe.afterRender();
   }
 
@@ -384,6 +399,8 @@ final class VoxelDemo extends ApplicationAdapter {
     drawCrosshair();
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     updateHud();
+    tools.update(delta);
+    tools.drawGizmos();
     stage.act(delta);
     stage.draw();
   }
@@ -444,7 +461,7 @@ final class VoxelDemo extends ApplicationAdapter {
       updateFreeFly(delta);
       return;
     }
-    if (!focused || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
+    if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
         || game.isPaused() || game.isWorldFrozen()) {
       stopPlayerInput();
       return;
@@ -465,7 +482,7 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private void updateFreeFly(float delta) {
-    if (!focused || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
+    if (!focused || tools.inspector().isVisible() || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
         || game.isPaused() || game.isWorldFrozen()) return;
     float strafe = axis(Input.Keys.D, Input.Keys.A);
     float vertical =
@@ -486,7 +503,6 @@ final class VoxelDemo extends ApplicationAdapter {
       if (discardFirstMouseDelta) discardFirstMouseDelta = false;
       else rotateLook(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
     }
-    cameraTransform.position.set(camera.position).add(0, -VoxelFpsController.EYE_HEIGHT, 0);
   }
 
   private float axis(int positive, int negative) {
@@ -509,7 +525,6 @@ final class VoxelDemo extends ApplicationAdapter {
     camera.position.x = MathUtils.clamp(camera.position.x, -16, 32);
     camera.position.y = MathUtils.clamp(camera.position.y, 0, 32);
     camera.position.z = MathUtils.clamp(camera.position.z, -16, 32);
-    cameraTransform.position.set(camera.position).add(0, -VoxelFpsController.EYE_HEIGHT, 0);
   }
 
   void rotateLook(float deltaX, float deltaY) {
@@ -540,7 +555,6 @@ final class VoxelDemo extends ApplicationAdapter {
     camera.up.set(Vector3.Y);
     pitch = MathUtils.asin(camera.direction.y) * MathUtils.radiansToDegrees;
     yaw = MathUtils.atan2(camera.direction.z, camera.direction.x) * MathUtils.radiansToDegrees;
-    cameraTransform.position.set(camera.position).add(0, -VoxelFpsController.EYE_HEIGHT, 0);
     camera.update();
   }
 
@@ -551,30 +565,24 @@ final class VoxelDemo extends ApplicationAdapter {
   private void setFreeFlyMode(boolean enabled) {
     if (freeFlyMode == enabled) return;
     if (enabled) {
+      stopPlayerInput();
       syncCameraFromFpsController();
+      pitch = MathUtils.asin(camera.direction.y) * MathUtils.radiansToDegrees;
+      yaw = MathUtils.atan2(camera.direction.z, camera.direction.x) * MathUtils.radiansToDegrees;
       freeFlyMode = true;
       fpsController.setEnabled(false);
     } else {
-      cameraTransform.position.set(camera.position).add(0, -VoxelFpsController.EYE_HEIGHT, 0);
       if (!isClearFpsBody(cameraTransform.position)) {
         // Editing may have obstructed the original spawn since startup.
         spawnFeet.set(findSpawnFeet());
         cameraTransform.position.set(spawnFeet);
         camera.position.set(spawnFeet).add(0, VoxelFpsController.EYE_HEIGHT, 0);
       }
-      float nextYaw = (float) Math.toDegrees(Math.atan2(-camera.direction.x, -camera.direction.z));
-      float nextPitch =
-          (float) Math.toDegrees(Math.asin(MathUtils.clamp(camera.direction.y, -1f, 1f)));
-      fpsController.addLookInput(
-          shortestAngleDelta(fpsController.getYawDegrees(), nextYaw),
-          nextPitch - fpsController.getPitchDegrees());
       freeFlyMode = false;
       fpsController.setEnabled(true);
+      syncCameraFromFpsController();
+      camera.update();
     }
-  }
-
-  private static float shortestAngleDelta(float from, float to) {
-    return ((to - from + 540f) % 360f) - 180f;
   }
 
   private void syncCameraFromFpsController() {
@@ -730,6 +738,7 @@ final class VoxelDemo extends ApplicationAdapter {
 
   @Override
   public void resize(int width, int height) {
+    if (tools != null) tools.inspector().onViewportChanged();
     if (renderer != null) renderer.resize(width, height);
     if (cameraRig != null && width > 0 && height > 0) cameraRig.resize(width, height);
     if (camera != null) {
@@ -750,6 +759,7 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void pause() {
     focused = false;
+    if (tools != null) tools.onFocusLost();
     useHeld = false;
     mineHeld = false;
     if (toolRecoil != null) toolRecoil.cancel();
@@ -767,6 +777,7 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void resume() {
     focused = true;
+    if (tools != null) tools.onFocusGained();
     useHeld = false;
     mineHeld = false;
     freeFlyToggleHeld = false;
@@ -779,6 +790,15 @@ final class VoxelDemo extends ApplicationAdapter {
     if (disposed) return;
     disposed = true;
     Throwable failure = null;
+    try {
+      if (tools != null) {
+        inputMultiplexer.removeProcessor(tools.inspector().inputProcessor());
+        inputMultiplexer.removeProcessor(tools.inspector().gizmoInputProcessor());
+        tools.close();
+      }
+    } catch (RuntimeException | Error e) {
+      failure = e;
+    }
     try {
       if (toolRecoil != null) toolRecoil.close();
     } catch (RuntimeException | Error e) {
