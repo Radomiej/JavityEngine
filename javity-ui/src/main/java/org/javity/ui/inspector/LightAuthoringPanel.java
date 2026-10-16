@@ -110,6 +110,7 @@ public final class LightAuthoringPanel implements AutoCloseable {
     if (closed) return;
     GameObject current = inspector.selectedObject();
     if (current != selected
+        || light == null && current != null && current.getComponent(Light3D.class) != null
         || light != null && (current == null || !current.containsComponent(light))) {
       index = 0;
       load();

@@ -43,6 +43,7 @@ public final class AssetStreamingDemo extends ApplicationAdapter {
   GameObject modelObject;
   ModelRenderer display;
   AssetLease<Model> first, second, missing;
+  private AssetLease<Model> previousMissingFailure;
   AssetLease<Texture> prefetch;
   AssetStreamingGpuSmokeProbe.GatedTextureLoader gate;
   int frames, modelLoads;
@@ -169,9 +170,13 @@ public final class AssetStreamingDemo extends ApplicationAdapter {
   void releasePrefetch() { if (prefetch != null) prefetch.close(); }
 
   void requestMissing() {
-    // Only explicit input retries a failed generation; old failures stay inspectable.
-    if (missing == null || missing.state() == AssetLease.State.FAILED || missing.state() == AssetLease.State.CLOSED)
-      missing = streams.request(MISSING, 5, MODEL_ESTIMATE);
+    // Keep the immediately previous failure inspectable, retiring older failed generations.
+    if (missing == null || missing.state() == AssetLease.State.FAILED || missing.state() == AssetLease.State.CLOSED) {
+      AssetLease<Model> next = streams.request(MISSING, 5, MODEL_ESTIMATE);
+      if (previousMissingFailure != null) previousMissingFailure.close();
+      previousMissingFailure = missing != null && missing.state() == AssetLease.State.FAILED ? missing : null;
+      missing = next;
+    }
     batch = List.of(missing);
   }
 

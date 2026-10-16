@@ -25,11 +25,15 @@ proofs; Android needs its separate runtime gate. Tool-use feedback is Task 2.
 
 ## Task 2: mining, swing, and viewmodel recoil
 
-Run `./gradlew :javity-desktop:run --args='--voxels'`. The current entry frame is
-`task2-idle.png`: a right hand, wooden shaft, and stepped cyan pickaxe head with
-an unobtrusive 380×168 HUD. The initial controller pitch is now −22° so the
-crosshair reaches terrain. The Task 1 captures above are historical and remain
-unchanged; their camera-local hand/tool base and source geometry are still used.
+Run `./gradlew :javity-desktop:run --args='--voxels'`. The Task 2 captures preserve
+the historical checkpoint `7a1d475`. Its entry frame, `task2-idle.png`, shows a
+right hand, wooden shaft, and stepped cyan pickaxe head with an unobtrusive
+380×168 HUD. The initial controller pitch is −22° so the crosshair reaches
+terrain. The current scene environment composition is shown in
+[voxel-scene-fps.png](../environment/voxel-scene-fps.png); see the
+[environment evidence](../environment/README.md). The Task 1 and Task 2 captures
+and metrics remain unchanged; their camera-local hand/tool base and source
+geometry are still used.
 
 The first LMB click captures the cursor. A subsequent press removes one actual
 raycast block and starts the canonical right-arm swing plus a finite viewmodel

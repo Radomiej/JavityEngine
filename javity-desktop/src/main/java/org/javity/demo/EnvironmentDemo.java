@@ -351,6 +351,7 @@ public final class EnvironmentDemo extends ApplicationAdapter {
         if (stage.getKeyboardFocus() == focused)
           throw new AssertionError("Hidden light editor retained keyboard focus");
       }
+      if (frame == 44) checkDynamicLightAuthoring();
       if (frame++ > 44) {
         if (Gdx.gl.glGetError() != GL20.GL_NO_ERROR) throw new AssertionError("Demo GL error");
         dispose();
@@ -361,6 +362,60 @@ public final class EnvironmentDemo extends ApplicationAdapter {
         Gdx.app.exit();
       }
     }
+  }
+
+  private void checkDynamicLightAuthoring() {
+    var editor = tools.lightAuthoring();
+    Flex root = stage.getRoot().findActor("light-authoring-panel");
+    GameObject target = game.createObject("Dynamic light authoring smoke");
+    target.addComponent(new Transform3D());
+    tools.inspector().setVisible(true);
+    tools.inspector().selectObject(target);
+    tools.update(0);
+    if (editor.hasLight() || root.isVisible())
+      throw new AssertionError("Selected lightless object shows a light draft");
+
+    PointLight3D first = target.addComponent(new PointLight3D());
+    game.initializePendingComponents();
+    tools.update(0);
+    if (!editor.hasLight() || !root.isVisible())
+      throw new AssertionError("First added light was not discovered on the same selection");
+    com.badlogic.gdx.scenes.scene2d.ui.TextField intensity = root.findActor("light-3");
+    intensity.setText("2.25");
+    stage.setKeyboardFocus(intensity);
+    target.addComponent(new org.javity.core.Component() {});
+    PointLight3D second = target.addComponent(new PointLight3D());
+    second.setIntensity(7);
+    game.initializePendingComponents();
+    tools.update(0);
+    tools.update(0);
+    if (!intensity.getText().equals("2.25") || stage.getKeyboardFocus() != intensity)
+      throw new AssertionError("Component insertion or update reset the existing dirty light draft");
+    editor.apply();
+    if (first.intensity() != 2.25f || second.intensity() != 7)
+      throw new AssertionError("Dirty light draft Apply lost exact component identity");
+
+    target.removeComponent(first);
+    tools.update(0);
+    intensity.setText("4.5");
+    editor.apply();
+    if (second.intensity() != 4.5f)
+      throw new AssertionError("Removing selected light did not refresh to the remaining light");
+    target.removeComponent(second);
+    tools.update(0);
+    if (editor.hasLight() || root.isVisible() || stage.getKeyboardFocus() == intensity)
+      throw new AssertionError("Removing final light retained draft, visibility or keyboard focus");
+    PointLight3D replacement = target.addComponent(new PointLight3D());
+    game.initializePendingComponents();
+    tools.update(0);
+    if (!editor.hasLight() || !root.isVisible())
+      throw new AssertionError("Readded first light was not discovered on the same selection");
+    intensity.setText("6.25");
+    editor.apply();
+    if (replacement.intensity() != 6.25f
+        || stage.getRoot().findActor("light-authoring-panel") != root)
+      throw new AssertionError("Replacement light Apply failed or rebuilt the panel root");
+    System.out.println("LightAuthoringPanel: PASS dynamic first-light discovery, dirty draft identity, removal/readd and focus");
   }
 
   private void capture(String name) {

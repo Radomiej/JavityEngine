@@ -9,8 +9,11 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.javity.assets.AssetLease;
 
 /** Native integration assertions; the delay gate wraps the ordinary TextureLoader only in smoke. */
@@ -25,6 +28,7 @@ final class AssetStreamingGpuSmokeProbe {
   private Model model;
   private final com.badlogic.gdx.math.Quaternion pausedWorldRotation = new com.badlogic.gdx.math.Quaternion();
   private AssetLease<Model> first, second, failed;
+  private final List<AssetLease<Model>> failures = new ArrayList<>();
   private int modelPixels, retainedPixels, emptyPixels;
 
   AssetStreamingGpuSmokeProbe() {
@@ -129,12 +133,21 @@ final class AssetStreamingGpuSmokeProbe {
       failed = demo.missing;
       require(failed.failure() != null, "Missing file has no diagnostic");
       capture("task3-explicit-failure.png");
-      demo.requestMissing();
-      require(demo.missing != failed && failed.state() == AssetLease.State.FAILED, "Explicit retry changed old failed lease");
+      retryMissing(demo);
       phase = 6;
     } else if (phase == 6 && demo.missing.state() == AssetLease.State.FAILED) {
       require(demo.batchReady() == 0 && demo.batchFailed() == 1, "Batch counts do not describe the current retry");
+      require(failures.getLast().state() == AssetLease.State.FAILED,
+          "Retry completion mutated the immediately previous failed generation");
+      if (failures.size() < 4) {
+        retryMissing(demo);
+        return;
+      }
       demo.dispose();
+      require(demo.missing.state() == AssetLease.State.CLOSED
+          && failures.stream().allMatch(lease -> lease.state() == AssetLease.State.CLOSED),
+          "Scene close retained current or historical failed leases");
+      require(((Set<?>) field(demo.streams, "leases")).isEmpty(), "Disposed service retained lease ownership");
       closeDuringLoad();
       require(demo.streams.stats().ready() == 0, "Disposed service has resident roots");
       for (var entry : buffers.entrySet()) {
@@ -153,12 +166,29 @@ final class AssetStreamingGpuSmokeProbe {
           + "  \"sentinelPixelDisplacement\": " + Math.abs(sentinelPixelAfter - sentinelPixelBefore) + ",\n"
           + "  \"modelPixels\": " + modelPixels + ", \"oneLeasePixels\": " + retainedPixels + ", \"detachedPixels\": " + emptyPixels + ",\n"
           + "  \"buffersCreatedDeleted\": " + bufferCreates.values().stream().mapToInt(Integer::intValue).sum() + ", \"texturesCreatedDeleted\": " + textureCreates.values().stream().mapToInt(Integer::intValue).sum() + ",\n"
+          + "  \"failedRetries\": " + failures.size() + ", \"boundedFailureHistory\": true,\n"
           + "  \"cachePressureDisposal\": true, \"explicitRetry\": true, \"ownerThreadNativeOperations\": true, \"closeDuringLoad\": true, \"pausedLoading\": true\n}\n", false, "UTF-8");
       Gdx.gl = originalGl; Gdx.gl20 = original;
       Gdx.app.log("AssetStreaming", "PASS: default loaders, live sentinel, textured model, leases/cache/pressure/retry and native cleanup");
       Gdx.app.exit();
       phase = 7;
     }
+  }
+
+  private void retryMissing(AssetStreamingDemo demo) {
+    AssetLease<Model> previous = demo.missing;
+    require(previous.state() == AssetLease.State.FAILED && previous.failure() != null,
+        "Retry fixture did not fail through the actual loader");
+    failures.add(previous);
+    demo.requestMissing();
+    require(demo.missing != previous && demo.missing.failure() == null
+        && previous.state() == AssetLease.State.FAILED, "Explicit retry changed old failed lease");
+    Set<?> owned = (Set<?>) field(demo.streams, "leases");
+    require(owned.size() == 2 && owned.contains(previous) && owned.contains(demo.missing),
+        "Retry retained obsolete failed lease ownership");
+    for (int i = 0; i < failures.size() - 1; i++)
+      require(failures.get(i).state() == AssetLease.State.CLOSED && !owned.contains(failures.get(i)),
+          "Older failed retry lease was not closed");
   }
 
   void afterFinishFrame() {
