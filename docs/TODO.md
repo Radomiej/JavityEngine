@@ -166,6 +166,8 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [x] Niezależna walidacja animacji na darmowym importowanym Fox: GL20/GL30, 24 kości, Survey/Walk/Run, crossfade, maska, mikser, zegary, callbacki i cleanup. [Dowody](artifacts/imported-animation/README.md). Nie zamyka zadań FPS/streamingu/oświetlenia ani importu dowolnych rigów.
 
 
+- [ ] Roślinność przez gotowe komponenty: deterministyczne fragmenty trawy, krzaków i drzew, proste ustawienia i współdzielone assety; bez GameObjecta na źdźbło. Projekt API i renderowania uwzględni instancing, cutout, culling, własność oraz nowe otoczenie. Priorytet: prosty kod w stylu Java Lab.
+
 ## GPU instancing i animation batching — nowe wymaganie
 
 - [ ] Porównać źródłowy projekt użytkownika, gdy będzie dostępny kod; nie deklarować portu na podstawie nazwy/pustego repo.
