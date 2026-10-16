@@ -142,13 +142,22 @@ public final class SharedPoseData {
     return new SharedPoseData(source, 0, layout, bind, clips);
   }
 
+  /** A retained source edit that an immutable primitive snapshot cannot represent. */
+  static final class UnrepresentableSourceException extends RuntimeException {
+    private UnrepresentableSourceException() {
+      super(null, null, false, false);
+    }
+  }
+
   // ClipData validated these arrays when first resolved. Later public source edits retain the
   // original sampler behavior; snapshotting must not introduce new eager validation failures.
   private static Channel resolvedChannel(Array<?> source, int width) {
     if (source == null) return null;
     List<Integer> bits = new ArrayList<>(source.size * (width + 1));
     for (int i = 0; i < source.size; i++) {
-      NodeKeyframe<?> key = (NodeKeyframe<?>) source.get(i);
+      if (!(source.get(i) instanceof NodeKeyframe<?> key)
+          || (width == 3 ? !(key.value instanceof Vector3) : !(key.value instanceof Quaternion)))
+        throw new UnrepresentableSourceException();
       bits.add(Float.floatToRawIntBits(key.keytime));
       if (width == 3) {
         Vector3 value = (Vector3) key.value;

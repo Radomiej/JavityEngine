@@ -673,47 +673,30 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     if (batch == null || batch.isDisposed()) {
       composeLocal();
     } else {
-      List<Animation> selected = new ArrayList<>();
-      selectClips(current, selected);
-      for (ModelAnimationLayer layer : layers) selectClips(layer.current, selected);
-      sharedData =
-          batch.source(
-              sharedData,
-              data ->
-                  data.matchesResolved(
-                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices),
-              () ->
-                  SharedPoseData.captureResolved(
-                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices));
-      ExactPoseKey.Builder key = ExactPoseKey.builder(sharedData);
-      keyPlayback(key, current);
-      keyFade(key, baseTransition);
-      key.tag(layers.size());
-      for (ModelAnimationLayer layer : layers) {
-        key.number(layer.weight).tag(layer.resolvedMask == null ? 0 : 1);
-        if (layer.resolvedMask != null) key.mask(layer.resolvedMask);
-        keyPlayback(key, layer.current);
-        keyFade(key, layer.transition);
-      }
-      ExactPoseCache.Pose pose =
-          batch.resolve(
-              key.build(),
-              () -> {
-                composeLocal();
-                float[] result = new float[nodes.size() * 10];
-                for (PoseNode node : nodes)
-                  storeTrs(result, node.index * 10, node.outT, node.outR, node.outS);
-                return result;
-              });
-      for (PoseNode node : nodes) {
-        int i = node.index * 10;
-        node.outT.set(pose.component(i), pose.component(i + 1), pose.component(i + 2));
-        node.outR.set(
-            pose.component(i + 3),
-            pose.component(i + 4),
-            pose.component(i + 5),
-            pose.component(i + 6));
-        node.outS.set(pose.component(i + 7), pose.component(i + 8), pose.component(i + 9));
+      ExactPoseKey key = compositionKey(batch);
+      if (key == null) {
+        composeLocal();
+      } else {
+        ExactPoseCache.Pose pose =
+            batch.resolve(
+                key,
+                () -> {
+                  composeLocal();
+                  float[] result = new float[nodes.size() * 10];
+                  for (PoseNode node : nodes)
+                    storeTrs(result, node.index * 10, node.outT, node.outR, node.outS);
+                  return result;
+                });
+        for (PoseNode node : nodes) {
+          int i = node.index * 10;
+          node.outT.set(pose.component(i), pose.component(i + 1), pose.component(i + 2));
+          node.outR.set(
+              pose.component(i + 3),
+              pose.component(i + 4),
+              pose.component(i + 5),
+              pose.component(i + 6));
+          node.outS.set(pose.component(i + 7), pose.component(i + 8), pose.component(i + 9));
+        }
       }
     }
     for (PoseNode node : nodes) {
@@ -724,6 +707,39 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       node.node.isAnimated = true;
     }
     renderer.instance.calculateTransforms();
+  }
+
+  private ExactPoseKey compositionKey(PoseBatchSystem batch) {
+    List<Animation> selected = new ArrayList<>();
+    selectClips(current, selected);
+    for (ModelAnimationLayer layer : layers) selectClips(layer.current, selected);
+    try {
+      sharedData =
+          batch.source(
+              sharedData,
+              data ->
+                  data.matchesResolved(
+                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices),
+              () ->
+                  SharedPoseData.captureResolved(
+                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices));
+    } catch (SharedPoseData.UnrepresentableSourceException ignored) {
+      // Optional snapshotting must not read malformed keys earlier than the original sampler.
+      // Sampling remains outside this catch, so an actually used malformed value still fails once.
+      sharedData = null;
+      return null;
+    }
+    ExactPoseKey.Builder key = ExactPoseKey.builder(sharedData);
+    keyPlayback(key, current);
+    keyFade(key, baseTransition);
+    key.tag(layers.size());
+    for (ModelAnimationLayer layer : layers) {
+      key.number(layer.weight).tag(layer.resolvedMask == null ? 0 : 1);
+      if (layer.resolvedMask != null) key.mask(layer.resolvedMask);
+      keyPlayback(key, layer.current);
+      keyFade(key, layer.transition);
+    }
+    return key.build();
   }
 
   private void selectClips(ModelPosePlayback playback, List<Animation> selected) {

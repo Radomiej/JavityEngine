@@ -427,6 +427,124 @@ public class PoseBatchingTest {
     }
   }
 
+  @Test
+  public void unusedMalformedRetainedEndpointFallsBackAndRestoringItResumesCacheSameFrame() {
+    Model model = model();
+    try (Game cached = new Game();
+        Game plain = new Game()) {
+      PoseBatchSystem batch = cached.addSystem(new PoseBatchSystem(8));
+      Owner a = owner(cached, model), b = owner(plain, model);
+      SamplingReadsArray ca = instrumentTranslation(a, 0), cb = instrumentTranslation(b, 0);
+      cached.start();
+      plain.start();
+      ModelPosePlayback p = a.animator.play("clip0", PlayMode.LOOP),
+          q = b.animator.play("clip0", PlayMode.LOOP);
+      NodeKeyframe<Vector3> validA = ca.get(1), validB = cb.get(1);
+      ca.set(1, new NodeKeyframe<>(1, null));
+      cb.set(1, new NodeKeyframe<>(1, null));
+      ca.samplingReads = cb.samplingReads = 0;
+      p.seek(0);
+      q.seek(0);
+      equal(a, b);
+      assertTrue(cb.samplingReads > 0);
+      assertEquals(cb.samplingReads, ca.samplingReads);
+      ca.samplingReads = cb.samplingReads = 0;
+      NullPointerException cachedFailure =
+          assertThrows(NullPointerException.class, () -> p.seek(.5));
+      NullPointerException plainFailure =
+          assertThrows(NullPointerException.class, () -> q.seek(.5));
+      assertEquals(plainFailure.getStackTrace()[0], cachedFailure.getStackTrace()[0]);
+      assertTrue(
+          java.util.Arrays.stream(cachedFailure.getStackTrace())
+              .anyMatch(
+                  frame ->
+                      frame.getClassName().equals(ModelPoseAnimator.class.getName())
+                          && frame.getMethodName().equals("sampleVector")));
+      assertTrue(cb.samplingReads > 0);
+      assertEquals(cb.samplingReads, ca.samplingReads);
+      ca.set(1, validA);
+      cb.set(1, validB);
+      long executions = batch.stats().totalSamplerExecutions(), hits = batch.stats().totalHits();
+      p.seek(0);
+      q.seek(0);
+      equal(a, b);
+      assertEquals(executions, batch.stats().totalSamplerExecutions());
+      assertEquals(hits + 1, batch.stats().totalHits());
+      p.seek(.4);
+      q.seek(.4);
+      equal(a, b);
+      assertEquals(executions + 1, batch.stats().totalSamplerExecutions());
+      p.seek(.4);
+      assertEquals(executions + 1, batch.stats().totalSamplerExecutions());
+    } finally {
+      model.dispose();
+    }
+  }
+
+  @Test
+  public void malformedRetainedLayerSkippedByWeightOrInactiveClockPreservesUncachedBehavior() {
+    for (boolean inactive : new boolean[] {false, true}) {
+      Model model = model();
+      try (Game cached = new Game();
+          Game plain = new Game()) {
+        cached.addSystem(new PoseBatchSystem(8));
+        Owner a = owner(cached, model), b = owner(plain, model);
+        SamplingReadsArray ca = instrumentTranslation(a, 1), cb = instrumentTranslation(b, 1);
+        cached.start();
+        plain.start();
+        ModelPosePlayback p = a.animator.play("clip0", PlayMode.LOOP),
+            q = b.animator.play("clip0", PlayMode.LOOP);
+        ModelAnimationLayer la = a.animator.addLayer("layer", NodeMask.ids("socket")),
+            lb = b.animator.addLayer("layer", NodeMask.ids("socket"));
+        la.play("clip1", PlayMode.ONCE);
+        lb.play("clip1", PlayMode.ONCE);
+        if (inactive) {
+          la.setWeight(1);
+          lb.setWeight(1);
+          // Exercise readLayer's inactive-clock guard with a retained slot directly.
+          la.current().clock.stop();
+          lb.current().clock.stop();
+        }
+        ca.set(1, new NodeKeyframe<>(1, null));
+        cb.set(1, new NodeKeyframe<>(1, null));
+        ca.samplingReads = cb.samplingReads = 0;
+        p.seek(0);
+        q.seek(0);
+        equal(a, b);
+        assertEquals(0, ca.samplingReads);
+        assertEquals(0, cb.samplingReads);
+      } finally {
+        model.dispose();
+      }
+    }
+  }
+
+  private static SamplingReadsArray instrumentTranslation(Owner owner, int animation) {
+    NodeAnimation track = owner.renderer.instance.animations.get(animation).nodeAnimations.first();
+    SamplingReadsArray result = new SamplingReadsArray(track.translation);
+    track.translation = result;
+    return result;
+  }
+
+  private static final class SamplingReadsArray extends Array<NodeKeyframe<Vector3>> {
+    int samplingReads;
+
+    SamplingReadsArray(Array<NodeKeyframe<Vector3>> source) {
+      super(source);
+    }
+
+    @Override
+    public NodeKeyframe<Vector3> get(int index) {
+      // Ignore snapshot reads and generic bridge frames: count only actual sampler reads.
+      if (java.util.Arrays.stream(new Throwable().getStackTrace())
+          .anyMatch(
+              frame ->
+                  frame.getClassName().equals(ModelPoseAnimator.class.getName())
+                      && frame.getMethodName().equals("sampleVector"))) samplingReads++;
+      return super.get(index);
+    }
+  }
+
   static void equal(Owner a, Owner b) {
     assertArrayEquals(root(a).localTransform.val, root(b).localTransform.val, 0);
     assertArrayEquals(
