@@ -10,10 +10,7 @@ public abstract class Light3D extends Component {
   private float intensity = 1;
 
   public final void setColor(float r, float g, float b) {
-    nonnegative(r, "red");
-    nonnegative(g, "green");
-    nonnegative(b, "blue");
-    color.set(r, g, b, 1);
+    setRgb(color, r, g, b);
   }
 
   public final Color color(Color out) {
@@ -32,6 +29,17 @@ public abstract class Light3D extends Component {
   @Override
   public void onCreate() {
     requireComponent(Transform3D.class);
+  }
+
+  // Color.set(float...) and Color.mul clamp to [0,1]; lighting colors may exceed one.
+  static void setRgb(Color target, float r, float g, float b) {
+    nonnegative(r, "red");
+    nonnegative(g, "green");
+    nonnegative(b, "blue");
+    target.r = r;
+    target.g = g;
+    target.b = b;
+    target.a = 1;
   }
 
   static void nonnegative(float value, String name) {

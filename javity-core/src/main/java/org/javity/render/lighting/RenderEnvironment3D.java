@@ -27,15 +27,13 @@ public final class RenderEnvironment3D extends GameSystem {
   }
 
   public void setAmbient(float r, float g, float b) {
-    validateColor(r, g, b);
-    ambient.set(r, g, b, 1);
+    Light3D.setRgb(ambient, r, g, b);
   }
 
   public void setFog(float r, float g, float b, float near, float far) {
-    validateColor(r, g, b);
     if (!Float.isFinite(near) || !Float.isFinite(far) || near < 0 || far <= near)
       throw new IllegalArgumentException("fog requires finite 0 <= near < far");
-    fog.set(r, g, b, 1);
+    Light3D.setRgb(fog, r, g, b);
     fogNear = near;
     fogFar = far;
     fogEnabled = true;
@@ -43,12 +41,6 @@ public final class RenderEnvironment3D extends GameSystem {
 
   public void clearFog() {
     fogEnabled = false;
-  }
-
-  private static void validateColor(float r, float g, float b) {
-    Light3D.nonnegative(r, "red");
-    Light3D.nonnegative(g, "green");
-    Light3D.nonnegative(b, "blue");
   }
 
   public static Environment select(
@@ -63,9 +55,9 @@ public final class RenderEnvironment3D extends GameSystem {
       throw new IllegalStateException("Environment must belong to a live scene");
     if (directionalCapacity < 0 || pointCapacity < 0 || spotCapacity < 0)
       throw new IllegalArgumentException("Light capacities must be nonnegative");
-    environment.clear();
-    environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
-    if (fogEnabled) environment.set(new ColorAttribute(ColorAttribute.Fog, fog));
+    Environment candidate = new Environment();
+    candidate.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
+    if (fogEnabled) candidate.set(new ColorAttribute(ColorAttribute.Fog, fog));
     float[] points = new float[pointCapacity], spots = new float[spotCapacity];
     int nd = 0, np = 0, ns = 0, od = 0, op = 0, os = 0;
     Color color = new Color();
@@ -97,7 +89,7 @@ public final class RenderEnvironment3D extends GameSystem {
             continue;
           }
           spots[ns++] = spot.range();
-          environment.add(
+          candidate.add(
               new SpotLight()
                   .set(
                       color,
@@ -112,22 +104,28 @@ public final class RenderEnvironment3D extends GameSystem {
             continue;
           }
           points[np++] = point.range();
-          environment.add(new PointLight().set(color, position, point.intensity()));
+          candidate.add(new PointLight().set(color, position, point.intensity()));
         } else if (light instanceof DirectionalLight3D) {
           if (nd >= directionalCapacity) {
             od++;
             continue;
           }
-          color.mul(light.intensity());
-          validateColor(color.r, color.g, color.b);
-          environment.add(new DirectionalLight().set(color, direction));
+          Light3D.setRgb(
+              color,
+              color.r * light.intensity(),
+              color.g * light.intensity(),
+              color.b * light.intensity());
+          candidate.add(new DirectionalLight().set(color, direction));
           nd++;
         }
       }
     }
-    environment.set(
+    candidate.set(
         new SceneLightingAttribute(
             Arrays.copyOf(points, np), Arrays.copyOf(spots, ns), fogNear, fogFar));
+    // Adopt only a fully validated candidate; a failed snapshot leaves the previous one intact.
+    environment.clear();
+    environment.set(candidate);
     overflow = new Overflow(od, op, os);
     return environment;
   }

@@ -2,6 +2,7 @@ package org.javity.render.lighting;
 
 import static org.junit.Assert.*;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.*;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -18,6 +19,149 @@ public class LightSnapshotTest {
 
   private static Environment select(Game game, Environment legacy) {
     return RenderEnvironment3D.select(game, legacy, 2, 4, 2);
+  }
+
+  private static void assertRgb(float r, float g, float b, Color actual) {
+    assertEquals(r, actual.r, 0);
+    assertEquals(g, actual.g, 0);
+    assertEquals(b, actual.b, 0);
+    assertEquals(1, actual.a, 0);
+  }
+
+  @Test
+  public void directionalIntensityPreservesWhiteAboveOne() {
+    try (Game game = new Game()) {
+      var scene = game.addSystem(new RenderEnvironment3D());
+      var light = object(game).addComponent(new DirectionalLight3D());
+      light.setIntensity(2);
+      game.start();
+      var snapshot = scene.snapshot(2, 4, 2);
+      assertRgb(
+          2,
+          2,
+          2,
+          snapshot
+              .get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type)
+              .lights
+              .first()
+              .color);
+    }
+  }
+
+  @Test
+  public void directionalIntensityPreservesColoredProductsAboveOne() {
+    try (Game game = new Game()) {
+      var scene = game.addSystem(new RenderEnvironment3D());
+      var light = object(game).addComponent(new DirectionalLight3D());
+      light.setColor(.75f, .5f, .25f);
+      light.setIntensity(3);
+      game.start();
+      var snapshot = scene.snapshot(2, 4, 2);
+      assertRgb(
+          2.25f,
+          1.5f,
+          .75f,
+          snapshot
+              .get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type)
+              .lights
+              .first()
+              .color);
+    }
+  }
+
+  @Test
+  public void colorsAboveOneSurviveSettersAndSnapshotsAndInvalidWritesAreAtomic() {
+    try (Game game = new Game()) {
+      var scene = game.addSystem(new RenderEnvironment3D());
+      var point = object(game).addComponent(new PointLight3D());
+      var spot = object(game).addComponent(new SpotLight3D());
+      var directional = object(game).addComponent(new DirectionalLight3D());
+      for (Light3D light : new Light3D[] {point, spot, directional}) {
+        light.setColor(2, .5f, 3);
+        assertThrows(IllegalArgumentException.class, () -> light.setColor(4, Float.NaN, 1));
+        assertThrows(IllegalArgumentException.class, () -> light.setColor(4, 1, -1));
+        assertRgb(2, .5f, 3, light.color(new Color()));
+      }
+      scene.setAmbient(2, 3, .5f);
+      scene.setFog(4, .25f, 2, 2, 10);
+      assertThrows(
+          IllegalArgumentException.class, () -> scene.setAmbient(9, Float.POSITIVE_INFINITY, 0));
+      assertThrows(IllegalArgumentException.class, () -> scene.setFog(9, 1, 1, 8, 4));
+      assertThrows(IllegalArgumentException.class, () -> scene.setFog(9, 1, -1, 1, 4));
+      game.start();
+      var snapshot = scene.snapshot(2, 4, 2);
+      assertRgb(
+          2,
+          .5f,
+          3,
+          snapshot.get(PointLightsAttribute.class, PointLightsAttribute.Type).lights.first().color);
+      assertRgb(
+          2,
+          .5f,
+          3,
+          snapshot.get(SpotLightsAttribute.class, SpotLightsAttribute.Type).lights.first().color);
+      assertRgb(
+          2,
+          .5f,
+          3,
+          snapshot
+              .get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type)
+              .lights
+              .first()
+              .color);
+      assertRgb(2, 3, .5f, snapshot.get(ColorAttribute.class, ColorAttribute.AmbientLight).color);
+      assertRgb(4, .25f, 2, snapshot.get(ColorAttribute.class, ColorAttribute.Fog).color);
+      assertEquals(
+          2, snapshot.get(SceneLightingAttribute.class, SceneLightingAttribute.Type).fogNear(), 0);
+      assertEquals(
+          10, snapshot.get(SceneLightingAttribute.class, SceneLightingAttribute.Type).fogFar(), 0);
+      point.setColor(9, 9, 9);
+      assertRgb(
+          2,
+          .5f,
+          3,
+          snapshot.get(PointLightsAttribute.class, PointLightsAttribute.Type).lights.first().color);
+    }
+  }
+
+  @Test
+  public void directionalProductOverflowRejectsSnapshotWithoutAdoptingPartialValues() {
+    try (Game game = new Game()) {
+      var scene = game.addSystem(new RenderEnvironment3D());
+      var light = object(game).addComponent(new DirectionalLight3D());
+      light.setColor(.5f, .25f, .75f);
+      scene.setAmbient(.1f, .2f, .3f);
+      game.start();
+      var snapshot = scene.snapshot(2, 4, 2);
+      var marker = snapshot.get(SceneLightingAttribute.class, SceneLightingAttribute.Type);
+      light.setColor(Float.MAX_VALUE, 1, 1);
+      light.setIntensity(2);
+      scene.setAmbient(.9f, .8f, .7f);
+      assertThrows(IllegalArgumentException.class, () -> scene.snapshot(2, 4, 2));
+      assertSame(marker, snapshot.get(SceneLightingAttribute.class, SceneLightingAttribute.Type));
+      assertRgb(
+          .5f,
+          .25f,
+          .75f,
+          snapshot
+              .get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type)
+              .lights
+              .first()
+              .color);
+      assertRgb(
+          .1f, .2f, .3f, snapshot.get(ColorAttribute.class, ColorAttribute.AmbientLight).color);
+      light.setIntensity(0);
+      assertSame(snapshot, scene.snapshot(2, 4, 2));
+      assertRgb(
+          0,
+          0,
+          0,
+          snapshot
+              .get(DirectionalLightsAttribute.class, DirectionalLightsAttribute.Type)
+              .lights
+              .first()
+              .color);
+    }
   }
 
   @Test
