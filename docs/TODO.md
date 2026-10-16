@@ -164,3 +164,14 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [x] Guide istniejącego API z komendami, zrzutami i przykładem SceneAssets: [engine-guide.md](engine-guide.md). Nowe API powyżej pozostaje propozycją.
 
 - [x] Niezależna walidacja animacji na darmowym importowanym Fox: GL20/GL30, 24 kości, Survey/Walk/Run, crossfade, maska, mikser, zegary, callbacki i cleanup. [Dowody](artifacts/imported-animation/README.md). Nie zamyka zadań FPS/streamingu/oświetlenia ani importu dowolnych rigów.
+
+
+## GPU instancing i animation batching — nowe wymaganie
+
+- [ ] Porównać źródłowy projekt użytkownika, gdy będzie dostępny kod; nie deklarować portu na podstawie nazwy/pustego repo.
+- [ ] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i poprawny fallback GL20.
+- [ ] Frame-local cache dokładnie zgodnych póz; osobne zegary/zdarzenia każdej postaci i bez współdzielonych mutable kości.
+- [ ] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
+- [ ] Rzeczywiste porównanie pikseli/poz, liczby draw calls i sampler calls, benchmark64/256/1024 oraz osobny Android/context-loss gate.
+
+[Projekt do uzgodnienia](gpu-instancing-design.md). Nic z tego nie jest jeszcze oznaczone jako wdrożone.
