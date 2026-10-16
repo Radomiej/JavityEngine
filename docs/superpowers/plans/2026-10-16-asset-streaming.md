@@ -44,11 +44,11 @@
 - `<T> AssetLease<T> request(AssetKey<T> key, int priority, long estimatedResidentBytes)`; estimate>=0, zawiera zależności, sprzeczny typ/estimate tego samego path odrzucony.
 - `AssetLease<T> extends AutoCloseable`: `state(): State`, `get(): T`, `failure(): Throwable`, `close(): void`. State=QUEUED/LOADING/READY/FAILED/CLOSED; get wyłącznie READY.
 
-- [ ] **Step 1: Write the failing tests.** Rzeczywisty AssetManager z kontrolowanymi testowymi loaderami/Disposable: `sameKeyLoadsOnce`, `closingOneLeaseKeepsSecondReady`, `sharedDependencySurvivesFirstRootUnload`, `conflictingTypeOrEstimateRefused`, `closeIdempotentAndGetAfterCloseFails`. Testy nie wymagają GL.
-- [ ] **Step 2: Verify RED.** `./gradlew :javity-assets:test --tests org.javity.assets.AssetStreamsOwnershipTest` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
-- [ ] **Step 3: Implement.** Zarejestrować moduł api javity-core; nie tworzyć loaderów od nowa. Jeden manager.load per koordynowany root, refcount lease niezależny od wewnętrznego refcount zależności AssetManager. onUiUpdate pompuje manager.update(updateMillis), również podczas WORLD pause. Żądania/odczyty/close lease z obcego wątku odrzucić.
-- [ ] **Step 4: Verify GREEN.** Testy na faktycznej kolejce AssetManager, CPU test wrongThreadRefused i cleanup po nieudanym load. Sprawdzić graf zależności bez desktop natives w production dependencies.
-- [ ] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: add scene-owned streaming asset leases`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.
+- [x] **Step 1: Write the failing tests.** Rzeczywisty AssetManager z kontrolowanymi testowymi loaderami/Disposable: `sameKeyLoadsOnce`, `closingOneLeaseKeepsSecondReady`, `sharedDependencySurvivesFirstRootUnload`, `conflictingTypeOrEstimateRefused`, `closeIdempotentAndGetAfterCloseFails`. Testy nie wymagają GL.
+- [x] **Step 2: Verify RED.** `./gradlew :javity-assets:test --tests org.javity.assets.AssetStreamsOwnershipTest` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
+- [x] **Step 3: Implement.** Zarejestrować moduł api javity-core; nie tworzyć loaderów od nowa. Jeden manager.load per koordynowany root, refcount lease niezależny od wewnętrznego refcount zależności AssetManager. onUiUpdate pompuje manager.update(updateMillis), również podczas WORLD pause. Żądania/odczyty/close lease z obcego wątku odrzucić.
+- [x] **Step 4: Verify GREEN.** Testy na faktycznej kolejce AssetManager, CPU test wrongThreadRefused i cleanup po nieudanym load. Sprawdzić graf zależności bez desktop natives w production dependencies.
+- [x] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: add scene-owned streaming asset leases`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.
 
 ### Task 2: Priorytety, presja pamięci i bezpieczna eksmisja
 
@@ -62,11 +62,11 @@
 - `AssetStreams.stats(): StreamStats` zwraca niemutowalny record `StreamStats(int queued,int inflight,int ready,int pinned,long estimatedResidentBytes,boolean overBudget)`.
 - Prefetch = zwykły lease posiadany przez system hosta do chwili gotowości/wyjścia z zasięgu; po jego close zasób zostaje nieprzypiętym cache kandydatem.
 
-- [ ] **Step 1: Write the failing tests.** Testy `priorityThenFifo`, `queueAndInflightLimits`, `pinnedAssetsNeverEvicted`, `onlyFinishFrameEvicts`, `reRequestBeforeFinishFrameKeepsResource`, `lateOldGenerationNotPublished`, `sceneCloseDuringLoadCleansDependencies`, `failedLoadAllowsExplicitNewRequest`. LRU dotyczy ostatniego zwolnienia/uzyskania gotowego root; równy czas rozstrzyga kolejność wejścia.
-- [ ] **Step 2: Verify RED.** `./gradlew :javity-assets:test --tests org.javity.assets.AssetStreamsSchedulingTest` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
-- [ ] **Step 3: Implement.** Scheduler trzyma sortowaną ograniczoną kolejkę bez preemptowania aktywnego loadera. Queue-full request odrzuca jawnie, bez cichego usuwania lease. Konserwatywne sumy root estimates mogą liczyć wspólną zależność dwukrotnie — nazwać je estimates. Brak miejsca z przypiętymi rootami blokuje start kolejnych; overBudget raportowany. Cancellation ma generację i doprowadza manager do spójnego zwolnienia bez publikowania zamkniętego lease. Zamknięcie systemu wymaga zatrzymanego renderowania i drenuje własne zasoby.
-- [ ] **Step 4: Verify GREEN.** Całe javity-assets:test, także WORLD pause/onUiUpdate i powtórne close po błędzie. Brak wycieku testowych Disposable i brak unload pomiędzy begin/end symulowanego batcha.
-- [ ] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: bound asset streaming and defer eviction safely`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.
+- [x] **Step 1: Write the failing tests.** Testy `priorityThenFifo`, `queueAndInflightLimits`, `pinnedAssetsNeverEvicted`, `onlyFinishFrameEvicts`, `reRequestBeforeFinishFrameKeepsResource`, `lateOldGenerationNotPublished`, `sceneCloseDuringLoadCleansDependencies`, `failedLoadAllowsExplicitNewRequest`. LRU dotyczy ostatniego zwolnienia/uzyskania gotowego root; równy czas rozstrzyga kolejność wejścia.
+- [x] **Step 2: Verify RED.** `./gradlew :javity-assets:test --tests org.javity.assets.AssetStreamsSchedulingTest` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
+- [x] **Step 3: Implement.** Scheduler trzyma sortowaną ograniczoną kolejkę bez preemptowania aktywnego loadera. Queue-full request odrzuca jawnie, bez cichego usuwania lease. Konserwatywne sumy root estimates mogą liczyć wspólną zależność dwukrotnie — nazwać je estimates. Brak miejsca z przypiętymi rootami blokuje start kolejnych; overBudget raportowany. Cancellation ma generację i doprowadza manager do spójnego zwolnienia bez publikowania zamkniętego lease. Zamknięcie systemu wymaga zatrzymanego renderowania i drenuje własne zasoby.
+- [x] **Step 4: Verify GREEN.** Całe javity-assets:test, także WORLD pause/onUiUpdate i powtórne close po błędzie. Brak wycieku testowych Disposable i brak unload pomiędzy begin/end symulowanego batcha.
+- [x] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: bound asset streaming and defer eviction safely`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.
 
 ### Task 3: Działające demo i granice platformy
 
@@ -80,8 +80,8 @@
 - Launcher `--asset-streaming`, zadanie `:javity-desktop:assetStreamingSmoke`.
 - Consumes: request/lease/get/finishFrame/stats z Task1/2; demo trzyma lease tak długo, jak renderujący komponent.
 
-- [ ] **Step 1: Write the failing tests.** Native probe: animowany sentinel nadal się aktualizuje podczas load; po READY wyświetlony oryginalny lokalny model z teksturą, dwa lease i jeden render zasobu po close pierwszego, ostatni close usuwa komponent przed finishFrame/unload. Zrzut i native resource counter przed/po dispose.
-- [ ] **Step 2: Verify RED.** `./gradlew :javity-desktop:assetStreamingSmoke` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
-- [ ] **Step 3: Implement.** Dodać mały autorski fixture modeli/tekstur z licencją, panel request/prefetch/release i statystyk. Nowe żądanie po error jest jawne. Nie zmieniać ModelRenderer.instance w miejscu. Nie integrować jeszcze automatycznego streamingu terenu.
-- [ ] **Step 4: Verify GREEN.** Pełny reactor, assetStreamingSmoke + voxelSmoke. Osobny opt-in Android build i instrumentacja realnego load/close/context-loss przed deklaracją Android streaming; bez dostępnego wyniku oznaczyć tę część jako unverified, nie PASS.
-- [ ] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: demonstrate streaming assets with runtime proof`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.
+- [x] **Step 1: Write the failing tests.** Native probe: animowany sentinel nadal się aktualizuje podczas load; po READY wyświetlony oryginalny lokalny model z teksturą, dwa lease i jeden render zasobu po close pierwszego, ostatni close usuwa komponent przed finishFrame/unload. Zrzut i native resource counter przed/po dispose.
+- [x] **Step 2: Verify RED.** `./gradlew :javity-desktop:assetStreamingSmoke` — brak nowego API lub wskazane niezachowane zachowanie; zachować log.
+- [x] **Step 3: Implement.** Dodać mały autorski fixture modeli/tekstur z licencją, panel request/prefetch/release i statystyk. Nowe żądanie po error jest jawne. Nie zmieniać ModelRenderer.instance w miejscu. Nie integrować jeszcze automatycznego streamingu terenu.
+- [x] **Step 4: Verify GREEN.** Pełny reactor, assetStreamingSmoke + voxelSmoke. Osobny opt-in Android build i instrumentacja realnego load/close/context-loss przed deklaracją Android streaming; bez dostępnego wyniku oznaczyć tę część jako unverified, nie PASS.
+- [x] **Step 5: Commit.** Stage tylko pliki zadania, `git diff --cached --check`, commit `feat: demonstrate streaming assets with runtime proof`; wymagany przegląd i wymagane dowody przed zamknięciem zadania.

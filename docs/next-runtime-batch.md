@@ -1,6 +1,6 @@
 # Kolejny zakres: FPS, narzędzia sceny, streaming i otoczenie
 
-Data: 2026-10-16. **Projekt zaakceptowany przez użytkownika 2026-10-16; nie jest opisem wdrożonego API.** W tej aktualizacji dokumentacji nie dodano nowych klas gameplay/renderera. [Guide działającego silnika](engine-guide.md) oddziela istniejące funkcje od planu. Kierunek zaakceptowano. Poniższe cztery plany rozdzielają wykonanie na małe etapy i wymagają przeglądu przed implementacją z dowodami runtime.
+Data: 2026-10-16. **Zaakceptowany projekt — zapis wymagań sprzed implementacji.** Tabela audytu poniżej opisuje punkt wyjścia, nie aktualne braki. Wszystkie cztery etapy są wdrożone i niezależnie sprawdzone; końcowy przegląd całego batcha trwa. Aktualny stan, zakres platform i dowody: [kolejka prac](work-queue.md) oraz [guide](engine-guide.md).
 
 ## Cel użytkownika
 
@@ -85,7 +85,7 @@ Testy: kierunek/kolor/intensywność i dezaktywacja świateł na faktycznych pik
 Każdy etap kończy się działającym przykładem, instrukcją uruchomienia, wynikami CPU/native i zrzutem. Niedostarczone modele produkcyjne i fizyczny ARM64 nie stają się zaliczone na podstawie testu proceduralnego/desktopu. Uzgodnienie tego kierunku nie oznacza, że wszystkie opisane klasy już istnieją.
 
 
-## Plany wykonania — do przeglądu
+## Zaakceptowane plany wykonania
 
 1. [Czytelny voxel FPS z kilofem](superpowers/plans/2026-10-16-readable-voxel-fps.md).
 2. [Narzędzia sceny i Feel](superpowers/plans/2026-10-16-runtime-tools-feel.md).

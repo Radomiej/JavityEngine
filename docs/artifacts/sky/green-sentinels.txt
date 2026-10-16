@@ -1,0 +1,9 @@
+GLES300 sky sources compile/link on desktop Mesa compiler (no device/context claim)
+sky managed mesh+shader recovery unchanged position 0 -> 0; first and repeated frames match
+sky recovery raw positions 0 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL30
+GLES300 sky sources compile/link on desktop Mesa compiler (no device/context claim)
+sky managed mesh+shader recovery unchanged position 15 -> 15; first and repeated frames match
+sky recovery raw positions 15 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL20
+BUILD SUCCESSFUL in 2s

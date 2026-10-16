@@ -1,0 +1,4 @@
+GLES300 sky sources compile/link on desktop Mesa compiler (no device/context claim)
+java.lang.AssertionError: managed mesh recovery with unchanged location lost sky on frame 0
+Caused by: java.lang.AssertionError: managed mesh recovery with unchanged location lost sky on frame 0
+BUILD FAILED in 2s

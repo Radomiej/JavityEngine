@@ -11,6 +11,7 @@ Upraszczamy i rozbudowujemy silnik 2D/3D na libGDX. Użytkownik dopuszcza migrac
 - `javity-physics2d`: opcjonalny Box2D dla nowego rdzenia, bez Artemis; ciała, collidery i kontakty.
 - `javity-engine`: historyczne API Javity, utrzymane do migracji gier.
 - `javity-net`: HTTP i pobieranie zasobów.
+- `javity-assets`: opcjonalny lokalny streaming Texture/Model, typed lease, priorytety i budżetowany cache; docs/asset-streaming.md.
 - `javity-maplibre`: opcjonalny MapLibre Native FFI, lokalne MBTiles/MVT, style JSON, Linux x64 system EGL/GLES.
 - `javity-map-core`: nowe mapy rastrowe XYZ bez legacy; provider, cache, kamera, markery/trasy.
 - `javity-map`: opcjonalne mapy geograficzne OSM, markery i trasy; to nie mapy poziomów Tiled.
@@ -170,3 +171,9 @@ RuntimeInspector w javity-ui pożycza Stage/UiTheme i Supplier<Game>; posiada w�
 ## GLES i zasoby kontekstu
 
 SmoothShapeRenderer zachowuje desktop GLSL120 i wybiera lokalnie GLES300 dla GLES3; nie zmieniaj globalnych prefixów ShaderProgram. Własne materiały przechodzą tę samą konwersję tokenów. Białe tekstury SmoothShapeRenderer i UiTheme są managed i zachowują posiadany Pixmap do końca życia tekstury. Zwalniaj teksturę przed Pixmap; pause/resume nie jest dowodem odtworzenia rzeczywiście utraconego kontekstu. Ograniczone buildy Android APK, testy JNI/ART Yoga/QuickJS, smoke modelu/dotyku przy density 160/320 i rzeczywista utrata/odzyskanie EGL są potwierdzone; nie oznacza to pełnej gotowości Androida. ActivityFIX3 i responsiveFIX1 są zintegrowane; wszystkie pięć przypadków instrumentacyjnych finalnego APK density 320 przeszło osobno (w tym Activity recreate, landscape, EGL recovery i touch/model/React), ale łączny runner pozostaje niezaliczony z powodu ANR. Debug/test i R8 release build oraz audyty APK przeszły; ograniczony R8 release runtime przeszedł na lokalnie podpisanej kopii; fizyczny ARM, wydajność urządzenia i Android MapLibre/Bullet pozostają poza potwierdzonym zakresem. Pełny desktop build po integracji FBO potwierdził 646 testów w 75 suite oraz presentation3dSmoke, postprocessSmoke (GL30/GL20), avatarGl30Smoke i physics3dSmoke.
+
+## Lokalny streaming i światła sceny
+
+`AssetStreams` przejmuje wyłącznie skonfigurowany, pusty AssetManager. Żądania, publikacja i `finishFrame` należą do owner thread; ostatni zamknięty lease pozostawia cache, eksmisja następuje dopiero przy presji po renderze. Najpierw odłącz konsumentów modelu/tekstury, potem zamknij lease. Jedna fizyczna transakcja loadera naraz zapewnia dokładne rozliczenie zależności; statystyki pamięci są szacunkami z rezerwacjami. Pinned adaptery wewnętrzne libGDX wymagają audytu przy zmianie jego wersji. Szczegóły: `docs/asset-streaming.md`.
+
+`RenderEnvironment3D` jest jawnym wyborem oświetlenia świata; bez niego pozostaje historyczne `renderer.environment`. Nowe światła/fog wymuszają zwykły rendering zamiast niezgodnego shadera instancingu. Viewmodel zachowuje osobne historyczne światło bez mgły/nieba. `SkySettings` pożycza cubemap; shader i mesh posiada renderer. Zachowuj opisany w `docs/scene-lighting.md` kontrakt stanu GL20 oraz hook odzyskiwania rzeczywistych lokalizacji uniformów i atrybutów. Desktop GL20/GL30 nie zastępuje osobnej walidacji nowych funkcji na Androidzie.

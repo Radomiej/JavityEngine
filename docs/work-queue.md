@@ -52,9 +52,17 @@ Historyczny checkpoint Android z 2026-10-16: Yoga AAR i APK instrumentacji zbudo
 Historyczny checkpoint integracyjny: wydzielony provider Graal i przenośny host, Android CPU 9/9, Yoga JNI/ART 4/4, QuickJS/React JNI/ART 7/7 oraz smoke modelu/dotyku przy density 160/320 (58.527/58.899 s) i rzeczywista utrata/odzyskanie EGL (55.856 s). Późniejszy wynik Android CPU to 13/13; szczegóły checkpointów są w [TODO](TODO.md). EGL smoke obejmował VAO, shadery, model, UI, SDF, font i depth FBO. Aktualny pełny desktop build: 646 testów/75 suite, zero failures/errors/skipped, 92 zadania/26 s; presentation3dSmoke, postprocessSmoke (GL30+GL20), avatarGl30Smoke i physics3dSmoke PASS. Późniejsze odizolowane testy odtwarzania Activity przy density 320 przeszły; pełny zestaw instrumentacyjny nadal ma ANR. Późniejszy osobny test układu poziomego przeszedł. Późniejsze końcowe regresje touch/EGL przeszły osobno. Pozostają fizyczny ARM64, pomiary wydajności na urządzeniu oraz Android MapLibre/Bullet; ograniczony runtime R8 release przeszedł na lokalnie podpisanej kopii APK ([dowód](artifacts/android/app-release-runtime-verification.json)); [aktualne dowody](android-status.md).
 
 
-## Kolejny zaakceptowany zakres — 2026-10-16
+## Bieżący batch runtime — 2026-10-16
 
-[Projekt FPS/narzędzi/streamingu/otoczenia](next-runtime-batch.md) zaakceptowany przez użytkownika. Cztery powiązane plany wykonania są gotowe do przeglądu. Kolejność: czytelna ręka i kilof w --voxels → tree viewer i Feel → asset streaming → światła/skybox/mgła. Guide obecnego API jest w [engine-guide.md](engine-guide.md). Nowe funkcje pozostają otwarte; akceptacja projektu ani plany nie oznaczają ich wdrożenia. Zachowujemy wcześniejszą metodę pracy agentów i niezależnego review.
+[Zaakceptowany projekt](next-runtime-batch.md) realizujemy w kolejności FPS → narzędzia → streaming → otoczenie. Status oznacza wdrożenie i niezależny przegląd, z oddzielnymi ograniczeniami platform.
+
+- [x] Czytelny voxel FPS: autorski kilof, LMB/E, recoil, FPS/TPP i kontrolowane kadry. [Dowody](artifacts/voxel-fps/README.md).
+- [x] Wspólny tree viewer/gizma w voxelach i Bullet oraz typowany panel Feel z własnością playbacku i przekazaniem inputu F1. [Narzędzia](runtime-tools.md), [Feel](feel3d.md).
+- [x] Lokalny streaming modeli/tekstur: typed lease, współdzielone zależności, priorytety, cache i bezpieczna eksmisja, demo `--asset-streaming`. [Guide i zakres](asset-streaming.md), [dowody](artifacts/asset-streaming/README.md). Android tego modułu pozostaje UNVERIFIED. Drobna uwaga o retencji nieudanych żądań dema jest zapisana do końcowego przeglądu.
+- [x] Światła sceny, skybox, mgła, WORLD dzień/noc i typowany authoring z undo — niezależne przeglądy PASS. [Guide](lighting-and-sky.md), [kadry i metryki](artifacts/environment/README.md). Android nowych funkcji UNVERIFIED. Drobna uwaga o odkrywaniu dynamicznie dodanego światła trafia do końcowego przeglądu.
+- [ ] Foliage: [proponowany projekt gotowych komponentów](superpowers/specs/2026-10-16-foliage-components-design.md), nie wdrożone klasy. Kępy trawy/krzaków i współdzielone modele drzew; wiatr osobnym rozszerzeniem. Projekt oczekuje przeglądu użytkownika.
+
+Końcowy przegląd całego batcha i push są nadal przed nami. [Guide silnika](engine-guide.md) opisuje aktualne API; [decyzje integracji](runtime-batch-decisions.md) zachowują uzasadnienia i koszty wyborów. Nie deklarujemy pełnej zgodności z komercyjnymi pakietami ani nowej walidacji Androida na podstawie desktopu.
 
 ## GPU instancing — zakres zaakceptowany 2026-10-16
 
