@@ -1,6 +1,6 @@
 # GPU instancing i batching animacji — zaakceptowany projekt
 
-2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **To projekt, nie wdrożona funkcja.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
+2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etapy B/C pozostają planem.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
 
 ## Co mamy
 
@@ -69,10 +69,14 @@ Demo powinno pokazywać zwykłą/instanced ścieżkę i stats side-by-side, zach
 
 ## Plany wykonania
 
-Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania przygotowane do przeglądu; implementacja nie rozpoczęła się:
+Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania zaakceptowane. Etap A wdrożony i sprawdzony na desktopie; etapy B/C oczekują wykonania:
 
 1. [A — statyczny instancing](superpowers/plans/2026-10-16-static-gpu-instancing.md).
 2. [B — dokładny cache póz](superpowers/plans/2026-10-16-exact-pose-batching.md).
 3. [C — instanced skinning](superpowers/plans/2026-10-16-instanced-skinning.md).
 
 Kod projektu referencyjnego pozostaje dodatkowym źródłem do porównania, gdy będzie dostępny. Nie blokuje własnej implementacji. Ten zakres nie oznacza ukończenia wcześniejszej kolejki FPS/narzędzi/streamingu/otoczenia.
+
+## Bieżące dowody etapu A
+
+[Statyczny instancing — API, porównania i logi](artifacts/instancing/README.md). 256 zgodnych obiektów: 256 zwykłych draw calls kontra jeden instanced draw. Główny test ma identyczny obraz; odrębny test przesuniętej hierarchii ma jawny wyjątek jednego piksela na styku ścian, opisany w dowodach. Android i prawdziwe odtworzenie kontekstu nowej ścieżki pozostają bramką C.

@@ -169,7 +169,7 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 ## GPU instancing i animation batching — nowe wymaganie
 
 - [ ] Porównać źródłowy projekt użytkownika, gdy będzie dostępny kod; nie deklarować portu na podstawie nazwy/pustego repo.
-- [ ] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i poprawny fallback GL20.
+- [x] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i fallback GL20 — desktop oraz niezależny przegląd; [dowody](artifacts/instancing/README.md). Android/EGL nowej ścieżki pozostają bramką C.
 - [ ] Frame-local cache dokładnie zgodnych póz; osobne zegary/zdarzenia każdej postaci i bez współdzielonych mutable kości.
 - [ ] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
 - [ ] Rzeczywiste porównanie pikseli/poz, liczby draw calls i sampler calls, benchmark64/256/1024 oraz osobny Android/context-loss gate.
