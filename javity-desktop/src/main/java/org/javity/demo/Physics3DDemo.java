@@ -1102,7 +1102,7 @@ final class Physics3DDemo extends ApplicationAdapter {
       sphereProofCamera.update();
     }
     if (stage != null) {
-      stage.getViewport().update(width, height, false);
+      stage.getViewport().update(width, height, true);
       if (hud != null) {
         hud.setBounds(
             16, Math.max(16, height - 142), Math.min(700, Math.max(340, width - 32)), 126);

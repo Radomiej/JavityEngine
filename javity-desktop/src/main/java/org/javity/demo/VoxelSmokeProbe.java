@@ -946,6 +946,7 @@ final class VoxelSmokeProbe {
 
   private void verifyDebugFocusPreservesPlayer() {
     Vector3 before = demo.playerFeet().cpy();
+    Vector3 lookBefore = demo.fpsController().getLookDirection(new Vector3()).cpy();
     var tools = (org.javity.ui.inspector.RuntimeToolsOverlay) field(demo, "tools");
     var game = (org.javity.core.Game) field(demo, "game");
     var player = (org.javity.core.GameObject) field(demo, "cameraObject");
@@ -959,7 +960,8 @@ final class VoxelSmokeProbe {
     require(demo.playerFeet().epsilonEquals(before, .0001f), "Debug focus/movement teleported player feet");
     demo.dispatchKeyDownForSmoke(Input.Keys.F);
     require(demo.playerFeet().epsilonEquals(before, .0001f), "Returning from debug focus teleported player feet");
-    Vector3 lookBefore = demo.fpsController().getLookDirection(new Vector3()).cpy();
+    require(demo.fpsController().getLookDirection(new Vector3()).epsilonEquals(lookBefore, .0001f),
+        "Returning from debug focus changed original controller look");
     // Editing while the debug camera is detached can obstruct the preserved body position.
     BlockPos obstruction = new BlockPos((int) Math.floor(before.x),
         (int) Math.floor(before.y + .5f), (int) Math.floor(before.z));

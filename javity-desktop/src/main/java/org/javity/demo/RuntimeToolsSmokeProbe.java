@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import org.javity.core.Game;
@@ -67,6 +68,19 @@ final class RuntimeToolsSmokeProbe {
     resize.accept(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     render.run();
     require(inspector.detailsViewportHeight() >= 120, "Resize clipped inspector details");
+    requireScreenBounds(stage, "runtime-inspector-panel");
+    requireScreenBounds(stage, "runtime-inspector-details-viewport");
+    requireScreenBounds(stage, "runtime-transform-undo");
+    requireScreenBounds(stage, "runtime-transform-redo");
+    requireScreenBounds(stage, "runtime-edit-status");
+    click(stage, input, "runtime-transform-undo");
+    Label editStatus = stage.getRoot().findActor("runtime-edit-status");
+    require(editStatus.getText().toString().equals("Nothing to undo / edit became stale"),
+        "Resized bottom-control click did not invoke Undo");
+    require(Arrays.equals(trs, controlled.getComponent(Transform3D.class).worldMatrix().val),
+        "Resized bottom-control click changed controller-owned TRS");
+    require(revision == revision(world), "Resized bottom-control click edited a voxel");
+    render.run();
     screenshot("runtime-tools-" + name + "-900x600.png");
     Gdx.graphics.setWindowedMode(width, height);
     resize.accept(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -102,6 +116,33 @@ final class RuntimeToolsSmokeProbe {
     stage.stageToScreenCoordinates(point);
     require(input.touchDown(Math.round(point.x), Math.round(point.y), 0, Input.Buttons.LEFT), "Panel click not handled " + name);
     input.touchUp(Math.round(point.x), Math.round(point.y), 0, Input.Buttons.LEFT);
+  }
+
+  /** Project every corner through the live Stage viewport, then convert to framebuffer pixels. */
+  private static void requireScreenBounds(Stage stage, String name) {
+    Actor actor = stage.getRoot().findActor(name);
+    require(actor != null, "Missing control " + name);
+    float minX = Float.POSITIVE_INFINITY, minY = Float.POSITIVE_INFINITY;
+    float maxX = Float.NEGATIVE_INFINITY, maxY = Float.NEGATIVE_INFINITY;
+    float scaleX = (float) Gdx.graphics.getBackBufferWidth() / Gdx.graphics.getWidth();
+    float scaleY = (float) Gdx.graphics.getBackBufferHeight() / Gdx.graphics.getHeight();
+    for (int corner = 0; corner < 4; corner++) {
+      Vector2 point = actor.localToStageCoordinates(new Vector2(
+          (corner & 1) == 0 ? 0 : actor.getWidth(),
+          (corner & 2) == 0 ? 0 : actor.getHeight()));
+      stage.stageToScreenCoordinates(point);
+      point.scl(scaleX, scaleY);
+      minX = Math.min(minX, point.x);
+      minY = Math.min(minY, point.y);
+      maxX = Math.max(maxX, point.x);
+      maxY = Math.max(maxY, point.y);
+    }
+    String bounds = name + " framebuffer bounds [" + minX + ", " + minY + ", " + maxX + ", " + maxY + "]";
+    require(Float.isFinite(minX) && Float.isFinite(minY) && Float.isFinite(maxX)
+        && Float.isFinite(maxY) && maxX > minX && maxY > minY
+        && minX >= 0 && minY >= 0 && maxX <= Gdx.graphics.getBackBufferWidth()
+        && maxY <= Gdx.graphics.getBackBufferHeight(), "Resize clipped " + bounds);
+    Gdx.app.log("RuntimeTools", bounds);
   }
 
   private static int[] pixels() {
