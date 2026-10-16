@@ -1,6 +1,6 @@
 # Kolejny zakres: FPS, narzędzia sceny, streaming i otoczenie
 
-Data: 2026-10-16. **Zaakceptowany projekt — zapis wymagań sprzed implementacji.** Tabela audytu poniżej opisuje punkt wyjścia, nie aktualne braki. Wszystkie cztery etapy są wdrożone i niezależnie sprawdzone; końcowy przegląd całego batcha trwa. Aktualny stan, zakres platform i dowody: [kolejka prac](work-queue.md) oraz [guide](engine-guide.md).
+Data: 2026-10-16. **Zaakceptowany projekt — zapis wymagań sprzed implementacji.** Tabela audytu poniżej opisuje punkt wyjścia, nie aktualne braki. Wszystkie cztery etapy są wdrożone i niezależnie sprawdzone; końcowy przegląd całego batcha i poprawek zakończył się PASS. Aktualny stan, zakres platform i dowody: [kolejka prac](work-queue.md) oraz [guide](engine-guide.md).
 
 ## Cel użytkownika
 

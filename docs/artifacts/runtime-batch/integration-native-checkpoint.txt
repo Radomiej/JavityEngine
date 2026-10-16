@@ -1,0 +1,77 @@
+Source: 41518e9. Exact selected lines from actual final root run; before three bounded final P3 corrections.
+
+EnvironmentDemo: PASS courtyard day/dusk/night/fog/local lights/authoring captures and repeated owner dispose
+sky managed mesh+shader recovery unchanged position 0 -> 0; first and repeated frames match
+sky recovery raw positions 0 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL30
+sky managed mesh+shader recovery unchanged position 15 -> 15; first and repeated frames match
+sky recovery raw positions 15 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL20
+PASS directionalChangesPixels bright=255 dark=0
+PASS pointAttenuates near=143 far=16
+PASS spotActuallyLightsCone inside=143 outside=0
+PASS newUniformLocationsRefreshAfterRelink 4 -> 210
+PASS scene light/fog pixels retained after real relink
+PASS disabledLightGone
+PASS lit world fog
+PASS unlit world fog independent of normals
+PASS unlit fog disabled control
+PASS unlit distance fog close=171 distant=41
+PASS legacy unlit behavior unchanged
+PASS scene world uses ordinary fallback
+PASS fogAffectsWorldOnly / legacy viewmodel remains visible
+PASS viewmodelAndHudRemainVisible
+PASS dayNightPauseClock
+PASS dayNight WORLD resumes
+PASS cubemap not replaced by cycle
+PASS scene skinned textured pose changes pixels=1470
+PASS socket and light gizmos borrow canonical pose without mutation
+PASS scene skinned alpha-test / opaque=3332 transparent holes revealing later background=3332
+PASS no residual GL errors
+environmentSmoke GL30: PASS checks=25
+PASS directionalChangesPixels bright=255 dark=0
+PASS pointAttenuates near=143 far=16
+PASS spotActuallyLightsCone inside=143 outside=0
+PASS newUniformLocationsRefreshAfterRelink 4 -> 210
+PASS scene light/fog pixels retained after real relink
+PASS disabledLightGone
+PASS lit world fog
+PASS unlit world fog independent of normals
+PASS unlit fog disabled control
+PASS unlit distance fog close=171 distant=41
+PASS legacy unlit behavior unchanged
+PASS scene world uses ordinary fallback
+PASS fogAffectsWorldOnly / legacy viewmodel remains visible
+PASS viewmodelAndHudRemainVisible
+PASS dayNightPauseClock
+PASS dayNight WORLD resumes
+PASS cubemap not replaced by cycle
+PASS scene skinned textured pose changes pixels=1470
+PASS socket and light gizmos borrow canonical pose without mutation
+PASS scene skinned alpha-test / opaque=3332 transparent holes revealing later background=3332
+PASS no residual GL errors
+environmentSmoke GL20: PASS checks=25
+[AssetStreaming] PASS: default loaders, live sentinel, textured model, leases/cache/pressure/retry and native cleanup
+[Voxels] GPU PASS: atlas UVs, depth, budget, seams, culling, large indices and resource recovery
+[RuntimeTools] voxel PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=464899
+[RuntimeTools] voxel debug focus PASS: close + step + return preserved feet/look; edited-body obstruction recovered
+[Voxels] SCENE PASS: FPS movement, camera controls, seam edits, resize and cleanup
+[Voxels] SCENE PASS: grounded FPS movement, free-fly, seam edits, resize and gallery proof
+[RuntimeInspector] PASS: native selection, gizmo drag/undo/redo, failure paths, supplier replacement, transform edits, lifecycle, F1/focus, resize
+[JavitySmoke] PASS: 120 frames, 2D + 3D + Camera2D, Yoga rounded/border/Rectangle, Box2D, pause/resume, resize; WORLD=81, UI=120, contacts=3, triggers=1
+[RuntimeTools] physics3d PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=467433
+[RuntimeTools] physics3d PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=467433
+avatarGpuSmoke: PASS (requested=GL20, actual=GL20, VAOs=0, authored skin parity, region color/depth, leases, source resources)
+avatarGpuSmoke: PASS (requested=GL30, actual=GL30, VAOs=1, authored skin parity, region color/depth, leases, source resources)
+feel3dGpuSmoke: PASS (3D presentation + particles + world postprocess)
+worldPostProcessGpuSmoke: PASS (flat bypass, tint, desaturation, vignette, HUD isolation, leases, resize, resource ownership)
+worldPostProcessGl20Contract: PASS (repeated eligible capture, prebound rejection, element buffer)
+[JavityShapesSmoke] PASS: 120 frames; AA/alias coverage, alpha, caps, rounded corners, SCREEN/WORLD, sprite/text/UI sentinels, zoom, camera movement and resize
+instancingSmoke GL33: PASS assertions=71
+instancingSmoke GL20: PASS assertions=7
+actual GL: 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+skinnedInstancingSmoke GL33: PASS assertions=126
+actual GL: 4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+skinnedInstancingSmoke GL20: PASS assertions=7
+BUILD SUCCESSFUL in 47s
+110 actionable tasks: 24 executed, 86 up-to-date

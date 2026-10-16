@@ -58,11 +58,11 @@ Historyczny checkpoint integracyjny: wydzielony provider Graal i przenośny host
 
 - [x] Czytelny voxel FPS: autorski kilof, LMB/E, recoil, FPS/TPP i kontrolowane kadry. [Dowody](artifacts/voxel-fps/README.md).
 - [x] Wspólny tree viewer/gizma w voxelach i Bullet oraz typowany panel Feel z własnością playbacku i przekazaniem inputu F1. [Narzędzia](runtime-tools.md), [Feel](feel3d.md).
-- [x] Lokalny streaming modeli/tekstur: typed lease, współdzielone zależności, priorytety, cache i bezpieczna eksmisja, demo `--asset-streaming`. [Guide i zakres](asset-streaming.md), [dowody](artifacts/asset-streaming/README.md). Android tego modułu pozostaje UNVERIFIED. Drobna uwaga o retencji nieudanych żądań dema jest zapisana do końcowego przeglądu.
-- [x] Światła sceny, skybox, mgła, WORLD dzień/noc i typowany authoring z undo — niezależne przeglądy PASS. [Guide](lighting-and-sky.md), [kadry i metryki](artifacts/environment/README.md). Android nowych funkcji UNVERIFIED. Drobna uwaga o odkrywaniu dynamicznie dodanego światła trafia do końcowego przeglądu.
+- [x] Lokalny streaming modeli/tekstur: typed lease, współdzielone zależności, priorytety, cache i bezpieczna eksmisja, demo `--asset-streaming`. [Guide i zakres](asset-streaming.md), [dowody](artifacts/asset-streaming/README.md). Android tego modułu pozostaje UNVERIFIED. Końcowa poprawka ogranicza historię failed lease do bieżącego i poprzedniego żądania; 211 kontroli natywnych PASS.
+- [x] Światła sceny, skybox, mgła, WORLD dzień/noc i typowany authoring z undo — niezależne przeglądy PASS. [Guide](lighting-and-sky.md), [kadry i metryki](artifacts/environment/README.md). Android nowych funkcji UNVERIFIED. Panel wykrywa też pierwsze światło dodane do bieżącego zaznaczenia bez utraty draftu.
 - [ ] Foliage: [proponowany projekt gotowych komponentów](superpowers/specs/2026-10-16-foliage-components-design.md), nie wdrożone klasy. Kępy trawy/krzaków i współdzielone modele drzew; wiatr osobnym rozszerzeniem. Projekt oczekuje przeglądu użytkownika.
 
-Końcowy przegląd całego batcha i push są nadal przed nami. [Guide silnika](engine-guide.md) opisuje aktualne API; [decyzje integracji](runtime-batch-decisions.md) zachowują uzasadnienia i koszty wyborów. Nie deklarujemy pełnej zgodności z komercyjnymi pakietami ani nowej walidacji Androida na podstawie desktopu.
+Końcowy przegląd całego batcha oraz scoped re-review poprawek: Spec/Quality PASS, bez pozostałych uwag. Pełny build i rzeczywiste bramki desktopowe PASS; [dokładne wyniki](runtime-batch-verification.md). Commity przygotowano na `modernization/java25-gradle-yoga`, bez PR/merge/release. [Guide silnika](engine-guide.md) opisuje aktualne API; [decyzje integracji](runtime-batch-decisions.md) zachowują uzasadnienia i koszty wyborów. Nie deklarujemy pełnej zgodności z komercyjnymi pakietami ani nowej walidacji Androida na podstawie desktopu.
 
 ## GPU instancing — zakres zaakceptowany 2026-10-16
 

@@ -1,0 +1,9 @@
+Source: d1070a2. Exact selected lines from actual root post-fix build/native run.
+
+[AssetStreaming] PASS: default loaders, live sentinel, textured model, leases/cache/pressure/retry and native cleanup
+LightAuthoringPanel: PASS dynamic first-light discovery, dirty draft identity, removal/readd and focus
+EnvironmentDemo: PASS courtyard day/dusk/night/fog/local lights/authoring captures and repeated owner dispose
+[RuntimeInspector] PASS: native selection, gizmo drag/undo/redo, failure paths, supplier replacement, transform edits, lifecycle, F1/focus, resize
+[JavitySmoke] PASS: 120 frames, 2D + 3D + Camera2D, Yoga rounded/border/Rectangle, Box2D, pause/resume, resize; WORLD=81, UI=120, contacts=3, triggers=1
+BUILD SUCCESSFUL in 15s
+97 actionable tasks: 11 executed, 86 up-to-date

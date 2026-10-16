@@ -13,11 +13,15 @@ Zakres: czytelny voxel FPS, narzędzia sceny/Feel, lokalny streaming i otoczenie
 
 W przeglądzie nieba znaleziono i naprawiono rzeczywisty błąd VAO: po odtworzeniu mesh/shadera tło znikało, jeżeli lokalizacja pozycji się nie zmieniła. Test regresji obejmuje niezmienione i zmienione lokalizacje, pierwszy oraz następne kadry i zachowanie VAO wywołującego. To desktopowe odtworzenie zasobów zarządzanych, **nie test utraty EGL na Androidzie**.
 
-Kod otoczenia jest zintegrowany w `8521f75`; niezależny przegląd zadania PASS. Trwa końcowy przegląd całego zakresu. Ostateczne polecenia, licznik testów oraz commit zostaną zapisane po ich ukończeniu. Dwie drobne uwagi z przeglądów etapów są przekazane do tego przeglądu: retencja starych failed lease w demo streamingu i wykrywanie pierwszego światła dodanego do już zaznaczonego obiektu.
+Kod otoczenia: `8521f75`; końcowe trzy poprawki: `d1070a2`. [Przegląd całego zakresu i scoped re-review](artifacts/runtime-batch/README.md): **Spec PASS / Quality PASS, bez pozostałych uwag**. Zamknięto retencję nieudanych żądań dema, wykrywanie dynamicznego pierwszego światła i nieaktualny podpis historycznego zrzutu FPS.
+
+Końcowa weryfikacja na `41518e9`: `./gradlew build` oraz environmentSmoke, assetStreamingSmoke, voxelSmoke, inspectorSmoke, physics3dSmoke, avatarSmoke/avatarGl30Smoke, feel3dSmoke, postprocessSmoke, shapesSmoke i static/skinned instancing GL20/GL30 — **PASS, 47 s, 110 zadań**. Po poprawkach na `d1070a2`: ponownie `./gradlew build` oraz assetStreamingSmoke, environmentDemoSmoke i inspectorSmoke — **PASS, 15 s, 97 zadań**. To świeże polecenia incremental: część zadań była UP-TO-DATE. Zachowane raporty domyślnego reactora: **805 testów / 91 suite, zero failures/errors/skipped**; nie deklarujemy ponownego wykonania każdego niezmienionego testu.
+
+Końcowy test streamingu: **211 kontroli**, cztery retry/pięć rzeczywistych błędów, tylko bieżący i poprzedni failed lease, zbilansowane 12 buforów i 8 tekstur. Panel odkrywa dynamiczne światło, zachowuje draft, obsługuje usunięcie/ponowne dodanie i oddaje focus. Historyczne kadry/metryki zachowano; aktualne otoczenie ma osobne dowody. [Raporty, fragmenty rzeczywistych logów i metryki](artifacts/runtime-batch/README.md).
 
 ## Granice wyników
 
-- APK debug z nowymi źródłami skompilowano przed końcową wąską poprawką focusu UI; nie jest to dowód runtime. Android nowego streamingu i otoczenia: **UNVERIFIED**. Wcześniejsze testy Androida nie zastępują testów nowych funkcji.
+- APK debug zbudowano również po końcowych poprawkach na `d1070a2` (PASS, 4 s / 84 zadania); nie jest to dowód runtime. Android nowego streamingu i otoczenia: **UNVERIFIED**. Wcześniejsze testy Androida nie zastępują testów nowych funkcji.
 - Światła sceny/mgła wymuszają zwykły rendering modeli zamiast obecnego instancingu. To koszt poprawności obrazu, nie regresja ukryta pod deklaracją wydajności.
 - Streaming dotyczy lokalnych modeli/tekstur; nie dostarcza automatycznego HTTP, hot reloadu ani nieskończonego świata.
 - [Roślinność](superpowers/specs/2026-10-16-foliage-components-design.md) pozostaje projektem do przeglądu, nie wdrożonym API.

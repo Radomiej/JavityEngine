@@ -1,0 +1,3 @@
+Source: d1070a2. Compile only; Android feature runtime/EGL UNVERIFIED.
+BUILD SUCCESSFUL in 4s
+84 actionable tasks: 3 executed, 81 up-to-date
