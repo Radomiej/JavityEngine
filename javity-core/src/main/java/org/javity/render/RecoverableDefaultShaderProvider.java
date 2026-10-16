@@ -125,7 +125,13 @@ final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
         AttributeAlias[] vertices,
         AttributeAlias[] instances,
         boolean scene) {
-      super(renderable, config);
+      super(
+          renderable,
+          config,
+          createPrefix(renderable, config)
+              + (scene && renderable.environment.has(ColorAttribute.Fog)
+                  ? "#define sceneFogFlag\n"
+                  : ""));
       this.scene = scene;
       sceneDirectional =
           registerLights(
@@ -167,6 +173,19 @@ final class RecoverableDefaultShaderProvider extends DefaultShaderProvider {
     @Override
     public boolean canRender(Renderable renderable) {
       return scene == isScene(renderable) && super.canRender(renderable);
+    }
+
+    @Override
+    public void render(Renderable renderable, Attributes attributes) {
+      // DefaultShader skips bindLights for meshes without normals. Fog is surface-independent.
+      if (scene) {
+        SceneLightingAttribute marker =
+            renderable.environment.get(SceneLightingAttribute.class, SceneLightingAttribute.Type);
+        set(sceneFogRange, marker.fogNear(), marker.fogFar());
+        ColorAttribute fog = renderable.environment.get(ColorAttribute.class, ColorAttribute.Fog);
+        if (fog != null) set(u_fogColor, fog.color);
+      }
+      super.render(renderable, attributes);
     }
 
     @Override

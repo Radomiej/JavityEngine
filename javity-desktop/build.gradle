@@ -279,3 +279,22 @@ tasks.register('skySmoke', JavaExec) {
     mainClass = 'org.javity.demo.SkyGpuSmokeLauncher'
     jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
+
+tasks.register('environmentSmoke', JavaExec) {
+    dependsOn 'skySmoke', 'environmentDemoSmoke'
+    group = 'verification'
+    description = 'Integrated environment pixel controls, authoring, day/night and GL20/GL30 regression proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.EnvironmentGpuSmokeProbe'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+
+tasks.register('environmentDemoSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual courtyard presets, light authoring captures and repeated owner cleanup.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--environment', '--smoke'
+}

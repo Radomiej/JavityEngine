@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-16",
+  "base": "889ef3b1869b772668f6e627c146ccb683153c24",
+  "sourceSha256": {
+    "javity-core/src/main/java/org/javity/render/lighting/DayNightCycle3D.java": "006027d2705ae21ede0fca87721aea8609e643a5408787ac9ea2729e318af1a2",
+    "javity-core/src/main/java/org/javity/render/RecoverableDefaultShaderProvider.java": "40b2154fd3909f533c6ac6f2cbe0e88efa8713de1433c9fd3a31b87e7e4730bf",
+    "javity-core/src/main/resources/org/javity/render/scene-lighting.fragment.glsl": "fa05d1214eb9cb53a7ccaeb582acb3c3989be7c661bcbd15e299f97a9a63c4c3",
+    "javity-core/src/main/resources/org/javity/render/scene-lighting.vertex.glsl": "7e495528373ade6f172544ed56312d26751c8d8ff247871a5493010499a80cca",
+    "javity-desktop/src/main/java/org/javity/demo/EnvironmentDemo.java": "9ffdda14e44c80d3b9c417e352ebffa9aceb16ab978e3ed27f2b5c77be7bb854",
+    "javity-desktop/src/main/java/org/javity/demo/EnvironmentGpuSmokeProbe.java": "d1ad272df73e649070c422e58ee631bc456a6cfd2d4c45baa40b55e5f9631931"
+  },
+  "captureOrientation": "upright; framebuffer flipped on PNG write",
+  "phases": {
+    "afternoon": 0.57,
+    "last-light": 0.735,
+    "midnight": 0,
+    "mist": 0.43
+  },
+  "nativeProfiles": [
+    "desktop GL30",
+    "desktop GL20"
+  ],
+  "controlsPerProfile": 25,
+  "directionalRed": [
+    255,
+    0
+  ],
+  "pointNearFarRed": [
+    143,
+    16
+  ],
+  "spotInsideOutsideRed": [
+    143,
+    0
+  ],
+  "unlitNearFarFogRed": [
+    171,
+    41
+  ],
+  "sceneFogUniformLocations": [
+    4,
+    210
+  ],
+  "relinkChangedPixels": 0,
+  "sceneSkinnedPoseChangedPixels": 1470,
+  "alphaTestOpaquePixels": 3332,
+  "alphaTestLaterBackgroundHolePixels": 3332,
+  "androidFeatureEgl": "UNVERIFIED",
+  "screenshots": {
+    "afternoon.png": {
+      "sha256": "1db1d60481e69786ab8514aa1f029e1b0f83838387e728f4d8da60901e11cbbe",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        151.97,
+        164.86,
+        166.993
+      ]
+    },
+    "authoring.png": {
+      "sha256": "cfc41f18791024e3332484e93ebb62c3f79338cdcefb1fe056f053d3ff63f203",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        99.603,
+        110.748,
+        121.686
+      ]
+    },
+    "last-light.png": {
+      "sha256": "2918c741fd37765c475643cdad96a541d66db1c55c76b1e5b6c259852cf52c55",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        65.528,
+        42.017,
+        39.122
+      ]
+    },
+    "midnight.png": {
+      "sha256": "529c73736b8e76b0551530cc5d224250bac4bc67bd8f52c4c5a412732f5536b9",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        18.805,
+        16.494,
+        23.992
+      ]
+    },
+    "mist.png": {
+      "sha256": "5e426981d72dd24faef9d4659ab0c5d90898dcc4dfc0127ec38430b99fe5bb64",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        150.133,
+        170.175,
+        183.534
+      ]
+    },
+    "point-only.png": {
+      "sha256": "cd077e4378597b74df8d0d4f3a76f48387b5265fa53712372efb03809b68ea78",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        17.387,
+        12.348,
+        17.221
+      ]
+    },
+    "spot-only.png": {
+      "sha256": "64f3f214e38cac1507a86b155f62677bc3139eafb3b94b57a7e30f319e7f3ba3",
+      "size": [
+        1100,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        7.675,
+        11.989,
+        22.741
+      ]
+    },
+    "voxel-scene-fps.png": {
+      "sha256": "7abee33e65dfda6ef5ff83b07e9cefd0038bafaceb85ac4122bd4473a16511a9",
+      "size": [
+        1280,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        93.608,
+        121.146,
+        78.545
+      ]
+    },
+    "voxel-scene-tools.png": {
+      "sha256": "c5c61885827db768f0ea44811ff698a35b8be92b122589bea9c2d9477412748e",
+      "size": [
+        1280,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        75.925,
+        96.022,
+        104.75
+      ]
+    },
+    "voxel-scene-tpp.png": {
+      "sha256": "974040c02efd79f1ef94a556fe83c45d5d595bcc31137e492005904299eed159",
+      "size": [
+        1280,
+        720
+      ],
+      "worldRoiMeanRgb": [
+        89.628,
+        120.005,
+        85.024
+      ]
+    }
+  }
+}

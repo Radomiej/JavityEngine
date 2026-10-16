@@ -1,8 +1,10 @@
 package org.javity.ui.inspector;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import java.util.*;
 import org.javity.core.*;
+import org.javity.render.lighting.*;
 
 /**
  * Scene snapshots and typed transform edits. Selection and edit history are scoped to a Game
@@ -33,6 +35,7 @@ public final class SceneInspection {
   }
 
   private enum EditKind {
+    LIGHT,
     TRANSFORM_2D,
     TRANSFORM_3D,
     ROTATION_3D,
@@ -79,7 +82,120 @@ public final class SceneInspection {
       EditKind kind,
       Enum<?> field,
       float[] before,
-      float[] after) {}
+      float[] after,
+      Light3D light) {
+    Edit(
+        Game scene,
+        GameObject object,
+        Transform3D component,
+        EditKind kind,
+        Enum<?> field,
+        float[] before,
+        float[] after) {
+      this(scene, object, component, kind, field, before, after, null);
+    }
+  }
+
+  /** Parameters not used by a light type must be zero. RGB/intensity are nonnegative HDR values. */
+  public record LightState(
+      float red,
+      float green,
+      float blue,
+      float intensity,
+      float range,
+      float cutoffDegrees,
+      float exponent) {}
+
+  public static final class LightEditSession {
+    private final Game scene;
+    private final GameObject object;
+    private final Light3D light;
+    private final LightState before;
+    private final long epoch;
+
+    private LightEditSession(
+        Game scene, GameObject object, Light3D light, LightState before, long epoch) {
+      this.scene = scene;
+      this.object = object;
+      this.light = light;
+      this.before = before;
+      this.epoch = epoch;
+    }
+  }
+
+  public static LightState lightState(Light3D light) {
+    Color c = light.color(new Color());
+    return new LightState(
+        c.r,
+        c.g,
+        c.b,
+        light.intensity(),
+        light instanceof PointLight3D p ? p.range() : 0,
+        light instanceof SpotLight3D p ? p.cutoffDegrees() : 0,
+        light instanceof SpotLight3D p ? p.exponent() : 0);
+  }
+
+  public LightEditSession beginLightEdit(Light3D light) {
+    Objects.requireNonNull(light);
+    GameObject object = requireSelectedObject();
+    if (!object.containsComponent(light)) throw new IllegalStateException("Selected light changed");
+    return new LightEditSession(scene, object, light, lightState(light), selectionEpoch);
+  }
+
+  public void commitLightEdit(LightEditSession session, LightState next) {
+    Objects.requireNonNull(session);
+    Objects.requireNonNull(next);
+    if (session.scene != scene
+        || session.epoch != selectionEpoch
+        || session.object != requireSelectedObject()
+        || !session.object.containsComponent(session.light)
+        || !session.before.equals(lightState(session.light)))
+      throw new IllegalStateException("Scene, selection or light changed during edit");
+    validateLight(session.light, next);
+    if (session.before.equals(next)) return;
+    writeLight(session.light, values(next));
+    push(
+        new Edit(
+            scene,
+            session.object,
+            null,
+            EditKind.LIGHT,
+            null,
+            values(session.before),
+            values(next),
+            session.light));
+  }
+
+  private static float[] values(LightState s) {
+    return new float[] {
+      s.red(), s.green(), s.blue(), s.intensity(), s.range(), s.cutoffDegrees(), s.exponent()
+    };
+  }
+
+  private static void validateLight(Light3D light, LightState state) {
+    float[] v = values(state);
+    for (float value : v)
+      if (!Float.isFinite(value) || value < 0)
+        throw new IllegalArgumentException("Light values must be finite and nonnegative");
+    if (light instanceof PointLight3D) {
+      if (v[4] <= 0) throw new IllegalArgumentException("Range must be positive");
+    } else if (v[4] != 0) throw new IllegalArgumentException("Directional range must be zero");
+    if (light instanceof SpotLight3D) {
+      if (v[5] <= 0 || v[5] >= 90)
+        throw new IllegalArgumentException("Cutoff must be between 0 and 90");
+    } else if (v[5] != 0 || v[6] != 0)
+      throw new IllegalArgumentException("Unused spot parameters must be zero");
+  }
+
+  private static void writeLight(Light3D light, float[] v) {
+    light.setColor(v[0], v[1], v[2]);
+    light.setIntensity(v[3]);
+    if (light instanceof PointLight3D p) p.setRange(v[4]);
+    if (light instanceof SpotLight3D p) {
+      p.setCutoffDegrees(v[5]);
+      p.setExponent(v[6]);
+    }
+  }
 
   /** Opaque identity/baseline token for a drag that spans multiple input frames. */
   public static final class Transform3DEditSession {
@@ -604,6 +720,7 @@ public final class SceneInspection {
   private static boolean matches(Edit edit, float[] expected) {
     float[] actual;
     switch (edit.kind()) {
+      case LIGHT -> actual = values(lightState(edit.light()));
       case TRANSFORM_2D -> {
         if (edit.field() != null)
           actual = new float[] {read(edit.object(), (Transform2DField) edit.field())};
@@ -646,7 +763,8 @@ public final class SceneInspection {
       }
     return present
         && (edit.component() == null || edit.object().containsComponent(edit.component()))
-        && allowsTransformEdit(edit.object());
+        && (edit.light() == null || edit.object().containsComponent(edit.light()))
+        && (edit.kind() == EditKind.LIGHT || allowsTransformEdit(edit.object()));
   }
 
   private GameObject requireSelectedObject() {
@@ -759,6 +877,7 @@ public final class SceneInspection {
   private static void apply(Edit edit, boolean forward) {
     float[] values = forward ? edit.after() : edit.before();
     switch (edit.kind()) {
+      case LIGHT -> writeLight(edit.light(), values);
       case TRANSFORM_2D -> {
         if (edit.field() == null) writeTransform2D(edit.object(), values);
         else write(edit.object(), (Transform2DField) edit.field(), values[0]);
@@ -807,11 +926,13 @@ public final class SceneInspection {
       while (!ancestors.isEmpty() && ancestors.peekLast().depth() >= row.depth())
         ancestors.removeLast();
       GameObject object = objects.get(row.id());
-      boolean matches = needle.isEmpty()
-          || row.name().toLowerCase(Locale.ROOT).contains(needle)
-          || Integer.toString(row.id()).contains(needle)
-          || (object != null && object.getTags().stream()
-              .anyMatch(tag -> tag.toLowerCase(Locale.ROOT).contains(needle)));
+      boolean matches =
+          needle.isEmpty()
+              || row.name().toLowerCase(Locale.ROOT).contains(needle)
+              || Integer.toString(row.id()).contains(needle)
+              || (object != null
+                  && object.getTags().stream()
+                      .anyMatch(tag -> tag.toLowerCase(Locale.ROOT).contains(needle)));
       if (matches) {
         included.add(row.id());
         for (Row ancestor : ancestors) included.add(ancestor.id());

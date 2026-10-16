@@ -93,7 +93,7 @@ uniform sampler2D u_emissiveTexture;
 varying vec3 v_scenePosition;
 varying float v_eyeDistance;
 uniform vec4 u_cameraPosition;
-#ifdef fogFlag
+#ifdef sceneFogFlag
 uniform vec4 u_fogColor;
 uniform vec2 u_sceneFogRange;
 #endif
@@ -243,9 +243,9 @@ void main() {
 		#endif
 	#endif //lightingFlag
 
-	#ifdef fogFlag
+	#ifdef sceneFogFlag
 		gl_FragColor.rgb = mix(gl_FragColor.rgb, u_fogColor.rgb, clamp((v_eyeDistance - u_sceneFogRange.x) / (u_sceneFogRange.y - u_sceneFogRange.x), 0.0, 1.0));
-	#endif // end fogFlag
+	#endif // end sceneFogFlag
 
 	#ifdef blendedFlag
 		gl_FragColor.a = diffuse.a * v_opacity;

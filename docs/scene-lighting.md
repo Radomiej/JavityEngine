@@ -33,7 +33,7 @@ multiply by `pow(max(dot(direction, lightToFragment), 0), exponent)` inside the
 cutoff cone, and contribute zero outside it. Intensity multiplies the result
 once. Fog blends the final model RGB with its color using
 `clamp((eyeDistance - near)/(far - near), 0, 1)`, with `0 <= near < far`.
-`clearFog()` removes it. Fog does not affect arbitrary custom shaders or 2D UI.
+`clearFog()` removes it. Fog applies to ordinary scene models with or without normals. The scene-only prefix and per-draw fog uniforms are independent of lighting. Legacy shader behavior is unchanged; fog does not affect arbitrary custom shaders, Shapes or 2D UI.
 
 Both `GdxRenderer()` and `GdxRenderer(maxBones, maxBoneWeights)` provide scene
 capacities **2 directional / 4 point / 2 spot**. The advanced constructor
@@ -55,11 +55,7 @@ component state.
 without scene fog or sky, keeping FPS hands readable independently of the world.
 This can produce a visible lighting difference between hands and world objects.
 
-The implementation is forward lighting without dynamic shadows or PBR. Task 1
-checks CPU snapshots, retained-uniform recovery and actual scene shader draws on
-desktop GL20/GL30. Full measured lighting/fog pixel controls, day/night and
-Android EGL feature gates belong to later tasks; they are not implied by these
-foundation checks.
+The implementation is forward lighting without dynamic shadows or PBR. The integrated `environmentSmoke` now checks measured directional/point/spot/fog, scene-skinned textured poses and alpha-test depth holes, moved uniform recovery, WORLD clock, borrowed sockets and viewmodel/HUD isolation on desktop GL20/GL30. [Day/night and authoring](lighting-and-sky.md), [actual captures and scope](artifacts/environment/README.md). Android feature EGL gates remain **UNVERIFIED**.
 
 ## Sky backgrounds
 

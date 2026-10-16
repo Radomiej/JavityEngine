@@ -160,7 +160,7 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [ ] Udostępnić tree viewer również w VoxelDemo/Physics3DDemo, poprawić wyszukiwanie i ergonomię; gizma socketów/świateł przez jawne adaptery.
 - [ ] Narzędzia Feel: wspólne scenariusze use-tool/hit/landing/sprint/scene transition i panel istniejących presetów bez nowego schedulera.
 - [x] Lokalny streaming nad AssetManager: typed lease, kolejki/priorytety, limity, cache i bezpieczna eksmisja nieprzypiętych rootów; autorski teksturowany model, prefetch i failure/retry w `--asset-streaming`. [API](asset-streaming.md), [native dowody](artifacts/asset-streaming/README.md). Android streaming **UNVERIFIED**; HTTP, hot reload i streaming chunków osobno.
-- [ ] Światła sceny (directional/point/spot), ambient, skybox, mgła i prosty dzień/noc; jawne shader capacities i testy pikseli/context recovery.
+- [x] Światła sceny directional/point/spot, ambient, gradient/pożyczony cubemap, mgła także unlit modeli, WORLD dzień/noc, typowane edycje i wspólne undo oraz gizma świateł/socketu. `--environment` i jawne otoczenie voxelów; [API](lighting-and-sky.md), [dowody desktop GL20/GL30](artifacts/environment/README.md). Android nowych funkcji **UNVERIFIED** bez rzeczywistego GLES/EGL gate; PBR/cienie/HDR poza zakresem.
 - [x] Guide istniejącego API z komendami, zrzutami i przykładem SceneAssets: [engine-guide.md](engine-guide.md). Stan kolejnych wdrożeń jest opisany w checkboxach powyżej.
 
 - [x] Niezależna walidacja animacji na darmowym importowanym Fox: GL20/GL30, 24 kości, Survey/Walk/Run, crossfade, maska, mikser, zegary, callbacki i cleanup. [Dowody](artifacts/imported-animation/README.md). Nie zamyka zadań FPS/streamingu/oświetlenia ani importu dowolnych rigów.

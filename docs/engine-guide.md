@@ -1,6 +1,6 @@
 # JavityEngine — przewodnik praktyczny
 
-Stan: 2026-10-16. Ten guide opisuje istniejące API. Projekt kolejnych funkcji jest osobno w [następnym batchu](next-runtime-batch.md); nazwy z tamtego projektu nie są jeszcze klasami silnika.
+Stan: 2026-10-16. Ten guide opisuje istniejące API. Stan zaakceptowanego batcha (FPS, narzędzia, streaming i otoczenie) opisują [kolejka prac](work-queue.md) i instrukcje poniżej; dokument [projektu](next-runtime-batch.md) zachowuje historyczny punkt wyjścia.
 
 ## 1. Wybierz i uruchom przykład
 
@@ -12,6 +12,8 @@ Wymagania desktopu: pełne JDK25 i OpenGL. Polecenia uruchamiaj z katalogu repoz
 | Ten sam rodzaj gry z opcjonalną fizyką Bullet | `./gradlew :javity-desktop:run --args='--physics3d'` |
 | Drzewo obiektów, komponenty, transformacje i gizma | `./gradlew :javity-desktop:run --args='--inspector'` |
 | Feedback, zegary, scena i React HUD | `./gradlew :javity-desktop:run --args='--mm'` |
+| Otoczenie: dzień/noc, mgła, directional/point/spot i typowany authoring | `./gradlew :javity-desktop:run --args='--environment'` |
+| Lokalny streaming typed lease | `./gradlew :javity-desktop:run --args='--asset-streaming'` |
 | Prezentacyjne efekty kamery/modelu 3D | `./gradlew :javity-desktop:feel3d` |
 | Porównanie kontrolek z HTML | `./gradlew :javity-desktop:run --args='--ui-parity'` |
 
@@ -43,11 +45,11 @@ Systemy (`GameSystem`) dodawaj przed `start()`. Komponenty dodane później inic
 
 ## 3. Tree viewer i gizma
 
-Uruchom `--inspector`, a potem użyj F1 do otwierania i zamykania panelu. Ten przełącznik działa również w podstawowym ModernDemo. Nie jest obecnie wpięty do `--voxels`, `--physics3d` ani launchera Androida.
+Uruchom `--inspector`, a potem użyj F1 do otwierania i zamykania panelu w ModernDemo. F1 działa również w `--voxels`, `--physics3d` i `--environment`: używa tej samej Game, zwalnia kursor i daje UI pierwszeństwo przed gameplay. W voxelach i Bullet Focus wymaga jawnego trybu lotu debugowego. Launcher Androida ma osobny, ograniczony zakres.
 
 ![Drzewo GameObjectów i inspektor sceny](demo-runtime-inspector.png)
 
-Panel pokazuje obiekty aktywne i nieaktywne, hierarchię pierwszego Transform3D oraz wszystkie komponenty, także wyłączone i powtórzone. Hierarchia 2D pozostaje płaska. Wybierz obiekt, zmień typowane pola i kliknij Apply. Undo/redo ma 256 wpisów. Przyciski MOVE/ROTATE/SCALE oraz LOCAL/WORLD i pole snapu sterują uchwytami osi; jeden drag tworzy jedną operację historii. Kontrolki UI mają pierwszeństwo przed światem. Focus loss, zmiana sceny/kamery lub resize anuluje podgląd przeciągania.
+Panel pokazuje obiekty aktywne i nieaktywne, hierarchię pierwszego Transform3D oraz wszystkie komponenty, także wyłączone i powtórzone. Hierarchia 2D pozostaje płaska. Wybierz obiekt, zmień typowane pola i kliknij Apply. Undo/redo ma 256 wpisów we wspólnej historii transformacji i typowanych parametrów światła. Wybranie światła w RuntimeToolsOverlay pokazuje osobny draft RGB/intensity/range/cutoff/exponent; Apply zapisuje jedną operację, a zmiana sceny, komponentu lub stanu odrzuca nieaktualny draft. Range i cutoff nie są polami directional. Gizma pokazują kierunek, zasięg i stożek; socket prawej dłoni w voxelach pokazuje kanoniczne osie bez zmiany kości. Przyciski MOVE/ROTATE/SCALE oraz LOCAL/WORLD i pole snapu sterują uchwytami osi; jeden drag tworzy jedną operację historii. Kontrolki UI mają pierwszeństwo przed światem. Focus loss, zmiana sceny/kamery lub resize anuluje podgląd przeciągania.
 
 Do własnego hosta przekaż aktualną scenę przez Supplier<Game>, kamery przez `setGizmoCameras`, ustaw kolejność wejścia inspector → Stage → gizma → gameplay i rysuj gizma między światem a Stage. [Pełny przykład integracji, ograniczenia rodziców i eksport](runtime-tools.md).
 
@@ -132,11 +134,18 @@ UI jest opcjonalne: Scene2D/Yoga bez JS albo React/TSX na wspólnym hoście. Zwy
 
 ## 6. Światło i tło — aktualny stan
 
-`GdxRenderer.environment` udostępnia libGDX Environment z domyślnym ambient i DirectionalLight. Host może zmienić ambient i kierunek światła przez API libGDX. Nie ma jeszcze scene-local komponentów świateł ani skyboxa; płaski kolor czyszczenia ekranu w voxelowym demie nie jest skyboxem. Liczby świateł i możliwości shaderów wymagają jawnej konfiguracji. Nowy projekt obejmuje komponenty, cubemap i mgłę: [następny batch](next-runtime-batch.md).
+`RenderEnvironment3D` jest scene-local systemem rejestrowanym przed startem. GameObject z `Transform3D` i `DirectionalLight3D`, `PointLight3D` lub `SpotLight3D` dostarcza światło świata; kierunek to world-transformed lokalne -Z. Ambient, gradient/cubemap i mgła należą do environment. Domyślne limity sceny to 2 directional / 4 point / 2 spot; nadmiar wybierany jest deterministycznie i raportowany. Scena bez tego systemu zachowuje historyczne `GdxRenderer.environment`.
+
+`DayNightCycle3D(sun, environment, daySeconds)` używa zegara WORLD i właścicieli tej samej Game. Faza 0 to północ, .25 wschód, .5 południe, .75 zachód. Steruje słońcem, ambient i gradientem; pożyczony cubemap pozostaje tym samym obrazem. `--environment` pokazuje kamienny dziedziniec: 1 popołudnie, 2 ostatnie światło, 3 północ, 4 mgła; przyciski włączają cykl, pauzę i lokalne światła. F1/wybór lampy otwiera typowany authoring. `--voxels` jawnie wybiera nowe otoczenie z zatrzymaną fazą poranną.
+
+Mgła obejmuje zwykłe modele świata także bez normals; nie obejmuje Shapes, własnych shaderów ani UI. Pass viewmodelu celowo zachowuje historyczne światło bez scene fog/sky, więc dłonie mogą mieć inne oświetlenie niż świat. Nowe scene environment wymusza zwykły rendering kandydatów instancingu. To forward lighting bez PBR/IBL, dynamicznych cieni, HDR/bloom i wolumetryki. [API i własność](lighting-and-sky.md), [dokładny kontrakt shaderów i sky pass](scene-lighting.md), [zrzuty i bramki](artifacts/environment/README.md). Nowe funkcje na Androidzie pozostają **UNVERIFIED** do rzeczywistej bramki GLES/EGL.
+
+![Dziedziniec: popołudnie](artifacts/environment/afternoon.png)
+![Dziedziniec: ostatnie światło](artifacts/environment/last-light.png)
 
 ## 7. Jak sprawdzać własną zmianę
 
-`./gradlew build` sprawdza reactor desktopowy. `voxelSmoke`, `inspectorSmoke`, `avatarSmoke`, `avatarGl30Smoke` i `feel3dSmoke` wymagają rzeczywistego OpenGL. Kompilacja ani test headless nie dowodzą widoczności rąk, światła lub shaderów. [Aktualne dowody Androida](android-status.md) rozdzielają testy CPU, JNI, piksele, lifecycle i ograniczenia sprzętu. [Indeks pozostałych instrukcji](README.md).
+`./gradlew build` sprawdza reactor desktopowy. `environmentSmoke` (GL20/GL30 i osobny sky gate), `voxelSmoke`, `inspectorSmoke`, `avatarSmoke`, `avatarGl30Smoke` i `feel3dSmoke` wymagają rzeczywistego OpenGL. Kompilacja ani test headless nie dowodzą widoczności rąk, światła lub shaderów. [Aktualne dowody Androida](android-status.md) rozdzielają testy CPU, JNI, piksele, lifecycle i ograniczenia sprzętu. [Indeks pozostałych instrukcji](README.md).
 
 
 ## 8. Darmowy model z prawdziwymi animacjami

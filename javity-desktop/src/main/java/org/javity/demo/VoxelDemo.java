@@ -145,6 +145,13 @@ final class VoxelDemo extends ApplicationAdapter {
     atlas.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
 
     game = new Game();
+    var sceneEnvironment = game.addSystem(new org.javity.render.lighting.RenderEnvironment3D());
+    var sunlight = game.createObject("Voxel sunlight / scene environment");
+    sunlight.addComponent(new Transform3D());
+    var sun = sunlight.addComponent(new org.javity.render.lighting.DirectionalLight3D());
+    var day = sunlight.addComponent(new org.javity.render.lighting.DayNightCycle3D(sun, sceneEnvironment, 180));
+    day.setPhase(.43);
+    day.setEnabled(false);
     cameraObject = game.createObject("voxel FPS player");
     cameraTransform = cameraObject.addComponent(new Transform3D());
     cameraComponent = cameraObject.addComponent(new Camera3D(67));
@@ -185,6 +192,8 @@ final class VoxelDemo extends ApplicationAdapter {
     createHud();
     tools = new RuntimeToolsOverlay(stage, theme, () -> game);
     tools.inspector().setGizmoCameras(camera, null);
+    tools.setSocketGizmo(avatar.binding, "right-hand",
+        () -> avatar.renderer.instance.transform, () -> camera);
     tools.setDebugCameraProvider(() -> freeFlyMode ? camera : null);
     tools.setInteractionChanged(() -> {
       stopPlayerInput();

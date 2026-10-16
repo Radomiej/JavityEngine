@@ -522,6 +522,7 @@ public final class RuntimeInspector implements AutoCloseable {
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     gizmoRenderer.begin(ShapeRenderer.ShapeType.Line);
     try {
+      if (is3D) LightGizmoAdapter.draw(gizmoRenderer, camera, editorObject);
       int count = is3D ? 3 : 2;
       for (int axis = 0; axis < count; axis++) {
         gizmoRenderer.setColor(
@@ -960,6 +961,19 @@ public final class RuntimeInspector implements AutoCloseable {
   public GameObject selectedObject() {
     if (closed || currentScene.get() != displayedScene) return null;
     return selectedObject(displayedScene, inspection.capture().selectedId());
+  }
+
+  public SceneInspection.LightEditSession beginLightEdit(org.javity.render.lighting.Light3D light) {
+    requireOpen();
+    refresh();
+    return inspection.beginLightEdit(light);
+  }
+
+  public void commitLightEdit(SceneInspection.LightEditSession edit, SceneInspection.LightState next) {
+    requireOpen();
+    refresh();
+    inspection.commitLightEdit(edit, next);
+    refresh();
   }
 
   public void setSearchQuery(String query) {

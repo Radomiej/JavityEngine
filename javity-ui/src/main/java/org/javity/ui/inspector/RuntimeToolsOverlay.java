@@ -14,6 +14,13 @@ import org.javity.ui.flex.UiTheme;
 public final class RuntimeToolsOverlay implements AutoCloseable {
   private final RuntimeInspector inspector;
   private final FeelPreviewPanel feelPreview;
+  private final LightAuthoringPanel lights;
+  private com.badlogic.gdx.graphics.glutils.ShapeRenderer socketRenderer;
+  private org.javity.avatar.AvatarBinding socketBinding;
+  private String socketName;
+  private Supplier<com.badlogic.gdx.math.Matrix4> socketBase;
+  private Supplier<Camera> socketCamera;
+
   private Supplier<Camera> debugCamera = () -> null;
   private Runnable interactionChanged = () -> {};
   private boolean focused = true, restoreCapture, closed;
@@ -27,23 +34,36 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
       inspector.close();
       throw failure;
     }
+    try {
+      lights = new LightAuthoringPanel(stage, theme, inspector);
+    } catch (RuntimeException | Error failure) {
+      feelPreview.close();
+      inspector.close();
+      throw failure;
+    }
     feelPreview.setVisible(false);
     inspector.setVisibilityListener(this::visibilityChanged);
-    inspector.setFocusSelectedHandler(object -> {
-      Camera camera = debugCamera.get();
-      if (camera == null) return "Focus refused: enter free-fly debug mode first";
-      Transform3D transform = object.getComponent(Transform3D.class);
-      if (transform == null) return "Focus refused: selected object has no Transform3D";
-      Vector3 target = transform.worldMatrix().getTranslation(new Vector3());
-      camera.position.set(target).mulAdd(camera.direction, -5f);
-      camera.lookAt(target);
-      camera.update();
-      return null;
-    });
+    inspector.setFocusSelectedHandler(
+        object -> {
+          Camera camera = debugCamera.get();
+          if (camera == null) return "Focus refused: enter free-fly debug mode first";
+          Transform3D transform = object.getComponent(Transform3D.class);
+          if (transform == null) return "Focus refused: selected object has no Transform3D";
+          Vector3 target = transform.worldMatrix().getTranslation(new Vector3());
+          camera.position.set(target).mulAdd(camera.direction, -5f);
+          camera.lookAt(target);
+          camera.update();
+          return null;
+        });
   }
 
-  public RuntimeInspector inspector() { return inspector; }
-  public FeelPreviewPanel feelPreview() { return feelPreview; }
+  public RuntimeInspector inspector() {
+    return inspector;
+  }
+
+  public FeelPreviewPanel feelPreview() {
+    return feelPreview;
+  }
 
   /** Return a camera only after the host explicitly entered its debug/free-fly mode. */
   public void setDebugCameraProvider(Supplier<Camera> provider) {
@@ -57,7 +77,10 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
 
   private void visibilityChanged(boolean visible) {
     feelPreview.setVisible(visible);
-    if (!visible) feelPreview.stop();
+    if (!visible) {
+      feelPreview.stop();
+      lights.setVisible(false);
+    }
     if (visible) {
       restoreCapture = focused && Gdx.input.isCursorCatched();
       Gdx.input.setCursorCatched(false);
@@ -70,9 +93,48 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
 
   public void update(float unscaledDelta) {
     inspector.update(unscaledDelta);
+    lights.update(inspector.isVisible());
+    feelPreview.setVisible(inspector.isVisible() && !lights.hasLight());
     feelPreview.update(unscaledDelta);
   }
-  public void drawGizmos() { inspector.drawGizmos(); }
+
+  public LightAuthoringPanel lightAuthoring() {
+    return lights;
+  }
+
+  /** Optional socket diagnostic: host borrows binding/base/camera until clear or close. */
+  public void setSocketGizmo(
+      org.javity.avatar.AvatarBinding binding,
+      String name,
+      Supplier<com.badlogic.gdx.math.Matrix4> base,
+      Supplier<Camera> camera) {
+    socketBinding = Objects.requireNonNull(binding);
+    socketName = Objects.requireNonNull(name);
+    socketBase = Objects.requireNonNull(base);
+    socketCamera = Objects.requireNonNull(camera);
+  }
+
+  public void clearSocketGizmo() {
+    socketBinding = null;
+    socketBase = null;
+    socketCamera = null;
+  }
+
+  public void drawGizmos() {
+    inspector.drawGizmos();
+    if (closed || !inspector.isVisible() || socketBinding == null) return;
+    Camera camera = socketCamera.get();
+    if (camera == null) return;
+    if (socketRenderer == null)
+      socketRenderer = new com.badlogic.gdx.graphics.glutils.ShapeRenderer();
+    socketRenderer.setProjectionMatrix(camera.combined);
+    socketRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line);
+    try {
+      SocketGizmoAdapter.draw(socketRenderer, camera, socketBinding, socketName, socketBase.get());
+    } finally {
+      socketRenderer.end();
+    }
+  }
 
   public void onFocusLost() {
     focused = false;
@@ -82,12 +144,18 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
     interactionChanged.run();
   }
 
-  public void onFocusGained() { focused = true; }
+  public void onFocusGained() {
+    focused = true;
+  }
 
-  @Override public void close() {
+  @Override
+  public void close() {
     if (closed) return;
     if (inspector.isVisible()) inspector.setVisible(false);
     closed = true;
+    clearSocketGizmo();
+    if (socketRenderer != null) socketRenderer.dispose();
+    lights.close();
     feelPreview.close();
     inspector.close();
   }

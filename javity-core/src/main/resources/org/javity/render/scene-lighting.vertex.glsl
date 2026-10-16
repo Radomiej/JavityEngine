@@ -24,7 +24,7 @@
 #define specularFlag
 #endif
 
-#if defined(specularFlag) || defined(fogFlag)
+#if defined(specularFlag) || defined(sceneFogFlag)
 #define cameraPositionFlag
 #endif
 
