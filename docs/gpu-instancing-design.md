@@ -2,7 +2,7 @@
 
 2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etap B również ma sprawdzoną implementację; C pozostaje planem.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
 
-## Co mamy
+## Punkt wyjścia — przed etapami A/B
 
 `GdxRenderer` używa ModelBatch, ale jego flush wywołuje shader.render dla każdego Renderable. Wspólna siatka albo jeden ModelBatch nie oznaczają automatycznie jednego draw call. `ModelPoseAnimator` ma osobny sampler i kanoniczny ModelInstance dla właściciela; renderer nie przesuwa zegara animacji. AvatarView wybiera części i sockety z tej samej pozy. Nowy batching musi zachować te kontrakty.
 

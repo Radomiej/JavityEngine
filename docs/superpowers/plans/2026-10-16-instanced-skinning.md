@@ -38,11 +38,11 @@
 - Consumes: immutable exact-pose identity from stage B and canonical skinning matrices.
 - Produces: `BonePalette implements Disposable`, constructor `(int boneCount, int maxRows)`; `beginFrame(long frameIndex): void`; `put(ExactPoseKey key, Matrix4[] skinMatrices): BonePalette.Row`; nested immutable `Row` with page/index/generation; `contextRestored(): void`.
 
-- [ ] **Step 1: Write failing tests.** Assert width=4*boneCount, column-major matrix reconstruction, identical pose one upload, unequal pose separate rows, page split at maxRows, stale generation rejected and texture-size/vertex-fetch capability refusal. Force partial allocation failure and assert cleanup without source disposal.
-- [ ] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.render.BonePaletteTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
-- [ ] **Step 3: Implement.** Retain bounded CPU palette backing for recovery. Use RGBA32F nearest/clamp texture and texelFetch, no uniform crowd array. Validate width, rows, vertex texture units and available matrix/tint/row attributes before allocation; overflow produces another bounded page or explicit fallback. Generation-check every row lease.
-- [ ] **Step 4: Verify GREEN.** Run `./gradlew :javity-core:test --tests org.javity.render.BonePaletteTest`; require all named assertions to pass and preserve the evidence.
-- [ ] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(render): add bounded bone palette pages"`.
+- [x] **Step 1: Write failing tests.** Assert width=4*boneCount, column-major matrix reconstruction, identical pose one upload, unequal pose separate rows, page split at maxRows, stale generation rejected and texture-size/vertex-fetch capability refusal. Force partial allocation failure and assert cleanup without source disposal.
+- [x] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.render.BonePaletteTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
+- [x] **Step 3: Implement.** Retain bounded CPU palette backing for recovery. Use RGBA32F nearest/clamp texture and texelFetch, no uniform crowd array. Validate width, rows, vertex texture units and available matrix/tint/row attributes before allocation; overflow produces another bounded page or explicit fallback. Generation-check every row lease.
+- [x] **Step 4: Verify GREEN.** Run `./gradlew :javity-core:test --tests org.javity.render.BonePaletteTest`; require all named assertions to pass and preserve the evidence.
+- [x] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(render): add bounded bone palette pages"`.
 
 ### Task 2: Animated instance rendering and avatar parity
 
