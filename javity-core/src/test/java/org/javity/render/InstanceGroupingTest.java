@@ -53,6 +53,21 @@ public class InstanceGroupingTest {
   }
 
   @Test
+  public void orderDependentDepthUsesFallback() {
+    Renderable r = renderable();
+    try {
+      r.material.set(new DepthTestAttribute(GL20.GL_LEQUAL, 0, 1, false));
+      assertEquals("ORDER_DEPENDENT_DEPTH_STATE", InstanceGroupKey.rejectionReason(r, null));
+      r.material.set(new DepthTestAttribute(GL20.GL_ALWAYS, 0, 1, true));
+      assertEquals("ORDER_DEPENDENT_DEPTH_STATE", InstanceGroupKey.rejectionReason(r, null));
+      r.material.set(new DepthTestAttribute(GL20.GL_LEQUAL, 0, 1, true));
+      assertNull(InstanceGroupKey.rejectionReason(r, null));
+    } finally {
+      r.meshPart.mesh.dispose();
+    }
+  }
+
+  @Test
   public void slotReuseAndCapacity() {
     InstanceSlots slots = new InstanceSlots(256);
     for (long i = 0; i < 257; i++) slots.put(i, new Matrix4().setToTranslation(i, 0, 0));
@@ -78,6 +93,17 @@ public class InstanceGroupingTest {
     Matrix4 shear = new Matrix4();
     shear.val[Matrix4.M01] = .2f;
     assertNotNull(InstanceGroupKey.transformRejection(shear));
+  }
+
+  @Test
+  public void extremeUniformScaleKeepsDeterminantSign() {
+    for (float scale : new float[] {1e-30f, 1e30f}) {
+      assertNull(
+          InstanceGroupKey.transformRejection(new Matrix4().setToScaling(scale, scale, scale)));
+      assertEquals(
+          "MIRRORED_TRANSFORM",
+          InstanceGroupKey.transformRejection(new Matrix4().setToScaling(-scale, scale, scale)));
+    }
   }
 
   @Test

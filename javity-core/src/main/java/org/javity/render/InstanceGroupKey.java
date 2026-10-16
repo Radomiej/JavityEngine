@@ -51,8 +51,16 @@ final class InstanceGroupKey {
     }
     if (!position || !normal) return "MISSING_POSITION_OR_NORMAL";
     if (r.material == null) return "MISSING_MATERIAL";
+    DepthTestAttribute depth = (DepthTestAttribute) r.material.get(DepthTestAttribute.Type);
+    if (depth != null
+        && (!depth.depthMask
+            || (depth.depthFunc != GL20.GL_LESS && depth.depthFunc != GL20.GL_LEQUAL)))
+      return "ORDER_DEPENDENT_DEPTH_STATE";
+    BlendingAttribute blending = (BlendingAttribute) r.material.get(BlendingAttribute.Type);
+    if (blending != null && (blending.blended || blending.opacity != 1f)) return "ALPHA_BLENDING";
     for (Attribute a : r.material) {
-      if (a.type == ColorAttribute.Diffuse
+      if (a.type == BlendingAttribute.Type
+          || a.type == ColorAttribute.Diffuse
           || a.type == FloatAttribute.AlphaTest
           || a.type == IntAttribute.CullFace
           || a.type == DepthTestAttribute.Type) continue;
@@ -93,9 +101,9 @@ final class InstanceGroupKey {
         || Math.abs(dot(v, 0, 8)) > scale * 1e-5
         || Math.abs(dot(v, 4, 8)) > scale * 1e-5) return "SHEARED_TRANSFORM";
     double determinant =
-        (double) v[0] * (v[5] * v[10] - v[6] * v[9])
-            - (double) v[4] * (v[1] * v[10] - v[2] * v[9])
-            + (double) v[8] * (v[1] * v[6] - v[2] * v[5]);
+        (double) v[0] * ((double) v[5] * v[10] - (double) v[6] * v[9])
+            - (double) v[4] * ((double) v[1] * v[10] - (double) v[2] * v[9])
+            + (double) v[8] * ((double) v[1] * v[6] - (double) v[2] * v[5]);
     return determinant <= 0 ? "MIRRORED_TRANSFORM" : null;
   }
 
@@ -114,7 +122,12 @@ final class InstanceGroupKey {
     out.add("attributes");
     for (Attribute a : attributes) {
       out.add(a.type);
-      if (a instanceof ColorAttribute c) color(c.color, out);
+      if (a instanceof BlendingAttribute b) {
+        out.add(b.blended);
+        out.add(b.sourceFunction);
+        out.add(b.destFunction);
+        out.add(b.opacity);
+      } else if (a instanceof ColorAttribute c) color(c.color, out);
       else if (a instanceof FloatAttribute f) out.add(f.value);
       else if (a instanceof IntAttribute i) out.add(i.value);
       else if (a instanceof DepthTestAttribute d) {

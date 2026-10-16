@@ -216,3 +216,14 @@ tasks.register('feel3d', JavaExec) {
     mainClass = 'org.javity.demo.Feel3DDemoLauncher'
     jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
+
+['instancingSmoke', 'instancingGl20Smoke'].each { taskName ->
+    tasks.register(taskName, JavaExec) {
+        group = 'verification'
+        description = 'Native static instancing pixels, draw counts, ownership and fallback proof.'
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = 'org.javity.demo.InstancingSmokeLauncher'
+        jvmArgs '--enable-native-access=ALL-UNNAMED'
+        if (taskName == 'instancingGl20Smoke') args '--gl20'
+    }
+}
