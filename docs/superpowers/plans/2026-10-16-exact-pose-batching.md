@@ -65,4 +65,4 @@
 
 ## Execution evidence
 
-Completed through98d7d8c and independently reviewed, including a narrow uncached fallback for post-validation source data that cannot be snapshotted. Full reactor714 tests/79 suites;123 animation tests independently repeated; four realGL20/GL30 Fox proofs retain original tolerances and actual loaded JAR hashes. [Evidence and measured CPU/allocation cost](../../artifacts/imported-animation/pose-cache-fix1/README.md). CPU sharing is opt-in and was slower overall for this fixture despite256→1 compositions; do not infer total speedup.
+Completed through98d7d8c and independently reviewed, including a narrow uncached fallback for post-validation source data that cannot be snapshotted. Full reactor714 tests/79 suites;123 animation tests independently repeated; four realGL20/GL30 Fox proofs retain original tolerances and actual loaded JAR hashes. [Evidence and measured CPU/allocation cost](../../artifacts/imported-animation/README.md). CPU sharing is opt-in and was slower overall for this fixture despite256→1 compositions; do not infer total speedup.
