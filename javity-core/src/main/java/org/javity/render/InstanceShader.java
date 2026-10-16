@@ -22,6 +22,23 @@ final class InstanceShader extends DefaultShader {
   static InstanceShader create(Renderable representative) {
     Config config = new Config();
     String prefix = createPrefix(representative, config);
+    ShaderProgram program = prepareProgram(prefix, false);
+    InstanceShader shader = null;
+    try {
+      if (!program.isCompiled()) throw new IllegalStateException(program.getLog());
+      shader = new InstanceShader(representative, config, program);
+      shader.init();
+      for (int i = 0; i < 4; i++)
+        if (program.getAttributeLocation("a_i" + i) < 0)
+          throw new IllegalStateException("Instance matrix attribute missing");
+      return shader;
+    } catch (RuntimeException | Error failure) {
+      program.dispose();
+      throw failure;
+    }
+  }
+
+  static ShaderProgram prepareProgram(String prefix, boolean skinned) {
     boolean es = Gdx.graphics.getGLVersion().getType() == GLVersion.Type.GLES;
     String header = es ? "#version 300 es\n" : "#version 330 core\n";
     String vertex =
@@ -46,26 +63,30 @@ final class InstanceShader extends DefaultShader {
         es
             ? "precision mediump float;\nout vec4 instanceFragColor;\n"
             : "out vec4 instanceFragColor;\n";
-    vertex = header + prefix + vertex;
+    if (skinned) {
+      vertex =
+          vertex.replace(
+              "uniform mat4 u_bones[numBones];",
+              "#ifdef GL_ES\nprecision highp float;\nuniform highp sampler2D u_palette;\n"
+                  + "#else\nuniform sampler2D u_palette;\n#endif\n"
+                  + "in float a_paletteRow;\n"
+                  + "mat4 paletteBone(int bone) { int x = bone * 4; int y = int(a_paletteRow); "
+                  + "return mat4(texelFetch(u_palette,ivec2(x,y),0),"
+                  + "texelFetch(u_palette,ivec2(x+1,y),0),texelFetch(u_palette,ivec2(x+2,y),0),"
+                  + "texelFetch(u_palette,ivec2(x+3,y),0)); }\n");
+      vertex =
+          vertex.replaceAll(
+              "u_bones\\[int\\((a_boneWeight[0-7]\\.x)\\)\\]", "paletteBone(int($1))");
+    }
+    vertex =
+        header + (es ? "precision highp float;\nprecision highp int;\n" : "") + prefix + vertex;
     fragment = header + fragmentOutput + prefix + fragment;
     preflight(
         (ShaderProgram.prependVertexCode == null ? "" : ShaderProgram.prependVertexCode) + vertex,
         (ShaderProgram.prependFragmentCode == null ? "" : ShaderProgram.prependFragmentCode)
             + fragment);
     ShaderProgram program = new ShaderProgram(vertex, fragment);
-    InstanceShader shader = null;
-    try {
-      if (!program.isCompiled()) throw new IllegalStateException(program.getLog());
-      shader = new InstanceShader(representative, config, program);
-      shader.init();
-      for (int i = 0; i < 4; i++)
-        if (program.getAttributeLocation("a_i" + i) < 0)
-          throw new IllegalStateException("Instance matrix attribute missing");
-      return shader;
-    } catch (RuntimeException | Error failure) {
-      program.dispose();
-      throw failure;
-    }
+    return program;
   }
 
   /** Raw compile/link first: ShaderProgram otherwise loses failed stage handles in this GDX. */

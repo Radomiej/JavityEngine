@@ -41,7 +41,17 @@ public final class GdxRenderer implements Disposable {
   private final Matrix4 renderableCandidate = new Matrix4();
   private final Presentation3D.Pose presentationPose = new Presentation3D.Pose();
   private final ModelBatch models;
+  private Game instanceScene;
   private StaticInstanceBatch staticInstances;
+  private SkinnedInstanceBatch skinnedInstances;
+  private final IdentityHashMap<ModelRenderer, Map<AvatarView.RenderKey, Long>> avatarInstanceIds =
+      new IdentityHashMap<>();
+  private final com.badlogic.gdx.utils.Array<AvatarView.RenderKey> avatarKeys =
+      new com.badlogic.gdx.utils.Array<>();
+  private final com.badlogic.gdx.utils.Array<Renderable> skinnedCandidates =
+      new com.badlogic.gdx.utils.Array<>();
+  private final com.badlogic.gdx.utils.LongArray skinnedOwners =
+      new com.badlogic.gdx.utils.LongArray();
   private final com.badlogic.gdx.utils.LongArray worldCandidateOwners =
       new com.badlogic.gdx.utils.LongArray();
   private final IdentityHashMap<ModelRenderer, IdentityHashMap<NodePart, Long>> instanceOwnerIds =
@@ -146,6 +156,7 @@ public final class GdxRenderer implements Disposable {
   public void restoreContextShaderBindings() {
     modelShaders.contextRestored();
     if (staticInstances != null) staticInstances.contextRestored();
+    if (skinnedInstances != null) skinnedInstances.contextRestored();
   }
 
   /** Load during initialization. Supports libGDX Model formats: G3DJ, G3DB and OBJ. */
@@ -173,6 +184,7 @@ public final class GdxRenderer implements Disposable {
   }
 
   public void render(Game game) {
+    beginWorldScene(Objects.requireNonNull(game, "game"));
     Camera3D view = null;
     for (GameObject o : game.getObjectsWith(Camera3D.class)) {
       for (Camera3D c : o.getComponents(Camera3D.class))
@@ -195,6 +207,7 @@ public final class GdxRenderer implements Disposable {
     Objects.requireNonNull(camera, "camera");
     if (camera.getGame() != game)
       throw new IllegalArgumentException("Camera3D must belong to the rendered Game");
+    beginWorldScene(game);
     if (!visible(camera)) return;
     if (localOverride != null) {
       ModelRenderer target = localOverride.renderer();
@@ -226,12 +239,30 @@ public final class GdxRenderer implements Disposable {
             if (!o.containsComponent(r)) continue;
             localOverride.validateShaderCapacity(maxBones, maxBoneWeights);
             Matrix4 objectBase = presentedBase(transform, o);
-            int start = worldOrdinary.size;
-            localOverride.getRenderablesWithBase(worldOrdinary, worldPool, objectBase);
-            for (int i = start; i < worldOrdinary.size; i++)
+            InstancedModel marker = o.getComponent(InstancedModel.class);
+            boolean optedIn = marker != null && visible(marker);
+            var output = optedIn ? worldCandidates : worldOrdinary;
+            int start = output.size;
+            avatarKeys.clear();
+            localOverride.getRenderablesWithBase(output, worldPool, objectBase, avatarKeys);
+            Map<AvatarView.RenderKey, Long> ids = null;
+            if (optedIn) {
+              seenInstanceOwners.add(r);
+              ids = avatarInstanceIds.computeIfAbsent(r, ignored -> new HashMap<>());
+              Set<AvatarView.RenderKey> present = new HashSet<>();
+              for (AvatarView.RenderKey key : avatarKeys) present.add(key);
+              ids.keySet().retainAll(present);
+            }
+            for (int i = start; i < output.size; i++) {
               requireFinite(
-                  worldOrdinary.get(i).worldTransform,
+                  output.get(i).worldTransform,
                   "presented avatar renderable matrix is not representable");
+              if (optedIn)
+                worldCandidateOwners.add(
+                    ids.computeIfAbsent(
+                        avatarKeys.get(i - start),
+                        ignored -> nextInstanceOwnerId = Math.incrementExact(nextInstanceOwnerId)));
+            }
           } else {
             validateShaderCapacity(r);
             Matrix4 base = presentedBase(transform, o);
@@ -252,6 +283,24 @@ public final class GdxRenderer implements Disposable {
         }
       }
       instanceOwnerIds.keySet().retainAll(seenInstanceOwners);
+      avatarInstanceIds.keySet().retainAll(seenInstanceOwners);
+      skinnedCandidates.clear();
+      skinnedOwners.clear();
+      for (int i = 0; i < worldCandidates.size; ) {
+        Renderable candidate = worldCandidates.get(i);
+        if (candidate.bones != null && candidate.bones.length > 0) {
+          skinnedCandidates.add(candidate);
+          skinnedOwners.add(worldCandidateOwners.get(i));
+          worldCandidates.removeIndex(i);
+          worldCandidateOwners.removeIndex(i);
+        } else i++;
+      }
+      if (skinnedInstances == null && skinnedCandidates.size > 0)
+        skinnedInstances = new SkinnedInstanceBatch(256, 1024);
+      if (skinnedInstances != null)
+        worldOrdinary.addAll(
+            skinnedInstances.render(
+                skinnedCandidates, camera.camera, environment, skinnedOwners.toArray()));
       if (staticInstances == null && worldCandidates.size > 0)
         staticInstances = new StaticInstanceBatch(256);
       if (staticInstances != null)
@@ -270,6 +319,8 @@ public final class GdxRenderer implements Disposable {
     } finally {
       worldOrdinary.clear();
       worldCandidates.clear();
+      skinnedCandidates.clear();
+      avatarKeys.clear();
       worldPool.flush();
     }
   }
@@ -306,19 +357,61 @@ public final class GdxRenderer implements Disposable {
     for (Node child : node.getChildren()) collectAttachedPartIds(child, ids, nextId, attached);
   }
 
+  // render2D may be a separate overlay Game and deliberately does not cross this boundary.
+  private void beginWorldScene(Game game) {
+    if (instanceScene == game) return;
+    releaseInstanceBatches();
+    instanceScene = game;
+  }
+
+  private void releaseInstanceBatches() {
+    StaticInstanceBatch oldStatic = staticInstances;
+    SkinnedInstanceBatch oldSkinned = skinnedInstances;
+    staticInstances = null;
+    skinnedInstances = null;
+    instanceScene = null;
+    instanceOwnerIds.clear();
+    avatarInstanceIds.clear();
+    seenInstanceOwners.clear();
+    worldCandidateOwners.clear();
+    skinnedOwners.clear();
+    try {
+      if (oldStatic != null) oldStatic.dispose();
+    } finally {
+      if (oldSkinned != null) oldSkinned.dispose();
+    }
+  }
+
   /** Statistics for opt-in world candidates in the most recently completed view. */
   public InstanceStats instanceStats() {
-    return staticInstances == null ? InstanceStats.EMPTY : staticInstances.stats();
+    InstanceStats a = staticInstances == null ? InstanceStats.EMPTY : staticInstances.stats();
+    InstanceStats b = skinnedInstances == null ? InstanceStats.EMPTY : skinnedInstances.stats();
+    return new InstanceStats(
+        a.submitted() + b.submitted(),
+        a.visible() + b.visible(),
+        a.culled() + b.culled(),
+        a.instanced() + b.instanced(),
+        a.fallback() + b.fallback(),
+        a.groups() + b.groups(),
+        a.draws() + b.draws(),
+        a.uploadBytes() + b.uploadBytes());
   }
 
   /** Reason counts for rejected opt-in world candidates in the latest completed view. */
   public Map<String, Integer> instanceFallbackReasons() {
-    return staticInstances == null ? Map.of() : staticInstances.fallbackReasons();
+    Map<String, Integer> result = new LinkedHashMap<>();
+    if (staticInstances != null) result.putAll(staticInstances.fallbackReasons());
+    if (skinnedInstances != null)
+      skinnedInstances
+          .fallbackReasons()
+          .forEach((reason, count) -> result.merge(reason, count, Integer::sum));
+    return Map.copyOf(result);
   }
 
   /** Call outside active batches before rendering a source mesh edited by its owner. */
   public void invalidateGeometry(Mesh source) {
     if (staticInstances != null) staticInstances.invalidateGeometry(source);
+    if (skinnedInstances != null) skinnedInstances.invalidateGeometry(source);
   }
 
   private Matrix4 presentedBase(Transform3D transform, GameObject object) {
@@ -571,7 +664,7 @@ public final class GdxRenderer implements Disposable {
 
   @Override
   public void dispose() {
-    if (staticInstances != null) staticInstances.dispose();
+    releaseInstanceBatches();
     models.dispose();
     sprites.dispose();
     shapes.dispose();

@@ -801,7 +801,15 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     target[i + 9] = s.z;
   }
 
+  private long fullPoseCompositions;
+
+  /** Monotonic actual full local-pose compositions, including uncached incompatibility fallback. */
+  public long fullPoseCompositions() {
+    return fullPoseCompositions;
+  }
+
   private void composeLocal() {
+    fullPoseCompositions++;
     int layerCount = layers.size();
     int nodeCount = nodes.size();
     for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {

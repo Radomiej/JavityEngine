@@ -80,6 +80,15 @@ public final class AvatarView implements RenderableProvider {
   /** Internal renderer seam that composes the owning object's world transform without mutation. */
   public void getRenderablesWithBase(
       Array<Renderable> out, Pool<Renderable> pool, Matrix4 objectBase) {
+    getRenderablesWithBase(out, pool, objectBase, null);
+  }
+
+  /** Immutable source part and authored region identity; pooled Renderables are never keys. */
+  public record RenderKey(PartKey part, String preparedRegion) {}
+
+  /** Renderer collection seam. Keys, when supplied, append exactly once per emitted renderable. */
+  public void getRenderablesWithBase(
+      Array<Renderable> out, Pool<Renderable> pool, Matrix4 objectBase, Array<RenderKey> keys) {
     Objects.requireNonNull(out, "out");
     Objects.requireNonNull(pool, "pool");
     Objects.requireNonNull(objectBase, "objectBase");
@@ -96,12 +105,14 @@ public final class AvatarView implements RenderableProvider {
           renderable.meshPart.set(prepared.getValue());
           setTransform(renderable, entry);
           out.add(renderable);
+          if (keys != null) keys.add(new RenderKey(entry.key, prepared.getKey()));
         }
       } else if (selected(entry.semantic, entry.slot)) {
         Renderable renderable =
             binding.instance().getRenderable(pool.obtain(), entry.node, entry.nodePart);
         setTransform(renderable, entry);
         out.add(renderable);
+        if (keys != null) keys.add(new RenderKey(entry.key, null));
       }
     }
   }

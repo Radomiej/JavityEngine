@@ -16,7 +16,11 @@ final class InstanceGroupKey {
   }
 
   static InstanceGroupKey from(Renderable r, Environment environment) {
-    String reason = rejectionReason(r, environment);
+    return from(r, environment, false);
+  }
+
+  static InstanceGroupKey from(Renderable r, Environment environment, boolean skinned) {
+    String reason = rejectionReason(r, environment, skinned);
     if (reason != null) throw new IllegalArgumentException(reason);
     List<Object> values = new ArrayList<>();
     values.add(r.meshPart.mesh);
@@ -32,21 +36,43 @@ final class InstanceGroupKey {
   }
 
   static String rejectionReason(Renderable r, Environment e) {
+    return rejectionReason(r, e, false);
+  }
+
+  static String rejectionReason(Renderable r, Environment e, boolean skinned) {
     if (r.shader != null) return "CUSTOM_SHADER";
-    if (r.bones != null && r.bones.length > 0) return "SKINNED_GEOMETRY";
+    if (!skinned && r.bones != null && r.bones.length > 0) return "SKINNED_GEOMETRY";
     if (r.meshPart.mesh == null
         || r.meshPart.size <= 0
         || r.meshPart.primitiveType != GL20.GL_TRIANGLES) return "UNSUPPORTED_GEOMETRY";
+    long range =
+        r.meshPart.mesh.getNumIndices() > 0
+            ? r.meshPart.mesh.getNumIndices()
+            : r.meshPart.mesh.getNumVertices();
+    if (r.meshPart.offset < 0 || (long) r.meshPart.offset + r.meshPart.size > range)
+      return "INVALID_MESH_RANGE";
     String transform = transformRejection(r.worldTransform);
     if (transform != null) return transform;
     boolean position = false, normal = false, uv = false;
+    Set<Long> attributes = new HashSet<>();
     for (VertexAttribute a : r.meshPart.mesh.getVertexAttributes()) {
+      if (!attributes.add(((long) a.usage << 32) | (a.unit & 0xffffffffL)))
+        return "DUPLICATE_VERTEX_ATTRIBUTE";
+      if ((a.usage == VertexAttributes.Usage.Position && !a.alias.equals("a_position"))
+          || (a.usage == VertexAttributes.Usage.Normal && !a.alias.equals("a_normal"))
+          || (a.usage == VertexAttributes.Usage.TextureCoordinates
+              && !a.alias.equals("a_texCoord0"))) return "UNSUPPORTED_VERTEX_ALIAS";
       if (a.type != GL20.GL_FLOAT || a.normalized) return "UNSUPPORTED_VERTEX_LAYOUT";
       if (a.usage == VertexAttributes.Usage.Position && a.numComponents == 3) position = true;
       else if (a.usage == VertexAttributes.Usage.Normal && a.numComponents == 3) normal = true;
       else if (a.usage == VertexAttributes.Usage.TextureCoordinates
           && a.unit == 0
           && a.numComponents == 2) uv = true;
+      else if (skinned
+          && a.usage == VertexAttributes.Usage.BoneWeight
+          && a.numComponents == 2
+          && a.unit >= 0
+          && a.unit < 8) continue;
       else return "UNSUPPORTED_VERTEX_LAYOUT";
     }
     if (!position || !normal) return "MISSING_POSITION_OR_NORMAL";

@@ -227,3 +227,20 @@ tasks.register('feel3d', JavaExec) {
         if (taskName == 'instancingGl20Smoke') args '--gl20'
     }
 }
+
+tasks.register('skinnedInstancingSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native independent-pose skin palette, pixels and measured draw/upload proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkinnedInstancingSmokeLauncher'
+    workingDir = rootProject.projectDir
+}
+
+tasks.register('skinnedInstancingGl20Smoke', JavaExec) {
+    group = 'verification'
+    description = 'Animated instancing explicit ordinary GL20 fallback proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkinnedInstancingSmokeLauncher'
+    workingDir = rootProject.projectDir
+    args '--gl20'
+}

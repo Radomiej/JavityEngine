@@ -19,10 +19,11 @@ public class InstanceGroupingTest {
         new Mesh(
             Mesh.VertexDataType.VertexArray,
             true,
-            3,
+            9,
             0,
             VertexAttribute.Position(),
             VertexAttribute.Normal());
+    r.meshPart.mesh.setVertices(new float[9 * r.meshPart.mesh.getVertexSize() / 4]);
     r.meshPart.size = 3;
     r.meshPart.primitiveType = GL20.GL_TRIANGLES;
     r.material = new Material("same", ColorAttribute.createDiffuse(Color.RED));
@@ -148,11 +149,12 @@ public class InstanceGroupingTest {
         new Mesh(
             Mesh.VertexDataType.VertexArray,
             true,
-            3,
+            9,
             0,
             VertexAttribute.Position(),
             VertexAttribute.Normal(),
             VertexAttribute.TexCoords(0));
+    r.meshPart.mesh.setVertices(new float[9 * r.meshPart.mesh.getVertexSize() / 4]);
     old.dispose();
     try {
       Texture first = new CpuTexture(), second = new CpuTexture();

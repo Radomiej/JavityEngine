@@ -1,0 +1,148 @@
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-desktop:compileJava
+> Task :javity-desktop:classes
+
+> Task :javity-desktop:skinnedInstancingSmoke
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+actual GL: 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+six independent Walk/Run/Survey poses: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+independent poses actual draws 6 -> 1, paletteBytes=9216, instanceBytes=408
+production GPU transform-feedback source vertex error=1.068115234375E-4 vertices=10368
+ordinary-after-instance: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+shared-pose: foreground=5510 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+crossfade-mid: foreground=5453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+tail-mask: foreground=6733 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+mixer: foreground=7019 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+wrong-row negative control changed pixels=1114
+alpha-test: foreground=5892 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+fallback-restored: foreground=7004 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+budget-fallback: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected instance allocation failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:850)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glBufferData(Unknown Source)
+	at org.javity.render.InstanceGpuTransport$Chunk.update(InstanceGpuTransport.java:33)
+	at org.javity.render.SkinnedInstanceBatch$Group.prepare(SkinnedInstanceBatch.java:337)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:171)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:500)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:178)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected palette upload failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:854)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glTexSubImage2D(Unknown Source)
+	at org.javity.render.BonePalette.bindPage(BonePalette.java:228)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:172)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:510)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:178)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+after-upload-failure: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+original glTF oracle max vertex error source units=0.006999969482421875
+prepared-world-FULL_BODY-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-ARMS_ONLY-cache-false: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-FULL_BODY-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-ARMS_ONLY-cache-true: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+java.lang.AssertionError: camera-less new scene clears previous stats
+	at org.javity.demo.SkinnedInstancingDemo.check(SkinnedInstancingDemo.java:772)
+	at org.javity.demo.SkinnedInstancingDemo.verifySceneBoundary(SkinnedInstancingDemo.java:741)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:182)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+
+> Task :javity-desktop:skinnedInstancingSmoke FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':javity-desktop:skinnedInstancingSmoke' (registered in build file 'javity-desktop/build.gradle').
+> Process 'command '/tmp/javity-jdk25/jdk-25.0.4.1+1/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 4s
+37 actionable tasks: 2 executed, 35 up-to-date

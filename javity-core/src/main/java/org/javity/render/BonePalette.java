@@ -91,6 +91,15 @@ public final class BonePalette implements Disposable {
 
   /** Returns null on total row-budget overflow; never evicts a current-frame row. */
   public Row put(Matrix4[] skinMatrices) {
+    return put(skinMatrices, true);
+  }
+
+  // Batch-wide budget across different matrix widths: duplicates remain usable at the limit.
+  int rowCount() {
+    return rowCount;
+  }
+
+  Row put(Matrix4[] skinMatrices, boolean allowNewRow) {
     requireLive();
     if (!started) throw new IllegalStateException("Call beginFrame before collecting matrices");
     if (skinMatrices == null || skinMatrices.length != boneCount)
@@ -108,7 +117,7 @@ public final class BonePalette implements Disposable {
     MatrixContent content = new MatrixContent(values);
     Integer existing = entries.get(content);
     if (existing != null) return lease(existing);
-    if (rowCount == maxRows) return null;
+    if (!allowNewRow || rowCount == maxRows) return null;
     int slot = rowCount, pageIndex = slot / ROWS_PER_PAGE, index = slot % ROWS_PER_PAGE;
     Page page = pages[pageIndex];
     if (page == null) pages[pageIndex] = page = new Page(pageHeight(pageIndex), floatsPerRow);
