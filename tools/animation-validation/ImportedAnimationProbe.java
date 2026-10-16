@@ -371,7 +371,7 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
       cost.put("actualCachedCompositionsLastFrame", service.stats().frameSamplerExecutions());
       cost.put("actualCachedHitsLastFrame", service.stats().frameHits());
       cost.put("snapshotCopies", service.sourceStats().snapshotsCreated());
-      cost.put("livePrimitiveComparisons", service.sourceStats().comparisons());
+      cost.put("sourceSnapshotMatchChecks", service.sourceStats().comparisons());
       cost.put("markerEvents", cachedEvents[0]);
       report.put("batchingCost", cost);
       checks.add(
