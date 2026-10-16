@@ -1,3 +1,4 @@
 dependencies {
     api "com.badlogicgames.gdx:gdx:${rootProject.gdxVersion}"
+    testRuntimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
 }

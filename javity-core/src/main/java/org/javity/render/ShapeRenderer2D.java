@@ -54,6 +54,9 @@ public final class ShapeRenderer2D extends Render2D {
   /** Coordinate space used by the renderer. */
   public Space space = Space.WORLD;
 
+  private DashPattern2D dashPattern;
+  private double dashPhase;
+
   private final List<Vector2> points;
   final float[] vertices;
   final com.badlogic.gdx.utils.ShortArray triangles;
@@ -117,5 +120,91 @@ public final class ShapeRenderer2D extends Render2D {
 
   public List<Vector2> getPoints() {
     return points.stream().map(Vector2::cpy).toList();
+  }
+
+  /**
+   * Applies an immutable local-path dash pattern. Positive phase advances ink along point order.
+   */
+  public ShapeRenderer2D setDashes(DashPattern2D pattern, double phase) {
+    if (kind != Kind.POLYLINE)
+      throw new IllegalStateException("Dashes are supported only for polylines");
+    if (pattern == null)
+      throw new IllegalArgumentException("Dash pattern is required; use clearDashes");
+    if (!Double.isFinite(phase)) throw new IllegalArgumentException("Dash phase must be finite");
+    dashPattern = pattern;
+    dashPhase = floorModulo(phase, pattern.periodDouble());
+    return this;
+  }
+
+  /** Changes phase without changing the immutable pattern or renderer shader definition. */
+  public ShapeRenderer2D setDashPhase(double phase) {
+    if (dashPattern == null) throw new IllegalStateException("Shape has no dash pattern");
+    if (!Double.isFinite(phase)) throw new IllegalArgumentException("Dash phase must be finite");
+    dashPhase = floorModulo(phase, dashPattern.periodDouble());
+    return this;
+  }
+
+  public ShapeRenderer2D clearDashes() {
+    dashPattern = null;
+    dashPhase = 0;
+    return this;
+  }
+
+  public DashPattern2D dashPattern() {
+    return dashPattern;
+  }
+
+  /** Normalized phase in [0, period), measured in local path units. */
+  public double dashPhase() {
+    return dashPhase;
+  }
+
+  double dashPhaseDouble() {
+    return dashPhase;
+  }
+
+  /**
+   * Validates path-dependent dash point, float-precision, and repeat limits without creating GL
+   * resources.
+   */
+  public void validateDashConfiguration() {
+    if (dashPattern == null) return;
+    if (kind != Kind.POLYLINE)
+      throw new IllegalArgumentException("Dashes are supported only for polylines");
+    List<Vector2> effective = new ArrayList<>();
+    for (Vector2 point : points) {
+      if (!Float.isFinite(point.x) || !Float.isFinite(point.y))
+        throw new IllegalArgumentException("Polyline points must be finite");
+      if (effective.isEmpty()
+          || point.x != effective.get(effective.size() - 1).x
+          || point.y != effective.get(effective.size() - 1).y) {
+        if (effective.size() == 64)
+          throw new IllegalArgumentException("Polyline exceeds 64 effective points");
+        effective.add(point);
+      }
+    }
+    float smallest = Float.POSITIVE_INFINITY;
+    for (float length : dashPattern.lengths()) smallest = Math.min(smallest, length);
+    double period = dashPattern.periodDouble();
+    if (smallest <= 8f * Math.ulp((float) period))
+      throw new IllegalArgumentException("Dash pattern is below shader float precision");
+    for (int i = 1; i < effective.size(); i++) {
+      Vector2 a = effective.get(i - 1), b = effective.get(i);
+      double length = Math.hypot((double) b.x - a.x, (double) b.y - a.y);
+      if (!Double.isFinite(length) || length <= 0 || length > Float.MAX_VALUE)
+        throw new IllegalArgumentException(
+            "Polyline segment length is not representable as a float");
+      if (smallest <= 8f * Math.ulp((float) Math.max(length, period))
+          || length / period > 1_000_000d)
+        throw new IllegalArgumentException(
+            "Dash pattern is below shader precision or exceeds 1,000,000 cycles per segment");
+    }
+  }
+
+  private static double floorModulo(double value, double period) {
+    double result = value % period;
+    if (result < 0) result += period;
+    if (result >= period) result = Math.nextDown(period);
+    return result;
   }
 }

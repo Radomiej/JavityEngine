@@ -1,7 +1,5 @@
 package org.javity.ui.flex;
 
-import static org.lwjgl.util.yoga.Yoga.*;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -11,45 +9,54 @@ import com.badlogic.gdx.utils.Disposable;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
-import org.lwjgl.util.yoga.YGMeasureFunc;
-import org.lwjgl.util.yoga.YGSize;
+import org.javity.ui.yoga.YogaBackend;
+import org.javity.ui.yoga.YogaBackends;
+import org.javity.ui.yoga.YogaNode;
+import org.javity.ui.yoga.YogaNode.Align;
+import org.javity.ui.yoga.YogaNode.FlexDirection;
 
 /** Scene2D container backed by a real Yoga tree. Close detached containers explicitly. */
 public final class Flex extends WidgetGroup implements Disposable, AutoCloseable {
   private static final class Item {
-    final long node;
+    final YogaNode node;
     final boolean owned;
     String classes = "";
-    YGMeasureFunc measure;
+    YogaNode.MeasureFunction measure;
     Throwable measureFailure;
 
-    Item(long node, boolean owned) {
+    Item(YogaNode node, boolean owned) {
       this.node = node;
       this.owned = owned;
     }
   }
 
-  private final long node;
+  private final YogaNode node;
   private final IdentityHashMap<Actor, Item> items = new IdentityHashMap<>();
   private final UiTheme theme;
+  private final YogaBackend backend;
   private UtilityStyles.Visual visual;
   private String classes;
   private String parentClasses = "";
   private boolean disposed;
 
   public Flex(String classes) {
-    this(null, classes);
+    this(YogaBackends.createDefault(), null, classes);
   }
 
   public Flex(UiTheme theme, String classes) {
+    this(YogaBackends.createDefault(), theme, classes);
+  }
+
+  public Flex(YogaBackend backend, UiTheme theme, String classes) {
+    this.backend = java.util.Objects.requireNonNull(backend);
     this.theme = theme;
     setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.childrenOnly);
-    node = YGNodeNew();
+    node = backend.createNode();
     this.classes = classes == null ? "" : classes;
     try {
       visual = UtilityStyles.apply(node, this.classes);
     } catch (RuntimeException e) {
-      YGNodeFree(node);
+      node.freeNode();
       throw e;
     }
   }
@@ -61,7 +68,7 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     boolean alreadyChild = actor.getParent() == this;
     // Validate before changing the existing parent or allocating its persistent node.
     String replacement = classes == null ? "" : classes;
-    long probe = YGNodeNew();
+    YogaNode probe = backend.createNode();
     try {
       if (actor instanceof Flex child) child.applyClassesToProbe(probe, child.classes, replacement);
       else UtilityStyles.apply(probe, replacement);
@@ -69,9 +76,9 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
       Item item = items.get(actor);
       item.classes = replacement;
       if (actor instanceof Flex child) child.setParentClasses(replacement);
-      else YGNodeCopyStyle(item.node, probe);
+      else item.node.copyStyleFrom(probe);
     } finally {
-      YGNodeFree(probe);
+      probe.freeNode();
     }
     invalidateHierarchy();
     return actor;
@@ -81,13 +88,13 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
   public void setStyleClasses(String classes) {
     requireOpen();
     String replacement = classes == null ? "" : classes;
-    long probe = YGNodeNew();
+    YogaNode probe = backend.createNode();
     UtilityStyles.Visual nextVisual;
     try {
       nextVisual = applyClassesToProbe(probe, replacement, parentClasses);
-      YGNodeCopyStyle(node, probe);
+      node.copyStyleFrom(probe);
     } finally {
-      YGNodeFree(probe);
+      probe.freeNode();
     }
     this.classes = replacement;
     this.visual = nextVisual;
@@ -95,20 +102,20 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
   }
 
   private void setParentClasses(String replacement) {
-    long probe = YGNodeNew();
+    YogaNode probe = backend.createNode();
     UtilityStyles.Visual nextVisual;
     try {
       nextVisual = applyClassesToProbe(probe, classes, replacement);
-      YGNodeCopyStyle(node, probe);
+      node.copyStyleFrom(probe);
     } finally {
-      YGNodeFree(probe);
+      probe.freeNode();
     }
     parentClasses = replacement;
     visual = nextVisual;
     invalidateHierarchy();
   }
 
-  private UtilityStyles.Visual applyClassesToProbe(long probe, String own, String parent) {
+  private UtilityStyles.Visual applyClassesToProbe(YogaNode probe, String own, String parent) {
     UtilityStyles.Visual ownVisual = UtilityStyles.apply(probe, own);
     if (parent != null && !parent.isBlank()) UtilityStyles.apply(probe, parent);
     return ownVisual;
@@ -125,16 +132,16 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     for (Actor actor : items.keySet().toArray(Actor[]::new)) {
       if (actor.getParent() != this) {
         Item item = items.remove(actor);
-        YGNodeRemoveChild(node, item.node);
+        node.removeChild(item.node);
         if (actor instanceof Flex child) child.setParentClasses("");
         if (item.owned) {
           releaseMeasure(item);
-          YGNodeFree(item.node);
+          item.node.freeNode();
         }
       }
     }
     // Reinsert in Scene2D order, including addActorAt/before/after operations.
-    YGNodeRemoveAllChildren(node);
+    node.removeAllChildren();
     int index = 0;
     for (Actor actor : getChildren()) {
       Item item = items.get(actor);
@@ -142,11 +149,12 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
         if (actor instanceof Flex child) child.requireOpen();
         item =
             new Item(
-                actor instanceof Flex child ? child.node : YGNodeNew(), !(actor instanceof Flex));
+                actor instanceof Flex child ? child.node : backend.createNode(),
+                !(actor instanceof Flex));
         if (actor instanceof YogaMeasuredActor measurable) installMeasure(item, measurable);
         items.put(actor, item);
       }
-      YGNodeInsertChild(node, item.node, index++);
+      node.insertChild(item.node, index++);
     }
   }
 
@@ -160,17 +168,16 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
           // inherited font class, or wrap mode can arrive under identical root constraints, so
           // dirty its native leaf at the layout boundary before Yoga reuses a cached measurement.
           // Never do this inside the measure callback: Yoga must not be mutated reentrantly.
-          if (item.measure != null) YGNodeMarkDirty(item.node);
+          if (item.measure != null) item.node.markDirty();
           continue;
         }
-        boolean verticalStack = YGNodeStyleGetFlexDirection(node) == YGFlexDirectionColumn;
-        boolean stretchCrossAxis = YGNodeStyleGetAlignItems(node) == YGAlignStretch;
+        boolean verticalStack = node.styleFlexDirection() == FlexDirection.COLUMN;
+        boolean stretchCrossAxis = node.styleAlignItems() == Align.STRETCH;
         if (!hasDimension(item.classes, "w-") && !(verticalStack && stretchCrossAxis))
-          YGNodeStyleSetWidth(
-              item.node, actor instanceof Layout l ? l.getPrefWidth() : actor.getWidth());
+          item.node.setWidth(actor instanceof Layout l ? l.getPrefWidth() : actor.getWidth());
         if (!hasDimension(item.classes, "h-") && !(!verticalStack && stretchCrossAxis)) {
           float height = actor instanceof Layout l ? l.getPrefHeight() : actor.getHeight();
-          if (height > 0) YGNodeStyleSetHeight(item.node, height);
+          if (height > 0) item.node.setHeight(height);
         }
       }
     }
@@ -210,18 +217,18 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     requireOpen();
     List<TemporaryMeasure> callbacks = new ArrayList<>();
     MeasureFailure failure = new MeasureFailure();
-    long copy = copyYogaTree(callbacks, failure);
+    YogaNode copy = copyYogaTree(callbacks, failure);
     try {
-      YGNodeCalculateLayout(copy, availableWidth, Float.NaN, YGDirectionLTR);
+      copy.calculateLayout(availableWidth, Float.NaN);
       failure.rethrow();
-      return new IntrinsicSize(YGNodeLayoutGetWidth(copy), YGNodeLayoutGetHeight(copy));
+      return new IntrinsicSize(copy.layoutWidth(), copy.layoutHeight());
     } finally {
       releaseTemporaryMeasures(callbacks);
-      YGNodeFreeRecursive(copy);
+      copy.freeSubtree();
     }
   }
 
-  private record TemporaryMeasure(long node, YGMeasureFunc callback) {}
+  private record TemporaryMeasure(YogaNode node, YogaNode.MeasureFunction callback) {}
 
   private static final class MeasureFailure {
     Throwable failure;
@@ -237,60 +244,59 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     }
   }
 
-  private long copyYogaTree(List<TemporaryMeasure> callbacks, MeasureFailure failure) {
+  private YogaNode copyYogaTree(List<TemporaryMeasure> callbacks, MeasureFailure failure) {
     int firstCallback = callbacks.size();
-    long copy = YGNodeNew();
-    long pendingChildCopy = 0;
+    YogaNode copy = backend.createNode();
+    YogaNode pendingChildCopy = null;
     try {
-      YGNodeCopyStyle(copy, node);
+      copy.copyStyleFrom(node);
       int index = 0;
       for (Actor actor : getChildren()) {
         Item item = items.get(actor);
-        long childCopy;
+        YogaNode childCopy;
         if (actor instanceof Flex child) {
           childCopy = child.copyYogaTree(callbacks, failure);
           pendingChildCopy = childCopy;
         } else {
-          childCopy = YGNodeNew();
+          childCopy = backend.createNode();
           pendingChildCopy = childCopy;
-          YGNodeCopyStyle(childCopy, item.node);
+          childCopy.copyStyleFrom(item.node);
           if (actor instanceof YogaMeasuredActor measurable) {
-            YGMeasureFunc callback = measureFunction(measurable, failure::capture);
+            YogaNode.MeasureFunction callback = measureFunction(measurable, failure::capture);
             try {
               callbacks.add(new TemporaryMeasure(childCopy, callback));
-              YGNodeSetMeasureFunc(childCopy, callback);
+              childCopy.setMeasureFunction(callback);
             } catch (RuntimeException | Error e) {
               if (!callbacks.isEmpty() && callbacks.getLast().callback() == callback)
                 callbacks.removeLast();
-              callback.free();
+              childCopy.setMeasureFunction(null);
               throw e;
             }
           }
           if (!(actor instanceof YogaMeasuredActor)) {
-            boolean verticalStack = YGNodeStyleGetFlexDirection(node) == YGFlexDirectionColumn;
-            boolean stretchCrossAxis = YGNodeStyleGetAlignItems(node) == YGAlignStretch;
+            boolean verticalStack = node.styleFlexDirection() == FlexDirection.COLUMN;
+            boolean stretchCrossAxis = node.styleAlignItems() == Align.STRETCH;
             if (!hasDimension(item.classes, "w-") && !(verticalStack && stretchCrossAxis))
-              YGNodeStyleSetWidth(
-                  childCopy,
+              childCopy.setWidth(
                   actor instanceof Layout layout ? layout.getPrefWidth() : actor.getWidth());
             if (!hasDimension(item.classes, "h-") && !(!verticalStack && stretchCrossAxis)) {
               float preferredHeight =
                   actor instanceof Layout layout ? layout.getPrefHeight() : actor.getHeight();
-              if (preferredHeight > 0) YGNodeStyleSetHeight(childCopy, preferredHeight);
-              else YGNodeStyleSetHeightAuto(childCopy);
+              if (preferredHeight > 0) childCopy.setHeight(preferredHeight);
+              else childCopy.setHeightAuto();
             } else if (!hasDimension(item.classes, "h-")) {
-              YGNodeStyleSetHeightAuto(childCopy);
+              childCopy.setHeightAuto();
             }
           }
         }
-        YGNodeInsertChild(copy, childCopy, index++);
-        pendingChildCopy = 0;
+        copy.insertChild(childCopy, index++);
+        pendingChildCopy = null;
       }
       return copy;
     } catch (RuntimeException | Error e) {
       releaseTemporaryMeasuresFrom(callbacks, firstCallback);
-      if (pendingChildCopy != 0) YGNodeFreeRecursive(pendingChildCopy);
-      YGNodeFreeRecursive(copy);
+      if (pendingChildCopy != null) pendingChildCopy.freeSubtree();
+      copy.freeSubtree();
       throw e;
     }
   }
@@ -300,7 +306,7 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     requireOpen();
     if (!(getParent() instanceof Flex)) {
       measureLeaves();
-      YGNodeCalculateLayout(node, getWidth(), getHeight(), YGDirectionLTR);
+      node.calculateLayout(getWidth(), getHeight());
       checkMeasureFailures();
     }
     applyBounds();
@@ -313,36 +319,35 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
             thrown -> {
               if (item.measureFailure == null) item.measureFailure = thrown;
             });
-    YGNodeSetMeasureFunc(item.node, item.measure);
+    item.node.setMeasureFunction(item.measure);
   }
 
-  static YGMeasureFunc measureFunction(
+  static YogaNode.MeasureFunction measureFunction(
       YogaMeasuredActor measurable, java.util.function.Consumer<Throwable> failures) {
-    return YGMeasureFunc.create(
-        (long node, float width, int widthMode, float height, int heightMode, YGSize out) -> {
-          try {
-            float constraint = Float.isFinite(width) ? Math.max(0, width) : Float.NaN;
-            YogaMeasuredActor.Size size = measurable.measureForYoga(constraint, widthMode);
-            float measuredWidth = finiteNonnegative(size.width());
-            float measuredHeight = finiteNonnegative(size.height());
-            float resultWidth = measuredWidth;
-            if (Float.isFinite(width)) {
-              if (widthMode == YGMeasureModeExactly) resultWidth = Math.max(0, width);
-              else if (widthMode == YGMeasureModeAtMost)
-                resultWidth = Math.min(measuredWidth, Math.max(0, width));
-            }
-            float resultHeight = measuredHeight;
-            if (Float.isFinite(height)) {
-              if (heightMode == YGMeasureModeExactly) resultHeight = Math.max(0, height);
-              else if (heightMode == YGMeasureModeAtMost)
-                resultHeight = Math.min(measuredHeight, Math.max(0, height));
-            }
-            out.set(resultWidth, resultHeight);
-          } catch (Throwable failure) {
-            failures.accept(failure);
-            out.set(0, 0);
-          }
-        });
+    return (float width, int widthMode, float height, int heightMode) -> {
+      try {
+        float constraint = Float.isFinite(width) ? Math.max(0, width) : Float.NaN;
+        YogaMeasuredActor.Size size = measurable.measureForYoga(constraint, widthMode);
+        float measuredWidth = finiteNonnegative(size.width());
+        float measuredHeight = finiteNonnegative(size.height());
+        float resultWidth = measuredWidth;
+        if (Float.isFinite(width)) {
+          if (widthMode == YogaNode.MEASURE_EXACTLY) resultWidth = Math.max(0, width);
+          else if (widthMode == YogaNode.MEASURE_AT_MOST)
+            resultWidth = Math.min(measuredWidth, Math.max(0, width));
+        }
+        float resultHeight = measuredHeight;
+        if (Float.isFinite(height)) {
+          if (heightMode == YogaNode.MEASURE_EXACTLY) resultHeight = Math.max(0, height);
+          else if (heightMode == YogaNode.MEASURE_AT_MOST)
+            resultHeight = Math.min(measuredHeight, Math.max(0, height));
+        }
+        return new YogaNode.Size(resultWidth, resultHeight);
+      } catch (Throwable failure) {
+        failures.accept(failure);
+        return new YogaNode.Size(0, 0);
+      }
+    };
   }
 
   private static float finiteNonnegative(float value) {
@@ -366,8 +371,7 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
 
   private static void releaseMeasure(Item item) {
     if (item.measure == null) return;
-    YGNodeSetMeasureFunc(item.node, null);
-    item.measure.free();
+    item.node.setMeasureFunction(null);
     item.measure = null;
   }
 
@@ -380,19 +384,18 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     for (int i = callbacks.size() - 1; i >= firstCallback; i--) {
       TemporaryMeasure temporary = callbacks.get(i);
       callbacks.remove(i);
-      YGNodeSetMeasureFunc(temporary.node(), null);
-      temporary.callback().free();
+      temporary.node().setMeasureFunction(null);
     }
   }
 
   private void applyBounds() {
     for (Actor actor : getChildren()) {
-      long childNode = items.get(actor).node;
-      float height = YGNodeLayoutGetHeight(childNode);
+      YogaNode childNode = items.get(actor).node;
+      float height = childNode.layoutHeight();
       actor.setBounds(
-          YGNodeLayoutGetLeft(childNode),
-          getHeight() - YGNodeLayoutGetTop(childNode) - height,
-          YGNodeLayoutGetWidth(childNode),
+          childNode.layoutLeft(),
+          getHeight() - childNode.layoutTop() - height,
+          childNode.layoutWidth(),
           height);
       if (actor instanceof Flex child) child.applyBounds();
       else if (actor instanceof Layout layout) layout.validate();
@@ -431,6 +434,6 @@ public final class Flex extends WidgetGroup implements Disposable, AutoCloseable
     clearChildren();
     for (Actor actor : children) if (actor instanceof Flex child) child.dispose();
     disposed = true;
-    YGNodeFree(node);
+    node.freeNode();
   }
 }

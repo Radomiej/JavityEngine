@@ -1,7 +1,9 @@
 package org.javity.demo;
 
 import com.badlogic.gdx.backends.lwjgl3.*;
+import java.nio.file.Path;
 import java.util.Arrays;
+import org.javity.serialization.SceneJson;
 
 public final class DesktopLauncher {
   private DesktopLauncher() {}
@@ -14,26 +16,46 @@ public final class DesktopLauncher {
     boolean maplibre = Arrays.asList(args).contains("--maplibre");
     if (maplibre || gorzow) org.javity.maplibre.MapLibreDesktop.configure(config);
     boolean voxels = Arrays.asList(args).contains("--voxels");
+    boolean physics3d = Arrays.asList(args).contains("--physics3d");
     boolean materials = Arrays.asList(args).contains("--materials");
-    if (voxels) config.setPauseWhenLostFocus(true);
+    if (voxels || physics3d) config.setPauseWhenLostFocus(true);
     String devPath = null;
+    Path sceneExport = null;
     for (String argument : args) {
       if (argument.startsWith("--ui-dev=")) devPath = argument.substring("--ui-dev=".length());
+      if (argument.startsWith("--scene-export=")) {
+        String value = argument.substring("--scene-export=".length());
+        sceneExport = Path.of(value);
+        if (value.isBlank() || !sceneExport.isAbsolute())
+          throw new IllegalArgumentException("--scene-export requires an absolute destination path");
+      }
     }
+    boolean otherDemo =
+        Arrays.stream(args)
+            .anyMatch(
+                argument ->
+                    Arrays.asList(
+                            "--legacy", "--map", "--runtime", "--shapes", "--plugins", "--ui-parity")
+                        .contains(argument));
+    if (sceneExport != null && (mm || gorzow || maplibre || voxels || physics3d || materials || otherDemo))
+      throw new IllegalArgumentException("--scene-export is available with the ModernDemo runtime inspector");
     if (devPath != null && (!mm || devPath.isBlank()))
       throw new IllegalArgumentException("--ui-dev=<bundle> requires --mm and a nonempty path");
-    config.setWindowedMode(mm || voxels ? 1280 : 1100, 720);
+    boolean inspector = Arrays.asList(args).contains("--inspector");
+    config.setWindowedMode(mm || voxels || physics3d ? 1280 : inspector ? 1000 : 1100, inspector ? 680 : 720);
     config.useVsync(true);
     config.setForegroundFPS(60);
     config.disableAudio(!(mm || Arrays.asList(args).contains("--runtime")));
     boolean smoke = Arrays.asList(args).contains("--smoke");
-    new Lwjgl3Application(
+    var application =
         gorzow
             ? new GorzowDemo(smoke)
             : maplibre
                 ? new MapLibreDemo(smoke)
-                : voxels
-                    ? new VoxelDemo(smoke)
+                : physics3d
+                    ? new Physics3DDemo(smoke)
+                    : voxels
+                        ? new VoxelDemo(smoke)
                     : materials
                         ? new ShapeMaterialsDemo(smoke)
                         : mm
@@ -50,7 +72,27 @@ public final class DesktopLauncher {
                                                 ? new PluginsDemo(smoke)
                                                 : Arrays.asList(args).contains("--ui-parity")
                                                     ? new UiParityDemo(smoke)
-                                                    : new ModernDemo(smoke),
-        config);
+                                                    : new ModernDemo(
+                                                        smoke,
+                                                        inspector || sceneExport != null,
+                                                        sceneExport == null ? null : SceneJson.standard(),
+                                                        sceneExport);
+    if (application instanceof ModernDemo demo)
+      config.setWindowListener(
+          new Lwjgl3WindowAdapter() {
+            @Override
+            public void focusLost() {
+              demo.onFocusLost();
+            }
+          });
+    if (application instanceof Physics3DDemo demo)
+      config.setWindowListener(
+          new Lwjgl3WindowAdapter() {
+            @Override
+            public void focusLost() {
+              demo.onFocusLost();
+            }
+          });
+    new Lwjgl3Application(application, config);
   }
 }

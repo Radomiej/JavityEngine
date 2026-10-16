@@ -8,7 +8,41 @@ let currentUpdatePriority = DefaultEventPriority;
 let nextHandler = 1;
 let handlers = new Map();
 let pendingHandlers = null;
+let nextSignalCallback = 1;
+const signalCallbacks = new Map();
+const signalSubscriptions = new Map();
 const roots = new WeakMap();
+
+// Java receives only names, callback IDs, JSON and primitive return values.
+// Guest functions stay in this runtime across both Graal and JNI providers.
+globalThis.JavityGame = Object.freeze({
+  call(name, ...args) {
+    if (args.some(value => value !== null && !['string', 'boolean', 'number'].includes(typeof value))) {
+      throw new TypeError('Action arguments must be null, String, Boolean, or Number primitives');
+    }
+    if (args.some(value => typeof value === 'number' && !Number.isFinite(value))) {
+      throw new TypeError('Action number must be finite');
+    }
+    return JavityNative.gameCall(name, JSON.stringify(args));
+  },
+  get(name) { return JavityNative.gameGet(name); },
+  subscribe(name, callback) {
+    if (typeof callback !== 'function') throw new TypeError('signal callback must be a function');
+    if (nextSignalCallback >= Number.MAX_SAFE_INTEGER) throw new Error('signal callback id space exhausted');
+    const id = `s${nextSignalCallback++}`;
+    signalCallbacks.set(id, callback);
+    try {
+      const subscriptionId = JavityNative.subscribe(name, id);
+      signalSubscriptions.set(subscriptionId, id);
+      return subscriptionId;
+    }
+    catch (error) { signalCallbacks.delete(id); throw error; }
+  },
+  unsubscribe(id) {
+    try { JavityNative.unsubscribe(id); }
+    finally { releaseSignal(signalSubscriptions.get(id)); }
+  },
+});
 const textInstance = (text) => ({ text: String(text), parent: null });
 const isText = (value) => value && typeof value === 'object' && Object.hasOwn(value, 'text') && !value.type;
 
@@ -166,17 +200,13 @@ function commit(root) {
   try {
     const node = rootDescriptor(root);
     if (!node) {
-      JavityNative.commit('{"type":"View","key":"root-empty","classes":"","props":{},"children":[]}', {});
+      JavityNative.commit('{"type":"View","key":"root-empty","classes":"","props":{},"children":[]}', '[]');
       handlers = pendingHandlers;
       return;
     }
     const used = collectHandlerIds(node);
-    const bridgeHandlers = {};
-    for (const id of used) if (pendingHandlers.has(id)) bridgeHandlers[id] = (...args) => {
-      const callback = pendingHandlers?.get(id) || handlers.get(id);
-      if (callback) return discrete(callback, ...args);
-    };
-    JavityNative.commit(JSON.stringify(node), bridgeHandlers);
+    const handlerIds = [...used].filter(id => pendingHandlers.has(id));
+    JavityNative.commit(JSON.stringify(node), JSON.stringify(handlerIds));
     handlers = pendingHandlers;
   } catch (error) {
     handlers = previousHandlers;
@@ -262,7 +292,27 @@ function discrete(callback, ...args) {
   if (JavityNative.isOpen()) flush();
   return result;
 }
-function dispatchSignal(callback, value) { return discrete(callback, value); }
+function dispatchSignal(callbackId, value) {
+  const callback = signalCallbacks.get(callbackId);
+  if (callback) return discrete(callback, value);
+}
+function releaseSignal(callbackId) {
+  if (callbackId === undefined) return;
+  signalCallbacks.delete(callbackId);
+  for (const [subscriptionId, registeredCallbackId] of signalSubscriptions) {
+    if (registeredCallbackId === callbackId) signalSubscriptions.delete(subscriptionId);
+  }
+}
+function dispatchHandler(callbackId, value) {
+  const callback = handlers.get(callbackId);
+  if (callback) return discrete(callback, value);
+}
+function dispatchKeyHandler(callbackId, event) {
+  const callback = handlers.get(callbackId);
+  if (!callback) return false;
+  const result = discrete(callback, event);
+  return typeof result === 'boolean' ? result : false;
+}
 function render(node, container = globalThis) {
   const root = getRoot(container);
   reconciler.updateContainerSync(node, root.fiber, null, null);
@@ -277,12 +327,15 @@ function unmount(container = globalThis) {
   flush();
   roots.delete(container);
   handlers.clear();
+  signalCallbacks.clear();
+  signalSubscriptions.clear();
+  globalThis.__javityClearCallbacks?.();
   pendingHandlers = null;
-  JavityNative.commit('{"type":"View","key":"root-empty","classes":"","props":{},"children":[]}', {});
+  JavityNative.commit('{"type":"View","key":"root-empty","classes":"","props":{},"children":[]}', '[]');
 }
 const api = Object.freeze({
   React, createElement: React.createElement, Fragment: React.Fragment,
-  render, unmount, flush, discrete, dispatchSignal,
+  render, unmount, flush, discrete, dispatchSignal, releaseSignal, dispatchHandler, dispatchKeyHandler,
   View: 'View', Text: 'Text', Button: 'Button', Progress: 'Progress', TextField: 'TextField', ScrollView: 'ScrollView', Toggle: 'Toggle', Slider: 'Slider', Image: 'Image'
 });
 globalThis.JavityReact = api;

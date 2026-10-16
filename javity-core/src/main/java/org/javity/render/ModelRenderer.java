@@ -2,11 +2,14 @@ package org.javity.render;
 
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.javity.animation.AnimationTransition;
 import org.javity.animation.ModelAnimator;
 import org.javity.animation.ModelPoseAnimator;
 import org.javity.animation.PlayMode;
+import org.javity.avatar.AvatarBinding;
 import org.javity.core.Component;
 
 /** Shared Model resource, per-object instance, material copies and animation state. */
@@ -14,6 +17,7 @@ public final class ModelRenderer extends Component {
   public final ModelInstance instance;
   public final AnimationController animation;
   private ModelPoseAnimator observedPoseOwner;
+  private final List<AvatarBinding> avatarBindings = new ArrayList<>();
 
   public ModelRenderer(Model model) {
     instance = new ModelInstance(Objects.requireNonNull(model));
@@ -51,6 +55,24 @@ public final class ModelRenderer extends Component {
   /** Internal ownership cache used to observe deferred removal before a render call. */
   public void observePoseOwner(ModelPoseAnimator owner) {
     observedPoseOwner = owner;
+  }
+
+  /** Internal registration so renderer removal invalidates cached avatar views immediately. */
+  public void registerAvatarBinding(AvatarBinding binding) {
+    Objects.requireNonNull(binding);
+    if (getGameObject() == null || !getGameObject().containsComponent(this))
+      throw new IllegalStateException("Avatar binding renderer is not attached");
+    if (!avatarBindings.contains(binding)) avatarBindings.add(binding);
+  }
+
+  public void unregisterAvatarBinding(AvatarBinding binding) {
+    avatarBindings.remove(binding);
+  }
+
+  @Override
+  protected void onRelease() {
+    for (AvatarBinding binding : List.copyOf(avatarBindings)) binding.rendererReleased();
+    avatarBindings.clear();
   }
 
   private boolean synchronizePoseOwner() {

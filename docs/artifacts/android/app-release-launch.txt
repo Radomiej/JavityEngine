@@ -1,0 +1,7 @@
+Starting: Intent { cmp=org.javity.android.fixture/org.javity.android.JavityGameActivity }
+Status: ok
+LaunchState: COLD
+Activity: org.javity.android.fixture/org.javity.android.JavityGameActivity
+TotalTime: 8445
+WaitTime: 8773
+Complete

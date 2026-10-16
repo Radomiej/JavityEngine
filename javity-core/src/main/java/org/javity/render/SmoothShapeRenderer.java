@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.GLVersion;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.BufferUtils;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 /** Reusable SDF renderer for anti-aliased rectangles, circles, and joined polylines. */
 public final class SmoothShapeRenderer implements Disposable {
-  private static final String VERTEX_SHADER =
+  static final String VERTEX_SHADER =
       "#version 120\n"
           + "attribute vec4 a_position;\n"
           + "attribute vec4 a_color;\n"
@@ -28,7 +30,7 @@ public final class SmoothShapeRenderer implements Disposable {
           + "void main(){ v_color=a_color; v_color.a*=255.0/254.0; v_local=a_position.xy;"
           + " v_texCoords=a_texCoord0; gl_Position=u_projTrans*a_position; }\n";
 
-  private static final String FRAGMENT_SHADER =
+  static final String FRAGMENT_SHADER =
       "#version 120\n"
           + "uniform sampler2D u_texture;\n"
           + "uniform int u_kind;\n"
@@ -41,6 +43,10 @@ public final class SmoothShapeRenderer implements Disposable {
           + "uniform float u_halfStroke;\n"
           + "uniform float u_antiAlias;\n"
           + "uniform vec4 u_points[32];\n"
+          + "uniform int u_dashCount;\n"
+          + "uniform float u_dashPeriod;\n"
+          + "uniform vec4 u_dashIntervals[2];\n"
+          + "uniform vec4 u_dashStartPhase[16];\n"
           + "uniform vec2 u_shapeCenter;\n"
           + "uniform vec2 u_shapeBounds;\n"
           + "varying vec4 v_color;\n"
@@ -55,22 +61,48 @@ public final class SmoothShapeRenderer implements Disposable {
           + " length(max(q,vec2(0.0)))+min(max(q.x,q.y),0.0)-u_cornerRadius; }\n"
           + "float diskDistance(vec2 p, vec2 c){ return length(p-c)-u_halfStroke; }\n"
           + "vec4 shapeColor(vec2 local, vec4 tint){ return tint; }\n"
+          + "float phaseAt(int i){ vec4 v=u_dashStartPhase[i/4]; int c=i-(i/4)*4; if(c==0)return"
+          + " v.x; if(c==1)return v.y; if(c==2)return v.z; return v.w; }\n"
+          + "float dashBoundary(int i){ vec4 v=u_dashIntervals[i/4]; int c=i-(i/4)*4;"
+          + " if(c==0)return v.x; if(c==1)return v.y; if(c==2)return v.z; return v.w; }\n"
+          + "bool dashInk(float x){ float r=x;"
+          + " for(int k=0;k<4;k++){ if(k<u_dashCount/2 && r>=dashBoundary(k*2) &&"
+          + " r<dashBoundary(k*2+1)) return true; } return false; }\n"
+          + "bool dashContinues(float x){ float"
+          + " r=x; for(int k=0;k<4;k++){"
+          + " if(k<u_dashCount/2 && r>dashBoundary(k*2) && r<dashBoundary(k*2+1)) return true; }"
+          + " return false; }\n"
+          + "float clippedSegment(vec2 p,vec2 a,vec2 t,vec2 n,float len,float lo,float hi,bool"
+          + " capLo,bool capHi,bool squareLo,bool squareHi){ vec2 rel=p-a; float x=dot(rel,t),"
+          + " y=dot(rel,n); float before=(capLo&&squareLo)?u_halfStroke:0.0; float"
+          + " after=(capHi&&squareHi)?u_halfStroke:0.0; float h=(hi-lo+before+after)*0.5; float"
+          + " c=(lo+hi+after-before)*0.5; float d=boxDistance(vec2(x-c,y),vec2(h,u_halfStroke));"
+          + " if(capLo&&!squareLo&&u_cap==1)d=min(d,diskDistance(p,a+t*lo));"
+          + " if(capHi&&!squareHi&&u_cap==1)d=min(d,diskDistance(p,a+t*hi)); return d; }\n"
           + "float polylineDistance(vec2 p){\n"
-          + "  if(u_pointCount==1) return u_cap==1 ? diskDistance(p,pointAt(0)) : 1.0e20;\n"
-          + "  float d=1.0e20;\n"
-          + "  for(int i=0;i<63;i++){ if(i<u_pointCount-1){ vec2 a=pointAt(i); vec2 b=pointAt(i+1);"
-          + " vec2 delta=b-a; float len=length(delta); if(len>0.0){ vec2 t=delta/len; vec2"
-          + " n=vec2(-t.y,t.x); vec2 q=vec2(dot(p-a,t),dot(p-a,n)); float before=(i==0 &&"
-          + " u_cap==2)?u_halfStroke:0.0; float after=(i==u_pointCount-2 &&"
-          + " u_cap==2)?u_halfStroke:0.0; float halfLen=(len+before+after)*0.5; float"
-          + " center=(len+after-before)*0.5; float"
-          + " sd=boxDistance(vec2(q.x-center,q.y),vec2(halfLen,u_halfStroke)); d=min(d,sd); if(i>0)"
-          + " d=min(d,diskDistance(p,a)); }} }\n"
-          + "  if(u_cap==1){ vec2 last=pointAt(0); for(int j=0;j<64;j++){if(j<u_pointCount)"
-          + " last=pointAt(j);} d=min(d,diskDistance(p,pointAt(0))); d=min(d,diskDistance(p,last));"
-          + " }\n"
-          + "  return d;\n"
-          + "}\n"
+          + " if(u_pointCount==1){ if(u_dashCount>0&&!dashInk(phaseAt(0)))return 1.0e20; return"
+          + " u_cap==1?diskDistance(p,pointAt(0)):1.0e20; }\n"
+          + " float d=1.0e20; for(int i=0;i<63;i++){ if(i<u_pointCount-1){ vec2 a=pointAt(i); vec2"
+          + " b=pointAt(i+1); vec2 delta=b-a; float len=length(delta); if(len>0.0){ vec2"
+          + " t=delta/len,n=vec2(-t.y,t.x); float x=dot(p-a,t); float ph=phaseAt(i);"
+          + " if(u_dashCount==0){ float before=(i==0&&u_cap==2)?u_halfStroke:0.0; float"
+          + " after=(i==u_pointCount-2&&u_cap==2)?u_halfStroke:0.0; float h=(len+before+after)*0.5;"
+          + " float c=(len+after-before)*0.5;"
+          + " d=min(d,boxDistance(vec2(x-c,dot(p-a,n)),vec2(h,u_halfStroke)));"
+          + " if(i>0)d=min(d,diskDistance(p,a)); } else { for(int j=0;j<4;j++){"
+          + " if(j<u_dashCount/2){ float start=dashBoundary(j*2),end=dashBoundary(j*2+1); float"
+          + " base=floor((clamp(x,0.0,len)+ph-start)/u_dashPeriod); for(int q=0;q<2;q++){ float"
+          + " cyc=base+float(q); float rawLo=cyc*u_dashPeriod+start-ph; float"
+          + " rawHi=cyc*u_dashPeriod+end-ph; float lo=max(0.0,rawLo),hi=min(len,rawHi); if(hi>lo){"
+          + " bool pathLo=i==0&&lo==0.0; bool pathHi=i==u_pointCount-2&&hi==len; bool"
+          + " actualLo=pathLo||rawLo>=0.0; bool actualHi=pathHi||rawHi<=len;"
+          + " d=min(d,clippedSegment(p,a,t,n,len,lo,hi,actualLo,actualHi,u_cap==2,u_cap==2)); } } }"
+          + " } } } } }\n"
+          + " if(u_dashCount>0){ for(int i=1;i<63;i++){ if(i<u_pointCount-1){ vec2 a=pointAt(i);"
+          + " vec2 b=pointAt(i+1); float len=length(b-a); if(dashContinues(phaseAt(i))){"
+          + " d=min(d,diskDistance(p,a)); } } } } else if(u_cap==1){"
+          + " d=min(d,diskDistance(p,pointAt(0)));"
+          + " d=min(d,diskDistance(p,pointAt(u_pointCount-1))); } return d; }\n"
           + "void main(){\n"
           + "  float d;\n"
           + "  if(u_kind==0){ d=roundedBoxDistance(v_local); if(u_halfStroke>0.0)"
@@ -87,18 +119,30 @@ public final class SmoothShapeRenderer implements Disposable {
 
   private final ShaderProgram shader;
   private final Texture whiteTexture;
+  private final Pixmap whitePixel;
+  private final boolean gles300;
   private final SpriteBatch batch;
   private final Map<String, ShaderProgram> materialShaders = new LinkedHashMap<>();
   private final float[] packedPoints = new float[32 * 4];
+  private final float[] packedDashIntervals = new float[2 * 4];
+  private final float[] packedDashPhases = new float[16 * 4];
   private boolean disposed;
   private static final int MAX_MATERIAL_SHADERS = 32;
 
   /** Creates GPU resources. Must be called while an OpenGL context is current. */
   public SmoothShapeRenderer() {
-    ShaderProgram createdShader = new ShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if (Gdx.app == null)
+      throw new IllegalStateException("SmoothShapeRenderer requires a libGDX app for managed texture recovery");
+    gles300 = isGles300Context();
+    String vertexSource = shaderSource(VERTEX_SHADER, true, gles300);
+    String fragmentSource = shaderSource(FRAGMENT_SHADER, false, gles300);
+    requireUniformBudget(0);
+    preflightShader(vertexSource, fragmentSource);
+    ShaderProgram createdShader = new ShaderProgram(vertexSource, fragmentSource);
     Texture createdTexture = null;
     SpriteBatch createdBatch = null;
     Pixmap pixel = null;
+    Pixmap retainedPixel = null;
     try {
       if (!createdShader.isCompiled())
         throw new IllegalStateException(
@@ -106,21 +150,22 @@ public final class SmoothShapeRenderer implements Disposable {
       pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
       pixel.setColor(Color.WHITE);
       pixel.fill();
-      createdTexture = new Texture(pixel);
+      createdTexture = new Texture(managedWhiteTextureData(pixel));
       createdTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-      Pixmap completedPixel = pixel;
+      retainedPixel = pixel;
       pixel = null;
-      completedPixel.dispose();
       createdBatch = new OptionalUniformSpriteBatch(1, createdShader);
     } catch (RuntimeException | Error failure) {
       disposeAfterFailure(createdBatch, failure);
       disposeAfterFailure(createdTexture, failure);
       disposeAfterFailure(pixel, failure);
+      disposeAfterFailure(retainedPixel, failure);
       disposeAfterFailure(createdShader, failure);
       throw failure;
     }
     shader = createdShader;
     whiteTexture = createdTexture;
+    whitePixel = retainedPixel;
     batch = createdBatch;
   }
 
@@ -166,11 +211,21 @@ public final class SmoothShapeRenderer implements Disposable {
     if (prepared == null || !prepared.hasArea) return;
 
     for (int i = 0; i < packedPoints.length; i++) packedPoints[i] = 0;
+    java.util.Arrays.fill(packedDashIntervals, 0f);
+    java.util.Arrays.fill(packedDashPhases, 0f);
     for (int i = 0; i < prepared.pointCount; i++) {
       int packed = (i / 2) * 4 + ((i & 1) * 2);
       packedPoints[packed] = prepared.points[i * 2];
       packedPoints[packed + 1] = prepared.points[i * 2 + 1];
     }
+    double dashCursor = 0;
+    for (int i = 0; i < prepared.dashCount; i++) {
+      packedDashIntervals[i] = (float) dashCursor;
+      dashCursor += prepared.dashLengths[i];
+    }
+    if (prepared.dashCount > 0)
+      for (int i = 0; i < prepared.pointCount; i++)
+        packedDashPhases[i] = packDashPhase(prepared.dashStartPhases[i], prepared);
 
     int kind =
         switch (prepared.kind) {
@@ -233,9 +288,18 @@ public final class SmoothShapeRenderer implements Disposable {
       uniformf(drawShader, "u_cornerRadius", prepared.cornerRadius);
       uniformf(drawShader, "u_halfStroke", prepared.halfStroke);
       uniformf(drawShader, "u_antiAlias", shape.antiAlias ? 1f : 0f);
+      uniformi(drawShader, "u_dashCount", prepared.dashCount);
+      uniformf(drawShader, "u_dashPeriod", (float) prepared.dashPeriod);
       int pointsLocation = uniformLocation(drawShader, "u_points[0]");
       if (pointsLocation >= 0)
         drawShader.setUniform4fv(pointsLocation, packedPoints, 0, packedPoints.length);
+      int dashIntervalsLocation = uniformLocation(drawShader, "u_dashIntervals[0]");
+      if (dashIntervalsLocation >= 0)
+        drawShader.setUniform4fv(
+            dashIntervalsLocation, packedDashIntervals, 0, packedDashIntervals.length);
+      int dashPhasesLocation = uniformLocation(drawShader, "u_dashStartPhase[0]");
+      if (dashPhasesLocation >= 0)
+        drawShader.setUniform4fv(dashPhasesLocation, packedDashPhases, 0, packedDashPhases.length);
       uniformf(drawShader, "u_shapeCenter", centerX, centerY);
       uniformf(drawShader, "u_shapeBounds", boundsX, boundsY);
       if (material != null) uploadMaterial(drawShader, material);
@@ -255,6 +319,59 @@ public final class SmoothShapeRenderer implements Disposable {
     }
   }
 
+  static float packDashPhase(double phase, SmoothShapeMath.Prepared prepared) {
+    double cursor = 0;
+    int interval = -1;
+    double intervalStart = 0;
+    double intervalEnd = 0;
+    for (int i = 0; i < prepared.dashCount; i++) {
+      double end = cursor + prepared.dashLengths[i];
+      if (phase >= cursor && phase < end) {
+        interval = i;
+        intervalStart = cursor;
+        intervalEnd = end;
+        break;
+      }
+      cursor = end;
+    }
+    if (interval < 0)
+      throw new IllegalArgumentException("Dash phase is outside its normalized pattern period");
+
+    float start = (float) intervalStart;
+    float end = (float) intervalEnd;
+    if (!(start < end))
+      throw new IllegalArgumentException("Dash interval cannot be represented by shader floats");
+
+    boolean strictInterior = phase > intervalStart;
+    float packed = (float) phase;
+    if (strictInterior) {
+      if (packed <= start) packed = Math.nextUp(start);
+      if (packed >= end) packed = Math.nextDown(end);
+      if (!(packed > start && packed < end))
+        throw new IllegalArgumentException(
+            "Dash interval interior cannot be represented by shader floats");
+    } else {
+      // Keep exact transitions on the same half-open boundary after float conversion.
+      packed = start;
+    }
+
+    if (dashIntervalFloat(packed, prepared) != interval)
+      throw new IllegalArgumentException(
+          "Dash phase cannot be represented by shader float uniforms");
+    return packed;
+  }
+
+  private static int dashIntervalFloat(float phase, SmoothShapeMath.Prepared prepared) {
+    double cursor = 0;
+    for (int i = 0; i < prepared.dashCount; i++) {
+      float start = (float) cursor;
+      cursor += prepared.dashLengths[i];
+      float end = (float) cursor;
+      if (phase >= start && phase < end) return i;
+    }
+    return -1;
+  }
+
   private ShaderProgram shaderFor(ShapeMaterial2D material) {
     String key = material.definitionKey();
     ShaderProgram cached = materialShaders.get(key);
@@ -264,13 +381,16 @@ public final class SmoothShapeRenderer implements Disposable {
           "SmoothShapeRenderer supports at most "
               + MAX_MATERIAL_SHADERS
               + " distinct material shader definitions");
+    requireUniformBudget(material.uniformTypes().size());
     String marker = "vec4 shapeColor(vec2 local, vec4 tint){ return tint; }";
     String replacement = material.uniformDeclarations() + material.colorFunction();
     String fragment = FRAGMENT_SHADER.replace(marker, replacement);
     if (fragment.equals(FRAGMENT_SHADER))
       throw new IllegalStateException("Internal shape material shader insertion point is missing");
-    preflightShader(VERTEX_SHADER, fragment);
-    ShaderProgram created = new ShaderProgram(VERTEX_SHADER, fragment);
+    String vertexSource = shaderSource(VERTEX_SHADER, true, gles300);
+    fragment = shaderSource(fragment, false, gles300);
+    preflightShader(vertexSource, fragment);
+    ShaderProgram created = new ShaderProgram(vertexSource, fragment);
     if (!created.isCompiled()) {
       String log = created.getLog();
       try {
@@ -283,6 +403,87 @@ public final class SmoothShapeRenderer implements Disposable {
     }
     materialShaders.put(key, created);
     return created;
+  }
+
+  static PixmapTextureData managedWhiteTextureData(Pixmap pixel) {
+    return new PixmapTextureData(pixel, pixel.getFormat(), false, false, true);
+  }
+
+  private static boolean isGles300Context() {
+    if (Gdx.graphics == null || Gdx.graphics.getGLVersion() == null) return false;
+    GLVersion version = Gdx.graphics.getGLVersion();
+    if (version.getType() != GLVersion.Type.GLES) return false;
+    if (version.getMajorVersion() < 3)
+      throw new IllegalStateException("SmoothShapeRenderer requires OpenGL ES 3.0 or newer");
+    return true;
+  }
+
+  /** Converts this renderer's GLSL 1.20 source to the GLES 3.0 shader dialect. */
+  static String shaderSource(String source, boolean vertex, boolean gles300) {
+    if (!gles300) return source;
+    String converted = source.replaceFirst("^#version 120\\s*", "");
+    converted = converted.replace("attribute ", "in ");
+    converted = converted.replace("varying ", vertex ? "out " : "in ");
+    if (!vertex) {
+      converted = replaceGlslIdentifier(converted, "texture2D", "texture");
+      converted = converted.replace("gl_FragColor", "javityFragColor");
+      return "#version 300 es\nprecision highp float;\nout vec4 javityFragColor;\n" + converted;
+    }
+    return "#version 300 es\n" + converted;
+  }
+
+  /** Renames one GLSL identifier while preserving comments and all intervening whitespace. */
+  private static String replaceGlslIdentifier(String source, String identifier, String replacement) {
+    StringBuilder converted = new StringBuilder(source.length());
+    for (int index = 0; index < source.length(); ) {
+      char current = source.charAt(index);
+      if (current == '/' && index + 1 < source.length()) {
+        char next = source.charAt(index + 1);
+        if (next == '/') {
+          int end = source.indexOf('\n', index + 2);
+          if (end < 0) end = source.length();
+          converted.append(source, index, end);
+          index = end;
+          continue;
+        }
+        if (next == '*') {
+          int close = source.indexOf("*/", index + 2);
+          int end = close < 0 ? source.length() : close + 2;
+          converted.append(source, index, end);
+          index = end;
+          continue;
+        }
+      }
+      if (Character.isLetter(current) || current == '_') {
+        int end = index + 1;
+        while (end < source.length()) {
+          char character = source.charAt(end);
+          if (!Character.isLetterOrDigit(character) && character != '_') break;
+          end++;
+        }
+        String token = source.substring(index, end);
+        converted.append(token.equals(identifier) ? replacement : token);
+        index = end;
+        continue;
+      }
+      converted.append(current);
+      index++;
+    }
+    return converted.toString();
+  }
+
+  /** The fixed SDF arrays consume a substantial fragment uniform budget on small GL drivers. */
+  private static void requireUniformBudget(int customUniforms) {
+    IntBuffer limit = BufferUtils.newIntBuffer(1);
+    // OpenGL 2.0 names this token, but libGDX's common GL20 interface omits it.
+    Gdx.gl20.glGetIntegerv(0x8B49, limit); // GL_MAX_FRAGMENT_UNIFORM_COMPONENTS
+    int required = 224 + customUniforms * 4;
+    if (limit.get(0) < required)
+      throw new IllegalStateException(
+          "SmoothShapeRenderer requires at least "
+              + required
+              + " fragment uniform components; driver reports "
+              + limit.get(0));
   }
 
   /** Validates a new definition before libGDX's ShaderProgram can lose failed shader handles. */
@@ -420,6 +621,7 @@ public final class SmoothShapeRenderer implements Disposable {
     Throwable failure = null;
     failure = dispose(batch, failure);
     failure = dispose(whiteTexture, failure);
+    failure = dispose(whitePixel, failure);
     failure = dispose(shader, failure);
     for (ShaderProgram materialShader : materialShaders.values())
       failure = dispose(materialShader, failure);

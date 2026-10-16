@@ -88,6 +88,19 @@ public class ShapeMaterial2DTest {
   }
 
   @Test
+  public void dashUniformsRemainReservedFromMaterialSchemas() {
+    for (String name :
+        new String[] {"u_dashCount", "u_dashPeriod", "u_dashIntervals", "u_dashStartPhase"})
+      assertThrows(
+          name,
+          IllegalArgumentException.class,
+          () ->
+              ShapeMaterial2D.custom(
+                  "vec4 shapeColor(vec2 local, vec4 tint) { return tint; }",
+                  Map.of(name, ShapeMaterial2D.UniformType.FLOAT)));
+  }
+
+  @Test
   public void builtinMaterialsExposeTheirAnimatedFloatUniform() {
     ShapeMaterial2D gradient = ShapeMaterial2D.gradient(Color.RED, Color.BLUE, .5f);
     ShapeMaterial2D pulse = ShapeMaterial2D.pulse(Color.WHITE, Color.RED, 2);

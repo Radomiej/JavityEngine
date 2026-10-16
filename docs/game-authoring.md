@@ -15,6 +15,20 @@ Desktop wymaga OpenGL. W Relay Ward strzelasz kliknięciem w arenę, Space albo 
 
 Kod kompletnego hosta: `javity-desktop/src/main/java/org/javity/demo/MmSystemsDemo.java`. HUD: `web/javity-ui/src/mm.tsx`; wspólne drzewo referencyjne: `web/javity-ui-reference/mm-fixture.json`. To przykład składania niezależnych API, nie wymagany szablon każdej gry.
 
+## Gra blokowa i postać 3D
+
+`--voxels` uruchamia świat chunków z prostym kontrolerem AABB. `--physics3d` uruchamia osobną scenę Bullet z dynamicznymi bryłami i natywnym kontrolerem kapsułowym. W obu widokach postaci F5 przełącza FPS/TPP; ręce i narzędzie są osobnym widokiem tej samej animowanej postaci. W demie Bullet F3 pokazuje geometrię kolizji, E uruchamia użycie narzędzia, a przyciski myszy edytują bloki.
+
+```sh
+./gradlew :javity-desktop:run --args='--voxels'
+./gradlew :javity-desktop:run --args='--physics3d'
+./gradlew :javity-desktop:physics3dSmoke
+```
+
+Do własnej gry wybierz jednego właściciela ruchu postaci. Natywnemu kontrolerowi przekazuj wejście, a rigid body przemieszczaj poleceniami fizyki; bezpośrednia edycja Transform3D po związaniu z Bullet jest odrzucana. Grafika pożycza modele i tekstury. Widoki części avataru określają widoczność, animator pozostaje jedynym właścicielem pozy kości. [Avatar](avatars.md), [fizyka 3D](physics3d.md) i [voxele](voxels.md) opisują konfigurację, własność i ograniczenia.
+
+F1 w demie inspektora otwiera drzewo GameObjectów z transformacjami, undo/redo, gizmos i jawnym eksportem SceneJson. Eksport potrzebuje skonfigurowanych codeców i celu zapisu; nie pomija nieobsługiwanych komponentów. [Instrukcja narzędzi runtime](runtime-tools.md).
+
 ## Właściciele i zegary
 
 Rejestruj systemy przed `game.start()`. Dostawcę zasobów rejestruj przed konsumentem. Zamknięcie sceny najpierw sprząta komponenty, następnie systemy w odwrotnej kolejności rejestracji. Nie zwalniaj pożyczonego Model, fontu ani tekstury w komponencie.

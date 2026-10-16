@@ -13,7 +13,7 @@ public class Game implements Disposable, AutoCloseable {
   private final Map<String, Set<GameObject>> tagIndex = new HashMap<>();
   private int nextId = 1;
   private long frameIndex;
-  private boolean started, disposed, paused, stepping;
+  private boolean started, disposed, paused, stepping, initializing;
   public float deltaTime, unscaledDeltaTime;
   public double elapsed, unscaledElapsed;
 
@@ -149,24 +149,42 @@ public class Game implements Disposable, AutoCloseable {
   }
 
   private void initialize() {
-    for (int pass = 0; pass < 1000; pass++) {
-      boolean pending = false;
-      for (GameObject o : getObjects())
-        for (Component c : o.getComponents()) {
-          if (disposed) return;
-          if (!o.isDestroyed() && !c.created && !c.removed) {
-            pending = true;
-            c.initialize();
+    if (initializing) throw new IllegalStateException("Recursive component initialization");
+    initializing = true;
+    try {
+      for (int pass = 0; pass < 1000; pass++) {
+        boolean pending = false;
+        for (GameObject o : getObjects())
+          for (Component c : o.getComponents()) {
+            if (disposed) return;
+            if (!o.isDestroyed() && !c.created && !c.removed) {
+              pending = true;
+              c.initialize();
+            }
           }
-        }
-      if (!pending) return;
+        if (!pending) return;
+      }
+      throw new IllegalStateException("Unbounded component creation in onCreate");
+    } finally {
+      initializing = false;
     }
-    throw new IllegalStateException("Unbounded component creation in onCreate");
+  }
+
+  /**
+   * Initializes components attached after start without advancing any simulation clocks. This is
+   * intended for render-thread adapters that create scene objects between fixed world steps.
+   */
+  public void initializePendingComponents() {
+    if (stepping || initializing)
+      throw new IllegalStateException("Cannot initialize components while Game is updating");
+    if (!started || disposed) return;
+    initialize();
   }
 
   public void step(float delta) {
     if (!Float.isFinite(delta) || delta < 0) throw new IllegalArgumentException("Invalid delta");
     if (!started || disposed) return;
+    if (initializing) throw new IllegalStateException("Cannot step while initializing components");
     if (stepping) throw new IllegalStateException("Recursive game.step");
     stepping = true;
     frameIndex++;

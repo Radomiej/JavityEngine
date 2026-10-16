@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -33,6 +34,29 @@ final class VoxelSmokeProbe {
   private int neighborRebuildsBeforeRestore;
   private int stationaryFrames;
   private boolean artifactsWritten;
+  private boolean avatarModeProof;
+  private BlockPos avatarSweepWall;
+  private int avatarSweepWallOriginal;
+  private double locomotionBeforeModeSwitch;
+  private double locomotionWhilePaused;
+  private double useWhilePaused;
+  private float avatarWallClearanceFraction = Float.NaN;
+  private Matrix4 pausedArmPose;
+  private Matrix4 pausedLegPose;
+  private Matrix4 firstJumpPose;
+  private Matrix4 secondJumpPose;
+  private int jumpDeadline;
+  private int pausedMarkerCount;
+  private int playerFloorBlock;
+  private int cameraCenterBlock;
+  private boolean cameraCenterLoaded;
+  private Vector3 clearBoomFeet, clearBoomEye, clearBoomCamera, clearBoomDirection;
+  private float clearBoomFov, clearBoomNear;
+  private final java.util.List<BlockPos> viewmodelWallCells = new java.util.ArrayList<>();
+  private final java.util.List<Integer> viewmodelWallOriginal = new java.util.ArrayList<>();
+  private int fpsWallViewmodelSkinPixels;
+  private int fpsWallViewmodelToolPixels;
+  private int fpsWallViewmodelWallPixels;
   private boolean focusVerified;
   private boolean fpsControllerVerified;
   private long mainWindow, focusWindow;
@@ -67,6 +91,18 @@ final class VoxelSmokeProbe {
       case WAIT_FIXTURE_RESTORE -> waitForFixtureRestore();
       case RESTORE_VIEWPORT -> restoreViewport();
       case WAIT_STATIONARY -> verifyStationaryWorld();
+      case WAIT_AVATAR_TPP -> verifyAvatarTpp();
+      case WAIT_AVATAR_FPS_WALL -> verifyFpsViewmodelWall();
+      case WAIT_AVATAR_SLOTS_OFF -> verifyAvatarSlotsOff();
+      case WAIT_AVATAR_SLOTS_ON -> verifyAvatarSlotsOn();
+      case WAIT_AVATAR_ACTIVE_USE -> verifyAvatarActiveUse();
+      case WAIT_AVATAR_PAUSED -> verifyAvatarPaused();
+      case WAIT_AVATAR_RESUME -> verifyAvatarResume();
+      case WAIT_AVATAR_CLEAR -> verifyAvatarClearBoom();
+      case WAIT_JUMP_FIRST_POSE -> verifyFirstJumpPose();
+      case WAIT_JUMP_FIRST_RELEASE -> verifyFirstJumpReleased();
+      case WAIT_JUMP_SECOND_POSE -> verifySecondJumpPose();
+      case WAIT_JUMP_SECOND_RELEASE -> verifySecondJumpReleased();
       case CAPTURE -> captureProof();
       case COMPLETE -> {}
     }
@@ -74,6 +110,10 @@ final class VoxelSmokeProbe {
 
   private void waitForInitialMeshes() {
     if (demo.dirtyChunkCount() != 0) return;
+    if (!avatarModeProof) {
+      beginAvatarModeProof();
+      return;
+    }
     if (!focusVerified) {
       mainWindow = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
       GLFW.glfwFocusWindow(mainWindow);
@@ -87,6 +127,317 @@ final class VoxelSmokeProbe {
       phase = Phase.WAIT_FPS_MESHES;
       return;
     }
+  }
+
+  private void beginAvatarModeProof() {
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
+        "Voxel scene did not start in FPS camera mode");
+    locomotionBeforeModeSwitch = demo.locomotionTime();
+    demo.writeAvatarScreenshot("fps");
+    installFpsViewmodelWall();
+    demo.game().pause();
+    phase = Phase.WAIT_AVATAR_FPS_WALL;
+  }
+
+  private void installFpsViewmodelWall() {
+    Vector3 eye = demo.playerEye();
+    Vector3 look = demo.fpsController().getLookDirection(new Vector3());
+    boolean wallAlongZ = Math.abs(look.z) >= Math.abs(look.x);
+    int wallAxisCell = (int) Math.floor(wallAlongZ ? eye.z + look.z * 1.0f : eye.x + look.x * 1.0f);
+    int centerX = (int) Math.floor(eye.x),
+        centerY = (int) Math.floor(eye.y),
+        centerZ = (int) Math.floor(eye.z);
+    for (int side = -2; side <= 2; side++) {
+      for (int vertical = -1; vertical <= 2; vertical++) {
+        BlockPos cell =
+            wallAlongZ
+                ? new BlockPos(centerX + side, centerY + vertical, wallAxisCell)
+                : new BlockPos(wallAxisCell, centerY + vertical, centerZ + side);
+        require(
+            demo.world()
+                .isLoaded(org.javity.voxel.ChunkPos.fromBlock(cell.x(), cell.y(), cell.z())),
+            "FPS viewmodel wall fixture must use loaded terrain");
+        viewmodelWallCells.add(cell);
+        viewmodelWallOriginal.add(demo.world().getBlock(cell.x(), cell.y(), cell.z()));
+        demo.world().setBlock(cell.x(), cell.y(), cell.z(), demo.terrain().stoneId());
+      }
+    }
+  }
+
+  private void verifyFpsViewmodelWall() {
+    require(demo.game().isPaused(), "FPS viewmodel occlusion fixture must freeze world clocks");
+    if (demo.dirtyChunkCount() != 0) return;
+    fpsWallViewmodelSkinPixels = demo.writeAvatarScreenshot("fps-wall-viewmodel");
+    fpsWallViewmodelToolPixels = demo.lastAvatarToolPixels();
+    fpsWallViewmodelWallPixels = demo.lastViewmodelWallPixels();
+    require(
+        fpsWallViewmodelSkinPixels > 20,
+        "Viewmodel skin pixels were occluded by the nearer world wall");
+    require(
+        fpsWallViewmodelToolPixels > 100,
+        "Held tool was not visibly rendered over the nearer world wall");
+    require(
+        fpsWallViewmodelWallPixels > 10_000,
+        "Viewmodel occlusion fixture did not cover the center of the world image");
+    for (int i = 0; i < viewmodelWallCells.size(); i++) {
+      BlockPos cell = viewmodelWallCells.get(i);
+      demo.world().setBlock(cell.x(), cell.y(), cell.z(), viewmodelWallOriginal.get(i));
+    }
+    viewmodelWallCells.clear();
+    viewmodelWallOriginal.clear();
+    demo.game().resume();
+    locomotionBeforeModeSwitch = demo.locomotionTime();
+    Vector3 feet = demo.playerFeet();
+    Vector3 eye = demo.playerEye();
+    avatarSweepWall =
+        new BlockPos(
+            (int) Math.floor(feet.x), (int) Math.floor(eye.y), (int) Math.floor(feet.z + 2));
+    avatarSweepWallOriginal =
+        demo.world().getBlock(avatarSweepWall.x(), avatarSweepWall.y(), avatarSweepWall.z());
+    require(avatarSweepWallOriginal == 0, "TPP sweep wall fixture must begin empty");
+    demo.world()
+        .setBlock(
+            avatarSweepWall.x(),
+            avatarSweepWall.y(),
+            avatarSweepWall.z(),
+            demo.terrain().stoneId());
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.THIRD_PERSON,
+        "Repeated F5 keyDown toggled more than once");
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    phase = Phase.WAIT_AVATAR_TPP;
+  }
+
+  private void verifyAvatarTpp() {
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.THIRD_PERSON,
+        "F5 did not enter TPP mode");
+    require(
+        demo.cameraClearanceFraction() > 0 && demo.cameraClearanceFraction() < 1,
+        "TPP near-plane camera volume did not stop at the test wall");
+    avatarWallClearanceFraction = demo.cameraClearanceFraction();
+    require(
+        demo.cameraPosition().dst(demo.playerEye()) <= demo.boomDistance(),
+        "TPP camera exceeded its requested boom distance");
+    require(
+        demo.fpsController().isGrounded(),
+        "Avatar camera-mode proof lost its grounded player pose");
+    require(
+        demo.rightHandSocketMatchesTool(),
+        "Right-hand socket diverged from the attached tool grip");
+    require(
+        Math.abs((demo.locomotionTime() - locomotionBeforeModeSwitch) - 1d / 60d) < .001,
+        "World avatar pose clock advanced more than once across world and viewmodel passes");
+    demo.writeAvatarScreenshot("tpp-wall");
+    double beforeRemoteView = demo.locomotionTime();
+    int visibleBeforeRemoteView = demo.visibleChunkCount();
+    demo.renderRemoteAvatarForSmoke();
+    require(
+        demo.locomotionTime() == beforeRemoteView,
+        "Submitting a second camera view advanced the canonical avatar clock");
+    require(
+        demo.visibleChunkCount() == visibleBeforeRemoteView,
+        "Observer culling temporarily changed local chunk visibility");
+    demo.writeAvatarScreenshot("same-frame-second-camera-full-body");
+    beforeRemoteView = demo.locomotionTime();
+    demo.renderRemotePresetForSmoke(org.javity.avatar.AvatarPreset.BODY_WITHOUT_HEAD);
+    require(
+        demo.locomotionTime() == beforeRemoteView,
+        "BODY_WITHOUT_HEAD observer preset advanced the canonical avatar clock");
+    require(
+        demo.visibleChunkCount() == visibleBeforeRemoteView,
+        "Observer preset changed local chunk visibility");
+    demo.writeAvatarScreenshot("tpp-body-without-head");
+    beforeRemoteView = demo.locomotionTime();
+    demo.renderRemotePresetForSmoke(org.javity.avatar.AvatarPreset.ARMS_ONLY);
+    require(
+        demo.locomotionTime() == beforeRemoteView,
+        "ARMS_ONLY observer preset advanced the canonical avatar clock");
+    demo.writeAvatarScreenshot("tpp-arms-only-preset");
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.C);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.C);
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.T);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.T);
+    phase = Phase.WAIT_AVATAR_SLOTS_OFF;
+    demo.setAvatarMoveForSmoke(0, 0);
+  }
+
+  private void verifyAvatarSlotsOff() {
+    require(
+        !demo.clothingVisible() && !demo.toolVisible(),
+        "C/T slot controls did not hide shirt and tool");
+    demo.writeAvatarScreenshot("tpp-shirt-tool-hidden");
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.C);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.C);
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.T);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.T);
+    phase = Phase.WAIT_AVATAR_SLOTS_ON;
+  }
+
+  private void verifyAvatarSlotsOn() {
+    require(
+        demo.clothingVisible() && demo.toolVisible(),
+        "C/T slot controls did not restore shirt and tool");
+    demo.writeAvatarScreenshot("tpp-shirt-tool-visible");
+    demo.setAvatarMoveForSmoke(0, .4f);
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.E);
+    locomotionWhilePaused = demo.locomotionTime();
+    useWhilePaused = demo.useTime();
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    phase = Phase.WAIT_AVATAR_ACTIVE_USE;
+  }
+
+  private void verifyAvatarActiveUse() {
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
+        "F5 did not switch modes during simultaneous locomotion and use");
+    require(demo.locomotionParameter() > 0, "The locomotion mixer remained at idle during use");
+    require(demo.useTime() > useWhilePaused, "Masked use did not advance during locomotion");
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.THIRD_PERSON,
+        "F5 did not return to TPP after the active-use check");
+    pausedArmPose = demo.rightArmPoseForSmoke();
+    pausedLegPose = demo.leftLegPoseForSmoke();
+    pausedMarkerCount = demo.avatarMarkerCountForSmoke();
+    demo.game().pause();
+    locomotionWhilePaused = demo.locomotionTime();
+    useWhilePaused = demo.useTime();
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    phase = Phase.WAIT_AVATAR_PAUSED;
+  }
+
+  private void verifyAvatarPaused() {
+    require(demo.game().isPaused(), "WORLD pause fixture did not hold the game clock");
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
+        "F5 did not toggle while WORLD was paused");
+    require(
+        demo.locomotionTime() == locomotionWhilePaused, "Locomotion advanced during WORLD pause");
+    require(demo.useTime() == useWhilePaused, "Upper-body use action advanced during WORLD pause");
+    require(
+        matricesNear(pausedArmPose, demo.rightArmPoseForSmoke(), 1e-5f),
+        "F5 or render changed the arm pose while WORLD was paused");
+    require(
+        matricesNear(pausedLegPose, demo.leftLegPoseForSmoke(), 1e-5f),
+        "Locomotion mixer changed the leg pose while WORLD was paused");
+    require(
+        pausedMarkerCount == demo.avatarMarkerCountForSmoke(),
+        "Avatar animation markers fired while WORLD was paused");
+    demo.writeAvatarScreenshot("fps-paused-action");
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    demo.game().resume();
+    locomotionWhilePaused = demo.locomotionTime();
+    phase = Phase.WAIT_AVATAR_RESUME;
+  }
+
+  private void verifyAvatarResume() {
+    require(!demo.game().isPaused(), "WORLD did not resume after the paused camera toggle");
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.THIRD_PERSON,
+        "F5 did not return to TPP after the paused action");
+    require(
+        Math.abs((demo.locomotionTime() - locomotionWhilePaused) - 1d / 60d) < .001,
+        "Locomotion did not advance once after WORLD resumed");
+    require(
+        demo.locomotionParameter() > 0,
+        "Walking mixer did not enter locomotion during the resumed use action");
+    demo.setAvatarMoveForSmoke(0, 0);
+    demo.writeAvatarScreenshot("tpp-after-action");
+    require(
+        demo.world()
+            .setBlock(
+                avatarSweepWall.x(),
+                avatarSweepWall.y(),
+                avatarSweepWall.z(),
+                avatarSweepWallOriginal),
+        "Could not restore TPP camera wall fixture");
+    phase = Phase.WAIT_AVATAR_CLEAR;
+  }
+
+  private void verifyAvatarClearBoom() {
+    require(
+        demo.cameraClearanceFraction() == 1f,
+        "TPP camera did not return to full boom after wall removal");
+    require(
+        demo.cameraPosition().dst(demo.playerEye()) > 1f,
+        "TPP camera failed to restore a useful clear-space boom");
+    require(
+        demo.fpsController().isGrounded(), "Clear-boom capture did not retain a grounded player");
+    Vector3 feet = demo.playerFeet();
+    Vector3 cameraPosition = demo.cameraPosition();
+    clearBoomFeet = feet.cpy();
+    clearBoomEye = demo.playerEye();
+    clearBoomCamera = cameraPosition.cpy();
+    clearBoomDirection = demo.cameraDirection();
+    clearBoomFov = demo.cameraFov();
+    clearBoomNear = demo.cameraNear();
+    playerFloorBlock =
+        demo.world()
+            .getBlock(
+                (int) Math.floor(feet.x), (int) Math.floor(feet.y) - 1, (int) Math.floor(feet.z));
+    int cameraX = (int) Math.floor(cameraPosition.x);
+    int cameraY = (int) Math.floor(cameraPosition.y);
+    int cameraZ = (int) Math.floor(cameraPosition.z);
+    cameraCenterLoaded =
+        demo.world().isLoaded(org.javity.voxel.ChunkPos.fromBlock(cameraX, cameraY, cameraZ));
+    cameraCenterBlock = cameraCenterLoaded ? demo.world().getBlock(cameraX, cameraY, cameraZ) : -1;
+    require(playerFloorBlock != 0, "Clear-boom player was not standing over a solid terrain cell");
+    require(
+        cameraCenterBlock == 0, "Clear-boom camera center was inside or outside loaded terrain");
+    demo.writeAvatarScreenshot("tpp-clear");
+    demo.writeClearBoomCullingDiagnostic();
+    demo.resetPlayerForSmoke();
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
+        "Could not restore FPS mode for voxel controller coverage");
+    demo.setAvatarJumpForSmoke(true);
+    firstJumpPose = demo.leftLegPoseForSmoke();
+    jumpDeadline = demo.frameNumber() + 40;
+    phase = Phase.WAIT_JUMP_FIRST_POSE;
+  }
+
+  private void verifyFirstJumpPose() {
+    require(demo.frameNumber() < jumpDeadline, "First jump clip did not reach a sampled leg pose");
+    if (demo.jumpTimeForSmoke() < .08) return;
+    require(
+        !matricesNear(firstJumpPose, demo.leftLegPoseForSmoke(), 1e-4f),
+        "First jump did not change the leg pose");
+    phase = Phase.WAIT_JUMP_FIRST_RELEASE;
+  }
+
+  private void verifyFirstJumpReleased() {
+    require(demo.frameNumber() < jumpDeadline + 40, "First jump layer did not release on landing");
+    if (demo.jumpPlaybackActiveForSmoke() || demo.jumpWeightForSmoke() != 0) return;
+    demo.setAvatarJumpForSmoke(true);
+    secondJumpPose = demo.leftLegPoseForSmoke();
+    jumpDeadline = demo.frameNumber() + 40;
+    phase = Phase.WAIT_JUMP_SECOND_POSE;
+  }
+
+  private void verifySecondJumpPose() {
+    require(demo.frameNumber() < jumpDeadline, "Second jump clip did not restart");
+    if (demo.jumpTimeForSmoke() < .08) return;
+    require(
+        !matricesNear(secondJumpPose, demo.leftLegPoseForSmoke(), 1e-4f),
+        "Second jump did not change the leg pose");
+    phase = Phase.WAIT_JUMP_SECOND_RELEASE;
+  }
+
+  private void verifySecondJumpReleased() {
+    require(demo.frameNumber() < jumpDeadline + 40, "Second jump layer did not release on landing");
+    if (demo.jumpPlaybackActiveForSmoke() || demo.jumpWeightForSmoke() != 0) return;
+    avatarModeProof = true;
+    phase = Phase.WAIT_INITIAL_MESHES;
   }
 
   private void runFpsControllerProof() {
@@ -265,6 +616,9 @@ final class VoxelSmokeProbe {
     require(demo.frameNumber() <= focusDeadline, "Main GLFW window never gained focus");
     if (GLFW.glfwGetWindowAttrib(mainWindow, GLFW.GLFW_FOCUSED) != GLFW.GLFW_TRUE
         || !inputGuard("focused")) return;
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    require(
+        inputGuard("cameraModeToggleHeld"), "F5 native latch was not held before focus-loss proof");
     Gdx.input.setCursorCatched(true);
     focusWindow = GLFW.glfwCreateWindow(64, 64, "Javity focus smoke helper", 0, 0);
     require(focusWindow != 0, "Could not create native focus helper window");
@@ -291,6 +645,8 @@ final class VoxelSmokeProbe {
         || inputGuard("focused")) return;
     require(!Gdx.input.isCursorCatched(), "Native focus loss retained cursor capture");
     require(inputGuard("discardFirstMouseDelta"), "Native focus loss did not reset mouse delta");
+    require(
+        !inputGuard("cameraModeToggleHeld"), "Focus loss did not clear the held F5 toggle latch");
     GLFW.glfwFocusWindow(mainWindow);
     focusDeadline = demo.frameNumber() + 120;
     phase = Phase.WAIT_FOCUS_REGAIN;
@@ -302,6 +658,11 @@ final class VoxelSmokeProbe {
         || !inputGuard("focused")) return;
     require(inputGuard("discardFirstMouseDelta"), "Native resume omitted first-delta reset");
     require(!Gdx.input.isCursorCatched(), "Native resume unexpectedly captured cursor");
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
+    require(
+        demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
+        "F5 remained latched across native focus loss/regain");
     GLFW.glfwDestroyWindow(focusWindow);
     focusWindow = 0;
     focusVerified = true;
@@ -408,6 +769,7 @@ final class VoxelSmokeProbe {
     require(
         Gdx.gl.glGetError() == GL20.GL_NO_ERROR, "Voxel scene left an OpenGL error before capture");
     require(focusVerified, "Native focus probe was not completed");
+    require(avatarModeProof, "Native FPS/TPP avatar mode proof did not complete");
     demo.writeGalleryScreenshot();
     demo.finishSmoke(
         "{\n"
@@ -439,6 +801,7 @@ final class VoxelSmokeProbe {
             + stationaryFrames
             + ",\n"
             + "  \"focusLossAndRegain\": true,\n"
+            + "  \"focusLossClearsF5Latch\": true,\n"
             + "  \"cameraMoveAndLook\": true,\n"
             + "  \"fpsSpawnGrounded\": true,\n"
             + "  \"fpsWallCollision\": true,\n"
@@ -447,6 +810,55 @@ final class VoxelSmokeProbe {
             + "  \"fpsMouseRightLook\": true,\n"
             + "  \"fpsPlacementProtection\": true,\n"
             + "  \"fpsModeToggle\": true,\n"
+            + "  \"avatarF5WhilePaused\": true,\n"
+            + "  \"avatarF5DuringLocomotionAndUse\": true,\n"
+            + "  \"avatarActionAndLocomotionShareOneStep\": true,\n"
+            + "  \"avatarPreparedWeightedBody\": true,\n"
+            + "  \"avatarRigidShirtToolSlotsAndSocket\": true,\n"
+            + "  \"avatarSocketMatchesToolGrip\": true,\n"
+            + "  \"avatarSameFrameSecondCamera\": true,\n"
+            + "  \"avatarWallSweepFraction\": "
+            + avatarWallClearanceFraction
+            + ",\n"
+            + "  \"fpsWallViewmodelSkinPixels\": "
+            + fpsWallViewmodelSkinPixels
+            + ",\n"
+            + "  \"fpsWallViewmodelToolPixels\": "
+            + fpsWallViewmodelToolPixels
+            + ",\n"
+            + "  \"fpsWallViewmodelWallPixels\": "
+            + fpsWallViewmodelWallPixels
+            + ",\n"
+            + "  \"cameraVolumeWallClearance\": "
+            + demo.cameraClearanceFraction()
+            + ",\n"
+            + "  \"clearBoomPlayerFloorBlock\": "
+            + playerFloorBlock
+            + ",\n"
+            + "  \"clearBoomCameraCenterLoaded\": "
+            + cameraCenterLoaded
+            + ",\n"
+            + "  \"clearBoomCameraCenterBlock\": "
+            + cameraCenterBlock
+            + ",\n"
+            + "  \"clearBoomFeet\": "
+            + vectorJson(clearBoomFeet)
+            + ",\n"
+            + "  \"clearBoomEye\": "
+            + vectorJson(clearBoomEye)
+            + ",\n"
+            + "  \"clearBoomCamera\": "
+            + vectorJson(clearBoomCamera)
+            + ",\n"
+            + "  \"clearBoomDirection\": "
+            + vectorJson(clearBoomDirection)
+            + ",\n"
+            + "  \"clearBoomFovDegrees\": "
+            + clearBoomFov
+            + ",\n"
+            + "  \"clearBoomNear\": "
+            + clearBoomNear
+            + ",\n"
             + "  \"fpsUnsafeFlyReturnFallback\": true,\n"
             + "  \"crossSeamRemoveAndPlace\": true,\n"
             + "  \"smokeFixtureRestored\": true,\n"
@@ -472,6 +884,15 @@ final class VoxelSmokeProbe {
     if (!condition) throw new IllegalStateException(message);
   }
 
+  private static boolean matricesNear(Matrix4 a, Matrix4 b, float tolerance) {
+    for (int i = 0; i < 16; i++) if (Math.abs(a.val[i] - b.val[i]) > tolerance) return false;
+    return true;
+  }
+
+  private static String vectorJson(Vector3 value) {
+    return "{\"x\":" + value.x + ",\"y\":" + value.y + ",\"z\":" + value.z + "}";
+  }
+
   private enum Phase {
     WAIT_INITIAL_MESHES,
     WAIT_MAIN_FOCUS,
@@ -483,6 +904,18 @@ final class VoxelSmokeProbe {
     WAIT_FIXTURE_RESTORE,
     RESTORE_VIEWPORT,
     WAIT_STATIONARY,
+    WAIT_AVATAR_TPP,
+    WAIT_AVATAR_FPS_WALL,
+    WAIT_AVATAR_SLOTS_OFF,
+    WAIT_AVATAR_SLOTS_ON,
+    WAIT_AVATAR_ACTIVE_USE,
+    WAIT_AVATAR_PAUSED,
+    WAIT_AVATAR_RESUME,
+    WAIT_AVATAR_CLEAR,
+    WAIT_JUMP_FIRST_POSE,
+    WAIT_JUMP_FIRST_RELEASE,
+    WAIT_JUMP_SECOND_POSE,
+    WAIT_JUMP_SECOND_RELEASE,
     CAPTURE,
     COMPLETE
   }

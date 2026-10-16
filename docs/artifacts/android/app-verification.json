@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-16",
+  "platform": "AOSP API35 x86_64 emulator, SwiftShader, TCG",
+  "tested_apk_sha256": "94dcf3d4ff160ab17f9b254bb7f075061958d4ae006a7c534a69897bb7d130d5",
+  "tests": [
+    {
+      "name": "model pixels and touch, density160",
+      "tests": 1,
+      "seconds": 58.527,
+      "log": "app-density160-instrumentation.txt"
+    },
+    {
+      "name": "model pixels and touch, density320",
+      "tests": 1,
+      "seconds": 58.899,
+      "log": "app-density320-instrumentation.txt"
+    },
+    {
+      "name": "retained owners after actual EGL context loss",
+      "tests": 1,
+      "seconds": 55.856,
+      "log": "app-managed-context-instrumentation.txt"
+    }
+  ],
+  "result": "PASS",
+  "scope": [
+    "world-only model positive/negative pixel proof",
+    "touch movement, jump, look and input ownership",
+    "managed texture upload after context loss",
+    "SDF, dash, rounded UI and font pixels after context loss",
+    "framebuffer depth attachment recovery"
+  ],
+  "not_covered": [
+    "physical ARM64 devices",
+    "performance"
+  ],
+  "final_apk_sha256": "7f9483937f5b38d1c1df3b29b1f27bd3020904ceb2ff6af9c2b4e1e0d0a9073d",
+  "integration_tests": [
+    {
+      "name": "foreground Activity recreation",
+      "tests": 1,
+      "seconds": 62.812,
+      "log": "app-activity-foreground-instrumentation.txt"
+    },
+    {
+      "name": "already-paused Activity recreation",
+      "tests": 1,
+      "seconds": 56.209,
+      "log": "app-activity-paused-instrumentation.txt"
+    },
+    {
+      "name": "same Activity landscape and portrait restoration, density320",
+      "tests": 1,
+      "seconds": 53.573,
+      "log": "app-landscape-instrumentation.txt"
+    },
+    {
+      "name": "final APK actual same-owner EGL loss, density320",
+      "tests": 1,
+      "seconds": 54.787,
+      "log": "app-final-egl-instrumentation.txt"
+    },
+    {
+      "name": "final APK model, React, multipointer and full resource recreation, density320",
+      "tests": 1,
+      "seconds": 63.666,
+      "log": "app-final-touch-instrumentation.txt"
+    }
+  ],
+  "runner_limits": [
+    "Unfiltered suite startup hit system process-start timeout; two-test Activity run hit focus timeout. Listed Activity cases passed independently."
+  ],
+  "test_harness_adjustments": [
+    "Full resource rebuild has a separate 60-second bound for cold shader compilation on TCG; ordinary owner-thread operations retain their 10-second bound. Initial 10-second rebuild attempt timed out; rerun passed."
+  ],
+  "release_runtime": "app-release-runtime-verification.json"
+}

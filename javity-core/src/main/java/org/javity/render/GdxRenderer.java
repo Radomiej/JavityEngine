@@ -7,19 +7,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Disposable;
 import java.util.*;
+import org.javity.avatar.AvatarBinding;
+import org.javity.avatar.AvatarView;
 import org.javity.core.*;
 import org.javity.presentation.Presentation2D;
+import org.javity.presentation.Presentation3D;
 
 /** Render passes: models with depth, sprites without depth, then caller-owned UI. */
 public final class GdxRenderer implements Disposable {
-  private final SpriteBatch sprites = new SpriteBatch();
-  private final ShapeRenderer shapes = new ShapeRenderer();
+  private final SpriteBatch sprites;
+  private final ShapeRenderer shapes;
   private SmoothShapeRenderer smoothShapes;
-  private final Matrix4 screenProjection = new Matrix4().setToOrtho2D(0, 0, 1, 1);
+  private final Matrix4 screenProjection;
   static final Comparator<Render2D> RENDER_ORDER =
       Comparator.comparingInt(
               (Render2D r) ->
@@ -28,17 +34,89 @@ public final class GdxRenderer implements Disposable {
                       : 0)
           .thenComparingInt(r -> r.layer)
           .thenComparingInt(r -> r.order);
-  private final Matrix4 drawingTransform = new Matrix4(), identityTransform = new Matrix4();
-  private final ModelBatch models = new ModelBatch();
-  private final AssetManager assets = new AssetManager();
-  public final OrthographicCamera camera2D = new OrthographicCamera();
-  public final Environment environment = new Environment();
+  private final Matrix4 drawingTransform, identityTransform;
+  private final Matrix4 modelBase = new Matrix4();
+  private final Matrix4 presentationLocal = new Matrix4();
+  private final Matrix4 presentationCandidate = new Matrix4();
+  private final Matrix4 renderableCandidate = new Matrix4();
+  private final Presentation3D.Pose presentationPose = new Presentation3D.Pose();
+  private final ModelBatch models;
+  private final RecoverableDefaultShaderProvider modelShaders;
+  private final AssetManager assets;
+  public final OrthographicCamera camera2D;
+  public final Environment environment;
   private int width = 1, height = 1;
   private boolean sceneCameraActive;
+  private final int maxBones, maxBoneWeights;
 
   public GdxRenderer() {
+    this(12, 4);
+  }
+
+  /**
+   * Creates a renderer whose DefaultShader explicitly supports the given skinning capacity. The
+   * no-argument renderer keeps libGDX's 12-bone, 4-weight default; rigs beyond that require an
+   * explicitly larger capacity and hardware/shader validation.
+   */
+  public GdxRenderer(int maxBones, int maxBoneWeights) {
+    if (maxBones < 1 || maxBoneWeights < 0 || maxBoneWeights > 8)
+      throw new IllegalArgumentException(
+          "Shader capacity requires 1..N bones and 0..8 bone-weight attributes");
+    this.maxBones = maxBones;
+    this.maxBoneWeights = maxBoneWeights;
+    DefaultShader.Config shaderConfig = new DefaultShader.Config();
+    shaderConfig.numBones = maxBones;
+    shaderConfig.numBoneWeights = maxBoneWeights;
+    RecoverableDefaultShaderProvider createdModelShaders =
+        new RecoverableDefaultShaderProvider(shaderConfig);
+    SpriteBatch createdSprites = null;
+    ShapeRenderer createdShapes = null;
+    ModelBatch createdModels = null;
+    AssetManager createdAssets = null;
+    try {
+      createdSprites = new SpriteBatch();
+      createdShapes = new ShapeRenderer();
+      createdModels = new ModelBatch(createdModelShaders);
+      createdAssets = new AssetManager();
+    } catch (RuntimeException | Error failure) {
+      disposeAfterConstructionFailure(
+          failure, createdAssets, createdModels, createdShapes, createdSprites);
+      throw failure;
+    }
+    sprites = createdSprites;
+    shapes = createdShapes;
+    models = createdModels;
+    modelShaders = createdModelShaders;
+    assets = createdAssets;
+    screenProjection = new Matrix4().setToOrtho2D(0, 0, 1, 1);
+    drawingTransform = new Matrix4();
+    identityTransform = new Matrix4();
+    camera2D = new OrthographicCamera();
+    environment = new Environment();
     environment.set(new ColorAttribute(ColorAttribute.AmbientLight, .45f, .45f, .5f, 1));
     environment.add(new DirectionalLight().set(.9f, .9f, 1, -1, -.8f, -.4f));
+  }
+
+  static void disposeAfterConstructionFailure(Throwable original, Disposable... allocated) {
+    Objects.requireNonNull(original, "original");
+    for (Disposable resource : allocated) {
+      if (resource == null) continue;
+      try {
+        resource.dispose();
+      } catch (RuntimeException | Error cleanupFailure) {
+        if (cleanupFailure != original) original.addSuppressed(cleanupFailure);
+      }
+    }
+  }
+
+  /**
+   * Repairs this renderer's retained DefaultShader bindings after managed programs have relinked
+   * and their alias maps have been refreshed. Call on the GL owner thread before drawing, outside
+   * ModelBatch.begin/end. The single owned provider serves both world and viewmodel passes;
+   * caller-supplied shaders remain their caller's responsibility.
+   */
+  public void restoreContextShaderBindings() {
+    modelShaders.contextRestored();
   }
 
   /** Load during initialization. Supports libGDX Model formats: G3DJ, G3DB and OBJ. */
@@ -75,23 +153,136 @@ public final class GdxRenderer implements Disposable {
         }
       if (view != null) break;
     }
-    if (view != null) {
-      view.camera.viewportWidth = width;
-      view.camera.viewportHeight = height;
-      view.camera.update();
-      models.begin(view.camera);
+    if (view != null) renderWorld(game, view, null);
+    render2D(game);
+  }
+
+  /**
+   * Submits the world model pass to an explicit camera with an optional per-view avatar override.
+   * For that view, renderable bases compose as objectWorld × localPresentationTRS × viewBase.
+   */
+  public void renderWorld(Game game, Camera3D camera, AvatarView localOverride) {
+    Objects.requireNonNull(game, "game");
+    Objects.requireNonNull(camera, "camera");
+    if (camera.getGame() != game)
+      throw new IllegalArgumentException("Camera3D must belong to the rendered Game");
+    if (!visible(camera)) return;
+    if (localOverride != null) {
+      ModelRenderer target = localOverride.renderer();
+      if (target.getGame() != null && target.getGame() != game)
+        throw new IllegalArgumentException("AvatarView renderer must belong to the rendered Game");
+      if (target.getGame() == game
+          && target.getGameObject().containsComponent(target)
+          && target.isInitialized()
+          && target.isEnabled()
+          && target.getGameObject().isActive()
+          && !target.getGameObject().hasComponent(Transform3D.class))
+        throw new IllegalArgumentException("AvatarView renderer requires Transform3D");
+    }
+    camera.camera.viewportWidth = width;
+    camera.camera.viewportHeight = height;
+    camera.camera.update();
+    models.begin(camera.camera);
+    try {
       for (GameObject o : game.getObjectsWith(ModelRenderer.class, Transform3D.class)) {
         Transform3D transform = o.getComponent(Transform3D.class);
         if (!visible(transform)) continue;
-        for (ModelRenderer r : o.getComponents(ModelRenderer.class))
-          if (visible(r)) {
-            r.prepareForRender();
-            r.instance.transform.set(transform.worldMatrix());
+        for (ModelRenderer r : o.getComponents(ModelRenderer.class)) {
+          if (!visible(r)) continue;
+          r.prepareForRender();
+          if (localOverride != null && localOverride.renderer() == r) {
+            if (!o.containsComponent(r)) continue;
+            localOverride.validateShaderCapacity(maxBones, maxBoneWeights);
+            Matrix4 objectBase = presentedBase(transform, o);
+            models.render(
+                (out, pool) -> {
+                  localOverride.getRenderablesWithBase(out, pool, objectBase);
+                  for (Renderable renderable : out)
+                    requireFinite(
+                        renderable.worldTransform,
+                        "presented avatar renderable matrix is not representable");
+                },
+                environment);
+          } else {
+            validateShaderCapacity(r);
+            Matrix4 base = presentedBase(transform, o);
+            validateModelInstanceComposition(r.instance, base, renderableCandidate);
+            r.instance.transform.set(base);
             models.render(r.instance, environment);
           }
+        }
       }
+    } finally {
       models.end();
     }
+  }
+
+  private Matrix4 presentedBase(Transform3D transform, GameObject object) {
+    modelBase.set(transform.worldMatrix());
+    requireFinite(modelBase, "canonical model matrix is not representable");
+    Presentation3D presentation = object.getComponent(Presentation3D.class);
+    if (presentation == null || !object.containsComponent(presentation)) return modelBase;
+    presentation.snapshot(presentationPose);
+    return composePresentedBase(
+        modelBase, presentationPose, modelBase, presentationLocal, presentationCandidate);
+  }
+
+  static Matrix4 composePresentedBase(
+      Matrix4 canonicalWorld,
+      Presentation3D.Pose pose,
+      Matrix4 out,
+      Matrix4 localScratch,
+      Matrix4 candidateScratch) {
+    Objects.requireNonNull(canonicalWorld, "canonicalWorld");
+    Objects.requireNonNull(pose, "pose");
+    Objects.requireNonNull(out, "out");
+    Objects.requireNonNull(localScratch, "localScratch");
+    Objects.requireNonNull(candidateScratch, "candidateScratch");
+    requireFinite(canonicalWorld, "canonical model matrix is not representable");
+    requireFinite(pose.localMatrix(localScratch), "local presentation matrix is not representable");
+    candidateScratch.set(canonicalWorld).mul(localScratch);
+    requireFinite(candidateScratch, "composed presented model matrix is not representable");
+    return out.set(candidateScratch);
+  }
+
+  static void requireFinite(Matrix4 matrix, String message) {
+    for (float value : matrix.val)
+      if (!Float.isFinite(value)) throw new IllegalArgumentException(message);
+  }
+
+  /**
+   * Preflights the same rigid/skinned node transforms that ModelInstance exposes as renderables.
+   */
+  static void validateModelInstanceComposition(
+      ModelInstance instance, Matrix4 presentedBase, Matrix4 candidate) {
+    Objects.requireNonNull(instance, "instance");
+    Objects.requireNonNull(presentedBase, "presentedBase");
+    Objects.requireNonNull(candidate, "candidate");
+    requireFinite(presentedBase, "presented model base is not representable");
+    for (int i = 0; i < instance.nodes.size; i++)
+      validateNodeComposition(instance.nodes.get(i), presentedBase, candidate);
+  }
+
+  private static void validateNodeComposition(Node node, Matrix4 presentedBase, Matrix4 candidate) {
+    for (int i = 0; i < node.parts.size; i++) {
+      NodePart part = node.parts.get(i);
+      if (!part.enabled) continue;
+      if (part.bones == null) {
+        candidate.set(presentedBase).mul(node.globalTransform);
+        requireFinite(candidate, "presented rigid renderable matrix is not representable");
+      } else {
+        // ModelInstance uses the instance base as the Renderable world transform for skinned
+        // parts. Bone palette entries are vertex-selected and are not renderer-owned transforms.
+        requireFinite(presentedBase, "presented skinned renderable base is not representable");
+      }
+    }
+    for (int i = 0; i < node.getChildCount(); i++)
+      validateNodeComposition(node.getChild(i), presentedBase, candidate);
+  }
+
+  /** Draws the existing 2D world/screen stages after any explicit model pass. */
+  public void render2D(Game game) {
+    Objects.requireNonNull(game, "game");
     Camera2D view2D = null;
     for (GameObject o : game.getObjectsWith(Camera2D.class)) {
       for (Camera2D c : o.getComponents(Camera2D.class))
@@ -152,6 +343,35 @@ public final class GdxRenderer implements Disposable {
     } finally {
       if (sprites.isDrawing()) sprites.end();
     }
+  }
+
+  /** Draws a final depth-isolated 3D overlay pass (the framebuffer color is preserved). */
+  public void renderViewmodel(Camera camera, RenderableProvider provider) {
+    Objects.requireNonNull(camera, "camera");
+    Objects.requireNonNull(provider, "provider");
+    if (provider instanceof AvatarView view) view.validateShaderCapacity(maxBones, maxBoneWeights);
+    Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+    Gdx.gl.glDepthMask(true);
+    Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+    models.begin(camera);
+    try {
+      models.render(provider, environment);
+    } finally {
+      models.end();
+    }
+  }
+
+  private void validateShaderCapacity(ModelRenderer renderer) {
+    for (var root : renderer.instance.nodes) validateNodeCapacity(root);
+  }
+
+  private void validateNodeCapacity(com.badlogic.gdx.graphics.g3d.model.Node node) {
+    for (int i = 0; i < node.parts.size; i++) {
+      var part = node.parts.get(i);
+      if (part.enabled)
+        AvatarBinding.validateCapacity(part, node.id + "[" + i + "]", maxBones, maxBoneWeights);
+    }
+    for (var child : node.getChildren()) validateNodeCapacity(child);
   }
 
   private Matrix4 transform(Render2D r) {

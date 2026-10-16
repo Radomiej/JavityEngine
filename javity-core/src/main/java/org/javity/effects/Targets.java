@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.Objects;
 import java.util.function.DoubleSupplier;
 import org.javity.core.GameObject;
+import org.javity.presentation.CameraPresentation3D;
+import org.javity.presentation.Presentation3D;
 import org.javity.render.ShapeRenderer2D;
 import org.javity.render.SpriteRenderer2D;
 
@@ -72,6 +74,101 @@ public final class Targets {
 
   public static FloatTarget shapeAlpha(ShapeRenderer2D component) {
     return color(component, component.color, "shape.color.a", 3);
+  }
+
+  /** Persistent render-only local channels. Their identity is the channel, never Transform3D. */
+  public static FloatTarget presentationX(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.X, "presentation3d.translation.x");
+  }
+
+  public static FloatTarget presentationY(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.Y, "presentation3d.translation.y");
+  }
+
+  public static FloatTarget presentationZ(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.Z, "presentation3d.translation.z");
+  }
+
+  public static FloatTarget presentationRotationX(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.ROTATION_X, "presentation3d.rotation.x");
+  }
+
+  public static FloatTarget presentationRotationY(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.ROTATION_Y, "presentation3d.rotation.y");
+  }
+
+  public static FloatTarget presentationRotationZ(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.ROTATION_Z, "presentation3d.rotation.z");
+  }
+
+  public static FloatTarget presentationScaleX(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.SCALE_X, "presentation3d.scale.x");
+  }
+
+  public static FloatTarget presentationScaleY(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.SCALE_Y, "presentation3d.scale.y");
+  }
+
+  public static FloatTarget presentationScaleZ(Presentation3D.Channel channel) {
+    return pose(channel, Presentation3D.SCALE_Z, "presentation3d.scale.z");
+  }
+
+  public static FloatTarget cameraFovDelta(CameraPresentation3D.Channel channel) {
+    Objects.requireNonNull(channel, "channel");
+    return new Target(
+        channel.gameObject(),
+        channel,
+        "camera3d.fov.delta",
+        channel::isValid,
+        channel::getFovDelta,
+        channel::setFovDelta);
+  }
+
+  public static FloatTarget cameraTranslationX(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.X, "camera3d.translation.x");
+  }
+
+  public static FloatTarget cameraTranslationY(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.Y, "camera3d.translation.y");
+  }
+
+  public static FloatTarget cameraTranslationZ(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.Z, "camera3d.translation.z");
+  }
+
+  public static FloatTarget cameraRotationX(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.ROTATION_X, "camera3d.rotation.x");
+  }
+
+  public static FloatTarget cameraRotationY(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.ROTATION_Y, "camera3d.rotation.y");
+  }
+
+  public static FloatTarget cameraRotationZ(CameraPresentation3D.Channel channel) {
+    return cameraPose(channel, CameraPresentation3D.ROTATION_Z, "camera3d.rotation.z");
+  }
+
+  private static FloatTarget cameraPose(
+      CameraPresentation3D.Channel channel, int property, String key) {
+    Objects.requireNonNull(channel, "channel");
+    return new Target(
+        channel.gameObject(),
+        channel,
+        key,
+        channel::isValid,
+        () -> channel.get(property),
+        value -> channel.set(property, value));
+  }
+
+  private static FloatTarget pose(Presentation3D.Channel channel, int property, String key) {
+    Objects.requireNonNull(channel, "channel");
+    return new Target(
+        channel.gameObject(),
+        channel,
+        key,
+        channel::isValid,
+        () -> channel.get(property),
+        value -> channel.set(property, value));
   }
 
   private static FloatTarget transform(

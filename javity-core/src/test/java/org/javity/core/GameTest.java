@@ -71,6 +71,70 @@ public class GameTest {
   }
 
   @Test
+  public void pendingInitializationDoesNotAdvanceWorldTimeOrRunUpdates() {
+    int[] lifecycle = new int[2];
+    try (Game game = new Game()) {
+      game.start();
+      game.pause();
+      long frame = game.getFrameIndex();
+      game.unscaledElapsed = 3;
+      game.elapsed = 2;
+      Component component =
+          game.createObject("render attachment")
+              .addComponent(
+                  new Component() {
+                    @Override
+                    public void onCreate() {
+                      lifecycle[0]++;
+                    }
+
+                    @Override
+                    public void onUpdate(float delta) {
+                      lifecycle[1]++;
+                    }
+                  });
+
+      game.initializePendingComponents();
+
+      assertTrue(component.isInitialized());
+      assertArrayEquals(new int[] {1, 0}, lifecycle);
+      assertEquals(frame, game.getFrameIndex());
+      assertEquals(3, game.unscaledElapsed, 0);
+      assertEquals(2, game.elapsed, 0);
+    }
+  }
+
+  @Test
+  public void pendingInitializationRejectsReentryAndGameStepFromOnCreate() {
+    try (Game game = new Game()) {
+      game.start();
+      game.createObject("reentrant")
+          .addComponent(
+              new Component() {
+                @Override
+                public void onCreate() {
+                  getGame().initializePendingComponents();
+                }
+              });
+      assertThrows(IllegalStateException.class, game::initializePendingComponents);
+      assertEquals(0, game.getFrameIndex());
+    }
+    try (Game game = new Game()) {
+      game.start();
+      game.createObject("recursive step")
+          .addComponent(
+              new Component() {
+                @Override
+                public void onCreate() {
+                  getGame().step(0);
+                }
+              });
+      assertThrows(IllegalStateException.class, game::initializePendingComponents);
+      assertEquals(0, game.getFrameIndex());
+    }
+  }
+
+  @Test
   public void pauseLeavesUiUpdatingAndRejectsInvalidTime() {
     int[] updates = new int[2];
     try (Game game = new Game()) {

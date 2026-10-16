@@ -1,8 +1,6 @@
 package org.javity.ui.flex;
 
 import static org.junit.Assert.assertTrue;
-import static org.lwjgl.util.yoga.Yoga.YGNodeFree;
-import static org.lwjgl.util.yoga.Yoga.YGNodeNew;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,12 +15,12 @@ public class UiDevelopmentSampleStyleTest {
     Matcher classes = Pattern.compile("className=\"([^\"]+)\"").matcher(source);
     int checked = 0;
     while (classes.find()) {
-      long node = YGNodeNew();
+      var node = YogaTestSupport.node();
       try {
         UtilityStyles.apply(node, classes.group(1));
         checked++;
       } finally {
-        YGNodeFree(node);
+        node.freeNode();
       }
     }
     assertTrue("the development HUD must contain validated class strings", checked > 0);

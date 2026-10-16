@@ -6,10 +6,18 @@ import java.util.Objects;
 public final class ModelPosePlayback {
   interface Host {
     void requireCurrent(ModelPosePlayback playback);
+
     ModelPosePlayback restart(ModelPosePlayback playback);
+
     ModelPosePlayback seek(ModelPosePlayback playback, double seconds);
+
     void parameter(ModelPosePlayback playback, double value);
+
     ModelPosePlayback stopped(ModelPosePlayback playback);
+
+    boolean isFading(ModelPosePlayback playback);
+
+    double fadeProgress(ModelPosePlayback playback);
   }
 
   final PlaybackClock clock;
@@ -24,22 +32,65 @@ public final class ModelPosePlayback {
     this.parameter = parameter;
   }
 
-  public String animationName() { return clock.name; }
-  public PlayMode mode() { return clock.mode; }
-  public double time() { return clock.time(); }
-  public double duration() { return clock.duration; }
-  public double normalizedTime() { return clock.normalizedTime(); }
-  public double speed() { return clock.speed(); }
-  public double parameter() { return parameter; }
-  public boolean isPaused() { return clock.isPaused(); }
-  public boolean isPlaying() { return clock.isPlaying(); }
-  public boolean isCompleted() { return clock.isCompleted(); }
-  public boolean isActive() { return clock.isActive(); }
+  public String animationName() {
+    return clock.name;
+  }
+
+  public PlayMode mode() {
+    return clock.mode;
+  }
+
+  public double time() {
+    return clock.time();
+  }
+
+  public double duration() {
+    return clock.duration;
+  }
+
+  public double normalizedTime() {
+    return clock.normalizedTime();
+  }
+
+  public double speed() {
+    return clock.speed();
+  }
+
+  public double parameter() {
+    return parameter;
+  }
+
+  public boolean isPaused() {
+    return clock.isPaused();
+  }
+
+  public boolean isPlaying() {
+    return clock.isPlaying();
+  }
+
+  public boolean isCompleted() {
+    return clock.isCompleted();
+  }
+
+  public boolean isActive() {
+    return clock.isActive();
+  }
+
+  /** True while a frozen outgoing pose is blending into this playback. */
+  public boolean isFading() {
+    return host.isFading(this);
+  }
+
+  /** Clip-fade progress in [0,1], or 1 when no clip fade remains. */
+  public double fadeProgress() {
+    return host.fadeProgress(this);
+  }
 
   public ModelPosePlayback setParameter(double value) {
     host.requireCurrent(this);
     if (mixer == null) throw new IllegalStateException("This playback has no mixer parameter");
-    if (!Double.isFinite(value)) throw new IllegalArgumentException("Mixer parameter must be finite");
+    if (!Double.isFinite(value))
+      throw new IllegalArgumentException("Mixer parameter must be finite");
     host.parameter(this, value);
     return this;
   }

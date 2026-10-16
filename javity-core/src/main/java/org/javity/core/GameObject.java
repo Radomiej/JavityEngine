@@ -9,6 +9,7 @@ public final class GameObject {
   public final Transform2D transform = new Transform2D();
   public String name;
   private boolean active = true, destroyed;
+  private long activeRevision;
   private final List<Component> components = new ArrayList<>();
   private final Set<String> tags = new LinkedHashSet<>();
   private final List<Consumer<ComponentChange>> listeners = new ArrayList<>();
@@ -35,7 +36,16 @@ public final class GameObject {
   }
 
   public void setActive(boolean active) {
+    if (this.active == active) return;
+    if (activeRevision == Long.MAX_VALUE)
+      throw new IllegalStateException("GameObject active revision exhausted");
     this.active = active;
+    activeRevision++;
+  }
+
+  /** Monotonically changes whenever active state actually transitions. */
+  public long activeRevision() {
+    return activeRevision;
   }
 
   public <T extends Component> T addComponent(T component) {

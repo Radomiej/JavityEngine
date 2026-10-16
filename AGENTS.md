@@ -15,8 +15,11 @@ Upraszczamy i rozbudowujemy silnik 2D/3D na libGDX. Użytkownik dopuszcza migrac
 - `javity-map-core`: nowe mapy rastrowe XYZ bez legacy; provider, cache, kamera, markery/trasy.
 - `javity-map`: opcjonalne mapy geograficzne OSM, markery i trasy; to nie mapy poziomów Tiled.
 - `javity-desktop`: demo nowego rdzenia i opcjonalne demo legacy.
-- `javity-ui`: rzeczywisty Yoga/Flexbox dla Scene2D i ograniczony katalog klas stylów.
-- Android, XML UI i generator projektów pozostają historycznymi modułami poza głównym reactorem do czasu osobnej migracji.
+- `javity-ui`: przenośne Scene2D/deklaratywne UI i Yoga SPI, ograniczony katalog klas stylów.
+- `javity-ui-yoga-lwjgl`: desktopowy provider Yoga JNI; aplikacje desktop dodają go jawnie.
+- `javity-ui-yoga-android`: provider oficjalnej Yoga 3.2.1/SoLoader; AGP i 4 testy JNI/ART API35 x86_64 sprawdzone, pełna aplikacja ma osobne bramki.
+- `javity-script`: przenośny host React i SPI silnika JS; `javity-script-graal` wybiera GraalJS na desktopie, `javity-script-quickjs-android` dostarcza jawnie wstrzykiwany QuickJS.
+- Historyczny `javity-android`, XML UI i generator projektów pozostają poza głównym reactorem. Nowe moduły Android są opt-in przez `-PjavityAndroid=true`.
 
 ## Build i uruchamianie
 
@@ -54,7 +57,7 @@ Wzorcem nowego rdzenia jest `Radomiej/java-lab`, zwłaszcza `shared/lab-game-v2/
 
 ## Zasady zmian i weryfikacji
 
-Działający build, nowy rdzeń, Box2D i przykłady 2D/3D/UI już istnieją. Adapter map, czcionki FreeType i Camera2D/follow są dostępne. Bieżący backlog: docs/TODO.md; audyt braków: docs/migration-api.md. Priorytetem jest migracja pozostałych funkcji legacy przed MapLibre/Shapes/multiplayer. Nie łącz mechanicznego przenoszenia kodu ze zmianą jego zachowania bez potrzeby. Zachowuj informacje o pochodzeniu i licencjach w `THIRD_PARTY.md`; Spine ma własne warunki licencji.
+Działający build, nowy rdzeń, Box2D i przykłady 2D/3D/UI już istnieją. Adapter map, czcionki FreeType i Camera2D/follow są dostępne. Bieżący backlog: docs/TODO.md; audyt braków: docs/migration-api.md. Bieżącą kolejność prac wyznacza `docs/work-queue.md`: narzędzia runtime, avatar, desktopowy Bullet3D oraz desktopowy zakres Feel/animacji są ukończone. Android ma zaliczone ograniczone integracje AGP, Yoga/QuickJS JNI/ART, smoke density 160/320 i rzeczywistą utratę/odzyskanie EGL. ActivityFIX3 i responsiveFIX1 są zintegrowane; wszystkie pięć przypadków instrumentacyjnych finalnego APK density 320 przeszło osobno (w tym Activity recreate, landscape, EGL recovery i touch/model/React); łączny runner nadal kończy się ANR. Debug/test i R8 release build oraz APK audits są zaliczone, ograniczony runtime R8 release przeszedł na lokalnie podpisanej kopii; fizyczny ARM64, wydajność urządzenia i Android MapLibre/Bullet pozostają poza potwierdzonym zakresem. MapLibre Native oraz ograniczony katalog Shapes/materialów już istnieją; multiplayer i migracja konkretnych gier pozostają osobnymi zadaniami. Nie łącz mechanicznego przenoszenia kodu ze zmianą jego zachowania bez potrzeby. Zachowuj informacje o pochodzeniu i licencjach w `THIRD_PARTY.md`; Spine ma własne warunki licencji.
 
 Diagnozuj przyczynę błędów przed poprawką. Dodawaj testy regresji dla zmian zachowania i uruchamiaj cały reactor przed deklarowaniem sukcesu. Raportuj osobno: kompilację, testy i rzeczywiste uruchomienie graficzne. Nie deklaruj działania 3D, Androida, współczesnego Spine ani map online na podstawie samej kompilacji.
 
@@ -62,7 +65,7 @@ Nie wysyłaj commitów ani nie publikuj wydań bez polecenia użytkownika. Nie d
 
 ## UI Yoga
 
-UI używa natywnej Yoga przez LWJGL; obecnie moduł jest desktopowy. Nie deklaruj Android/web bez bindingów i osobnych testów. Klasy stylów mają jawny katalog w UtilityStyles; nie ignoruj nieznanych klas i nie deklaruj pełnego CSS/Tailwind. Zamykaj Flex i UiTheme; Stage.dispose() nie zwalnia węzłów Yoga. Odłączony kontener pozostaje własnością wywołującego.
+UI używa opaque YogaNode przez wybrany YogaBackend; LWJGL i Android JNI są osobnymi providerami. Dodaj dokładnie jeden provider do runtime albo wstrzyknij backend jawnie. Nie przywracaj LWJGL do przenośnego UI. Android wymaga inicjalizacji SoLoader z Context przed pierwszym node; nie deklaruj gotowości Android/web bez osobnych buildów i testów JNI/runtime. Klasy stylów mają jawny katalog w UtilityStyles; nie ignoruj nieznanych klas i nie deklaruj pełnego CSS/Tailwind. Zamykaj Flex i UiTheme; Stage.dispose() nie zwalnia węzłów Yoga. Odłączony kontener pozostaje własnością wywołującego.
 
 Nie nadpisuj wersji gdx-jnigen-loader, gdx-ai ani innych niezależnie wersjonowanych rozszerzeń wersją głównego libGDX.
 
@@ -71,6 +74,8 @@ Nie nadpisuj wersji gdx-jnigen-loader, gdx-ai ani innych niezależnie wersjonowa
 `GameSystem` rejestruj przed startem. Fazy: snapshot skali czasu → systemy `onUiUpdate` → komponenty UI → systemy before → WORLD → systemy after (fizyka) → late update → sprzątanie. `onUiUpdate` używa nieskalowanego czasu i działa podczas pauzy/freeze. Systemy należą do jednej sceny i są zamykane wraz z nią, także po błędzie callbacku. Rejestruj dostawcę zasobów przed konsumentem: po cleanup komponentów systemy zwalniają się w odwrotnej kolejności rejestracji, np. SoundManager przed SceneAssets. Nie iteruj bezpośrednio po kolekcji systemów w fazach, w których callback może zamknąć grę.
 
 Box2D ma stały krok 1/60 s i jawny przelicznik jednostek świata na metr. Jedna bryła i wiele colliderów na obiekt; geometria kolizji jest niezależna od grafiki. Nie udostępniaj natywnych Body/Fixture w gameplay API. Zdarzenia kontaktu kolejkuj i dostarczaj dopiero po odblokowaniu World; sprawdzaj usunięcie i enabled/active przed każdym odbiorcą. Testy fizyki muszą używać rzeczywistego Box2D, bez wymagania OpenGL.
+
+Opcjonalny `javity-physics3d` używa Bullet tylko w swoim module. Slice A+B dostarczają typed box/sphere/Y-up total-height capsule i compound bodies, fixed 1/60 krok z limitem 8 ticków na klatkę, scene-local native ownership, copied force/impulse commands, jawne teleport/kinematic ruch, world-local contacts, osobne trigger collision objects, mutual 16-bit filtry oraz copied closest-hit ray/sphere/capsule queries. Direct `Transform3D` writes po zbindowaniu są odrzucane. C1 dodaje opcjonalny `javity-voxel-physics3d` z wersjonowanymi snapshotami i ograniczonym statycznym compoundem/chunk; nie deklaruj fizycznej bariery dla dowolnych ciał dynamicznych. C2 dodaje osobny kontroler kapsułowy. Opt-in desktop C3 uruchamia `Physics3DDemo` (`--physics3d`) z lazy, jawnie posiadanym debug drawerem; CPU inicjalizacja `Physics3D` pozostaje bez GL. Android native packaging/runtime nadal wymaga osobnej walidacji. Szczegóły i limity w `docs/physics3d.md` oraz `docs/voxels.md`.
 
 UI ma `Rectangle`, `rounded` i `border`; wspólny shader należy do UiTheme. Nie twórz nowego shadera w każdej klatce ani nie zostawiaj zmienionego shadera Batch po rysowaniu widgetu. Zaokrąglenie jest wizualne, nie przycina dzieci i nie zmienia hitboxa.
 
@@ -96,7 +101,7 @@ SmoothShapeRenderer posiada współdzielone zasoby GPU. Pochodne GLSL i fizyczny
 
 ## Porty UI/animacji/feedback
 
-`javity-script` jest opcjonalnym hostem GraalJS Community i React; rdzeń nie zależy od JS. TSX buduj w web/javity-ui, aplikacje importują shim src/runtime.js do już istniejącego hosta. Nie bundluj drugiej kopii React. Jawne JavityGame actions/primitive values zastępują refleksyjny dostęp do Java. Runtime close przed UiDocument close; oba na wątku UI. Schedulery hosta mają limit callbacków, który nie ogranicza dowolnego JS ani Graal Promise jobs.
+`javity-script` jest opcjonalnym przenośnym hostem React; rdzeń nie zależy od JS. Graal Context/Value należą wyłącznie do `javity-script-graal`. QuickJS Android wybieraj przez `QuickJsScriptUiEngineFactory`; oba providery używają tej samej polityki hosta i bundla. Nie dodawaj Graal/Truffle/LWJGL do APK. Normalizuj również checked wyjątki natywnego QuickJS na granicy SPI; nie uruchamiaj rekurencyjnego evaluate w bindingach JNI. TSX buduj w web/javity-ui, aplikacje importują shim src/runtime.js do już istniejącego hosta. Nie bundluj drugiej kopii React. Jawne JavityGame actions/primitive values zastępują refleksyjny dostęp do Java. Runtime close przed UiDocument close; oba na wątku UI. Schedulery hosta mają limit callbacków, który nie ogranicza dowolnego JS ani Graal Promise jobs.
 
 EffectSystem należy do sceny, rejestruj przed startem. Dzierżawy identyfikują właściciela właściwości; stary handle nie może nadpisywać nowego efektu. ModelAnimator i legacy ModelRenderer muszą używać pojedynczego AnimationController; SpriteAnimationPlayer nie współistnieje z legacy SpriteAnimator na tym samym obiekcie. Model/Sprite zasoby dostarczone przez caller nie przechodzą na własność animatora. Testy animacji mają obejmować pozę i usunięcie właściciela, nie tylko czas.
 
@@ -106,7 +111,7 @@ Natywny markup/React obsługuje jawne typy/props UtilityStyles. Nie deklaruj pe�
 
 `SoundManager` pożycza Sound/Music, posiada konkretne native voice IDs i własne duck handles. Distinct Music streams mogą współistnieć; pojedynczy Music jest exclusive wobec własnej dzierżawy. Nigdy globalne Sound.stop() do anulowania jednego efektu. `isActive` oznacza dzierżawę, nie wykrycie końca natywnego Sound. FloatingTextPool pożycza font i resetuje sloty/generacje; render i native OpenAL muszą mieć osobny desktop smoke od recording mocks.
 
-ModelPoseAnimator ma własny per-instance sampler TRS, rzeczywisty 1D mixer i maksymalnie 8 warstw masked override. Wiąże pierwszy ModelRenderer; pozostałe renderery mają własny legacy controller. Nie współistnieje z ModelAnimator ani drugim pose ownerem. GameObject.containsComponent(Component) sprawdza tożsamość bez kopiowania listy; używaj go w sprawdzaniu lifetimes konkretnej instancji. Clip fade w pose/layer API jest jawnie odrzucane; layer.fadeTo zmienia wagę, a ModelAnimator pozostaje API clip crossfade.
+ModelPoseAnimator ma własny per-instance sampler TRS, rzeczywisty 1D mixer, crossfade klipów base i maksymalnie 8 warstw masked override z crossfade nazwanych klipów. Crossfade zamraża aktualny wkład slotu; stary zegar i jego zdarzenia kończą się przy podmianie. `layer.fadeTo` pozostaje osobną zmianą wagi. Wiąże pierwszy ModelRenderer; pozostałe renderery mają własny legacy controller. Nie współistnieje z ModelAnimator ani drugim pose ownerem. GameObject.containsComponent(Component) sprawdza tożsamość bez kopiowania listy; używaj go w sprawdzaniu lifetimes konkretnej instancji. ModelAnimator pozostaje oddzielnym legacy API.
 
 Przy wymianie sceny wykryj nowy SceneManager.current natychmiast po step, podmień scene-local źródła sygnałów i dopiero emituj host sceneGeneration/status oraz tick React. Callback zakończenia LoadHandle zapisuje flagę Java; nie emituje sygnału do gościa, który mógłby odczytać już zamknięte źródło poprzedniej sceny. Key poddrzewa HUD zależny od generacji odtwarza subskrypcje; akcje persistent hosta pobierają aktualny controller/audio, nie przechowują starego.
 
@@ -132,6 +137,8 @@ Indeksy Mesh to unsigned short: checkerboard 16³ ma 12288 ścian, 49152 wierzch
 
 Każde załadowanie chunku ma niezerowy `chunkGeneration`; poza załadowaniem wartość wynosi 0. Adapter porównuje generację, aby unload/reload tej samej pozycji przed kolejnym update nie pozostawiał starej geometrii ani historii. Nowy adapter zasiewa dirty work wszystkich istniejących chunków. Jeden aktywny konsument kolejki dirty na świat; nie deklaruj jednoczesnych wielu adapterów. Tryb --voxels włącza pauseWhenLostFocus; native smoke sprawdza rzeczywisty focus okna GLFW (helper trzeba jawnie pokazać).
 
+`contentRevision` i `collisionSnapshot` są odrębne od renderowej kolejki dirty. Opcjonalny bridge Bullet nie czyści jej i nie posiada zasobów renderera. Gotowość oznacza dokładnie opublikowaną generację/rewizję wszystkich chunków dotkniętych sprawdzanym AABB; brakujące lub przestarzałe dane blokują tę politykę. To nie tworzy natywnej granicy: zwykłe dynamiczne ciała mogą wyjść poza załadowany teren. Patrz `docs/voxels.md`.
+
 ## MapLibre Native
 
 `javity-maplibre` jest opcjonalny i korzysta z prawdziwego Native FFI 0.202610.0; binding/runtime aktualizuj razem. Ordinary JDK25, mały wewnętrzny most Kotlin, publiczne API Java. `MapLibreDesktop.configure` jawnie wybiera Linux x64 system EGL/GLES. `glesAdapterJar` zachowuje wyłącznie oficjalną klasę GLES z libGDX, bez ANGLELoader/sterowników ANGLE. Nie przełączaj pozostałych demonstracji na GLES; GLSL1.20 Shapes wymaga osobnej adaptacji.
@@ -151,3 +158,15 @@ Demo `--gorzow` korzysta z oddzielnego pakietu OSM/OpenMapTiles/OpenFreeMap, nie
 ## Controllery postaci
 
 CharacterController2D ma trwały zamiar ruchu w jednostkach świata/s i lokalne opcjonalne granice; nie steruje Box2D. VoxelFpsController wymaga Transform3D (pozycja stóp), ma CPU AABB, grawitację i jump buffer; niezładowane komórki są barierą. Nie deklaruj ogólnej fizyki 3D ani streamingu. W demie FPS kamera jest synchronizowana po Game.step, przed cullingiem; swobodny lot jest osobnym trybem debugowania.
+
+## Narzędzia runtime
+
+RuntimeInspector w javity-ui pożycza Stage/UiTheme i Supplier<Game>; posiada własne Yoga tree. Aktualizuj go na UI thread z nieskalowanym czasem. Host ustawia kolejność inputProcessor() → Stage → gizmoInputProcessor() → gra; przy zamknięciu usuwa oba procesory inspektora z multiplexer i zamyka inspector przed theme. To inspektor sceny gameplay z typowaną edycją transformacji i undo/redo, nie drzewo React/UiDocument ani pełny edytor. Gizmos używają typowanych sesji transformacji. Eksport runtime wymaga jawnych SceneJson codec i docelowego Path; prepare koduje jeden niezmienny kandydat i raportuje wszystkie problemy, save zapisuje go atomowo. Nie pomijaj nieobsługiwanych komponentów ani nie wywołuj writerów ponownie podczas save. Writery muszą być czyste; zapis runtime nie zastępuje źródłowej sceny projektu. Zachowuj izolację zaznaczenia przy wymianie Game z powtarzającymi się ID. Kolejność aktualnych zadań: docs/work-queue.md.
+
+## Własność avataru
+
+`AvatarBinding`/`AvatarView` pożyczają kanoniczną instancję, kości, materiały i tekstury; zbieranie renderables nie zmienia zegarów ani source enabled. `PreparedAvatarGeometry` posiada tylko wygenerowaną siatkę: owner close blokuje nowe bindingi, ostatni binding zwalnia bufory na wątku GL po końcu batcha. Źródłowy Model/tekstury muszą przeżyć wszystkie bindingi. Podział wymaga jawnych autorskich regionów; proceduralne demo FPS/TPP nie potwierdza automatycznej klasyfikacji ani importowanych rigów produkcyjnych.
+
+## GLES i zasoby kontekstu
+
+SmoothShapeRenderer zachowuje desktop GLSL120 i wybiera lokalnie GLES300 dla GLES3; nie zmieniaj globalnych prefixów ShaderProgram. Własne materiały przechodzą tę samą konwersję tokenów. Białe tekstury SmoothShapeRenderer i UiTheme są managed i zachowują posiadany Pixmap do końca życia tekstury. Zwalniaj teksturę przed Pixmap; pause/resume nie jest dowodem odtworzenia rzeczywiście utraconego kontekstu. Ograniczone buildy Android APK, testy JNI/ART Yoga/QuickJS, smoke modelu/dotyku przy density 160/320 i rzeczywista utrata/odzyskanie EGL są potwierdzone; nie oznacza to pełnej gotowości Androida. ActivityFIX3 i responsiveFIX1 są zintegrowane; wszystkie pięć przypadków instrumentacyjnych finalnego APK density 320 przeszło osobno (w tym Activity recreate, landscape, EGL recovery i touch/model/React), ale łączny runner pozostaje niezaliczony z powodu ANR. Debug/test i R8 release build oraz audyty APK przeszły; ograniczony R8 release runtime przeszedł na lokalnie podpisanej kopii; fizyczny ARM, wydajność urządzenia i Android MapLibre/Bullet pozostają poza potwierdzonym zakresem. Pełny desktop build po integracji FBO potwierdził 646 testów w 75 suite oraz presentation3dSmoke, postprocessSmoke (GL30/GL20), avatarGl30Smoke i physics3dSmoke.

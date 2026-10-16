@@ -6,13 +6,23 @@ const vm = require('node:vm');
 
 function loadHost() {
   let committed;
-  let handlers = {};
-  const context = vm.createContext({
+  let handlerIds = [];
+  const actionCalls = [];
+  let nextSubscriptionId = 1;
+  let context;
+  context = vm.createContext({
     console,
     setTimeout,
     clearTimeout,
     queueMicrotask,
-    JavityNative: { commit: (tree, nextHandlers) => { committed = JSON.parse(tree); handlers = nextHandlers; }, isOpen: () => true },
+    JavityNative: {
+      commit: (tree, ids) => { committed = JSON.parse(tree); handlerIds = JSON.parse(ids); },
+      isOpen: () => true,
+      gameCall: (name, args) => { actionCalls.push([name, JSON.parse(args)]); return null; },
+      gameGet: () => null,
+      subscribe: () => nextSubscriptionId++,
+      unsubscribe: () => {},
+    },
     JavityScheduler: {
       now: () => 0,
       timeout: () => 1,
@@ -26,8 +36,43 @@ function loadHost() {
   });
   const bundle = path.resolve(__dirname, '../../../javity-script/src/main/resources/org/javity/script/javity-ui.js');
   vm.runInContext(fs.readFileSync(bundle, 'utf8'), context);
-  return { context, get committed() { return committed; }, get handlers() { return handlers; } };
+  return {
+    context,
+    get committed() { return committed; },
+    get handlers() {
+      return Object.fromEntries(handlerIds.map(id => [id, (...args) => context.JavityReact.dispatchHandler(id, ...args)]));
+    },
+    actionCalls,
+  };
 }
+
+test('emitted host bundle preserves only strict primitive JSON arguments', () => {
+  const host = loadHost();
+  vm.runInContext(`
+    JavityGame.call('primitive', null, 'text', true, 7);
+    for (const value of [new Number(7), new String('x'), [], {}, {toJSON(){return 9}}, () => {}, undefined, 1n, Symbol('x')]) {
+      try { JavityGame.call('invalid', value); throw new Error('accepted a non-primitive'); }
+      catch (error) { if (error.message === 'accepted a non-primitive') throw error; }
+    }
+    try { JavityGame.call('nan', NaN); throw new Error('accepted NaN'); }
+    catch (error) { if (error.message === 'accepted NaN') throw error; if (!/must be finite/.test(error.message)) throw error; }
+  `, host.context);
+  assert.deepEqual(host.actionCalls, [['primitive', [null, 'text', true, 7]]]);
+});
+
+test('unsubscribe and host release remove guest signal callback IDs', () => {
+  const host = loadHost();
+  vm.runInContext(`
+    globalThis.signalCalls = 0;
+    globalThis.firstSubscription = JavityGame.subscribe('pulse', () => signalCalls++);
+    JavityGame.unsubscribe(firstSubscription);
+    JavityReact.dispatchSignal('s1', 1);
+    globalThis.secondSubscription = JavityGame.subscribe('pulse', () => signalCalls++);
+    JavityReact.releaseSignal('s2');
+    JavityReact.dispatchSignal('s2', 1);
+  `, host.context);
+  assert.equal(host.context.signalCalls, 0);
+});
 
 function loadSample(context) {
   const bundle = path.resolve(__dirname, '../../../javity-script/src/main/resources/org/javity/script/javity-sample.js');

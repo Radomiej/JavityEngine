@@ -1,7 +1,7 @@
 dependencies {
     api project(':javity-ui')
-    implementation 'org.graalvm.polyglot:polyglot:25.0.2'
-    runtimeOnly 'org.graalvm.polyglot:js-community:25.0.2'
+    testRuntimeOnly project(':javity-ui-yoga-lwjgl')
+    testRuntimeOnly project(':javity-script-graal')
 }
 
 tasks.withType(Test).configureEach {

@@ -41,6 +41,8 @@ public class AnimationTest {
       assertEquals(1, playback.normalizedTime(), 0);
       assertEquals(.2, playback.time(), .00001);
       assertEquals(1, completed[0]);
+      playback.pause();
+      assertFalse("completed sprite clocks retain legacy pause semantics", playback.isPaused());
       assertThrows(IllegalArgumentException.class, () -> playback.setSpeed(Double.NaN));
       assertThrows(IllegalArgumentException.class, () -> playback.setSpeed(-1));
       SpritePlayback excessiveLoops = player.play("walk", PlayMode.LOOP).setSpeed(11_000);
@@ -238,6 +240,8 @@ public class AnimationTest {
       assertEquals(10, root(renderer).translation.x, .001f);
       assertTrue(playback.isCompleted());
       assertEquals(1, playback.normalizedTime(), 0);
+      playback.pause();
+      assertFalse("completed legacy model clocks retain pause semantics", playback.isPaused());
     } finally {
       model.dispose();
     }

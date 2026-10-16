@@ -1,11 +1,11 @@
 package org.javity.ui.flex;
 
 import static org.junit.Assert.*;
-import static org.lwjgl.util.yoga.Yoga.*;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import org.javity.ui.yoga.YogaBackends;
+import org.javity.ui.yoga.YogaNode;
 import org.junit.Test;
-import org.lwjgl.util.yoga.YGSize;
 
 public class FlexTest {
   @Test
@@ -150,18 +150,57 @@ public class FlexTest {
   public void measureCallbackHonorsYogaWidthAndHeightModes() {
     WidthSensitiveActor actor = new WidthSensitiveActor();
     var callback = Flex.measureFunction(actor, failure -> fail("Unexpected callback failure"));
-    try (YGSize out = YGSize.calloc()) {
-      callback.invoke(0, 30, YGMeasureModeAtMost, 25, YGMeasureModeAtMost, out);
-      assertEquals(30, out.width(), .001f);
-      assertEquals(25, out.height(), .001f);
-      callback.invoke(0, 30, YGMeasureModeExactly, 25, YGMeasureModeExactly, out);
-      assertEquals(30, out.width(), .001f);
-      assertEquals(25, out.height(), .001f);
-      callback.invoke(0, 100, YGMeasureModeAtMost, 60, YGMeasureModeAtMost, out);
-      assertEquals(80, out.width(), .001f);
-      assertEquals(24, out.height(), .001f);
+    var atMost = callback.measure(30, YogaNode.MEASURE_AT_MOST, 25, YogaNode.MEASURE_AT_MOST);
+    assertEquals(30, atMost.width(), .001f);
+    assertEquals(25, atMost.height(), .001f);
+    var exact = callback.measure(30, YogaNode.MEASURE_EXACTLY, 25, YogaNode.MEASURE_EXACTLY);
+    assertEquals(30, exact.width(), .001f);
+    assertEquals(25, exact.height(), .001f);
+    var wider = callback.measure(100, YogaNode.MEASURE_AT_MOST, 60, YogaNode.MEASURE_AT_MOST);
+    assertEquals(80, wider.width(), .001f);
+    assertEquals(24, wider.height(), .001f);
+  }
+
+  @Test
+  public void backendRethrowsMeasureFailureAfterNativeLayoutReturns() {
+    var backend = YogaBackends.createDefault();
+    YogaNode root = backend.createNode();
+    YogaNode leaf = backend.createNode();
+    try {
+      leaf.setMeasureFunction(
+          (width, widthMode, height, heightMode) -> {
+            throw new IllegalArgumentException("backend measure sentinel");
+          });
+      root.insertChild(leaf, 0);
+      try {
+        root.calculateLayout(80, 80);
+        fail("Expected deferred measure failure");
+      } catch (IllegalArgumentException expected) {
+        assertEquals("backend measure sentinel", expected.getMessage());
+      }
     } finally {
-      callback.close();
+      root.freeSubtree();
+    }
+  }
+
+  @Test
+  public void backendChecksOwnershipBeforeNativeReparentAndFree() {
+    var backend = YogaBackends.createDefault();
+    YogaNode first = backend.createNode();
+    YogaNode second = backend.createNode();
+    YogaNode child = backend.createNode();
+    try {
+      first.insertChild(child, 0);
+      assertThrows(IllegalStateException.class, () -> second.insertChild(child, 0));
+      assertThrows(IllegalStateException.class, child::freeNode);
+      first.removeChild(child);
+      second.insertChild(child, 0);
+      assertThrows(IllegalArgumentException.class, () -> child.insertChild(second, 0));
+      second.removeChild(child);
+    } finally {
+      first.freeSubtree();
+      second.freeSubtree();
+      child.freeNode();
     }
   }
 

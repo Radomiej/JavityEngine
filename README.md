@@ -36,9 +36,10 @@ Uruchomienie wymaga ekranu i OpenGL; na Linux bez monitora użyj Xvfb. Dystrybuc
 | --- | --- |
 | `javity-core` | Nowy rdzeń i rendering 2D/3D; bez Artemis |
 | `javity-physics2d` | Opcjonalny Box2D dla nowego rdzenia, collidery i kontakty |
+| `javity-physics3d` / `javity-voxel-physics3d` | Opcjonalny desktopowy Bullet i most fizyki chunków |
 | `javity-voxel` | Opcjonalny świat blokowy: chunki 16³, meshing, DDA i adapter GPU |
 | `javity-ui` | Yoga/Flexbox, deklaratywne Scene2D i klasy stylów |
-| `javity-script` | Opcjonalny GraalJS + React/TSX host natywnego UI |
+| `javity-script` | Przenośny host React/TSX; `javity-script-graal` na desktopie, `javity-script-quickjs-android` na Androidzie |
 | `javity-desktop` | Demo nowego rdzenia i demo legacy |
 | `javity-backend` | Galaxy Rapid z Gita, budowany lokalnie |
 | `javity-engine` | Historyczne API Javity do migracji |
@@ -47,7 +48,7 @@ Uruchomienie wymaga ekranu i OpenGL; na Linux bez monitora użyj Xvfb. Dystrybuc
 | `javity-map-core` | Nowe mapy XYZ, lokalny provider, cache, markery i trasy; bez legacy |
 | `javity-map` | Historyczny plugin geograficzny OSM do migracji |
 
-Android, XML UI i generator projektów pozostają poza wspólnym buildem do osobnej migracji.
+Nowe `javity-android-app`, `javity-ui-yoga-android` i `javity-script-quickjs-android` włącza `-PjavityAndroid=true`: JDK25, compileSdk36, API35+, GLES3, APK ARM64/x86_64. [Build i uruchomienie](javity-android-app/README.md), [wyniki testów i ograniczenia](docs/android-status.md). Zwykły desktop build nie wymaga Android SDK. Historyczne `javity-android`, XML UI i generator projektów pozostają poza reactorem. Desktop wybiera osobny provider `javity-ui-yoga-lwjgl`.
 
 ## Komponenty
 
@@ -202,7 +203,7 @@ Powyższy moduł obsługuje raster. Dla wektorów jest osobny **`javity-maplibre
 
 ## Dokumentacja i dalsza migracja
 
-[Indeks docs](docs/README.md), [TODO](docs/TODO.md), [inwentaryzacja API](docs/migration-api.md), [plan multiplayer](docs/multiplayer-design-notes.md) oraz [Shapes/shadery](docs/shapes-and-shaders.md). Najpierw migrujemy funkcje legacy; plan multiplayer nie oznacza gotowej replikacji; zakres zgodności MapLibre opisuje osobny adapter.
+[Indeks docs](docs/README.md), [TODO](docs/TODO.md), [inwentaryzacja API](docs/migration-api.md), [plan multiplayer](docs/multiplayer-design-notes.md) oraz [Shapes/shadery](docs/shapes-and-shaders.md). Bieżącą kolejność prac wyznacza [work-queue](docs/work-queue.md); migracja konkretnych gier pozostaje osobnym zakresem; plan multiplayer nie oznacza gotowej replikacji; zakres zgodności MapLibre opisuje osobny adapter.
 
 ## Uzupełnione funkcje runtime
 
@@ -246,7 +247,7 @@ Praktyczne przykłady: [tworzenie gry](docs/game-authoring.md). Rozbudowę i wyn
 
 ## Świat voxelowy
 
-`--voxels` pokazuje teksturowany teren z 18 chunków, swobodny lot, wskazywanie i usuwanie/stawianie bloków. WASD i mysz, Space/Ctrl w pionie, Shift przyspiesza, Esc zwalnia kursor. Numerami 1–5 lub kółkiem zmienisz blok; LMB usuwa, RMB stawia. Pierwszy klik przechwytuje kursor. To skończony świat bez kolizji i grawitacji.
+`--voxels` pokazuje teksturowany, skończony teren z 18 chunków i edycję bloków. Domyślny FPS używa `VoxelFpsController`: WASD i mysz, Space skok, Shift sprint oraz grawitacja i kolizje AABB z blokami; `F` przełącza swobodny lot debugowy. F5 przełącza FPS/TPP z autorską animowaną postacią i osobnym widokiem rąk/narzędzia. Esc zwalnia kursor, pierwszy klik go przechwytuje. Numerami 1–5 lub kółkiem wybierzesz blok; LMB usuwa, RMB stawia. To nie jest ogólny solver fizyki 3D ani streaming świata; [avatar i ograniczenia rigu](docs/avatars.md).
 
 [API, własność i ograniczenia](docs/voxels.md), [screenshot](docs/demo-voxels.png), [oryginalny atlas](docs/voxel-atlas.png). Generator tekstur działa offline: `python3 tools/generate-voxel-atlas.py`.
 
@@ -264,3 +265,12 @@ Lokalny pakiet 38 kafelków OpenFreeMap/OpenMapTiles z prawdziwymi danymi OSM; u
 `CharacterController2D` zapewnia normalizowany ruch w jednostkach świata i opcjonalne granice — [API](docs/character-controller-2d.md). `Component` udostępnia również skróty wyszukiwania i usuwania komponentów właściciela.
 
 Voxelowe demo startuje w trybie FPS: WASD, mysz, Space skok, Shift sprint; F przełącza swobodny lot. `VoxelFpsController` ma grawitację, kolizje AABB i blokowanie krawędzi załadowanego świata — [API i ograniczenia](docs/voxel-fps-controller.md).
+
+Opt-in demo Bullet 3D uruchamiane jest przez `./gradlew :javity-desktop:run --args='--physics3d'`
+lub `./gradlew :javity-desktop:physics3d`; dodaje natywny kontroler kapsułowy, bryły dynamiczne,
+kinematic platform, trigger, edytowalne voxele oraz F5 FPS/TPP i F3 lazy debug draw. Nie zmienia
+ustalonego trybu AABB `--voxels`. [API, granice i dowód GPU](docs/physics3d.md), [artefakty](docs/artifacts/physics3d/).
+
+### Inspektor sceny w runtime
+
+F1 w podstawowym demie otwiera panel na naszym UI Yoga: GameObjecty, komponenty i transformacje. Start od razu z panelem: `./gradlew :javity-desktop:run --args='--inspector'`. Panel obsługuje typowaną edycję Transform2D/Transform3D, undo/redo, gizmos local/world ze snappingiem oraz jawnie konfigurowany eksport runtime SceneJson (`--scene-export=/absolute/path/runtime-scene.json`). Właściciele ruchu blokują bezpośrednią edycję, a assety wymagają jawnych codeców/resolverów. Drzewo UiDocument/React i diagnostyka reload pozostają osobnym etapem. [Instrukcja](docs/runtime-tools.md), [zrzut](docs/demo-runtime-inspector.png), [audyt OneJS](docs/onejs-coverage-audit.md), [kolejność kolejnych prac](docs/work-queue.md).

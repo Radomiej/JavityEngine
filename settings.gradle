@@ -1,17 +1,35 @@
-pluginManagement { repositories { gradlePluginPortal() } }
+pluginManagement {
+    repositories { google(); gradlePluginPortal(); mavenCentral() }
+    plugins {
+        id 'com.android.library' version '9.4.1'
+        id 'com.android.application' version '9.4.1'
+        id 'org.jetbrains.kotlin.android' version '2.4.20'
+    }
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories { mavenCentral() }
+    repositories { mavenCentral(); google() }
 }
 rootProject.name = 'JavityEngine'
 include 'javity-backend', 'javity-engine', 'javity-net', 'javity-map', 'javity-desktop'
 include 'javity-ui'
+include 'javity-ui-yoga-lwjgl'
 include 'javity-core'
 include 'javity-physics2d'
+include 'javity-physics3d'
 include 'javity-map-core'
 
 include 'javity-script'
+include 'javity-script-graal'
 
 include 'javity-voxel'
+include 'javity-voxel-physics3d'
 
 include 'javity-maplibre'
+
+// Desktop builds remain independent of the Android SDK.
+if (providers.gradleProperty('javityAndroid').map { it.toBoolean() }.getOrElse(false)) {
+    include 'javity-ui-yoga-android'
+    include 'javity-script-quickjs-android'
+    include 'javity-android-app'
+}

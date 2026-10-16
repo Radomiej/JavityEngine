@@ -12,7 +12,7 @@ Zakres wykonany: Java 25, Gradle 9.8.1, libGDX 1.14.2; lokalny Galaxy Rapid i pl
 
 ## Rendering i wejście
 
-Render2D ma wspólne layer/order dla SpriteRenderer2D, TextRenderer2D oraz ShapeRenderer2D. Tekst bierze caller-owned BitmapFont; transform 2D wpływa na tekst. Figury: rectangle/circle z fill lub stroke, polyline i prosty polygon. Circle/rectangle/polyline mają teraz SDF AA, rounded/caps i WORLD/SCREEN; szczegóły i ograniczenia w shapes-and-shaders.md. Publiczne material API nadal nie jest wdrożone. Polygon triangulowany raz przy budowie. SpriteAnimator podmienia region atlasu; WORLD pause zatrzymuje czas animacji.
+Render2D ma wspólne layer/order dla SpriteRenderer2D, TextRenderer2D oraz ShapeRenderer2D. Tekst bierze caller-owned BitmapFont; transform 2D wpływa na tekst. Figury: rectangle/circle z fill lub stroke, polyline i prosty polygon. Circle/rectangle/polyline mają teraz SDF AA, rounded/caps i WORLD/SCREEN; szczegóły i ograniczenia w shapes-and-shaders.md. Dostępne są publiczne `ShapeMaterial2D` z typowanymi uniformami oraz `ShapeShaderAnimator` z czasem WORLD/UI; gotowe gradient/pulse/stripes zachowują SDF AA i obrys. Materiały nie obejmują legacy polygon i wymagają jawnego codec/rejestru przy serializacji; [zakres i ograniczenia](shapes-and-shaders.md). Polygon triangulowany raz przy budowie. SpriteAnimator podmienia region atlasu; WORLD pause zatrzymuje czas animacji.
 
 InputActions jest InputAdapter: bind/isDown/justPressed/justReleased/axis. W multiplexer umieść Stage przed światem, po Game.step wywołaj finishFrame. Przy utracie focus/zmianie focus UI wywołaj releaseAll i PointerPicker.cancelAll, aby nie zostawiać wciśniętych klawiszy. PointerPicker używa Camera2D i hit area Pickable2D, uwzględnia transform i layer/order, sprawdza żywotność capture przy zwolnieniu.
 
@@ -38,15 +38,15 @@ HTTP sprawdzono na lokalnym serwerze, worker/cache na syntetycznych danych. Nie 
 
 `./gradlew :javity-desktop:run --args='--runtime'` i `:javity-desktop:runtimeSmoke` pokazują przeniesione wzorce TestApp: input/move, click, delayed audio, lifecycle, scene chooser, atlas/tekst/figury, prefab i polygon/raycast. Native OpenAL testuje pliki WAV wygenerowane dla projektu. Na serwerze użyto `ALSOFT_DRIVERS=null`; sprawdzono dekodowanie/odtwarzanie API, nie odsłuch przez głośniki.
 
-`.github/workflows/desktop.yml` dodaje Java25 build/test i Xvfb smoke (modern/map/runtime/shapes/legacy), zapisuje raporty/obrazy. Workflow nie został wysłany ani uruchomiony w GitHub; równoważne komendy sprawdzono lokalnie.
+`.github/workflows/desktop.yml` obejmuje Java25 build/test/dystrybucję, build/test hosta React, porównania HTML, fixture MapLibre oraz zestaw native smoke i próby zainstalowanej paczki; dokładne bieżące komendy są w workflow. Workflow nie został wysłany ani uruchomiony w GitHub; równoważne komendy sprawdzono lokalnie.
 
 ## Oddzielne dalsze zadania
 
-MapLibre vector styles, pełne Shapes/materials, multiplayer, GLB/PBR i mobile/web pozostają rozszerzeniami. Całe gry/ich XML UI wymagają migracji. Spine TestApp jest eksportem 2.1.27: wymagany właściwy projekt/narzędzie do ponownego eksportu przed migracją do nowoczesnego runtime. Nie usuwamy legacy ani nie deklarujemy pełnej konwersji tych assetów.
+Wektorowe style JSON v8/MVT/MBTiles są dostępne w osobnym `javity-maplibre` na Linux x64 EGL; [zakres zgodności](maplibre-native.md). Dalszymi zadaniami pozostają rozszerzenia Shapes (kreskowanie, AA polygon, bevel/miter, clipping, render targets i postprocessing), multiplayer, GLB/glTF/PBR oraz platformy mobile/web. Całe gry/ich XML UI wymagają migracji. Spine TestApp jest eksportem 2.1.27: wymagany właściwy projekt/narzędzie do ponownego eksportu przed migracją do nowoczesnego runtime. Nie usuwamy legacy ani nie deklarujemy pełnej konwersji tych assetów.
 
-## Końcowa weryfikacja
+## Weryfikacja zamknięcia bazy — 2026-10-13 (wynik historyczny)
 
-78 testów bez błędów, czysty build/dystrybucja, cztery Gradle smoke po 120 klatek (modern/map/runtime/shapes/legacy), ZIP integrity i dokumentacja. Dokładne wyniki: modernization-status.md, „Zamknięcie aktualizacji bazy desktop”.
+Na etapie zamknięcia bazy: 78 testów bez błędów, czysty build/dystrybucja oraz cztery Gradle smoke po 120 klatek (modern/map/runtime/legacy). Dokładny zapis historyczny: [modernization-status.md](modernization-status.md#zamknięcie-aktualizacji-bazy-desktop--2026-10-13). Bieżące dowody kolejnych etapów są raportowane osobno.
 
 ## Uzupełnienie Shapes AA — 2026-10-14
 
@@ -54,4 +54,4 @@ Końcowa baza obejmuje również SDF AA dla circle/rectangle/polyline, rounded/c
 
 ## Porty inspirowane Unity — 2026-10-14
 
-Do obecnego modelu komponentów dodano Feedback/Tween, nazwane klipy sprite/modelu z ModelAnimator crossFade, deklaratywne natywne UI oraz opcjonalny host GraalJS Community/React/TSX. Bridge Java–JS udostępnia jawne akcje i wartości prymitywne. Publiczne OneJS/onejs-react MIT posłużyły jako wzorzec; komercyjne źródła Feel/Animancer nie są włączone. [Źródła i zakres](unity-inspired-api.md), [OneJS](onejs-port.md), [animacje](animation-api.md), [feedback](feedback-api.md), [UI](declarative-ui.md). Native demo `--plugins` pokazuje proceduralny skinning dwóch kości. Kolejny etap dodaje rzeczywiste 1D mixery, masked override layers i presentation shake — [aktualny zakres](plugin-feature-coverage.md), [tworzenie gry](game-authoring.md). Produkcyjne rigi, glTF/PBR, IK i rozbudowane particles pozostają osobnym tematem.
+Do obecnego modelu komponentów dodano Feedback/Tween, nazwane klipy sprite/modelu z ModelAnimator crossFade, deklaratywne natywne UI oraz opcjonalny host GraalJS Community/React/TSX. Bridge Java–JS udostępnia jawne akcje i wartości prymitywne. Publiczne OneJS/onejs-react MIT posłużyły jako wzorzec; komercyjne źródła Feel/Animancer nie są włączone. [Źródła i zakres](unity-inspired-api.md), [OneJS](onejs-port.md), [animacje](animation-api.md), [feedback](feedback-api.md), [UI](declarative-ui.md). Native demo `--plugins` pokazuje proceduralny skinning dwóch kości. Dostępne są `ModelPoseAnimator` z rzeczywistym 1D mixerem, masked override layers i zmianą wag oraz istniejące 2D punch/shake. Clip crossfade w pose/layer API jest zatwierdzony po niezależnym przeglądzie, 548 testach oraz rzeczywistym pluginsSmoke. Prezentacyjne efekty kamery/modelu 3D pozostają kolejnym zadaniem Task6 — [aktualny zakres](plugin-feature-coverage.md), [tworzenie gry](game-authoring.md). Produkcyjne rigi, glTF/PBR, IK i rozbudowane particles pozostają osobnym tematem.

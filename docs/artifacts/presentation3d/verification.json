@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-16",
+  "command": "./gradlew :javity-core:test --tests org.javity.presentation.Presentation3DTest --tests org.javity.render.CameraRig3DTest --tests org.javity.render.GdxRendererConstructionTest :javity-desktop:presentation3dSmoke",
+  "environment": {
+    "jdk": "25.0.4.1",
+    "display": ":104",
+    "opengl": "Mesa software rendering"
+  },
+  "result": "PASS",
+  "cpuTests": {
+    "org.javity.presentation.Presentation3DTest": 9,
+    "org.javity.render.CameraRig3DTest": 9,
+    "org.javity.render.GdxRendererConstructionTest": 4,
+    "failures": 0
+  },
+  "gpuSmoke": {
+    "result": "PASS",
+    "window": "192x192",
+    "modelCentroidX": { "base": 95, "presented": 139 },
+    "worldCameraCentroidX": { "base": 95, "presented": 110 },
+    "viewmodelCentroidX": { "offset": 66, "zero": 95 },
+    "presentedWorldFovDegrees": 50.0,
+    "nearPlaneSweepRadius": 0.11978672,
+    "voxelClearance": {
+      "wallBlock": [2, 1, 1],
+      "stationaryEye": [1.87, 1.5, 1.5],
+      "baseRadiusAt50Degrees": 0.11978672,
+      "presentedRadiusAt68Degrees": 0.13819999,
+      "fallbackConstrained": true,
+      "wallRemovalReadmitsFov": true,
+      "unsafeAuthoredFallbackPreservesCamera": true
+    },
+    "checks": [
+      "model, camera and viewmodel framebuffer pixels",
+      "stable canonical Transform3D during model presentation",
+      "final camera pick rays and oriented frustum",
+      "world translation sweep and final near-plane clearance",
+      "FOV-only wall overlap falls back to authored FOV and eye",
+      "VoxelCameraObstruction stationary wall clearance, removal readmission, and atomic unsafe fallback",
+      "framebuffer texture released while GL context remains live",
+      "no GL errors during render or cleanup"
+    ]
+  },
+  "artifacts": {
+    "world-base.png": "0d19162c8ea1b5daad61e448047d285293682067a10acb9b7de6e7753eb4ad0e",
+    "model-offset.png": "6800a585021e3260acac8f7b4241490a9f0c7e38b4a6601f03fba9b0b3ecdf99",
+    "world-camera-offset.png": "8dcd221855ffbb9de15ba319c0919e8535482b7e9d5f8985ee6ce1efab3ac48f",
+    "viewmodel-offset.png": "4fbd17c898990b0ac63efcedd335c5480690cc7634b04527ee5bba8ac6bc74c3",
+    "viewmodel-zero.png": "14b877bb5365be5d699b4acfc0accca281d0c2c4c00376e4d3b1046c16c78d43"
+  },
+  "modelComposition": {
+    "rigidNodeOverflowRejectedBeforeInstanceBaseCommit": true,
+    "unusedLargeSkinnedBoneDoesNotRejectFiniteVertexWeightedGeometry": true,
+    "disabledRigidNodeIsSkipped": true,
+    "supportedRigidAndSkinnedOutputsRemainFinite": true
+  },
+  "fullLog": "/tmp/javity-presentation3d-fix3-gradle.log"
+}

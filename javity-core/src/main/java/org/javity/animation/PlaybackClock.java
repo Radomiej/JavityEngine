@@ -22,6 +22,7 @@ final class PlaybackClock {
   private boolean paused;
   private boolean active = true;
   private boolean completed;
+  private boolean allowPauseAfterCompletion;
   private boolean startPending = true;
   private boolean startMarkerPending = true;
   private long generation;
@@ -62,6 +63,7 @@ final class PlaybackClock {
   void setSpeed(double speed) {
     if (!Double.isFinite(speed) || speed < 0)
       throw new IllegalArgumentException("Speed must be finite and non-negative");
+    if (this.speed != speed) generation++;
     this.speed = speed;
   }
 
@@ -97,18 +99,26 @@ final class PlaybackClock {
     return active && !paused && !completed;
   }
 
+  long revision() {
+    return generation;
+  }
+
   void pause() {
-    if (active && !completed && !paused) {
+    if (active && (!completed || allowPauseAfterCompletion) && !paused) {
       paused = true;
       generation++;
     }
   }
 
   void resume() {
-    if (active && !completed && paused) {
+    if (active && (!completed || allowPauseAfterCompletion) && paused) {
       paused = false;
       generation++;
     }
+  }
+
+  void allowPauseAfterCompletion() {
+    allowPauseAfterCompletion = true;
   }
 
   void stop() {

@@ -594,6 +594,7 @@ public final class PluginsDemo extends ApplicationAdapter {
         throw new IllegalStateException(
             "Classic ModelAnimator native marker did not fire exactly once");
     }
+    if (frames == 37) verifyPoseCrossfadeSmoke();
     if (frames == 25) {
       runtime.reload(
           readResource("/org/javity/script/javity-sample.js") + "\n" + reactSampleMount());
@@ -699,7 +700,7 @@ public final class PluginsDemo extends ApplicationAdapter {
       playback.pause();
       double pausedTime = playback.time();
       int pausedRegion = sprite.region.getRegionX();
-      game.step(.2f);
+      advancePoseSmoke(.2f);
       if (Math.abs(playback.time() - pausedTime) > .001
           || sprite.region.getRegionX() != pausedRegion)
         throw new IllegalStateException("Locally paused sprite playback advanced or changed frame");
@@ -754,6 +755,271 @@ public final class PluginsDemo extends ApplicationAdapter {
               + classicSeekPixelDelta);
       verifyReactCloseReentrancy();
       Gdx.app.exit();
+    }
+  }
+
+  private void verifyPoseCrossfadeSmoke() {
+    Gdx.files.local("artifacts").mkdirs();
+    if (poseAnimatorA == null
+        || upperLayerA == null
+        || skinRendererA == null
+        || skinRendererB == null)
+      throw new IllegalStateException("Pose crossfade fixture was not initialized");
+    List<Pixmap> captures = new java.util.ArrayList<>();
+    try {
+      animatorB.current().setSpeed(0);
+      var secondBone = skinRendererB.instance.nodes.first().parts.first().bones[1].cpy();
+      Transform3D canonical = skinRendererA.getGameObject().getComponent(Transform3D.class);
+      var canonicalPosition = canonical.position.cpy();
+      var canonicalRotation = canonical.rotation.cpy();
+      var canonicalScale = canonical.scale.cpy();
+
+      skinRendererB.setEnabled(false);
+      Pixmap secondInstanceDisabled = renderPoseCapture(captures);
+      Pixmap secondInstanceDisabledRepeat = renderPoseCapture(captures);
+      int disabledNegativeControlPixels =
+          differingPixels(secondInstanceDisabled, secondInstanceDisabledRepeat, 575, 800, 220, 465);
+      if (disabledNegativeControlPixels != 0)
+        throw new IllegalStateException(
+            "Disabled second skin renderer changed its same-state ROI: "
+                + disabledNegativeControlPixels);
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-second-instance-disabled.png"),
+          secondInstanceDisabled,
+          -1,
+          true);
+      skinRendererB.setEnabled(true);
+      Pixmap baseBefore = renderPoseCapture(captures);
+      int untouchedSecondPixels =
+          differingPixels(secondInstanceDisabled, baseBefore, 575, 800, 220, 465);
+      if (untouchedSecondPixels < 1000)
+        throw new IllegalStateException(
+            "Second skin instance did not contribute visible foreground over its disabled capture: "
+                + untouchedSecondPixels);
+      var startBone = skinRendererA.instance.nodes.first().parts.first().bones[1].cpy();
+      ModelPosePlayback firstFade =
+          poseAnimatorA.play(
+              AnimationTransition.clip("bend-left").loop().startAt(.5).speed(0).fade(.4));
+      Pixmap baseStart = renderPoseCapture(captures);
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-base-fade-start.png"), baseStart, -1, true);
+      if (matrixDelta(startBone, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || differingPixels(baseBefore, baseStart, 350, 575, 220, 375) != 0)
+        throw new IllegalStateException("Base clip fade changed the rendered pose at alpha zero");
+
+      advancePoseSmoke(.2f);
+      Pixmap baseMid = renderPoseCapture(captures);
+      var baseMidBone = skinRendererA.instance.nodes.first().parts.first().bones[1].cpy();
+      int baseMidPixels = differingPixels(baseBefore, baseMid, 350, 575, 220, 375);
+      var baseMidLocal = skinRendererA.instance.getNode("tip", true).translation;
+      if (Math.abs(firstFade.fadeProgress() - .5) > .001
+          || matrixDelta(startBone, baseMidBone) < .02f
+          || Math.abs(baseMidLocal.x) > .015f
+          || Math.abs(baseMidLocal.y - .32f) > .015f
+          || baseMidPixels < 4
+          || differingPixels(baseBefore, baseMid, 575, 800, 220, 465) != 0)
+        throw new IllegalStateException(
+            "Base clip midpoint lacked matching bone/pixel change: progress="
+                + firstFade.fadeProgress()
+                + ", pixels="
+                + baseMidPixels
+                + ", local="
+                + baseMidLocal);
+      PixmapIO.writePNG(Gdx.files.local("artifacts/j-pose-base-fade-mid.png"), baseMid, -1, true);
+
+      ModelPosePlayback interrupted =
+          poseAnimatorA.play(
+              AnimationTransition.clip("bend-right").loop().startAt(.25).speed(0).fade(.4));
+      Pixmap interruptedStart = renderPoseCapture(captures);
+      if (matrixDelta(baseMidBone, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || differingPixels(baseMid, interruptedStart, 350, 575, 220, 375) != 0
+          || firstFade.isActive())
+        throw new IllegalStateException(
+            "Interrupted base fade popped or retained the outgoing clock");
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-base-fade-interrupt-start.png"),
+          interruptedStart,
+          -1,
+          true);
+      advancePoseSmoke(.2f);
+      Pixmap interruptedMid = renderPoseCapture(captures);
+      if (matrixDelta(baseMidBone, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              < .01f
+          || differingPixels(interruptedStart, interruptedMid, 350, 575, 220, 375) < 3)
+        throw new IllegalStateException("Interrupted base fade did not continue from its snapshot");
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-base-fade-interrupt-mid.png"),
+          interruptedMid,
+          -1,
+          true);
+      advancePoseSmoke(.2f);
+      Pixmap baseEnd = renderPoseCapture(captures);
+      PixmapIO.writePNG(Gdx.files.local("artifacts/j-pose-base-fade-end.png"), baseEnd, -1, true);
+      if (interrupted.isFading())
+        throw new IllegalStateException("Base fade did not reach its endpoint");
+      var baseEndBone = skinRendererA.instance.nodes.first().parts.first().bones[1].cpy();
+      ModelPosePlayback synchronousTarget =
+          poseAnimatorA.play(AnimationTransition.clip("bend-right").loop().startAt(.25).speed(0));
+      Pixmap synchronousTargetPixels = renderPoseCapture(captures);
+      if (matrixDelta(baseEndBone, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || differingPixels(baseEnd, synchronousTargetPixels, 350, 575, 220, 375) != 0
+          || synchronousTarget.isFading()
+          || differingPixels(baseBefore, synchronousTargetPixels, 575, 800, 220, 465) != 0)
+        throw new IllegalStateException(
+            "Base fade endpoint differs from the exact synchronous target pose");
+
+      poseAnimatorA.play(AnimationTransition.clip("bend-right").loop().startAt(.25).speed(0));
+      upperLayerA.current().seekNormalized(0);
+      upperLayerA.setWeight(1);
+      Pixmap layerBefore = renderPoseCapture(captures);
+      var layerRootBefore = skinRendererA.instance.nodes.first().parts.first().bones[0].cpy();
+      var layerTipBefore = skinRendererA.instance.nodes.first().parts.first().bones[1].cpy();
+      ModelPosePlayback layerFade =
+          upperLayerA.play(
+              AnimationTransition.clip("upper-fold").loop().startAt(.5).speed(0).fade(.4));
+      Pixmap layerStart = renderPoseCapture(captures);
+      if (matrixDelta(layerTipBefore, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || differingPixels(layerBefore, layerStart, 350, 575, 220, 375) != 0)
+        throw new IllegalStateException("Masked layer fade changed pixels at alpha zero");
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-layer-fade-start.png"), layerStart, -1, true);
+
+      advancePoseSmoke(.2f);
+      Pixmap layerMid = renderPoseCapture(captures);
+      int upperMidPixels = differingPixels(layerStart, layerMid, 350, 575, 220, 375);
+      int lowerMidPixels = differingPixels(layerStart, layerMid, 350, 575, 380, 465);
+      var layerMidLocal = skinRendererA.instance.getNode("tip", true).translation;
+      var pausedTip = skinRendererA.instance.nodes.first().parts.first().bones[1].cpy();
+      var pausedRoot = skinRendererA.instance.nodes.first().parts.first().bones[0].cpy();
+      double pausedProgress = layerFade.fadeProgress();
+      if (upperMidPixels < 3
+          || lowerMidPixels != 0
+          || Math.abs(layerMidLocal.x - -.325f) > .02f
+          || Math.abs(layerMidLocal.y) > .02f
+          || matrixDelta(layerTipBefore, pausedTip) < .02f)
+        throw new IllegalStateException(
+            "Masked layer midpoint changed the wrong region: upper="
+                + upperMidPixels
+                + ", lower="
+                + lowerMidPixels);
+      PixmapIO.writePNG(Gdx.files.local("artifacts/j-pose-layer-fade-mid.png"), layerMid, -1, true);
+
+      game.pause();
+      Pixmap pausedA = renderPoseCapture(captures);
+      double pausedTime = layerFade.time();
+      advancePoseSmoke(.3);
+      Pixmap pausedB = renderPoseCapture(captures);
+      if (Math.abs(layerFade.fadeProgress() - pausedProgress) > .0001
+          || Math.abs(layerFade.time() - pausedTime) > .0001
+          || matrixDelta(pausedTip, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || matrixDelta(pausedRoot, skinRendererA.instance.nodes.first().parts.first().bones[0])
+              > .0001f
+          || differingPixels(pausedA, pausedB, 350, 575, 220, 465) != 0
+          || differingPixels(baseBefore, pausedB, 575, 800, 220, 465) != 0)
+        throw new IllegalStateException("WORLD pause changed pose fade matrices or pixels");
+      PixmapIO.writePNG(
+          Gdx.files.local("artifacts/j-pose-layer-fade-paused.png"), pausedB, -1, true);
+      game.resume();
+
+      advancePoseSmoke(.2f);
+      Pixmap layerEnd = renderPoseCapture(captures);
+      int upperEndPixels = differingPixels(layerMid, layerEnd, 350, 575, 220, 375);
+      int lowerEndPixels = differingPixels(layerMid, layerEnd, 350, 575, 380, 465);
+      if (layerFade.isFading()
+          || upperEndPixels < 3
+          || lowerEndPixels != 0
+          || matrixDelta(
+                  layerTipBefore, skinRendererA.instance.nodes.first().parts.first().bones[1])
+              < .02f
+          || matrixDelta(
+                  layerRootBefore, skinRendererA.instance.nodes.first().parts.first().bones[0])
+              > .0001f
+          || Math.abs(skinRendererA.instance.getNode("tip", true).translation.x - -.65f) > .02f
+          || Math.abs(skinRendererA.instance.getNode("tip", true).translation.y) > .02f
+          || differingPixels(baseBefore, layerMid, 575, 800, 220, 465) != 0
+          || differingPixels(baseBefore, layerEnd, 575, 800, 220, 465) != 0)
+        throw new IllegalStateException(
+            "Masked layer endpoint failed matrix/pixel isolation: upper="
+                + upperEndPixels
+                + ", lower="
+                + lowerEndPixels);
+      PixmapIO.writePNG(Gdx.files.local("artifacts/j-pose-layer-fade-end.png"), layerEnd, -1, true);
+
+      if (matrixDelta(secondBone, skinRendererB.instance.nodes.first().parts.first().bones[1])
+              > .0001f
+          || !canonicalPosition.epsilonEquals(canonical.position, .0001f)
+          || !canonicalRotation.equals(canonical.rotation)
+          || !canonicalScale.epsilonEquals(canonical.scale, .0001f))
+        throw new IllegalStateException(
+            "Pose fade changed another instance or canonical object TRS");
+
+      ModelPosePlayback removedDuringFade =
+          upperLayerA.play(
+              AnimationTransition.clip("upper-reach").loop().startAt(.5).speed(0).fade(.4));
+      skinRendererA.getGameObject().removeComponent(poseAnimatorA);
+      skinRendererA.prepareForRender();
+      if (removedDuringFade.isActive()
+          || Math.abs(skinRendererA.instance.getNode("tip", true).translation.y) > .0001f
+          || skinRendererA.instance.getNode("tip", true).isAnimated)
+        throw new IllegalStateException("Removed pose owner wrote stale skin state");
+      Gdx.files
+          .local("artifacts/j-pose-crossfade-proof.json")
+          .writeString(
+              "{\"baseMidPixels\": "
+                  + baseMidPixels
+                  + ", \"maskedMidUpperPixels\": "
+                  + upperMidPixels
+                  + ", \"maskedMidLowerPixels\": "
+                  + lowerMidPixels
+                  + ", \"maskedEndUpperPixels\": "
+                  + upperEndPixels
+                  + ", \"maskedEndLowerPixels\": "
+                  + lowerEndPixels
+                  + ", \"secondInstanceForegroundPixels\": "
+                  + untouchedSecondPixels
+                  + ", \"secondInstanceDisabledNegativeControlPixels\": "
+                  + disabledNegativeControlPixels
+                  + ", \"secondInstanceStablePixels\": true, \"endpointMatchesImmediateTarget\":"
+                  + " true, \"pausedStepSeconds\": 0.3, \"instances\": 2, \"worldPauseStable\":"
+                  + " true, \"canonicalTransformStable\": true, \"removedOwnerRestoredBind\":"
+                  + " true}\n",
+              false);
+      Gdx.app.log(
+          "JavityPoseCrossfadeSmoke",
+          "PASS base pixels="
+              + baseMidPixels
+              + ", masked upper="
+              + upperMidPixels
+              + "/"
+              + upperEndPixels
+              + ", lower="
+              + lowerMidPixels
+              + "/"
+              + lowerEndPixels);
+    } finally {
+      for (Pixmap capture : captures) capture.dispose();
+    }
+  }
+
+  private Pixmap renderPoseCapture(List<Pixmap> captures) {
+    Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    renderer.render(game);
+    Pixmap image = capture();
+    captures.add(image);
+    return image;
+  }
+
+  private void advancePoseSmoke(double seconds) {
+    while (seconds > 0) {
+      float delta = (float) Math.min(.1, seconds);
+      game.step(delta);
+      seconds -= delta;
     }
   }
 

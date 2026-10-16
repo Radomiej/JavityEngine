@@ -1,10 +1,15 @@
 package org.javity.ui.flex;
 
-import static org.lwjgl.util.yoga.Yoga.*;
-
 import com.badlogic.gdx.graphics.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.javity.ui.yoga.YogaNode;
+import org.javity.ui.yoga.YogaNode.Align;
+import org.javity.ui.yoga.YogaNode.Edge;
+import org.javity.ui.yoga.YogaNode.FlexDirection;
+import org.javity.ui.yoga.YogaNode.Gutter;
+import org.javity.ui.yoga.YogaNode.Justify;
+import org.javity.ui.yoga.YogaNode.Wrap;
 
 /** Strict, measured subset of Tailwind 4.3.3 utilities used by the native UI. */
 public final class UtilityStyles {
@@ -49,12 +54,12 @@ public final class UtilityStyles {
 
   private UtilityStyles() {}
 
-  public static Visual apply(long node, String classes) {
+  public static Visual apply(YogaNode node, String classes) {
     return apply(node, classes, "");
   }
 
   /** Applies base utilities plus one visual state. State utilities cannot affect Yoga geometry. */
-  public static Visual apply(long node, String classes, String state) {
+  public static Visual apply(YogaNode node, String classes, String state) {
     Color background = null, text = Color.BLACK.cpy();
     float textScale = 1, fontSize = 16, lineHeight = 24, radius = 0, borderWidth = 0;
     boolean halfOpacity = false;
@@ -77,36 +82,36 @@ public final class UtilityStyles {
         if (!variant.equals(state)) continue;
       }
       switch (token) {
-        case "flex" -> YGNodeStyleSetFlexDirection(node, YGFlexDirectionRow);
-        case "flex-row" -> YGNodeStyleSetFlexDirection(node, YGFlexDirectionRow);
-        case "flex-col" -> YGNodeStyleSetFlexDirection(node, YGFlexDirectionColumn);
-        case "flex-wrap" -> YGNodeStyleSetFlexWrap(node, YGWrapWrap);
-        case "flex-nowrap" -> YGNodeStyleSetFlexWrap(node, YGWrapNoWrap);
+        case "flex" -> node.setFlexDirection(FlexDirection.ROW);
+        case "flex-row" -> node.setFlexDirection(FlexDirection.ROW);
+        case "flex-col" -> node.setFlexDirection(FlexDirection.COLUMN);
+        case "flex-wrap" -> node.setFlexWrap(Wrap.WRAP);
+        case "flex-nowrap" -> node.setFlexWrap(Wrap.NO_WRAP);
         case "appearance-none" -> {} // Used only by UiDocument's Progress node contract.
         case "outline-none" -> {} // Scene2D controls have no browser user-agent outline.
         case "overflow-y-auto" -> {} // UiDocument maps this to its clipping ScrollPane.
         case "flex-1" -> {
-          YGNodeStyleSetFlexGrow(node, 1);
-          YGNodeStyleSetFlexBasis(node, 0);
+          node.setFlexGrow(1);
+          node.setFlexBasis(0);
         }
-        case "grow" -> YGNodeStyleSetFlexGrow(node, 1);
-        case "shrink-0" -> YGNodeStyleSetFlexShrink(node, 0);
-        case "items-start" -> YGNodeStyleSetAlignItems(node, YGAlignFlexStart);
-        case "items-center" -> YGNodeStyleSetAlignItems(node, YGAlignCenter);
-        case "items-end" -> YGNodeStyleSetAlignItems(node, YGAlignFlexEnd);
-        case "items-stretch" -> YGNodeStyleSetAlignItems(node, YGAlignStretch);
-        case "self-start" -> YGNodeStyleSetAlignSelf(node, YGAlignFlexStart);
-        case "self-center" -> YGNodeStyleSetAlignSelf(node, YGAlignCenter);
-        case "self-end" -> YGNodeStyleSetAlignSelf(node, YGAlignFlexEnd);
-        case "self-stretch" -> YGNodeStyleSetAlignSelf(node, YGAlignStretch);
-        case "justify-start" -> YGNodeStyleSetJustifyContent(node, YGJustifyFlexStart);
-        case "justify-center" -> YGNodeStyleSetJustifyContent(node, YGJustifyCenter);
-        case "justify-end" -> YGNodeStyleSetJustifyContent(node, YGJustifyFlexEnd);
-        case "justify-between" -> YGNodeStyleSetJustifyContent(node, YGJustifySpaceBetween);
-        case "w-full" -> YGNodeStyleSetWidthPercent(node, 100);
-        case "h-full" -> YGNodeStyleSetHeightPercent(node, 100);
-        case "w-auto" -> YGNodeStyleSetWidthAuto(node);
-        case "h-auto" -> YGNodeStyleSetHeightAuto(node);
+        case "grow" -> node.setFlexGrow(1);
+        case "shrink-0" -> node.setFlexShrink(0);
+        case "items-start" -> node.setAlignItems(Align.START);
+        case "items-center" -> node.setAlignItems(Align.CENTER);
+        case "items-end" -> node.setAlignItems(Align.END);
+        case "items-stretch" -> node.setAlignItems(Align.STRETCH);
+        case "self-start" -> node.setAlignSelf(Align.START);
+        case "self-center" -> node.setAlignSelf(Align.CENTER);
+        case "self-end" -> node.setAlignSelf(Align.END);
+        case "self-stretch" -> node.setAlignSelf(Align.STRETCH);
+        case "justify-start" -> node.setJustifyContent(Justify.START);
+        case "justify-center" -> node.setJustifyContent(Justify.CENTER);
+        case "justify-end" -> node.setJustifyContent(Justify.END);
+        case "justify-between" -> node.setJustifyContent(Justify.SPACE_BETWEEN);
+        case "w-full" -> node.setWidthPercent(100);
+        case "h-full" -> node.setHeightPercent(100);
+        case "w-auto" -> node.setWidthAuto();
+        case "h-auto" -> node.setHeightAuto();
         case "text-sm" -> {
           fontSize = 14;
           lineHeight = 20;
@@ -166,7 +171,7 @@ public final class UtilityStyles {
         }
       }
     }
-    if (borderSpecified) YGNodeStyleSetBorder(node, YGEdgeAll, borderWidth);
+    if (borderSpecified) node.setBorder(Edge.ALL, borderWidth);
     if (halfOpacity) {
       if (background != null) background.a *= .5f;
       text.a *= .5f;
@@ -183,19 +188,19 @@ public final class UtilityStyles {
         borderColor == null ? text.cpy() : borderColor);
   }
 
-  private static boolean applySize(long node, String token) {
+  private static boolean applySize(YogaNode node, String token) {
     Matcher matcher = SIZE.matcher(token);
     if (!matcher.matches()) return false;
     String prop = matcher.group(1), size = matcher.group(2);
     float value;
     if (size.equals("full") && (prop.equals("w") || prop.equals("h"))) {
-      if (prop.equals("w")) YGNodeStyleSetWidthPercent(node, 100);
-      else YGNodeStyleSetHeightPercent(node, 100);
+      if (prop.equals("w")) node.setWidthPercent(100);
+      else node.setHeightPercent(100);
       return true;
     }
     if (size.equals("auto") && (prop.equals("w") || prop.equals("h"))) {
-      if (prop.equals("w")) YGNodeStyleSetWidthAuto(node);
-      else YGNodeStyleSetHeightAuto(node);
+      if (prop.equals("w")) node.setWidthAuto();
+      else node.setHeightAuto();
       return true;
     }
     Matcher pixels = PIXELS.matcher(size);
@@ -203,30 +208,30 @@ public final class UtilityStyles {
     else if (SIMPLE_NUMBER.matcher(size).matches()) value = number(size, token) * 4;
     else return false;
     switch (prop) {
-      case "p" -> YGNodeStyleSetPadding(node, YGEdgeAll, value);
-      case "px" -> YGNodeStyleSetPadding(node, YGEdgeHorizontal, value);
-      case "py" -> YGNodeStyleSetPadding(node, YGEdgeVertical, value);
-      case "pt" -> YGNodeStyleSetPadding(node, YGEdgeTop, value);
-      case "pr" -> YGNodeStyleSetPadding(node, YGEdgeRight, value);
-      case "pb" -> YGNodeStyleSetPadding(node, YGEdgeBottom, value);
-      case "pl" -> YGNodeStyleSetPadding(node, YGEdgeLeft, value);
-      case "m" -> YGNodeStyleSetMargin(node, YGEdgeAll, value);
-      case "mx" -> YGNodeStyleSetMargin(node, YGEdgeHorizontal, value);
-      case "my" -> YGNodeStyleSetMargin(node, YGEdgeVertical, value);
-      case "mt" -> YGNodeStyleSetMargin(node, YGEdgeTop, value);
-      case "mr" -> YGNodeStyleSetMargin(node, YGEdgeRight, value);
-      case "mb" -> YGNodeStyleSetMargin(node, YGEdgeBottom, value);
-      case "ml" -> YGNodeStyleSetMargin(node, YGEdgeLeft, value);
-      case "gap" -> YGNodeStyleSetGap(node, YGGutterAll, value);
-      case "gap-x" -> YGNodeStyleSetGap(node, YGGutterColumn, value);
-      case "gap-y" -> YGNodeStyleSetGap(node, YGGutterRow, value);
-      case "w" -> YGNodeStyleSetWidth(node, value);
-      case "h" -> YGNodeStyleSetHeight(node, value);
-      case "min-w" -> YGNodeStyleSetMinWidth(node, value);
-      case "min-h" -> YGNodeStyleSetMinHeight(node, value);
-      case "max-w" -> YGNodeStyleSetMaxWidth(node, value);
-      case "max-h" -> YGNodeStyleSetMaxHeight(node, value);
-      case "basis" -> YGNodeStyleSetFlexBasis(node, value);
+      case "p" -> node.setPadding(Edge.ALL, value);
+      case "px" -> node.setPadding(Edge.HORIZONTAL, value);
+      case "py" -> node.setPadding(Edge.VERTICAL, value);
+      case "pt" -> node.setPadding(Edge.TOP, value);
+      case "pr" -> node.setPadding(Edge.RIGHT, value);
+      case "pb" -> node.setPadding(Edge.BOTTOM, value);
+      case "pl" -> node.setPadding(Edge.LEFT, value);
+      case "m" -> node.setMargin(Edge.ALL, value);
+      case "mx" -> node.setMargin(Edge.HORIZONTAL, value);
+      case "my" -> node.setMargin(Edge.VERTICAL, value);
+      case "mt" -> node.setMargin(Edge.TOP, value);
+      case "mr" -> node.setMargin(Edge.RIGHT, value);
+      case "mb" -> node.setMargin(Edge.BOTTOM, value);
+      case "ml" -> node.setMargin(Edge.LEFT, value);
+      case "gap" -> node.setGap(Gutter.ALL, value);
+      case "gap-x" -> node.setGap(Gutter.COLUMN, value);
+      case "gap-y" -> node.setGap(Gutter.ROW, value);
+      case "w" -> node.setWidth(value);
+      case "h" -> node.setHeight(value);
+      case "min-w" -> node.setMinWidth(value);
+      case "min-h" -> node.setMinHeight(value);
+      case "max-w" -> node.setMaxWidth(value);
+      case "max-h" -> node.setMaxHeight(value);
+      case "basis" -> node.setFlexBasis(value);
       default -> throw new IllegalStateException(prop);
     }
     return true;

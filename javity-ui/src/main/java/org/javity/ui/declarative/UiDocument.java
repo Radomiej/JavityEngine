@@ -1,8 +1,5 @@
 package org.javity.ui.declarative;
 
-import static org.lwjgl.util.yoga.Yoga.YGNodeFree;
-import static org.lwjgl.util.yoga.Yoga.YGNodeNew;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -34,6 +31,9 @@ import org.javity.ui.flex.ImageFit;
 import org.javity.ui.flex.UiImage;
 import org.javity.ui.flex.UiTheme;
 import org.javity.ui.flex.UtilityStyles;
+import org.javity.ui.yoga.YogaBackend;
+import org.javity.ui.yoga.YogaBackends;
+import org.javity.ui.yoga.YogaNode;
 
 /** Owns one keyed Scene2D/Yoga tree. The theme and Stage remain caller-owned. */
 public final class UiDocument implements AutoCloseable {
@@ -106,6 +106,7 @@ public final class UiDocument implements AutoCloseable {
   }
 
   private final UiTheme theme;
+  private final YogaBackend yogaBackend;
   private final Flex root;
   private Map<String, Entry> entries = new HashMap<>();
   private UiNode current;
@@ -115,8 +116,13 @@ public final class UiDocument implements AutoCloseable {
   private final Set<Integer> pressedKeys = new java.util.HashSet<>();
 
   public UiDocument(UiTheme theme) {
+    this(YogaBackends.createDefault(), theme);
+  }
+
+  public UiDocument(YogaBackend yogaBackend, UiTheme theme) {
+    this.yogaBackend = java.util.Objects.requireNonNull(yogaBackend);
     this.theme = theme;
-    this.root = new Flex(theme, "flex flex-col");
+    this.root = new Flex(yogaBackend, theme, "flex flex-col");
   }
 
   public void render(UiNode node) {
@@ -411,7 +417,7 @@ public final class UiDocument implements AutoCloseable {
       if (!PROPS.contains(name))
         throw new IllegalArgumentException("Unsupported UI property: " + name);
     }
-    long probe = YGNodeNew();
+    YogaNode probe = yogaBackend.createNode();
     try {
       for (String token : node.classes().split("\\s+")) {
         int colon = token.indexOf(':');
@@ -436,7 +442,7 @@ public final class UiDocument implements AutoCloseable {
       }
       UtilityStyles.apply(probe, node.classes());
     } finally {
-      YGNodeFree(probe);
+      probe.freeNode();
     }
     Set<String> allowed =
         switch (node.type()) {
@@ -650,7 +656,9 @@ public final class UiDocument implements AutoCloseable {
   private Entry create(UiNode node, Map<String, Object> values) {
     Entry entry =
         switch (node.type()) {
-          case "View" -> new Entry(node.key(), node.type(), new Flex(theme, node.classes()), null);
+          case "View" ->
+              new Entry(
+                  node.key(), node.type(), new Flex(yogaBackend, theme, node.classes()), null);
           case "Text" ->
               new Entry(
                   node.key(),
@@ -680,7 +688,7 @@ public final class UiDocument implements AutoCloseable {
           case "Slider" ->
               new Entry(node.key(), node.type(), new Slider(theme, node.classes()), null);
           case "ScrollView" -> {
-            Flex content = new Flex(theme, "flex flex-col");
+            Flex content = new Flex(yogaBackend, theme, "flex flex-col");
             yield new Entry(
                 node.key(), node.type(), theme.scrollPane(content, node.classes()), content);
           }

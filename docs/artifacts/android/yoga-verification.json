@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-16",
+  "scope": "Yoga JNI / portable layout; no game graphics or QuickJS claim",
+  "result": "PASS",
+  "tests": 4,
+  "emulator": {
+    "api": 35,
+    "abi": "x86_64",
+    "acceleration": "TCG; no performance claim"
+  },
+  "build": {
+    "agp": "9.4.1",
+    "jdk": "25.0.4.1",
+    "kotlin": "2.4.20",
+    "compileSdk": 36,
+    "minSdk": 35,
+    "providerClassMajorVersions": [
+      69
+    ]
+  },
+  "apkSha256": "07923f0f64a95096c95c904e964c01e6138829abbd00abcb77834acd1d4d8df2",
+  "instrumentation": "org.javity.ui.yoga.android.YogaBackendInstrumentationTest",
+  "cases": [
+    "native layout and explicit subtree release",
+    "portable UiDocument layout and close",
+    "measurement exception returned after JNI boundary",
+    "invalid-call guards and valid measured dirty/layout getters"
+  ],
+  "remaining": [
+    "QuickJS JNI and full application APK",
+    "actual GLES/model/voxel/UI framebuffer",
+    "density/touch mapping",
+    "Activity and real EGL context recreation",
+    "release R8 and final APK ABI/16KiB audit",
+    "physical ARM64 execution"
+  ]
+}

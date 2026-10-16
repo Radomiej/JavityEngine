@@ -46,7 +46,7 @@ jobs:
         run: ./gradlew --no-daemon --warning-mode all clean build :javity-desktop:installDist :javity-desktop:distZip
       - name: Native graphics and audio smoke
         run: |
-          xvfb-run -a ./gradlew --no-daemon :javity-desktop:smoke :javity-desktop:mapSmoke :javity-desktop:maplibreSmoke :javity-desktop:gorzowSmoke :javity-desktop:runtimeSmoke :javity-desktop:shapesSmoke :javity-desktop:materialsSmoke :javity-desktop:voxelSmoke :javity-desktop:pluginsSmoke :javity-desktop:uiParitySmoke :javity-desktop:mmSmoke
+          xvfb-run -a ./gradlew --no-daemon :javity-desktop:smoke :javity-desktop:inspectorSmoke :javity-desktop:mapSmoke :javity-desktop:maplibreSmoke :javity-desktop:gorzowSmoke :javity-desktop:runtimeSmoke :javity-desktop:shapesSmoke :javity-desktop:materialsSmoke :javity-desktop:voxelSmoke :javity-desktop:avatarSmoke :javity-desktop:avatarGl30Smoke :javity-desktop:physics3dSmoke :javity-desktop:presentation3dSmoke :javity-desktop:particleSmoke :javity-desktop:postprocessSmoke :javity-desktop:feel3dSmoke :javity-desktop:pluginsSmoke :javity-desktop:uiParitySmoke :javity-desktop:mmSmoke
           mkdir -p build/smoke
           cp smoke.png build/smoke/modern.png
           cp map-smoke.png build/smoke/map.png
@@ -68,6 +68,7 @@ jobs:
           xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --maplibre --smoke
           xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --gorzow --smoke
           xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --voxels --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --inspector --smoke
           xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --mm --smoke
           xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --ui-parity --smoke
       - name: Installed development UI reload
@@ -90,10 +91,21 @@ jobs:
             artifacts/k4-*.png
             artifacts/k4-*.json
             artifacts/j-model-*.png
+            artifacts/j-pose-*.png
+            artifacts/j-pose-*.json
             artifacts/mm-systems/**
             artifacts/shape-materials/**
             artifacts/voxels/**
             docs/demo-maplibre*.png
+            docs/artifacts/avatar/**
+            docs/artifacts/physics3d/**
+            docs/artifacts/presentation3d/**
+            docs/artifacts/particles3d/**
+            docs/artifacts/world-postprocess/**
+            docs/artifacts/shapes-dashes/**
+            docs/artifacts/feel3d/**
+            docs/demo-runtime-inspector.png
+            docs/runtime-inspector-verification.json
             docs/demo-gorzow*.png
             docs/gorzow-verification.json
             docs/maplibre-comparison.png

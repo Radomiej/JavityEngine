@@ -28,8 +28,11 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   private final List<ModelAnimationLayer> layers = new ArrayList<>();
   private final PlaybackClock.Step[] layerSteps = new PlaybackClock.Step[MAX_LAYERS];
   private final ModelPosePlayback[] layerPlaybacks = new ModelPosePlayback[MAX_LAYERS];
+  private final TransitionState[] layerTransitions = new TransitionState[MAX_LAYERS];
+  private final long[] layerTransitionRevisions = new long[MAX_LAYERS];
   private ModelRenderer renderer;
   private ModelPosePlayback current;
+  private TransitionState baseTransition;
 
   @Override
   public void onCreate() {
@@ -66,8 +69,6 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     Objects.requireNonNull(transition);
     requireAttachedAndUsable();
     setupRenderer();
-    if (transition.fadeSeconds() > 0)
-      throw new IllegalArgumentException("Model pose clip crossfade is unsupported");
     ClipData data = clip(transition.clipName());
     PlaybackClock clock =
         new PlaybackClock(
@@ -77,8 +78,12 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
             transition.normalizedStart(),
             transition.speed(),
             transition.markers());
+    clock.allowPauseAfterCompletion();
     ModelPosePlayback next = new ModelPosePlayback(clock, this, null, 0);
+    PoseValue[] frozen = transition.fadeSeconds() > 0 ? captureBaseContribution() : null;
     replaceBase(next);
+    if (frozen != null)
+      baseTransition = new TransitionState(frozen, transition.fadeSeconds(), frameIndex() + 1);
     composeNow();
     return next;
   }
@@ -90,6 +95,16 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   private void replaceBase(ModelPosePlayback next) {
     if (current != null) current.clock.stop();
     current = next;
+    baseTransition = null;
+  }
+
+  void replaceLayer(ModelAnimationLayer layer, ModelPosePlayback next, double fadeSeconds) {
+    PoseValue[] frozen = fadeSeconds > 0 ? captureLayerContribution(layer) : null;
+    if (layer.current != null) layer.current.clock.stop();
+    layer.current = next;
+    layer.transition =
+        frozen == null ? null : new TransitionState(frozen, fadeSeconds, frameIndex() + 1);
+    composeNow();
   }
 
   public ModelPosePlayback current() {
@@ -142,6 +157,9 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       throw new IllegalArgumentException("Pose delta must be finite and non-negative");
 
     PlaybackClock.Step baseStep = current == null ? null : current.clock.preflight(delta);
+    ModelPosePlayback plannedBase = current;
+    TransitionState plannedBaseFade = baseTransition;
+    long plannedBaseFadeRevision = plannedBaseFade == null ? -1 : plannedBaseFade.revision;
     java.util.Arrays.fill(layerSteps, null);
     java.util.Arrays.fill(layerPlaybacks, null);
     int frameLayerCount = layers.size();
@@ -149,6 +167,13 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       ModelPosePlayback playback = layers.get(i).current;
       layerPlaybacks[i] = playback;
       if (playback != null) layerSteps[i] = playback.clock.preflight(delta);
+    }
+
+    java.util.Arrays.fill(layerTransitions, null);
+    java.util.Arrays.fill(layerTransitionRevisions, -1);
+    for (int i = 0; i < frameLayerCount; i++) {
+      layerTransitions[i] = layers.get(i).transition;
+      if (layerTransitions[i] != null) layerTransitionRevisions[i] = layerTransitions[i].revision;
     }
 
     for (int i = 0; i < frameLayerCount; i++) layers.get(i).updateFade(delta);
@@ -162,9 +187,16 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       ModelAnimationLayer layer = layers.get(i);
       ModelPosePlayback playback = layerPlaybacks[i];
       PlaybackClock.Step step = layerSteps[i];
-      if (playback != null && step != null && layer.current == playback) {
+      if (playback != null
+          && step != null
+          && layer.current == playback
+          && playback.clock.revision() == step.generation()) {
         playback.clock.fireStart(
-            () -> layer.current == playback && isOwnerRunnable() && isRendererLive());
+            () ->
+                layer.current == playback
+                    && playback.clock.revision() == step.generation()
+                    && isOwnerRunnable()
+                    && isRendererLive());
         if (!isOwnerRunnable() || !isRendererLive()) {
           relinquishPose();
           return;
@@ -174,6 +206,19 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     if (!isOwnerRunnable() || !isRendererLive()) {
       relinquishPose();
       return;
+    }
+    if (plannedBase != null
+        && current == plannedBase
+        && baseTransition == plannedBaseFade
+        && plannedBaseFade != null
+        && plannedBaseFade.revision == plannedBaseFadeRevision
+        && baseStep != null
+        && plannedBase.clock.revision() == baseStep.generation()
+        && plannedBase.clock.isActive()
+        && !plannedBase.clock.isPaused()
+        && frameIndex() >= plannedBaseFade.eligibleFrame) {
+      plannedBaseFade.advance(delta);
+      if (plannedBaseFade.progress() >= 1) baseTransition = null;
     }
     if (base != null && baseStep != null && current == base)
       base.clock.advance(baseStep, () -> current == base && isOwnerRunnable() && isRendererLive());
@@ -185,6 +230,20 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       ModelAnimationLayer layer = layers.get(i);
       ModelPosePlayback playback = layerPlaybacks[i];
       PlaybackClock.Step step = layerSteps[i];
+      TransitionState fade = layerTransitions[i];
+      if (playback != null
+          && layer.current == playback
+          && layer.transition == fade
+          && fade != null
+          && fade.revision == layerTransitionRevisions[i]
+          && step != null
+          && playback.clock.revision() == step.generation()
+          && playback.clock.isActive()
+          && !playback.clock.isPaused()
+          && frameIndex() >= fade.eligibleFrame) {
+        fade.advance(delta);
+        if (fade.progress() >= 1) layer.transition = null;
+      }
       if (playback != null && step != null && layer.current == playback)
         playback.clock.advance(
             step, () -> layer.current == playback && isOwnerRunnable() && isRendererLive());
@@ -307,21 +366,61 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
 
   private boolean[] resolveMask(NodeMask mask) {
     boolean[] result = new boolean[nodes.size()];
-    for (String value : mask.values()) {
-      if (mask.usesPaths()) {
-        Integer index = pathIndices.get(value);
-        if (index == null || index < 0)
-          throw new IllegalArgumentException("Unknown or ambiguous node path: " + value);
-        result[index] = true;
-      } else {
-        List<Integer> matches = idIndices.get(value);
-        if (matches == null || matches.isEmpty())
-          throw new IllegalArgumentException("Unknown node id: " + value);
-        if (matches.size() != 1) throw new IllegalArgumentException("Ambiguous node id: " + value);
-        result[matches.get(0)] = true;
+    switch (mask.kind()) {
+      case EXACT, SUBTREE -> {
+        for (String value : mask.values()) {
+          Node anchor;
+          if (mask.usesPaths()) {
+            Integer index = pathIndices.get(value);
+            if (index == null || index < 0)
+              throw new IllegalArgumentException(
+                  "Unknown or ambiguous node path '"
+                      + value
+                      + "'. Available paths: "
+                      + availablePaths());
+            anchor = nodes.get(index).node;
+          } else {
+            List<Integer> matches = idIndices.get(value);
+            if (matches == null || matches.isEmpty())
+              throw new IllegalArgumentException(
+                  "Unknown node id '" + value + "'. Available ids: " + idIndices.keySet());
+            if (matches.size() != 1)
+              throw new IllegalArgumentException(
+                  "Ambiguous node id '" + value + "'. Available paths: " + availablePaths());
+            anchor = nodes.get(matches.get(0)).node;
+          }
+          if (mask.kind() == NodeMask.Kind.EXACT) result[nodeIndices.get(anchor)] = true;
+          else markSubtree(anchor, result);
+        }
+      }
+      case UNION -> {
+        for (NodeMask operand : mask.operands()) {
+          boolean[] selected = resolveMask(operand);
+          for (int i = 0; i < result.length; i++) result[i] |= selected[i];
+        }
+      }
+      case DIFFERENCE -> {
+        NodeMask[] operands = mask.operands();
+        boolean[] included = resolveMask(operands[0]);
+        boolean[] excluded = resolveMask(operands[1]);
+        for (int i = 0; i < result.length; i++) result[i] = included[i] && !excluded[i];
       }
     }
     return result;
+  }
+
+  private String availablePaths() {
+    List<String> result = new ArrayList<>(nodes.size());
+    for (PoseNode node : nodes) result.add(node.path);
+    return result.toString();
+  }
+
+  private void markSubtree(Node root, boolean[] result) {
+    Integer index = nodeIndices.get(root);
+    if (index == null)
+      throw new IllegalArgumentException("Mask node is outside this renderer instance");
+    result[index] = true;
+    for (Node child : root.getChildren()) markSubtree(child, result);
   }
 
   private ClipData clip(String name) {
@@ -411,6 +510,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
             transition.normalizedStart(),
             transition.speed(),
             transition.markers());
+    clock.allowPauseAfterCompletion();
     return new ModelPosePlayback(clock, layer, null, 0);
   }
 
@@ -428,67 +528,148 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       sampleVector(track.scaling, time, node.sampleS);
   }
 
+  private PoseValue[] captureBaseContribution() {
+    PoseValue[] result = values(nodes.size());
+    for (PoseNode node : nodes) {
+      sampleBase(current, node, node.sampleT, node.sampleR, node.sampleS);
+      if (baseTransition != null) {
+        PoseValue from = baseTransition.outgoing[node.index];
+        double alpha = baseTransition.progress();
+        blendVector(from.t, node.sampleT, alpha, node.sampleT);
+        blendVector(from.s, node.sampleS, alpha, node.sampleS);
+        blendRotation(from.r, node.sampleR, alpha, node.sampleR, node.tempR);
+      }
+      PoseValue value = result[node.index];
+      value.t.set(node.sampleT);
+      value.r.set(node.sampleR);
+      value.s.set(node.sampleS);
+      value.tc = value.rc = value.sc = 1;
+    }
+    return result;
+  }
+
+  private PoseValue[] captureLayerContribution(ModelAnimationLayer layer) {
+    PoseValue[] result = values(nodes.size());
+    for (PoseNode node : nodes) readLayer(layer, node, result[node.index]);
+    return result;
+  }
+
+  private static PoseValue[] values(int count) {
+    PoseValue[] result = new PoseValue[count];
+    for (int i = 0; i < count; i++) result[i] = new PoseValue();
+    return result;
+  }
+
+  private void sampleBase(
+      ModelPosePlayback playback, PoseNode node, Vector3 outT, Quaternion outR, Vector3 outS) {
+    if (playback == null) {
+      outT.set(node.bindT);
+      outR.set(node.bindR);
+      outS.set(node.bindS);
+      return;
+    }
+    if (playback.mixer == null) {
+      ClipData clip = clip(playback.animationName());
+      sample(clip, playback.clock.normalizedTime() * clip.duration, node, true);
+      outT.set(node.sampleT);
+      outR.set(node.sampleR);
+      outS.set(node.sampleS);
+      return;
+    }
+    LinearModelMixer mixer = playback.mixer;
+    int lower = lowerIndex(mixer, playback.parameter);
+    int upper = upperIndex(mixer, playback.parameter, lower);
+    double mix = pairMix(mixer, playback.parameter, lower, upper);
+    ClipData a = clip(mixer.entries().get(lower).animationName());
+    ClipData b = clip(mixer.entries().get(upper).animationName());
+    double phase = playback.clock.normalizedTime();
+    sample(a, phase * a.duration, node, true);
+    node.tempT.set(node.sampleT);
+    node.tempR.set(node.sampleR);
+    node.tempS.set(node.sampleS);
+    sample(b, phase * b.duration, node, true);
+    blendVector(node.tempT, node.sampleT, mix, outT);
+    blendVector(node.tempS, node.sampleS, mix, outS);
+    blendRotation(node.tempR, node.sampleR, mix, outR, node.keyR);
+  }
+
+  private void readLayer(ModelAnimationLayer layer, PoseNode node, PoseValue out) {
+    out.tc = out.rc = out.sc = 0;
+    ModelPosePlayback playback = layer.current;
+    if (playback == null || !playback.clock.isActive() || !layer.resolvedMask[node.index]) return;
+    ClipData clip = clip(playback.animationName());
+    NodeTrack track = clip.tracks[node.index];
+    if (track != null) {
+      double time = playback.clock.normalizedTime() * clip.duration;
+      if (track.translation != null && track.translation.size > 0) {
+        sampleVector(track.translation, time, out.t);
+        out.tc = 1;
+      }
+      if (track.rotation != null && track.rotation.size > 0) {
+        sampleQuaternion(track.rotation, time, out.r, node.keyR);
+        out.rc = 1;
+      }
+      if (track.scaling != null && track.scaling.size > 0) {
+        sampleVector(track.scaling, time, out.s);
+        out.sc = 1;
+      }
+    }
+    TransitionState fade = layer.transition;
+    if (fade != null)
+      blendContribution(fade.outgoing[node.index], out, fade.progress(), out, node.tempR);
+  }
+
+  private static void blendContribution(
+      PoseValue from, PoseValue to, double alpha, PoseValue out, Quaternion scratch) {
+    double oneMinus = 1 - alpha;
+    double tc = oneMinus * from.tc + alpha * to.tc;
+    double rc = oneMinus * from.rc + alpha * to.rc;
+    double sc = oneMinus * from.sc + alpha * to.sc;
+    if (tc > 0) blendVector(from.t, to.t, alpha * to.tc / tc, out.t);
+    if (rc > 0) blendRotation(from.r, to.r, alpha * to.rc / rc, out.r, scratch);
+    if (sc > 0) blendVector(from.s, to.s, alpha * to.sc / sc, out.s);
+    out.tc = tc;
+    out.rc = rc;
+    out.sc = sc;
+  }
+
+  private static void blendRotation(
+      Quaternion from, Quaternion to, double alpha, Quaternion out, Quaternion scratch) {
+    if (alpha <= 0) out.set(from);
+    else if (alpha >= 1) out.set(to);
+    else {
+      scratch.set(to).nor();
+      out.set(from).nor().slerp(scratch, (float) alpha).nor();
+    }
+  }
+
   void composeNow() {
     if (renderer == null || nodes.isEmpty() || !isAttachedUsable() || !isRendererPresent()) return;
     if (!isOwnerRunnable()) return;
     ensureSetup();
-    LinearModelMixer mixer = current == null ? null : current.mixer;
-    ClipData single = current != null && mixer == null ? clip(current.animationName()) : null;
-    double phase = current == null ? 0 : current.clock.normalizedTime();
-    int lower = -1, upper = -1;
-    double mix = 0;
-    if (mixer != null) {
-      lower = lowerIndex(mixer, current.parameter);
-      upper = upperIndex(mixer, current.parameter, lower);
-      mix = pairMix(mixer, current.parameter, lower, upper);
-    }
     int layerCount = layers.size();
     int nodeCount = nodes.size();
     for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
       PoseNode node = nodes.get(nodeIndex);
-      node.outT.set(node.bindT);
-      node.outR.set(node.bindR);
-      node.outS.set(node.bindS);
-      if (single != null) {
-        sample(single, phase * single.duration, node, true);
-        node.outT.set(node.sampleT);
-        node.outR.set(node.sampleR);
-        node.outS.set(node.sampleS);
-      } else if (mixer != null) {
-        ClipData a = clip(mixer.entries().get(lower).animationName());
-        ClipData b = clip(mixer.entries().get(upper).animationName());
-        sample(a, phase * a.duration, node, true);
-        node.tempT.set(node.sampleT);
-        node.tempR.set(node.sampleR);
-        node.tempS.set(node.sampleS);
-        sample(b, phase * b.duration, node, true);
-        blendVector(node.tempT, node.sampleT, mix, node.outT);
-        blendVector(node.tempS, node.sampleS, mix, node.outS);
-        node.outR.set(node.tempR).nor().slerp(node.sampleR.nor(), (float) mix).nor();
+      sampleBase(current, node, node.outT, node.outR, node.outS);
+      if (baseTransition != null) {
+        PoseValue from = baseTransition.outgoing[node.index];
+        double alpha = baseTransition.progress();
+        blendVector(from.t, node.outT, alpha, node.outT);
+        blendVector(from.s, node.outS, alpha, node.outS);
+        blendRotation(from.r, node.outR, alpha, node.outR, node.tempR);
       }
       for (int layerIndex = 0; layerIndex < layerCount; layerIndex++) {
         ModelAnimationLayer layer = layers.get(layerIndex);
-        ModelPosePlayback playback = layer.current;
-        if (playback == null
-            || !playback.clock.isActive()
-            || layer.weight <= 0
-            || !layer.resolvedMask[node.index]) continue;
-        ClipData overlay = clip(playback.animationName());
-        NodeTrack track = overlay.tracks[node.index];
-        if (track == null) continue;
-        double clipTime = playback.clock.normalizedTime() * overlay.duration;
-        if (track.translation != null && track.translation.size > 0) {
-          sampleVector(track.translation, clipTime, node.tempT);
-          blendVector(node.outT, node.tempT, layer.weight, node.outT);
-        }
-        if (track.rotation != null && track.rotation.size > 0) {
-          sampleQuaternion(track.rotation, clipTime, node.tempR, node.keyR);
-          node.outR.slerp(node.tempR, (float) layer.weight).nor();
-        }
-        if (track.scaling != null && track.scaling.size > 0) {
-          sampleVector(track.scaling, clipTime, node.tempS);
-          blendVector(node.outS, node.tempS, layer.weight, node.outS);
-        }
+        if (layer.weight <= 0 || layer.resolvedMask == null) continue;
+        PoseValue contribution = node.layerValue;
+        readLayer(layer, node, contribution);
+        double tWeight = layer.weight * contribution.tc;
+        double rWeight = layer.weight * contribution.rc;
+        double sWeight = layer.weight * contribution.sc;
+        if (tWeight > 0) blendVector(node.outT, contribution.t, tWeight, node.outT);
+        if (rWeight > 0) blendRotation(node.outR, contribution.r, rWeight, node.outR, node.tempR);
+        if (sWeight > 0) blendVector(node.outS, contribution.s, sWeight, node.outS);
       }
       node.node.translation.set(node.outT);
       node.node.rotation.set(node.outR);
@@ -627,7 +808,9 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       if (layer.current != null) layer.current.clock.stop();
       layer.current = null;
       layer.fading = false;
+      layer.transition = null;
     }
+    baseTransition = null;
   }
 
   private void invalidateForRendererChange() {
@@ -723,8 +906,19 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     requireCurrent(playback);
     playback.clock.stop();
     current = null;
+    baseTransition = null;
     composeNow();
     return playback;
+  }
+
+  @Override
+  public boolean isFading(ModelPosePlayback playback) {
+    return current == playback && playback.clock.isActive() && baseTransition != null;
+  }
+
+  @Override
+  public double fadeProgress(ModelPosePlayback playback) {
+    return current == playback && baseTransition != null ? baseTransition.progress() : 1;
   }
 
   private static final class PoseNode {
@@ -741,6 +935,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
         sampleR = new Quaternion(),
         tempR = new Quaternion(),
         keyR = new Quaternion();
+    final PoseValue layerValue = new PoseValue();
 
     PoseNode(Node node, String path, int index) {
       this.node = node;
@@ -758,4 +953,35 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       Array<NodeKeyframe<Vector3>> scaling) {}
 
   private record ClipData(String name, float duration, NodeTrack[] tracks) {}
+
+  private static final class PoseValue {
+    final Vector3 t = new Vector3(), s = new Vector3();
+    final Quaternion r = new Quaternion();
+    double tc, rc, sc;
+  }
+
+  static final class TransitionState {
+    final PoseValue[] outgoing;
+    final double duration;
+    final long eligibleFrame;
+    double elapsed;
+    long revision;
+
+    TransitionState(PoseValue[] outgoing, double duration, long eligibleFrame) {
+      this.outgoing = outgoing;
+      this.duration = duration;
+      this.eligibleFrame = eligibleFrame;
+    }
+
+    double progress() {
+      return Math.min(1, elapsed / duration);
+    }
+
+    void advance(float delta) {
+      double next = elapsed + delta;
+      if (!Double.isFinite(next)) throw new IllegalArgumentException("Pose fade step overflow");
+      elapsed = Math.min(duration, next);
+      revision++;
+    }
+  }
 }

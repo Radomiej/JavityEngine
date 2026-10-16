@@ -1,6 +1,7 @@
 package org.javity.effects;
 
 import java.util.*;
+import java.util.function.BooleanSupplier;
 import org.javity.core.GameSystem;
 
 /** Scene-local ownership registry for properties animated by effect players. */
@@ -52,6 +53,22 @@ public final class EffectSystem extends GameSystem {
 
   void leaveCallback() {
     callbackDepth--;
+  }
+
+  /**
+   * Dispatches scene-local user code with the same budget and next-play deferral as effect nodes.
+   */
+  public boolean dispatchCallback(BooleanSupplier ownerValid, Runnable callback) {
+    Objects.requireNonNull(ownerValid, "ownerValid");
+    Objects.requireNonNull(callback, "callback");
+    if (getGame() == null || getGame().isDisposed() || !ownerValid.getAsBoolean()) return false;
+    enterCallback();
+    try {
+      callback.run();
+      return true;
+    } finally {
+      leaveCallback();
+    }
   }
 
   Lease acquire(FloatTarget target, Playback playback) {

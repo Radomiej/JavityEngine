@@ -1,10 +1,9 @@
 package org.javity.ui.flex;
 
-import static org.lwjgl.util.yoga.Yoga.*;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,10 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Disposable;
 import java.util.HashMap;
 import java.util.Map;
+import org.javity.ui.yoga.YogaBackends;
+import org.javity.ui.yoga.YogaNode;
 
 /** Owns shared UI textures and font. Dispose after the stage and its Flex tree. */
 public final class UiTheme implements Disposable {
   private final Texture white;
+  private final Pixmap whitePixel;
   private final BitmapFont font;
   private final boolean ownsFont;
   private final FileHandle trueTypeFile;
@@ -53,8 +55,23 @@ public final class UiTheme implements Disposable {
     Pixmap pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     pixel.setColor(Color.WHITE);
     pixel.fill();
-    white = new Texture(pixel);
-    pixel.dispose();
+    if (Gdx.app == null) {
+      IllegalStateException failure =
+          new IllegalStateException("UiTheme requires a libGDX app for managed texture recovery");
+      disposeAfterFailure(pixel, failure);
+      if (ownsFont) disposeAfterFailure(font, failure);
+      throw failure;
+    }
+    Texture createdWhite;
+    try {
+      createdWhite = new Texture(new PixmapTextureData(pixel, pixel.getFormat(), false, false, true));
+    } catch (RuntimeException | Error failure) {
+      disposeAfterFailure(pixel, failure);
+      if (ownsFont) disposeAfterFailure(font, failure);
+      throw failure;
+    }
+    white = createdWhite;
+    whitePixel = pixel;
   }
 
   /** TTF/OTF generated once on the GL thread; font belongs to the theme. */
@@ -100,11 +117,11 @@ public final class UiTheme implements Disposable {
   }
 
   private UtilityStyles.Visual visual(String classes, String state) {
-    long node = YGNodeNew();
+    YogaNode node = YogaBackends.createDefault().createNode();
     try {
       return UtilityStyles.apply(node, classes, state);
     } finally {
-      YGNodeFree(node);
+      node.freeNode();
     }
   }
 
@@ -323,11 +340,11 @@ public final class UiTheme implements Disposable {
 
   private UtilityStyles.Visual stateVisual(
       String classes, String state, UtilityStyles.Visual base) {
-    long node = YGNodeNew();
+    YogaNode node = YogaBackends.createDefault().createNode();
     try {
       return UtilityStyles.apply(node, classes, state);
     } finally {
-      YGNodeFree(node);
+      node.freeNode();
     }
   }
 
@@ -410,17 +427,40 @@ public final class UiTheme implements Disposable {
         color, color, 1, 16, 24, Float.POSITIVE_INFINITY, 0, Color.CLEAR);
   }
 
+  private static void disposeAfterFailure(Disposable resource, Throwable failure) {
+    try {
+      resource.dispose();
+    } catch (RuntimeException | Error cleanupFailure) {
+      failure.addSuppressed(cleanupFailure);
+    }
+  }
+
+  private static Throwable dispose(Disposable resource, Throwable failure) {
+    try {
+      resource.dispose();
+    } catch (RuntimeException | Error error) {
+      if (failure == null) return error;
+      if (failure != error) failure.addSuppressed(error);
+    }
+    return failure;
+  }
+
   @Override
   public void dispose() {
-    if (rectanglePainter != null) rectanglePainter.dispose();
+    Throwable failure = null;
+    if (rectanglePainter != null) failure = dispose(rectanglePainter, failure);
     images.clear();
-    for (BitmapFont cached : scaledBorrowedFonts.values()) cached.dispose();
+    for (BitmapFont cached : scaledBorrowedFonts.values()) failure = dispose(cached, failure);
     scaledBorrowedFonts.clear();
     if (ownsFont) {
-      for (BitmapFont cached : sizeFonts.values()) if (cached != font) cached.dispose();
-      font.dispose();
+      for (BitmapFont cached : sizeFonts.values())
+        if (cached != font) failure = dispose(cached, failure);
+      failure = dispose(font, failure);
     }
-    white.dispose();
+    failure = dispose(white, failure);
+    failure = dispose(whitePixel, failure);
+    if (failure instanceof RuntimeException error) throw error;
+    if (failure instanceof Error error) throw error;
   }
 
   private BitmapFont fontFor(UtilityStyles.Visual visual) {
@@ -570,7 +610,7 @@ public final class UiTheme implements Disposable {
       boolean trailingBreak = value.endsWith("\n");
       String[] paragraphs = value.split("\n", -1);
       float maxWidth = Float.isFinite(width) ? width : Float.POSITIVE_INFINITY;
-      boolean constrained = widthMode != YGMeasureModeUndefined && Float.isFinite(maxWidth);
+      boolean constrained = widthMode != 0 && Float.isFinite(maxWidth);
       for (int paragraphIndex = 0; paragraphIndex < paragraphs.length; paragraphIndex++) {
         if (trailingBreak && paragraphIndex == paragraphs.length - 1) break;
         String paragraph = paragraphs[paragraphIndex];
@@ -627,7 +667,7 @@ public final class UiTheme implements Disposable {
       float horizontalInsets = padding.horizontal() + 2 * borderInset();
       float verticalInsets = padding.vertical() + 2 * borderInset();
       float contentWidth = Math.max(0, getWidth() - horizontalInsets);
-      java.util.List<String> lines = lines(contentWidth, YGMeasureModeAtMost);
+      java.util.List<String> lines = lines(contentWidth, 2);
       BitmapFont font = getStyle().font;
       Color oldFontColor = font.getColor().cpy();
       try {
@@ -664,19 +704,15 @@ public final class UiTheme implements Disposable {
       return 0;
     }
 
-    private static final int YGMeasureModeUndefined = 0;
-    private static final int YGMeasureModeExactly = 1;
-    private static final int YGMeasureModeAtMost = 2;
-
     @Override
     public float getPrefWidth() {
-      if (wrap) return measureForYoga(Float.NaN, YGMeasureModeUndefined).width();
+      if (wrap) return measureForYoga(Float.NaN, YogaNode.MEASURE_UNDEFINED).width();
       return super.getPrefWidth();
     }
 
     @Override
     public float getPrefHeight() {
-      if (wrap) return measureForYoga(Float.NaN, YGMeasureModeUndefined).height();
+      if (wrap) return measureForYoga(Float.NaN, YogaNode.MEASURE_UNDEFINED).height();
       return Math.max(super.getPrefHeight(), lineBoxHeight);
     }
   }

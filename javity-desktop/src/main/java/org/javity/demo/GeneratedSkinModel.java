@@ -69,7 +69,8 @@ final class GeneratedSkinModel {
 
     model.animations.add(animation("bend-left", tip, -.52f));
     model.animations.add(animation("bend-right", tip, .52f));
-    model.animations.add(actionAnimation(tip));
+    model.animations.add(actionAnimation("upper-reach", tip, .65f, false));
+    model.animations.add(actionAnimation("upper-fold", tip, -.65f, true));
     model.calculateTransforms();
     return model;
   }
@@ -89,15 +90,16 @@ final class GeneratedSkinModel {
     return animation;
   }
 
-  private static Animation actionAnimation(Node tip) {
+  private static Animation actionAnimation(String name, Node tip, float peak, boolean horizontal) {
     NodeAnimation nodeAnimation = new NodeAnimation();
     nodeAnimation.node = tip;
     nodeAnimation.translation = new Array<>();
     nodeAnimation.translation.add(new NodeKeyframe<>(0, new Vector3(0, 0, 0)));
-    nodeAnimation.translation.add(new NodeKeyframe<>(.6f, new Vector3(0, .65f, 0)));
+    nodeAnimation.translation.add(
+        new NodeKeyframe<>(.6f, horizontal ? new Vector3(peak, 0, 0) : new Vector3(0, peak, 0)));
     nodeAnimation.translation.add(new NodeKeyframe<>(1.2f, new Vector3(0, 0, 0)));
     Animation animation = new Animation();
-    animation.id = "upper-reach";
+    animation.id = name;
     animation.duration = 1.2f;
     animation.nodeAnimations = new Array<>();
     animation.nodeAnimations.add(nodeAnimation);

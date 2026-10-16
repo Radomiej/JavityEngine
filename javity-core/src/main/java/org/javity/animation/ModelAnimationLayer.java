@@ -10,6 +10,7 @@ public final class ModelAnimationLayer implements ModelPosePlayback.Host {
   boolean[] resolvedMask;
   double weight;
   ModelPosePlayback current;
+  ModelPoseAnimator.TransitionState transition;
   private double fadeFrom, fadeTo, fadeElapsed, fadeDuration;
   boolean fading;
   private long fadeGeneration;
@@ -76,6 +77,7 @@ public final class ModelAnimationLayer implements ModelPosePlayback.Host {
     fading = false;
     if (current != null) current.clock.stop();
     current = null;
+    transition = null;
     owner.composeNow();
     return this;
   }
@@ -87,13 +89,8 @@ public final class ModelAnimationLayer implements ModelPosePlayback.Host {
   public ModelPosePlayback play(AnimationTransition transition) {
     Objects.requireNonNull(transition);
     requireUsable();
-    if (transition.fadeSeconds() > 0)
-      throw new IllegalArgumentException(
-          "Clip crossfade is unsupported; fade the layer weight instead");
     ModelPosePlayback next = owner.createLayerPlayback(this, transition);
-    if (current != null) current.clock.stop();
-    current = next;
-    owner.composeNow();
+    owner.replaceLayer(this, next, transition.fadeSeconds());
     return next;
   }
 
@@ -148,6 +145,7 @@ public final class ModelAnimationLayer implements ModelPosePlayback.Host {
     requireCurrent(playback);
     playback.clock.stop();
     current = null;
+    transition = null;
     owner.composeNow();
     return playback;
   }
@@ -155,5 +153,15 @@ public final class ModelAnimationLayer implements ModelPosePlayback.Host {
   @Override
   public void parameter(ModelPosePlayback playback, double value) {
     throw new IllegalStateException("A layer playback has no mixer parameter");
+  }
+
+  @Override
+  public boolean isFading(ModelPosePlayback playback) {
+    return current == playback && playback.clock.isActive() && transition != null;
+  }
+
+  @Override
+  public double fadeProgress(ModelPosePlayback playback) {
+    return current == playback && transition != null ? transition.progress() : 1;
   }
 }

@@ -18,10 +18,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.Optional;
+import org.javity.avatar.AvatarPreset;
+import org.javity.avatar.AvatarView;
 import org.javity.core.Game;
 import org.javity.core.GameObject;
 import org.javity.core.Transform3D;
+import org.javity.render.AvatarCameraMode;
 import org.javity.render.Camera3D;
+import org.javity.render.CameraRig3D;
 import org.javity.render.GdxRenderer;
 import org.javity.ui.flex.Flex;
 import org.javity.ui.flex.UiTheme;
@@ -31,6 +35,7 @@ import org.javity.voxel.ChunkPos;
 import org.javity.voxel.VoxelHit;
 import org.javity.voxel.VoxelRaycaster;
 import org.javity.voxel.VoxelWorld;
+import org.javity.voxel.controller.VoxelCameraObstruction;
 import org.javity.voxel.controller.VoxelFpsController;
 import org.javity.voxel.gpu.VoxelChunkRenderer;
 
@@ -60,16 +65,28 @@ final class VoxelDemo extends ApplicationAdapter {
   private com.badlogic.gdx.scenes.scene2d.ui.Label counters;
   private com.badlogic.gdx.scenes.scene2d.ui.Label targetStatus;
   private GameObject cameraObject;
+  private GameObject remoteCameraObject;
+  private Camera3D remoteCameraComponent;
   private Transform3D cameraTransform;
   private VoxelFpsController fpsController;
   private Camera3D cameraComponent;
+  private CameraRig3D cameraRig;
   private PerspectiveCamera camera;
+  private GeneratedVoxelAvatar avatar;
+  private Transform3D avatarTransform;
+  private AvatarView worldHiddenView;
+  private AvatarView worldFullView;
+  private AvatarView viewmodelView;
+  private AvatarView remoteProofView;
   private final Vector3 cameraPositionScratch = new Vector3();
   private final Vector3 cameraDirectionScratch = new Vector3();
+  private final Vector3 previousPlayerFeet = new Vector3();
   private Vector3 spawnFeet;
   private VoxelSmokeProbe smokeProbe;
   private int selectedBlockId;
   private int frames;
+  private int lastAvatarToolPixels;
+  private int lastViewmodelWallPixels;
   private float yaw;
   private float pitch;
   private boolean disposed;
@@ -77,6 +94,9 @@ final class VoxelDemo extends ApplicationAdapter {
   private boolean discardFirstMouseDelta = true;
   private boolean freeFlyMode;
   private boolean freeFlyToggleHeld;
+  private boolean cameraModeToggleHeld;
+  private boolean clothingVisible = true;
+  private boolean toolVisible = true;
 
   VoxelDemo(boolean smoke) {
     this.smoke = smoke;
@@ -113,13 +133,30 @@ final class VoxelDemo extends ApplicationAdapter {
     cameraTransform = cameraObject.addComponent(new Transform3D());
     cameraComponent = cameraObject.addComponent(new Camera3D(67));
     fpsController = cameraObject.addComponent(new VoxelFpsController(world));
+    remoteCameraObject = game.createObject("avatar observer camera");
+    remoteCameraComponent = remoteCameraObject.addComponent(new Camera3D(67));
+    remoteCameraComponent.camera.near = .1f;
+    remoteCameraComponent.camera.far = 240;
     camera = cameraComponent.camera;
     camera.near = .1f;
     camera.far = 240;
     spawnFeet = findSpawnFeet();
     cameraTransform.position.set(spawnFeet);
     game.start();
+    avatar = GeneratedVoxelAvatar.create(game, .9f);
+    avatarTransform = avatar.object.getComponent(Transform3D.class);
+    worldHiddenView = avatar.binding.view().parts(java.util.Set.of());
+    worldFullView = avatar.binding.view().preset(AvatarPreset.FULL_BODY).slotVisible("shirt", true);
+    viewmodelView = avatar.binding.view().preset(AvatarPreset.ARMS_ONLY).slotVisible("tool", true);
+    viewmodelView.slotVisible("shirt", false);
+    remoteProofView = avatar.binding.view().preset(AvatarPreset.FULL_BODY);
+    cameraRig =
+        new CameraRig3D(
+            cameraComponent, new PerspectiveCamera(72, 1, 1), new VoxelCameraObstruction(world));
+    cameraRig.setWorldProjection(67, .1f, 240);
+    cameraRig.setViewmodelProjection(72, .03f);
     syncCameraFromFpsController();
+    previousPlayerFeet.set(cameraTransform.position);
     chunks = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
 
     stage = new Stage(new ScreenViewport());
@@ -145,7 +182,7 @@ final class VoxelDemo extends ApplicationAdapter {
     hud.add(
         theme.label(
             "WASD move  Space jump  Shift sprint  F free-fly\n"
-                + "Esc release cursor  LMB remove  RMB place",
+                + "F5 FPS/TPP  E use  C shirt  T tool  Esc cursor\nLMB remove  RMB place",
             "text-sm text-slate-400",
             true),
         "h-10");
@@ -161,6 +198,32 @@ final class VoxelDemo extends ApplicationAdapter {
             freeFlyToggleHeld = true;
             toggleFreeFly();
           }
+          return true;
+        }
+        if (keycode == Input.Keys.F5) {
+          if (!cameraModeToggleHeld) {
+            cameraModeToggleHeld = true;
+            if (!freeFlyMode)
+              cameraRig.setMode(
+                  cameraRig.mode() == AvatarCameraMode.FIRST_PERSON
+                      ? AvatarCameraMode.THIRD_PERSON
+                      : AvatarCameraMode.FIRST_PERSON);
+          }
+          return true;
+        }
+        if (keycode == Input.Keys.E) {
+          avatar.beginUse();
+          return true;
+        }
+        if (keycode == Input.Keys.C) {
+          clothingVisible = !clothingVisible;
+          worldFullView.slotVisible("shirt", clothingVisible);
+          return true;
+        }
+        if (keycode == Input.Keys.T) {
+          toolVisible = !toolVisible;
+          worldFullView.slotVisible("tool", toolVisible);
+          viewmodelView.slotVisible("tool", toolVisible);
           return true;
         }
         if (keycode == Input.Keys.ESCAPE) {
@@ -180,6 +243,10 @@ final class VoxelDemo extends ApplicationAdapter {
       public boolean keyUp(int keycode) {
         if (keycode == Input.Keys.F) {
           freeFlyToggleHeld = false;
+          return true;
+        }
+        if (keycode == Input.Keys.F5) {
+          cameraModeToggleHeld = false;
           return true;
         }
         return false;
@@ -213,7 +280,21 @@ final class VoxelDemo extends ApplicationAdapter {
     float delta = smoke ? 1f / 60f : Math.min(Gdx.graphics.getDeltaTime(), .1f);
     if (!smoke) updateControls(delta);
     game.step(delta);
-    if (!freeFlyMode) syncCameraFromFpsController();
+    boolean worldAdvanced = !game.isWorldFrozen() && game.deltaTime > 0f;
+    if (worldAdvanced) {
+      avatar.updateUse();
+      avatar.updateJump(fpsController.getVerticalVelocity() > .05f);
+    }
+    if (!freeFlyMode) {
+      syncCameraFromFpsController();
+      syncAvatarYawOnly();
+      if (worldAdvanced) {
+        float speed = cameraTransform.position.dst(previousPlayerFeet) / game.deltaTime;
+        avatar.setWalking(MathUtils.clamp(speed / VoxelFpsController.SPRINT_SPEED, 0f, 1f));
+        previousPlayerFeet.set(cameraTransform.position);
+      }
+      cameraRig.update(cameraPositionScratch, cameraDirectionScratch, cameraObject);
+    }
     camera.update();
     chunks.update(camera, REBUILD_BUDGET);
 
@@ -221,8 +302,23 @@ final class VoxelDemo extends ApplicationAdapter {
     Gdx.gl.glClearColor(.29f, .55f, .78f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-    renderer.render(game);
+    if (freeFlyMode) renderer.renderWorld(game, cameraComponent, null);
+    else
+      renderer.renderWorld(
+          game,
+          cameraComponent,
+          cameraRig.mode() == AvatarCameraMode.FIRST_PERSON ? worldHiddenView : worldFullView);
     drawTargetOutline();
+    if (!freeFlyMode && cameraRig.mode() == AvatarCameraMode.FIRST_PERSON) {
+      com.badlogic.gdx.math.Matrix4 viewBase =
+          new com.badlogic.gdx.math.Matrix4()
+              .translate(.05f, -.8f, -1.35f)
+              .rotate(Vector3.X, 15)
+              .scale(.65f, .65f, .65f);
+      viewmodelView.setBaseTransform(viewBase);
+      renderer.renderViewmodel(cameraRig.viewmodelCamera(), viewmodelView);
+    }
+    renderer.render2D(game);
     drawCrosshair();
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
     updateHud();
@@ -378,6 +474,11 @@ final class VoxelDemo extends ApplicationAdapter {
     camera.up.set(Vector3.Y);
   }
 
+  private void syncAvatarYawOnly() {
+    avatarTransform.position.set(fpsController.getTransform3D().position);
+    avatarTransform.rotation.idt().setFromAxis(Vector3.Y, fpsController.getYawDegrees());
+  }
+
   private boolean isClearFpsBody(Vector3 feet) {
     if (!Float.isFinite(feet.x) || !Float.isFinite(feet.y) || !Float.isFinite(feet.z)) return false;
     float radius = VoxelFpsController.BODY_RADIUS;
@@ -463,7 +564,10 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private Optional<VoxelHit> currentHit() {
-    return VoxelRaycaster.cast(world, camera.position, camera.direction, 8, 512);
+    if (freeFlyMode) return VoxelRaycaster.cast(world, camera.position, camera.direction, 8, 512);
+    fpsController.getEyePosition(cameraPositionScratch);
+    fpsController.getLookDirection(cameraDirectionScratch);
+    return VoxelRaycaster.cast(world, cameraPositionScratch, cameraDirectionScratch, 8, 512);
   }
 
   private void drawTargetOutline() {
@@ -528,6 +632,7 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void resize(int width, int height) {
     if (renderer != null) renderer.resize(width, height);
+    if (cameraRig != null && width > 0 && height > 0) cameraRig.resize(width, height);
     if (camera != null) {
       camera.viewportWidth = Math.max(1, width);
       camera.viewportHeight = Math.max(1, height);
@@ -546,6 +651,13 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void pause() {
     focused = false;
+    freeFlyToggleHeld = false;
+    cameraModeToggleHeld = false;
+    if (fpsController != null) {
+      fpsController.setMoveInput(0, 0);
+      fpsController.setSprint(false);
+      fpsController.setJump(false);
+    }
     discardFirstMouseDelta = true;
     if (Gdx.input != null) Gdx.input.setCursorCatched(false);
   }
@@ -553,6 +665,8 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void resume() {
     focused = true;
+    freeFlyToggleHeld = false;
+    cameraModeToggleHeld = false;
     discardFirstMouseDelta = true;
   }
 
@@ -567,10 +681,12 @@ final class VoxelDemo extends ApplicationAdapter {
       failure = e;
     }
     try {
-      if (game != null) {
-        game.step(0);
-        game.close();
-      }
+      if (avatar != null) avatar.close();
+    } catch (RuntimeException | Error e) {
+      failure = combine(failure, e);
+    }
+    try {
+      if (game != null) game.close();
     } catch (RuntimeException | Error e) {
       failure = combine(failure, e);
     }
@@ -626,6 +742,14 @@ final class VoxelDemo extends ApplicationAdapter {
     return camera.direction.cpy();
   }
 
+  float cameraFov() {
+    return camera.fieldOfView;
+  }
+
+  float cameraNear() {
+    return camera.near;
+  }
+
   void restoreGalleryCamera() {
     for (int radius = 0; radius <= 20; radius++) {
       for (int z = -16; z < 32; z++) {
@@ -660,11 +784,112 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   void writeGalleryScreenshot() {
+    writeScreenshot("artifacts/voxels/gallery.png");
+  }
+
+  int writeAvatarScreenshot(String name) {
     Pixmap pixels =
         Pixmap.createFromFrameBuffer(
             0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     try {
-      var image = Gdx.files.local("artifacts/voxels/gallery.png");
+      var image = Gdx.files.local("docs/artifacts/avatar/voxel-" + name + ".png");
+      image.parent().mkdirs();
+      PixmapIO.writePNG(image, pixels, -1, true);
+      int warmPixels = 0;
+      int toolPixels = 0;
+      int wallPixels = 0;
+      int x0 = pixels.getWidth() / 12, x1 = pixels.getWidth() - x0;
+      int y1 = (int) (pixels.getHeight() * .72f);
+      for (int y = 0; y < y1; y++) {
+        for (int x = x0; x < x1; x++) {
+          int rgba = pixels.getPixel(x, y);
+          int r = rgba >>> 24 & 255, g = rgba >>> 16 & 255, b = rgba >>> 8 & 255;
+          if (r > 130 && g > 65 && r > g * 1.1 && g > b * 1.04) warmPixels++;
+          if (x > pixels.getWidth() * 3 / 5
+              && y > pixels.getHeight() / 20
+              && r > 70
+              && g > 30
+              && b < 80
+              && r > g * 1.2
+              && g > b * 1.15) toolPixels++;
+          if (x > pixels.getWidth() / 4
+              && x < pixels.getWidth() * 3 / 4
+              && y > pixels.getHeight() / 4
+              && y < pixels.getHeight() * 3 / 4
+              && Math.max(r, Math.max(g, b)) - Math.min(r, Math.min(g, b)) < 28
+              && Math.max(r, Math.max(g, b)) < 180) wallPixels++;
+        }
+      }
+      lastAvatarToolPixels = toolPixels;
+      lastViewmodelWallPixels = wallPixels;
+      return warmPixels;
+    } finally {
+      pixels.dispose();
+    }
+  }
+
+  int lastAvatarToolPixels() {
+    return lastAvatarToolPixels;
+  }
+
+  int lastViewmodelWallPixels() {
+    return lastViewmodelWallPixels;
+  }
+
+  void renderRemoteAvatarForSmoke() {
+    renderRemoteAvatarForSmoke(null);
+  }
+
+  void renderRemoteAvatarForSmoke(AvatarView localOverride) {
+    Vector3 eye = fpsController.getEyePosition(new Vector3());
+    PerspectiveCamera remote = remoteCameraComponent.camera;
+    remote.viewportWidth = Gdx.graphics.getBackBufferWidth();
+    remote.viewportHeight = Gdx.graphics.getBackBufferHeight();
+    remote.position.set(eye).add(4, 2, 4);
+    remote.direction.set(eye).sub(remote.position).nor();
+    remote.up.set(Vector3.Y);
+    remote.update();
+    Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+    Gdx.gl.glClearColor(.29f, .55f, .78f, 1f);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    chunks.setCullingEnabled(false);
+    try {
+      renderer.renderWorld(game, remoteCameraComponent, localOverride);
+      renderer.render2D(game);
+      drawCrosshair();
+      stage.act(0);
+      stage.draw();
+    } finally {
+      chunks.setCullingEnabled(true);
+    }
+  }
+
+  void renderRemotePresetForSmoke(AvatarPreset preset) {
+    remoteProofView.preset(preset);
+    renderRemoteAvatarForSmoke(remoteProofView);
+  }
+
+  void writeClearBoomCullingDiagnostic() {
+    chunks.setCullingEnabled(false);
+    try {
+      Gdx.gl.glViewport(
+          0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+      Gdx.gl.glClearColor(.29f, .55f, .78f, 1f);
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+      Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+      renderer.renderWorld(game, cameraComponent, worldFullView);
+      writeScreenshot("docs/artifacts/avatar/voxel-tpp-clear-culling-off.png");
+    } finally {
+      chunks.setCullingEnabled(true);
+    }
+  }
+
+  private void writeScreenshot(String path) {
+    Pixmap pixels =
+        Pixmap.createFromFrameBuffer(
+            0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+    try {
+      var image = Gdx.files.local(path);
       image.parent().mkdirs();
       PixmapIO.writePNG(image, pixels, -1, true);
     } finally {
@@ -677,6 +902,9 @@ final class VoxelDemo extends ApplicationAdapter {
     int glError = Gdx.gl.glGetError();
     require(glError == GL20.GL_NO_ERROR, "OpenGL error after voxel scene cleanup: " + glError);
     Gdx.files.local("artifacts/voxels/proof.json").writeString(proofJson, false, "UTF-8");
+    Gdx.files
+        .local("docs/artifacts/avatar/voxel-proof.json")
+        .writeString(proofJson, false, "UTF-8");
     Gdx.app.log(
         "Voxels", "SCENE PASS: FPS movement, camera controls, seam edits, resize and cleanup");
     Gdx.app.exit();
@@ -726,10 +954,104 @@ final class VoxelDemo extends ApplicationAdapter {
     return freeFlyMode;
   }
 
+  AvatarCameraMode avatarCameraMode() {
+    return cameraRig.mode();
+  }
+
+  float cameraClearanceFraction() {
+    return cameraRig.clearanceFraction();
+  }
+
+  float boomDistance() {
+    return cameraRig.boomDistance();
+  }
+
+  Vector3 playerEye() {
+    return fpsController.getEyePosition(new Vector3());
+  }
+
+  double locomotionTime() {
+    return avatar.locomotionTime();
+  }
+
+  double locomotionParameter() {
+    return avatar.locomotionParameter();
+  }
+
+  double useTime() {
+    return avatar.useTime();
+  }
+
+  boolean clothingVisible() {
+    return clothingVisible;
+  }
+
+  boolean toolVisible() {
+    return toolVisible;
+  }
+
+  boolean rightHandSocketMatchesTool() {
+    return avatar.rightHandSocketMatchesTool();
+  }
+
+  com.badlogic.gdx.math.Matrix4 rightArmPoseForSmoke() {
+    return avatar.rightArmPose();
+  }
+
+  com.badlogic.gdx.math.Matrix4 leftLegPoseForSmoke() {
+    return avatar.leftLegPose();
+  }
+
+  void setAvatarJumpForSmoke(boolean airborne) {
+    avatar.updateJump(airborne);
+  }
+
+  double jumpTimeForSmoke() {
+    return avatar.jumpTime();
+  }
+
+  double jumpWeightForSmoke() {
+    return avatar.jumpWeight();
+  }
+
+  boolean jumpPlaybackActiveForSmoke() {
+    return avatar.jumpPlaybackActive();
+  }
+
+  int avatarMarkerCountForSmoke() {
+    return avatar.markerCount();
+  }
+
+  void beginAvatarUseForSmoke() {
+    avatar.beginUse();
+  }
+
+  void setAvatarMoveForSmoke(float forward, float right) {
+    fpsController.setMoveInput(forward, right);
+  }
+
+  void resetPlayerForSmoke() {
+    cameraTransform.position.set(spawnFeet);
+    previousPlayerFeet.set(spawnFeet);
+    fpsController.setMoveInput(0, 0);
+  }
+
+  Game game() {
+    return game;
+  }
+
   boolean dispatchKeyDownForSmoke(int keycode) {
     boolean handled = inputMultiplexer.keyDown(keycode);
     inputMultiplexer.keyUp(keycode);
     return handled;
+  }
+
+  boolean dispatchRawKeyDownForSmoke(int keycode) {
+    return inputMultiplexer.keyDown(keycode);
+  }
+
+  boolean dispatchRawKeyUpForSmoke(int keycode) {
+    return inputMultiplexer.keyUp(keycode);
   }
 
   void applyFpsMouseLookForSmoke(float deltaX, float deltaY) {

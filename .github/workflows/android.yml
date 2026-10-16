@@ -1,0 +1,40 @@
+name: Android engine
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Android SDK
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Build APKs and unit tests
+        run: >-
+          ./gradlew --no-daemon -PjavityAndroid=true
+          :javity-android-app:assembleDebug
+          :javity-android-app:assembleDebugAndroidTest
+          :javity-android-app:assembleRelease
+          :javity-android-app:testDebugUnitTest
+          :javity-ui-yoga-android:assembleDebugAndroidTest
+          :javity-script-quickjs-android:assembleDebugAndroidTest
+      - name: APK ABI and 16 KiB alignment
+        run: |
+          python3 tools/audit-android-apk.py javity-android-app/build/outputs/apk/debug/javity-android-app-debug.apk --output build/android-debug-audit.json
+          python3 tools/audit-android-apk.py javity-android-app/build/outputs/apk/release/javity-android-app-release-unsigned.apk --output build/android-release-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-verification
+          path: |
+            javity-android-app/build/outputs/apk/**
+            javity-android-app/build/reports/tests/**
+            javity-ui-yoga-android/build/outputs/apk/androidTest/**
+            javity-script-quickjs-android/build/outputs/apk/androidTest/**
+            build/android-*-audit.json

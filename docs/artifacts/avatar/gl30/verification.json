@@ -1,0 +1,17 @@
+{
+  "fixture": "procedural two-quad skinned rig; not full voxel avatar",
+  "requestedGlProfile": "GL30",
+  "actualGlProfile": "GL30",
+  "actualGlVersion": "4.5 (Core Profile) Mesa 25.0.7-2+deb13u1",
+  "gl30Available": true,
+  "successfulCandidateVaoCount": 1,
+  "javaUploadFailureCandidateVaoCount": 1,
+  "glErrorFailureCandidateVaoCount": 1,
+  "restoreFailureCandidateVaoCount": 1,
+  "successfulVaosDeletedAfterFinalLease": true,
+  "samples": [
+    {"timeSeconds": 0.1, "pixelDifferences": 0, "sourceImage": "sample-1-source.png", "partitionImage": "sample-1-partition.png"},
+    {"timeSeconds": 0.4, "pixelDifferences": 0, "sourceImage": "sample-2-source.png", "partitionImage": "sample-2-partition.png"}
+  ],
+  "armsOnlyImage": "arms-only.png"
+}

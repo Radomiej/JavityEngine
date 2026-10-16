@@ -1,7 +1,6 @@
 package org.javity.ui.declarative;
 
 import static org.junit.Assert.*;
-import static org.lwjgl.util.yoga.Yoga.*;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
@@ -9,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import org.javity.ui.flex.Flex;
 import org.javity.ui.flex.UtilityStyles;
+import org.javity.ui.yoga.YogaBackends;
+import org.javity.ui.yoga.YogaNode;
+import org.javity.ui.yoga.YogaNode.Edge;
+import org.javity.ui.yoga.YogaNode.Gutter;
 import org.junit.Test;
 
 public class UiDocumentTest {
@@ -77,7 +80,8 @@ public class UiDocumentTest {
               "invalid-image",
               "",
               Map.of("source", "portrait"),
-              List.of(UiNode.element("Text", "image-text", "", Map.of("text", "child"), List.of())));
+              List.of(
+                  UiNode.element("Text", "image-text", "", Map.of("text", "child"), List.of())));
 
       IllegalArgumentException error =
           assertThrows(
@@ -113,22 +117,22 @@ public class UiDocumentTest {
 
   @Test
   public void supportedBracketSizesAndHexColorsAreStrict() {
-    long node = YGNodeNew();
+    YogaNode node = YogaBackends.createDefault().createNode();
     try {
       UtilityStyles.Visual visual =
           UtilityStyles.apply(
               node,
               "w-[120px] h-[24px] p-[12px] gap-[8px] bg-[#abc] text-[#11223344] border-[#aabbcc]");
-      YGNodeCalculateLayout(node, Float.NaN, Float.NaN, YGDirectionLTR);
-      assertEquals(120, YGNodeLayoutGetWidth(node), .001f);
-      assertEquals(24, YGNodeLayoutGetHeight(node), .001f);
-      assertEquals(12, YGNodeLayoutGetPadding(node, YGEdgeLeft), .001f);
-      assertEquals(8, YGNodeStyleGetGap(node, YGGutterAll), .001f);
+      node.calculateLayout(Float.NaN, Float.NaN);
+      assertEquals(120, node.layoutWidth(), .001f);
+      assertEquals(24, node.layoutHeight(), .001f);
+      assertEquals(12, node.layoutPadding(Edge.LEFT), .001f);
+      assertEquals(8, node.styleGap(Gutter.ALL), .001f);
       assertEquals(0xaa / 255f, visual.background().r, .01f);
       assertThrows(IllegalArgumentException.class, () -> UtilityStyles.apply(node, "w-[-2px]"));
       assertThrows(IllegalArgumentException.class, () -> UtilityStyles.color("#12"));
     } finally {
-      YGNodeFree(node);
+      node.freeNode();
     }
   }
 

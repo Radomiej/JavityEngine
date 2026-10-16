@@ -2,7 +2,9 @@ package org.javity.voxel;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 public class VoxelWorldTest {
@@ -70,6 +72,52 @@ public class VoxelWorldTest {
     world.loadChunk(position);
     long second = world.chunkGeneration(position);
     assertTrue(second > first);
+  }
+
+  @Test
+  public void collisionRevisionAndSnapshotAreIndependentOfRenderDirtyQueue() {
+    VoxelWorld world = new VoxelWorld(registry(), 2);
+    ChunkPos position = new ChunkPos(-1, 2, 3);
+    world.loadChunk(position);
+    long initial = world.contentRevision(position);
+    assertTrue(initial > 0);
+    world.clearDirty(position);
+    assertFalse(world.setBlock(-1, 32, 48, 0));
+    assertEquals(initial, world.contentRevision(position));
+    assertTrue(world.setBlock(-1, 32, 48, 1));
+    assertEquals(initial + 1, world.contentRevision(position));
+    assertTrue(world.dirtyChunks().contains(position));
+    VoxelWorld.CollisionSnapshot snapshot = world.collisionSnapshot(position);
+    assertEquals(world.chunkGeneration(position), snapshot.generation());
+    assertEquals(world.contentRevision(position), snapshot.contentRevision());
+    assertEquals(1, snapshot.getBlock(15, 0, 0));
+    short[] copy = snapshot.copyBlocks();
+    copy[0] = 0;
+    assertEquals(1, snapshot.getBlock(15, 0, 0));
+    world.setBlock(-1, 32, 48, 0);
+    assertEquals(1, snapshot.getBlock(15, 0, 0));
+    assertEquals(initial + 2, world.contentRevision(position));
+    assertTrue(world.unloadChunk(position));
+    assertEquals(0, world.contentRevision(position));
+    assertEquals(0, world.chunkGeneration(position));
+  }
+
+  @Test
+  public void contentRevisionOverflowFailsBeforeBlockOrDirtyMutation() throws Exception {
+    VoxelWorld world = new VoxelWorld(registry(), 1);
+    ChunkPos position = new ChunkPos(0, 0, 0);
+    world.loadChunk(position);
+    world.clearDirty(position);
+    Field revisions = VoxelWorld.class.getDeclaredField("contentRevisions");
+    revisions.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    Map<ChunkPos, Long> values = (Map<ChunkPos, Long>) revisions.get(world);
+    values.put(position, Long.MAX_VALUE);
+
+    assertThrows(IllegalStateException.class, () -> world.setBlock(0, 0, 0, 1));
+    assertEquals(0, world.getBlock(0, 0, 0));
+    assertEquals(Long.MAX_VALUE, world.contentRevision(position));
+    assertTrue(world.dirtyChunks().isEmpty());
   }
 
   @Test

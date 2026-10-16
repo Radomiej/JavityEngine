@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
  * Moves its owner's transform from a normalized velocity command during WORLD updates. This is
  * transform movement only; it does not perform collision detection or response.
  */
-public class CharacterController2D extends Component {
+public class CharacterController2D extends Component implements TransformEditPolicy {
   public final Vector2 velocity = new Vector2();
   public boolean constrainToBounds = true;
 
@@ -14,6 +14,11 @@ public class CharacterController2D extends Component {
   private boolean hasWorldBounds;
   private float boundsX, boundsY, boundsWidth, boundsHeight;
   private float halfWidth, halfHeight;
+
+  @Override
+  public boolean allowsInspectorTransformEdit() {
+    return false;
+  }
 
   /** Set the configured speed used by {@link #move(float, float)} in world units per second. */
   public CharacterController2D setSpeed(float speed) {

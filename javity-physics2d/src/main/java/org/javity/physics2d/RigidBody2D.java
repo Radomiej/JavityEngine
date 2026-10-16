@@ -3,9 +3,10 @@ package org.javity.physics2d;
 import com.badlogic.gdx.math.Vector2;
 import java.util.Objects;
 import org.javity.core.Component;
+import org.javity.core.TransformEditPolicy;
 
 /** One per object. Positions and velocity use world units; angular velocity uses radians/s. */
-public final class RigidBody2D extends Component {
+public final class RigidBody2D extends Component implements TransformEditPolicy {
   public enum Type {
     STATIC,
     DYNAMIC,
@@ -48,6 +49,11 @@ public final class RigidBody2D extends Component {
 
   public RigidBody2D() {
     this(Type.DYNAMIC);
+  }
+
+  @Override
+  public boolean allowsInspectorTransformEdit() {
+    return false;
   }
 
   public RigidBody2D(Type type) {

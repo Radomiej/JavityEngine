@@ -5,12 +5,13 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.Objects;
 import org.javity.core.Component;
 import org.javity.core.Transform3D;
+import org.javity.core.TransformEditPolicy;
 import org.javity.voxel.BlockPos;
 import org.javity.voxel.ChunkPos;
 import org.javity.voxel.VoxelWorld;
 
 /** CPU-only, axis-aligned first-person movement for a finite, explicitly loaded voxel world. */
-public final class VoxelFpsController extends Component {
+public final class VoxelFpsController extends Component implements TransformEditPolicy {
   public static final float BODY_RADIUS = 0.30f;
   public static final float BODY_HEIGHT = 1.80f;
   public static final float EYE_HEIGHT = 1.62f;
@@ -43,6 +44,11 @@ public final class VoxelFpsController extends Component {
 
   public VoxelFpsController(VoxelWorld world) {
     this.world = Objects.requireNonNull(world, "world");
+  }
+
+  @Override
+  public boolean allowsInspectorTransformEdit() {
+    return false;
   }
 
   @Override

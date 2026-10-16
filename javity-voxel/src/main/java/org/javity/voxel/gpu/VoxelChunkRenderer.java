@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.model.MeshPart;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.math.Vector3;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,7 +77,8 @@ public final class VoxelChunkRenderer implements AutoCloseable {
     requireOpenAndRenderThread();
     Objects.requireNonNull(camera, "camera");
     if (maxRebuilds < 0) throw new IllegalArgumentException("maxRebuilds must be nonnegative");
-    if (game.isDisposed()) throw new IllegalStateException("Cannot update voxel rendering after Game.close");
+    if (game.isDisposed())
+      throw new IllegalStateException("Cannot update voxel rendering after Game.close");
     lastCamera = camera;
     int successful = 0;
     lastRebuilds = 0;
@@ -199,7 +199,22 @@ public final class VoxelChunkRenderer implements AutoCloseable {
     }
 
     if (current == null) {
-      RenderedChunk replacement = createRenderedChunk(position, candidate, nextFaceCount);
+      RenderedChunk replacement = null;
+      try {
+        replacement = createRenderedChunk(position, candidate, nextFaceCount);
+        ensureCandidateReady(
+            position, null, replacement.gameObject, replacement.renderer, candidate);
+      } catch (RuntimeException | Error failure) {
+        if (replacement != null && !replacement.gameObject.isDestroyed()) {
+          try {
+            releaseSceneObject(replacement);
+          } catch (RuntimeException | Error cleanupFailure) {
+            failure.addSuppressed(cleanupFailure);
+          }
+        }
+        disposeAfterFailure(candidate, failure);
+        throw failure;
+      }
       rendered.put(position, replacement);
       faceCount += nextFaceCount;
       updateChunkVisibility(replacement, lastCamera);
@@ -217,17 +232,31 @@ public final class VoxelChunkRenderer implements AutoCloseable {
     try {
       current.gameObject.addComponent(candidateRenderer);
       attached = true;
+      // Initialize the replacement before detaching the currently visible model.
+      game.initializePendingComponents();
+      ensureCandidateReady(position, current, current.gameObject, candidateRenderer, candidate);
       if (!current.gameObject.removeComponent(current.renderer))
-        throw new IllegalStateException("Previous chunk ModelRenderer was detached during replacement");
+        throw new IllegalStateException(
+            "Previous chunk ModelRenderer was detached during replacement");
+      ensureCandidateReady(position, current, current.gameObject, candidateRenderer, candidate);
+      if (current.gameObject.containsComponent(current.renderer))
+        throw new IllegalStateException(
+            "Previous chunk renderer remained attached after replacement");
     } catch (RuntimeException | Error failure) {
       if (attached || current.gameObject.containsComponent(candidateRenderer)) {
         try {
-          current.gameObject.removeComponent(candidateRenderer);
+          if (current.gameObject.containsComponent(candidateRenderer))
+            current.gameObject.removeComponent(candidateRenderer);
         } catch (RuntimeException | Error cleanupFailure) {
           failure.addSuppressed(cleanupFailure);
         }
       }
-      if (!current.gameObject.containsComponent(current.renderer)) {
+      boolean mayRestoreOldRenderer =
+          !closed
+              && !game.isDisposed()
+              && !current.gameObject.isDestroyed()
+              && rendered.get(position) == current;
+      if (mayRestoreOldRenderer && !current.gameObject.containsComponent(current.renderer)) {
         // GameObject.removeComponent mutates first and notifies listeners second. A listener
         // may throw after detaching the old component, so restore a new component over the
         // still-live old Model instead of trying to reattach the removed instance.
@@ -267,7 +296,8 @@ public final class VoxelChunkRenderer implements AutoCloseable {
     int vertexCount = meshData.vertexCount();
     int indexCount = meshData.indexCount();
     if (vertexCount <= 0 || vertexCount > MAX_UNSIGNED_SHORT_VERTICES)
-      throw new IllegalArgumentException("Chunk mesh exceeds unsigned-short vertex capacity: " + vertexCount);
+      throw new IllegalArgumentException(
+          "Chunk mesh exceeds unsigned-short vertex capacity: " + vertexCount);
     if (indexCount <= 0 || indexCount % 3 != 0)
       throw new IllegalArgumentException("Chunk mesh index count must be a positive triangle list");
     float[] vertices = meshData.vertices();
@@ -277,7 +307,8 @@ public final class VoxelChunkRenderer implements AutoCloseable {
     for (int i = 0; i < indices.length; i++) {
       int unsignedIndex = Short.toUnsignedInt(indices[i]);
       if (unsignedIndex >= vertexCount)
-        throw new IllegalArgumentException("Voxel mesh index " + unsignedIndex + " exceeds " + vertexCount);
+        throw new IllegalArgumentException(
+            "Voxel mesh index " + unsignedIndex + " exceeds " + vertexCount);
     }
 
     Model model = new Model();
@@ -328,7 +359,8 @@ public final class VoxelChunkRenderer implements AutoCloseable {
   }
 
   private RenderedChunk createRenderedChunk(ChunkPos position, Model model, int faces) {
-    GameObject object = game.createObject("voxel chunk " + position.x() + "," + position.y() + "," + position.z());
+    GameObject object =
+        game.createObject("voxel chunk " + position.x() + "," + position.y() + "," + position.z());
     Transform3D transform = null;
     ModelRenderer modelRenderer = null;
     try {
@@ -336,20 +368,52 @@ public final class VoxelChunkRenderer implements AutoCloseable {
       transform.position.set(position.originX(), position.originY(), position.originZ());
       modelRenderer = new ModelRenderer(model);
       object.addComponent(modelRenderer);
+      game.initializePendingComponents();
+      ensureCandidateReady(position, null, object, modelRenderer, model);
       return new RenderedChunk(
-          position, world.chunkGeneration(position), object, transform, modelRenderer, model, faces);
+          position,
+          world.chunkGeneration(position),
+          object,
+          transform,
+          modelRenderer,
+          model,
+          faces);
     } catch (RuntimeException | Error failure) {
-      if (modelRenderer != null) {
+      if (modelRenderer != null && !object.isDestroyed()) {
         try {
-          object.removeComponent(modelRenderer);
+          if (object.containsComponent(modelRenderer)) object.removeComponent(modelRenderer);
         } catch (RuntimeException | Error cleanupFailure) {
           failure.addSuppressed(cleanupFailure);
         }
       }
-      object.destroy();
-      disposeAfterFailure(model, failure);
+      if (!object.isDestroyed()) {
+        try {
+          object.destroy();
+        } catch (RuntimeException | Error cleanupFailure) {
+          failure.addSuppressed(cleanupFailure);
+        }
+      }
       throw failure;
     }
+  }
+
+  private void ensureCandidateReady(
+      ChunkPos position,
+      RenderedChunk expectedCurrent,
+      GameObject object,
+      ModelRenderer renderer,
+      Model expectedModel) {
+    if (closed) throw new IllegalStateException("VoxelChunkRenderer closed during chunk creation");
+    if (game.isDisposed() || object.isDestroyed() || object.game != game)
+      throw new IllegalStateException("Game/object closed during chunk renderer initialization");
+    if (rendered.get(position) != expectedCurrent)
+      throw new IllegalStateException("Chunk ownership changed during renderer initialization");
+    if (!object.containsComponent(renderer)
+        || !renderer.isInitialized()
+        || renderer.getGameObject() != object
+        || renderer.instance.model != expectedModel)
+      throw new IllegalStateException(
+          "Candidate chunk renderer was detached during initialization");
   }
 
   private void synchronizeLoadedGenerations() {

@@ -1,0 +1,15 @@
+JSR-305 3.0.2: javax.annotation.concurrent notices
+
+Source: https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2-sources.jar
+Classes: javax.annotation.concurrent.GuardedBy, Immutable, NotThreadSafe, ThreadSafe.
+The exact published source headers state:
+
+/*
+ * Copyright (c) 2005 Brian Goetz
+ * Released under the Creative Commons Attribution License
+ *   (http://creativecommons.org/licenses/by/2.5)
+ * Official home: http://www.jcip.net
+ */
+
+License: Creative Commons Attribution 2.5, https://creativecommons.org/licenses/by/2.5/
+No local modifications to these third-party source classes are included. The accompanying full CC-BY-2.5 text is from the SPDX license list. The artifact POM separately declares Apache-2.0; this notice preserves the additional exact-source attribution.

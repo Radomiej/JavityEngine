@@ -1,9 +1,12 @@
 # Dokumentacja JavityEngine
 
 - [Zakończenie aktualizacji bazy i API usług](finish-update.md).
-- [TODO i kolejność prac](TODO.md) — bieżący backlog; najpierw migracja, później dodatkowe technologie.
+- [TODO i kolejność prac](TODO.md) — bieżący backlog; kolejność wykonania w [work-queue](work-queue.md).
 - [Status i wyniki weryfikacji](modernization-status.md).
 - [Inwentaryzacja starego API](migration-api.md) — co przeniesiono, co nadal działa w legacy i czego brakuje.
+- [Fizyka 3D Bullet](physics3d.md) — opcjonalne bryły, kontakty, zapytania i adapter voxelowy; status kontrolera/demo opisany osobno.
+- [Avatary FPS/TPP](avatars.md) — maski, regiony siatki, sloty/sockety, jeden właściciel pozy i widoki.
+- [Efekty odczuć 3D](feel3d.md) — presety prezentacyjne, kamery świata/viewmodelu i demo GL30; [zrzuty i pomiary](artifacts/feel3d/README.md).
 - [Voxele i chunki](voxels.md) — dane świata, meshing, DDA, adapter GPU i kontrola zasobów.
 - [Demo voxelowe](demo-voxels.png) i [autorski atlas tekstur](voxel-atlas.png).
 - [Mapy i MapLibre](maps-and-maplibre.md) — raster XYZ i oddzielny backend wektorowy.
@@ -21,8 +24,18 @@
 - [Relay Ward — natywny HUD](demo-mm.png) i [referencja HTML](demo-mm-html.png); [metoda porównania](ui-html-parity.md#hud-relay-ward).
 - [Pokrycie Feel/Animancer/OneJS](plugin-feature-coverage.md) — wdrożone zachowania, oddzielne dowody native i aktualny etap.
 - [Feedback/tween API](feedback-api.md), [animacje 2D/3D](animation-api.md), [deklaratywne UI](declarative-ui.md), [port OneJS/React](onejs-port.md).
+- [Provider QuickJS dla Androida](../javity-script-quickjs-android/README.md) — wspólny host React i aktualny status adaptera Android.
 - [Audyt systemów More Mountains](mm-systems-audit.md) — przeczytane źródła, zakres wdrożenia i brakujące kontrakty.
 - [Ustalenia portów](plugin-port-decisions.md) — własność, czas i granice bridge.
 - `superpowers/specs/` i `superpowers/plans/` — projekt i checklisty poszczególnych etapów.
 
 Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Zasady pracy: [AGENTS.md](../AGENTS.md).
+
+- [Android: audyt, probe APK i wymagany port](android-status.md)
+
+- [Kolejka prac](work-queue.md)
+- [Inspektor runtime](runtime-tools.md)
+- [Pokrycie OneJS — audyt agenta](onejs-coverage-audit.md)
+
+- [Projekt backendów Android Yoga/QuickJS i zakres testów](superpowers/specs/2026-10-15-android-port-architecture.md) — zweryfikowane artefakty; projekt, nie deklaracja wdrożenia.
+- [Szczegóły skinningu i warstw avatarów](superpowers/specs/2026-10-15-avatar-api-architecture.md) — własność geometrii i ograniczenia libGDX.

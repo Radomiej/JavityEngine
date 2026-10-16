@@ -1,0 +1,5 @@
+# Preserve upstream notice bytes: the APK audit verifies their SHA-256 hashes.
+javity-android-app/src/main/assets/android/third-party/** -text -whitespace
+
+# Preserve the historical compiler diagnostic exactly as captured.
+docs/android-shader-failure.txt -text -whitespace

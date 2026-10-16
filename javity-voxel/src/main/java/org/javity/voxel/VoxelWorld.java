@@ -15,6 +15,7 @@ public final class VoxelWorld {
   private final int maxLoadedChunks;
   private final Map<ChunkPos, short[]> chunks = new LinkedHashMap<>();
   private final Map<ChunkPos, Long> chunkGenerations = new LinkedHashMap<>();
+  private final Map<ChunkPos, Long> contentRevisions = new LinkedHashMap<>();
   private final LinkedHashSet<ChunkPos> dirty = new LinkedHashSet<>();
   private long lastChunkGeneration;
 
@@ -41,6 +42,7 @@ public final class VoxelWorld {
     long generation = lastChunkGeneration + 1;
     chunks.put(position, blocks);
     chunkGenerations.put(position, generation);
+    contentRevisions.put(position, 1L);
     lastChunkGeneration = generation;
     markDirty(position);
     for (BlockFace face : FACES) neighbor(position, face).ifPresent(this::markDirty);
@@ -50,6 +52,7 @@ public final class VoxelWorld {
     Objects.requireNonNull(position, "position");
     if (chunks.remove(position) == null) return false;
     chunkGenerations.remove(position);
+    contentRevisions.remove(position);
     dirty.remove(position);
     for (BlockFace face : FACES) neighbor(position, face).ifPresent(this::markDirty);
     return true;
@@ -61,12 +64,33 @@ public final class VoxelWorld {
 
   /**
    * Returns the nonzero generation token for this currently loaded chunk, or zero when unloaded.
-   * Each successful load lifetime receives a larger token. Token metadata is stored only for
-   * loaded chunks, so it is bounded by the world's loaded-chunk cap.
+   * Each successful load lifetime receives a larger token. Token metadata is stored only for loaded
+   * chunks, so it is bounded by the world's loaded-chunk cap.
    */
   public long chunkGeneration(ChunkPos position) {
     Objects.requireNonNull(position, "position");
     return chunkGenerations.getOrDefault(position, 0L);
+  }
+
+  /**
+   * Returns the content revision for a currently loaded chunk, or zero when it is unloaded.
+   * Revisions change only when a block value changes and are retained only for loaded chunks.
+   */
+  public long contentRevision(ChunkPos position) {
+    Objects.requireNonNull(position, "position");
+    return contentRevisions.getOrDefault(position, 0L);
+  }
+
+  /**
+   * Copies a chunk's block occupancy and revision in one single-threaded read. The returned
+   * snapshot contains no reference to the world's mutable storage.
+   */
+  public CollisionSnapshot collisionSnapshot(ChunkPos position) {
+    Objects.requireNonNull(position, "position");
+    short[] blocks = chunks.get(position);
+    if (blocks == null) throw new IllegalStateException("Chunk is not loaded: " + position);
+    return new CollisionSnapshot(
+        position, chunkGenerations.get(position), contentRevisions.get(position), blocks);
   }
 
   public List<ChunkPos> loadedChunks() {
@@ -75,6 +99,11 @@ public final class VoxelWorld {
 
   public int loadedChunkCount() {
     return chunks.size();
+  }
+
+  /** Configured maximum number of loaded chunks; used to size bounded adapters. */
+  public int maxLoadedChunks() {
+    return maxLoadedChunks;
   }
 
   public int dirtyChunkCount() {
@@ -107,7 +136,11 @@ public final class VoxelWorld {
     int localX = Math.floorMod(x, 16), localY = Math.floorMod(y, 16), localZ = Math.floorMod(z, 16);
     int index = blockIndex(localX, localY, localZ);
     if (Short.toUnsignedInt(blocks[index]) == blockId) return false;
+    long revision = contentRevisions.get(position);
+    if (revision == Long.MAX_VALUE)
+      throw new IllegalStateException("Chunk content revision space exhausted: " + position);
     blocks[index] = (short) blockId;
+    contentRevisions.put(position, revision + 1);
     markDirty(position);
     if (localX == 0) neighbor(position, BlockFace.NEG_X).ifPresent(this::markDirty);
     if (localX == 15) neighbor(position, BlockFace.POS_X).ifPresent(this::markDirty);
@@ -151,6 +184,50 @@ public final class VoxelWorld {
 
   private static int blockIndex(int x, int y, int z) {
     return (y * 16 + z) * 16 + x;
+  }
+
+  /** Immutable copied block occupancy for collision consumers. Block ids remain unsigned. */
+  public static final class CollisionSnapshot {
+    private final ChunkPos position;
+    private final long generation;
+    private final long contentRevision;
+    private final short[] blocks;
+
+    private CollisionSnapshot(
+        ChunkPos position, long generation, long contentRevision, short[] blocks) {
+      this.position = position;
+      this.generation = generation;
+      this.contentRevision = contentRevision;
+      this.blocks = blocks.clone();
+    }
+
+    public ChunkPos position() {
+      return position;
+    }
+
+    public long generation() {
+      return generation;
+    }
+
+    public long contentRevision() {
+      return contentRevision;
+    }
+
+    public int getBlock(int localX, int localY, int localZ) {
+      if (localX < 0
+          || localX >= CHUNK_SIZE
+          || localY < 0
+          || localY >= CHUNK_SIZE
+          || localZ < 0
+          || localZ >= CHUNK_SIZE)
+        throw new IndexOutOfBoundsException("Local block coordinates must be in [0, 15]");
+      return Short.toUnsignedInt(blocks[blockIndex(localX, localY, localZ)]);
+    }
+
+    /** Returns a fresh copy of the 4096 unsigned block ids in storage order. */
+    public short[] copyBlocks() {
+      return blocks.clone();
+    }
   }
 
   private java.util.Optional<ChunkPos> neighbor(ChunkPos position, BlockFace face) {

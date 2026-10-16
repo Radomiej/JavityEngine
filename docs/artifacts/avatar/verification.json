@@ -1,0 +1,8 @@
+{
+  "fixture": "procedural two-quad skinned rig; not full voxel avatar",
+  "samples": [
+    {"timeSeconds": 0.1, "pixelDifferences": 0, "sourceImage": "sample-1-source.png", "partitionImage": "sample-1-partition.png"},
+    {"timeSeconds": 0.4, "pixelDifferences": 0, "sourceImage": "sample-2-source.png", "partitionImage": "sample-2-partition.png"}
+  ],
+  "armsOnlyImage": "arms-only.png"
+}

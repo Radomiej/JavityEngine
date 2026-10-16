@@ -1,7 +1,9 @@
 package org.javity.demo;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -9,8 +11,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.nio.IntBuffer;
@@ -18,10 +18,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.javity.core.Component;
+import org.javity.core.ComponentChange;
 import org.javity.core.Game;
 import org.javity.core.GameObject;
 import org.javity.core.Transform3D;
-import org.javity.core.ComponentChange;
 import org.javity.render.Camera3D;
 import org.javity.render.GdxRenderer;
 import org.javity.render.ModelRenderer;
@@ -86,7 +87,8 @@ public final class VoxelGpuSmokeProbe {
       world.setBlock(15, 1, 4, grass);
       world.setBlock(16, 1, 4, wood);
       world.setBlock(96, 1, 1, sand);
-      require(world.dirtyChunkCount() == 3, "Initial dirty requests were not deduplicated by chunk");
+      require(
+          world.dirtyChunkCount() == 3, "Initial dirty requests were not deduplicated by chunk");
 
       game = new Game();
       GameObject cameraObject = game.createObject("voxel smoke camera");
@@ -108,27 +110,41 @@ public final class VoxelGpuSmokeProbe {
       int initialTotal = chunks.totalRebuilds();
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       require(chunks.lastRebuilds() <= 1, "A frame exceeded the one-chunk rebuild budget");
-      require(world.dirtyChunkCount() == 2, "A budget of one did not leave two dirty chunks queued");
+      require(
+          world.dirtyChunkCount() == 2, "A budget of one did not leave two dirty chunks queued");
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.totalRebuilds() - initialTotal == 3, "Initial dirty chunks were not rebuilt once each");
-      require(chunks.faceCount() == 38, "Expected 38 exposed faces across fixtures, got " + chunks.faceCount());
-      require(chunks.renderedChunkCount() == 3, "Each nonempty loaded chunk should own one rendered model");
-      require(chunks.visibleChunkCount() < chunks.renderedChunkCount(), "A remote chunk was not frustum-culled");
+      require(
+          chunks.totalRebuilds() - initialTotal == 3,
+          "Initial dirty chunks were not rebuilt once each");
+      require(
+          chunks.faceCount() == 38,
+          "Expected 38 exposed faces across fixtures, got " + chunks.faceCount());
+      require(
+          chunks.renderedChunkCount() == 3,
+          "Each nonempty loaded chunk should own one rendered model");
+      require(
+          chunks.visibleChunkCount() < chunks.renderedChunkCount(),
+          "A remote chunk was not frustum-culled");
 
       // A new adapter must reconstruct models from an unchanged, already-clean CPU world.
       Set<Integer> firstAdapterBuffers = tracker.liveAdapterBuffers(preAdapterBuffers);
       chunks.close();
       game.step(0);
       for (int handle : firstAdapterBuffers)
-        require(!original20.glIsBuffer(handle), "Closing the first adapter retained buffer " + handle);
+        require(
+            !original20.glIsBuffer(handle), "Closing the first adapter retained buffer " + handle);
       chunks = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
-      require(world.dirtyChunkCount() == 3, "A replacement adapter did not queue every loaded chunk");
-      int firstReplacementFrame = frame(
-          game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
+      require(
+          world.dirtyChunkCount() == 3, "A replacement adapter did not queue every loaded chunk");
+      int firstReplacementFrame =
+          frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       require(firstReplacementFrame == 1, "Replacement adapter ignored its one-chunk build budget");
-      require(chunks.renderedChunkCount() == 1, "Replacement adapter did not begin rebuilding models");
+      require(
+          chunks.renderedChunkCount() == 1, "Replacement adapter did not begin rebuilding models");
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.renderedChunkCount() == 3, "Replacement adapter failed to restore the clean world's models");
+      require(
+          chunks.renderedChunkCount() == 3,
+          "Replacement adapter failed to restore the clean world's models");
 
       // Validate actual texel sampling against the PNG, including its image-top/low-v row
       // convention. Grass's green cap lives near the top of tile 1; wood's side and cap
@@ -136,24 +152,30 @@ public final class VoxelGpuSmokeProbe {
       Vector3 grassCapPoint = new Vector3(1f + 8f / 15f, 1f + 12f / 15f, 2f);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
       assertFramebufferMatchesTile(camera, grassCapPoint, atlasPixels, 1, 8, 3, "grass side cap");
-      requireGreen(framebufferColor(camera, grassCapPoint), "Grass side did not sample its cap row");
+      requireGreen(
+          framebufferColor(camera, grassCapPoint), "Grass side did not sample its cap row");
 
       Vector3 woodSidePoint = new Vector3(4f + 8f / 15f, 1f + 7f / 15f, 2f);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(4.5f, 1.5f, 1.5f), 0);
       Color woodSide = framebufferColor(camera, woodSidePoint);
       assertFramebufferMatchesTile(camera, woodSidePoint, atlasPixels, 4, 8, 8, "wood side");
-      requireDistinct(woodSide, framebufferColorForTile(atlasPixels, 1, 8, 3), "wood side atlas row");
+      requireDistinct(
+          woodSide, framebufferColorForTile(atlasPixels, 1, 8, 3), "wood side atlas row");
 
       Vector3 overlapPoint = new Vector3(7f + 8f / 15f, 1f + 7f / 15f, 2f);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(7.5f, 1.5f, 1.5f), 0);
       Color overlap = framebufferColor(camera, overlapPoint);
-      assertFramebufferMatchesTile(camera, overlapPoint, atlasPixels, 1, 8, 8, "front block in depth overlap");
-      requireCloserToTile(overlap, atlasPixels, 1, 3, "front voxel must occlude the stone behind it");
+      assertFramebufferMatchesTile(
+          camera, overlapPoint, atlasPixels, 1, 8, 8, "front block in depth overlap");
+      requireCloserToTile(
+          overlap, atlasPixels, 1, 3, "front voxel must occlude the stone behind it");
 
       Vector3 woodTopPoint = new Vector3(4f + 8f / 15f, 2f, 1f + 7f / 15f);
-      frameTopDown(game, renderer, chunks, camera, cameraTransform, new Vector3(4.5f, 1.5f, 1.5f), 0);
+      frameTopDown(
+          game, renderer, chunks, camera, cameraTransform, new Vector3(4.5f, 1.5f, 1.5f), 0);
       Color woodTop = framebufferColor(camera, woodTopPoint);
-      assertFramebufferMatchesTile(camera, woodTopPoint, atlasPixels, 5, 8, 8, "wood cap / lower atlas row");
+      assertFramebufferMatchesTile(
+          camera, woodTopPoint, atlasPixels, 5, 8, 8, "wood cap / lower atlas row");
       requireDistinct(woodTop, woodSide, "wood top and side tiles");
 
       int stableTotal = chunks.totalRebuilds();
@@ -167,63 +189,94 @@ public final class VoxelGpuSmokeProbe {
       require(world.dirtyChunkCount() == 0, "An unchanged write dirtied a chunk");
       require(world.setBlock(2, 1, 1, wood), "Expected a block edit");
       require(world.setBlock(2, 1, 1, stone), "Expected a replacement edit");
-      require(world.dirtyChunkCount() == 1, "Multiple edits failed to deduplicate one chunk request");
+      require(
+          world.dirtyChunkCount() == 1, "Multiple edits failed to deduplicate one chunk request");
       int zeroRebuilds = chunks.rebuildCount(ZERO);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       require(chunks.lastRebuilds() == 1, "Dirty chunk was not rebuilt within a budget of one");
-      require(chunks.rebuildCount(ZERO) == zeroRebuilds + 1, "A deduplicated chunk was rebuilt more than once");
+      require(
+          chunks.rebuildCount(ZERO) == zeroRebuilds + 1,
+          "A deduplicated chunk was rebuilt more than once");
 
       // Editing one block at the seam changes visibility in both loaded chunks.
       int leftRebuilds = chunks.rebuildCount(ZERO);
       int rightRebuilds = chunks.rebuildCount(ONE_X);
       require(world.setBlock(15, 1, 4, 0), "Expected removal at chunk boundary");
-      require(world.dirtyChunkCount() == 2, "A cross-chunk edit must dirty the owner and loaded face neighbor");
+      require(
+          world.dirtyChunkCount() == 2,
+          "A cross-chunk edit must dirty the owner and loaded face neighbor");
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.rebuildCount(ZERO) == leftRebuilds + 1, "Boundary owner did not rebuild exactly once");
-      require(chunks.rebuildCount(ONE_X) == rightRebuilds + 1, "Boundary neighbor did not rebuild exactly once");
-      require(chunks.faceCount() == 38,
-          "Removing one seam block should expose a single six-face block while retaining the edited adjacent pair");
+      require(
+          chunks.rebuildCount(ZERO) == leftRebuilds + 1,
+          "Boundary owner did not rebuild exactly once");
+      require(
+          chunks.rebuildCount(ONE_X) == rightRebuilds + 1,
+          "Boundary neighbor did not rebuild exactly once");
+      require(
+          chunks.faceCount() == 38,
+          "Removing one seam block should expose a single six-face block while retaining the edited"
+              + " adjacent pair");
 
       // Replacing the same loaded coordinate without an intermediate update must retire the
       // previous model even when the rebuild budget is zero.
       int renderedBeforeUnload = chunks.renderedChunkCount();
       GameObject oldRemoteObject = findChunkObject(game, REMOTE);
-      require(oldRemoteObject != null, "Could not locate the remote chunk object before replacement");
+      require(
+          oldRemoteObject != null, "Could not locate the remote chunk object before replacement");
       Vector3 remoteSandPoint = new Vector3(96f + 8f / 15f, 1f + 7f / 15f, 2f);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(96.5f, 1.5f, 1.5f), 0);
       assertFramebufferMatchesTile(
-          camera, remoteSandPoint, atlasPixels, 6, 8, 8, "remote sand before same-coordinate replacement");
+          camera,
+          remoteSandPoint,
+          atlasPixels,
+          6,
+          8,
+          8,
+          "remote sand before same-coordinate replacement");
       Set<Integer> buffersBeforeRemoteReplacement = tracker.liveAdapterBuffers(preAdapterBuffers);
       require(world.unloadChunk(REMOTE), "Remote chunk did not unload");
       world.loadChunk(REMOTE);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
-      require(chunks.renderedChunkCount() == renderedBeforeUnload - 1,
+      require(
+          chunks.renderedChunkCount() == renderedBeforeUnload - 1,
           "Reloading a chunk coordinate retained its previous ModelRenderer");
-      require(oldRemoteObject.isDestroyed(), "Same-coordinate reload did not destroy the old chunk object");
-      require(chunks.rebuildCount(REMOTE) == 0, "Same-coordinate reload retained its previous rebuild count");
+      require(
+          oldRemoteObject.isDestroyed(),
+          "Same-coordinate reload did not destroy the old chunk object");
+      require(
+          chunks.rebuildCount(REMOTE) == 0,
+          "Same-coordinate reload retained its previous rebuild count");
       Set<Integer> buffersAfterRemoteReplacement = tracker.liveAdapterBuffers(preAdapterBuffers);
       Set<Integer> retiredRemoteBuffers = new HashSet<>(buffersBeforeRemoteReplacement);
       retiredRemoteBuffers.removeAll(buffersAfterRemoteReplacement);
-      require(retiredRemoteBuffers.size() == 2,
+      require(
+          retiredRemoteBuffers.size() == 2,
           "Same-coordinate reload did not retire the old chunk vertex/index buffers");
       for (int handle : retiredRemoteBuffers)
-        require(!original20.glIsBuffer(handle), "Same-coordinate reload retained old buffer " + handle);
+        require(
+            !original20.glIsBuffer(handle), "Same-coordinate reload retained old buffer " + handle);
       world.setBlock(96, 1, 1, sand);
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.rebuildCount(REMOTE) == 1, "Reloaded chunk did not start a fresh per-position rebuild count");
+      require(
+          chunks.rebuildCount(REMOTE) == 1,
+          "Reloaded chunk did not start a fresh per-position rebuild count");
 
       // Empty chunks have lifetime diagnostics even without a rendered model, and those
       // diagnostics must reset when the same coordinate is loaded again.
       world.loadChunk(EMPTY_LIFETIME);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
-      require(chunks.rebuildCount(EMPTY_LIFETIME) == 1, "Empty loaded chunk was not counted as rebuilt");
+      require(
+          chunks.rebuildCount(EMPTY_LIFETIME) == 1,
+          "Empty loaded chunk was not counted as rebuilt");
       require(world.unloadChunk(EMPTY_LIFETIME), "Empty lifetime fixture did not unload");
       world.loadChunk(EMPTY_LIFETIME);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
-      require(chunks.rebuildCount(EMPTY_LIFETIME) == 0,
+      require(
+          chunks.rebuildCount(EMPTY_LIFETIME) == 0,
           "Same-coordinate empty reload retained its prior per-position diagnostic count");
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
-      require(chunks.rebuildCount(EMPTY_LIFETIME) == 1,
+      require(
+          chunks.rebuildCount(EMPTY_LIFETIME) == 1,
           "Empty replacement lifetime did not begin its own rebuild count");
 
       // 16^3 / 2 occupied checkerboard cells emit 12,288 faces, 49,152 vertices and
@@ -236,7 +289,9 @@ public final class VoxelGpuSmokeProbe {
             if (((x + y + z) & 1) == 0) world.setBlock(32 + x, y, z, grass);
       int facesBeforeLarge = chunks.faceCount();
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.faceCount() - facesBeforeLarge == 12_288, "Large checkerboard upload lost faces or overflowed indices");
+      require(
+          chunks.faceCount() - facesBeforeLarge == 12_288,
+          "Large checkerboard upload lost faces or overflowed indices");
       require(chunks.rebuildCount(LARGE) == 1, "Large checkerboard chunk did not upload once");
       chunks.setCullingEnabled(false);
       frameFromOutside(
@@ -248,7 +303,8 @@ public final class VoxelGpuSmokeProbe {
           new Vector3(39.5f, 8.5f, 7.5f),
           new Vector3(39.5f, 8.5f, 38f));
       Color largeMeshPixel = framebufferColor(camera, new Vector3(39.5f, 8.5f, 16f));
-      require(largeMeshPixel.r + largeMeshPixel.g + largeMeshPixel.b > .08f,
+      require(
+          largeMeshPixel.r + largeMeshPixel.g + largeMeshPixel.b > .08f,
           "Checkerboard mesh with more than 65,535 indices produced no framebuffer pixels");
       // Mesher order is y,z,x then NEG_X/POS_X/NEG_Y/POS_Y/NEG_Z/POS_Z. The
       // last occupied checkerboard voxel is local (14,15,15), world (46,15,15).
@@ -256,17 +312,17 @@ public final class VoxelGpuSmokeProbe {
       // and vertices 49,140..49,143. This top-face sample reaches the late index
       // buffer tail and the unsigned-short vertex range above 32,767.
       Vector3 lateFacePoint = new Vector3(46f + 8f / 15f, 16f, 15f + 7f / 15f);
-      frameTopDown(
-          game,
-          renderer,
-          chunks,
+      frameTopDown(game, renderer, chunks, camera, cameraTransform, lateFacePoint, 0);
+      assertFramebufferMatchesTile(
           camera,
-          cameraTransform,
           lateFacePoint,
-          0);
-      assertFramebufferMatchesTile(camera, lateFacePoint, atlasPixels, 0, 8, 8,
+          atlasPixels,
+          0,
+          8,
+          8,
           "late checkerboard top face from index entries 73,710+");
-      require(original20.glGetError() == GL20.GL_NO_ERROR,
+      require(
+          original20.glGetError() == GL20.GL_NO_ERROR,
           "Large checkerboard draw left an OpenGL error");
       chunks.setCullingEnabled(true);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
@@ -276,56 +332,79 @@ public final class VoxelGpuSmokeProbe {
       // Capture only live names: OpenGL may recycle a deleted numeric name for a
       // replacement allocation, so historical handles are not stable identities.
       oldChunkBuffers = tracker.liveAdapterBuffers(preAdapterBuffers);
-      require(oldChunkBuffers.size() >= 2, "Probe did not observe owned voxel vertex/index buffers");
-      int deletedBeforeReplacement = tracker.deletedLiveCount(oldChunkBuffers);
+      require(
+          oldChunkBuffers.size() >= 2, "Probe did not observe owned voxel vertex/index buffers");
+      int deletedBeforeReplacement = tracker.deletionCount(oldChunkBuffers);
       require(world.setBlock(1, 2, 1, stone), "Expected a replaceable voxel mesh edit");
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
-      require(tracker.deletedLiveCount(oldChunkBuffers) >= deletedBeforeReplacement + 2,
-          "Successful model replacement did not release the previous GL mesh buffers");
+      require(
+          tracker.deletionCount(oldChunkBuffers) >= deletedBeforeReplacement + 2,
+          "Successful model replacement did not release the previous GL mesh buffers: old="
+              + oldChunkBuffers
+              + ", deletions before/after="
+              + deletedBeforeReplacement
+              + "/"
+              + tracker.deletionCount(oldChunkBuffers));
 
       Set<Integer> stableBuffers = tracker.liveAdapterBuffers(preAdapterBuffers);
       int failedRebuildCount = chunks.rebuildCount(ZERO);
       GameObject zeroObject = null;
       for (GameObject object : game.getObjects())
         if (object.name.equals("voxel chunk 0,0,0")) zeroObject = object;
-      require(zeroObject != null, "Could not locate the chunk object for listener rollback coverage");
+      require(
+          zeroObject != null, "Could not locate the chunk object for listener rollback coverage");
       ModelRenderer detachedRenderer = zeroObject.getComponent(ModelRenderer.class);
-      require(detachedRenderer != null, "Chunk had no current renderer before listener rollback test");
+      require(
+          detachedRenderer != null, "Chunk had no current renderer before listener rollback test");
       com.badlogic.gdx.graphics.g3d.Model retainedModel = detachedRenderer.instance.model;
       boolean[] throwOnOldRemoval = {true};
-      Runnable removeListener = zeroObject.onComponentChange(change -> {
-        if (throwOnOldRemoval[0]
-            && change.type() == ComponentChange.Type.REMOVED
-            && change.component() == detachedRenderer) {
-          throwOnOldRemoval[0] = false;
-          throw new IllegalStateException("probe listener rejected old renderer removal");
-        }
-      });
+      Runnable removeListener =
+          zeroObject.onComponentChange(
+              change -> {
+                if (throwOnOldRemoval[0]
+                    && change.type() == ComponentChange.Type.REMOVED
+                    && change.component() == detachedRenderer) {
+                  throwOnOldRemoval[0] = false;
+                  throw new IllegalStateException("probe listener rejected old renderer removal");
+                }
+              });
       require(world.setBlock(3, 1, 1, wood), "Expected listener rollback mesh edit");
       boolean listenerFailed = false;
       try {
         frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       } catch (IllegalStateException expected) {
-        listenerFailed = expected.getMessage() != null
-            && expected.getMessage().contains("probe listener");
+        listenerFailed =
+            expected.getMessage() != null && expected.getMessage().contains("probe listener");
       }
       require(listenerFailed, "Replacement did not expose the one-shot removal listener failure");
-      require(chunks.rebuildCount(ZERO) == failedRebuildCount,
+      require(
+          chunks.rebuildCount(ZERO) == failedRebuildCount,
           "Listener-failed replacement was counted as a committed rebuild");
       require(world.dirtyChunkCount() > 0, "Listener-failed chunk was not left retryable");
       ModelRenderer restoredRenderer = zeroObject.getComponent(ModelRenderer.class);
-      require(restoredRenderer != null && restoredRenderer != detachedRenderer,
+      require(
+          restoredRenderer != null && restoredRenderer != detachedRenderer,
           "Rollback did not attach a fresh ModelRenderer for the retained model");
-      require(restoredRenderer.instance.model == retainedModel,
+      require(
+          restoredRenderer.instance.model == retainedModel,
           "Rollback failed to preserve the previous Model instance");
       for (int handle : stableBuffers)
-        require(original20.glIsBuffer(handle), "Listener failure released the retained old buffer " + handle);
+        require(
+            original20.glIsBuffer(handle),
+            "Listener failure released the retained old buffer " + handle);
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
-      assertFramebufferMatchesTile(camera, new Vector3(1f + 8f / 15f, 2f + 7f / 15f, 2f), atlasPixels, 3, 8, 8,
+      assertFramebufferMatchesTile(
+          camera,
+          new Vector3(1f + 8f / 15f, 2f + 7f / 15f, 2f),
+          atlasPixels,
+          3,
+          8,
+          8,
           "old model after listener rollback");
       removeListener.run();
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
-      require(chunks.rebuildCount(ZERO) == failedRebuildCount + 1,
+      require(
+          chunks.rebuildCount(ZERO) == failedRebuildCount + 1,
           "Listener-failed replacement was not retryable on the next update");
 
       failedRebuildCount = chunks.rebuildCount(ZERO);
@@ -336,25 +415,42 @@ public final class VoxelGpuSmokeProbe {
       try {
         frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       } catch (RuntimeException expected) {
-        candidateFailed = expected.getMessage() != null
-            && expected.getMessage().toLowerCase().contains("tile");
+        candidateFailed =
+            expected.getMessage() != null && expected.getMessage().toLowerCase().contains("tile");
       }
-      require(candidateFailed,
+      require(
+          candidateFailed,
           "Invalid atlas candidate did not report the expected atlas tile validation failure");
-      require(chunks.rebuildCount(ZERO) == failedRebuildCount,
+      require(
+          chunks.rebuildCount(ZERO) == failedRebuildCount,
           "A failed candidate was counted as a committed rebuild");
       for (int handle : stableBuffers)
-        require(original20.glIsBuffer(handle), "Failed replacement disposed a still-renderable old buffer " + handle);
-      require(tracker.generationCount() == generationIndex,
+        require(
+            original20.glIsBuffer(handle),
+            "Failed replacement disposed a still-renderable old buffer " + handle);
+      require(
+          tracker.generationCount() == generationIndex,
           "Invalid tile candidate allocated GPU buffers before validation");
 
       // Draw the retained model after the failed candidate, then retry on the next update.
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 0);
-      assertFramebufferMatchesTile(camera, new Vector3(1f + 8f / 15f, 2f + 7f / 15f, 2f), atlasPixels, 3, 8, 8,
+      assertFramebufferMatchesTile(
+          camera,
+          new Vector3(1f + 8f / 15f, 2f + 7f / 15f, 2f),
+          atlasPixels,
+          3,
+          8,
+          8,
           "old model after failed replacement");
       require(world.setBlock(1, 2, 1, wood), "Expected a valid retry edit");
       drainDirty(game, renderer, chunks, camera, cameraTransform, world);
-      require(chunks.rebuildCount(ZERO) == failedRebuildCount + 1, "Failed upload was not retried exactly once");
+      require(
+          chunks.rebuildCount(ZERO) == failedRebuildCount + 1,
+          "Failed upload was not retried exactly once");
+
+      // Run adversarial first-upload callback fixtures after the main adapter's
+      // identity-sensitive replacement assertions, since drivers may recycle GL names.
+      verifyInitializationCallbackCleanup(blocks, grass, atlas, renderer, tracker, original20);
 
       Set<Integer> voxelBuffers = tracker.adapterBuffers(preAdapterBuffers);
       chunks.close();
@@ -363,9 +459,12 @@ public final class VoxelGpuSmokeProbe {
       game.step(0); // flush destroyed chunk objects before any later draw
       for (int handle : voxelBuffers)
         require(!original20.glIsBuffer(handle), "Voxel adapter leaked GL buffer " + handle);
-      require(original20.glIsTexture(atlasHandle), "Voxel adapter disposed its borrowed atlas texture");
+      require(
+          original20.glIsTexture(atlasHandle), "Voxel adapter disposed its borrowed atlas texture");
       atlas.bind();
-      require(original20.glGetError() == GL20.GL_NO_ERROR, "Borrowed atlas could not be rebound after close");
+      require(
+          original20.glGetError() == GL20.GL_NO_ERROR,
+          "Borrowed atlas could not be rebound after close");
 
       game.close();
       game = null;
@@ -373,7 +472,10 @@ public final class VoxelGpuSmokeProbe {
       renderer = null;
       require(driverErrors.isEmpty(), "Driver errors during voxel probe: " + driverErrors);
       require(original20.glGetError() == GL20.GL_NO_ERROR, "Voxel probe left an OpenGL error");
-      Gdx.app.log("Voxels", "GPU PASS: atlas UVs, depth, budget, seams, culling, large indices and resource recovery");
+      Gdx.app.log(
+          "Voxels",
+          "GPU PASS: atlas UVs, depth, budget, seams, culling, large indices and resource"
+              + " recovery");
     } finally {
       Throwable failure = null;
       try {
@@ -429,7 +531,295 @@ public final class VoxelGpuSmokeProbe {
           }
         },
         configuration);
-    if (!failures.isEmpty()) throw new IllegalStateException("Voxel GPU smoke failed", failures.get(0));
+    if (!failures.isEmpty())
+      throw new IllegalStateException("Voxel GPU smoke failed", failures.get(0));
+  }
+
+  private static void verifyInitializationCallbackCleanup(
+      BlockRegistry blocks,
+      int blockId,
+      Texture atlas,
+      GdxRenderer renderer,
+      GlTracker tracker,
+      GL20 gl) {
+    verifyFirstUploadCallbackClose(blocks, blockId, atlas, renderer, tracker, gl);
+    verifyFirstUploadCallbackRemoval(blocks, blockId, atlas, renderer, tracker, gl);
+    verifyFirstUploadGameClose(blocks, blockId, atlas, renderer, tracker, gl);
+    verifyReplacementCallbackRemoval(blocks, blockId, atlas, renderer, tracker, gl);
+  }
+
+  private static void verifyFirstUploadCallbackClose(
+      BlockRegistry blocks,
+      int blockId,
+      Texture atlas,
+      GdxRenderer renderer,
+      GlTracker tracker,
+      GL20 gl) {
+    Game game = new Game();
+    PerspectiveCamera camera = createFixtureCamera(game);
+    VoxelWorld world = oneChunkWorld(blocks, blockId);
+    VoxelChunkRenderer[] adapterRef = new VoxelChunkRenderer[1];
+    adapterRef[0] = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
+    game.createObject("close adapter callback")
+        .addComponent(
+            new Component() {
+              @Override
+              public void onCreate() {
+                adapterRef[0].close();
+              }
+            });
+    int baseline = tracker.generationCount();
+    int deletionBaseline = tracker.deletionEventCount();
+    try {
+      expectChunkUpdateFailure(adapterRef[0], camera, "callback closed adapter");
+      require(
+          adapterRef[0].renderedChunkCount() == 0,
+          "Closed adapter committed its provisional chunk");
+      GameObject provisional = findChunkObject(game, ZERO);
+      require(
+          provisional == null || provisional.isDestroyed(),
+          "Adapter-close callback left its provisional chunk object alive");
+      requireCandidateBuffersDisposed(
+          tracker, baseline, deletionBaseline, gl, "adapter-close callback");
+    } finally {
+      adapterRef[0].close();
+      game.step(0);
+      game.close();
+    }
+  }
+
+  private static void verifyFirstUploadCallbackRemoval(
+      BlockRegistry blocks,
+      int blockId,
+      Texture atlas,
+      GdxRenderer renderer,
+      GlTracker tracker,
+      GL20 gl) {
+    Game game = new Game();
+    PerspectiveCamera camera = createFixtureCamera(game);
+    VoxelWorld world = oneChunkWorld(blocks, blockId);
+    VoxelChunkRenderer adapter = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
+    GameObject[] provisionalRef = new GameObject[1];
+    boolean[] removedCandidate = {false};
+    game.createObject("remove first candidate callback")
+        .addComponent(
+            new Component() {
+              @Override
+              public void onCreate() {
+                provisionalRef[0] = findChunkObject(game, ZERO);
+                if (provisionalRef[0] == null) return;
+                ModelRenderer candidate = provisionalRef[0].getComponent(ModelRenderer.class);
+                removedCandidate[0] =
+                    candidate != null && provisionalRef[0].removeComponent(candidate);
+              }
+            });
+    int baseline = tracker.generationCount();
+    int deletionBaseline = tracker.deletionEventCount();
+    try {
+      expectChunkUpdateFailure(adapter, camera, "callback removed first candidate");
+      require(removedCandidate[0], "First-upload callback did not remove the candidate renderer");
+      require(adapter.renderedChunkCount() == 0, "Detached first-upload candidate was committed");
+      require(
+          provisionalRef[0] != null && provisionalRef[0].isDestroyed(),
+          "Detached first-upload candidate object was not retired");
+      requireCandidateBuffersDisposed(
+          tracker, baseline, deletionBaseline, gl, "first-upload candidate removal");
+    } finally {
+      adapter.close();
+      game.step(0);
+      game.close();
+    }
+  }
+
+  private static void verifyFirstUploadGameClose(
+      BlockRegistry blocks,
+      int blockId,
+      Texture atlas,
+      GdxRenderer renderer,
+      GlTracker tracker,
+      GL20 gl) {
+    Game game = new Game();
+    PerspectiveCamera camera = createFixtureCamera(game);
+    VoxelWorld world = oneChunkWorld(blocks, blockId);
+    VoxelChunkRenderer adapter = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
+    game.createObject("close game callback")
+        .addComponent(
+            new Component() {
+              @Override
+              public void onCreate() {
+                game.close();
+              }
+            });
+    int baseline = tracker.generationCount();
+    int deletionBaseline = tracker.deletionEventCount();
+    try {
+      expectChunkUpdateFailure(adapter, camera, "Game closed from component callback");
+      require(game.isDisposed(), "Game-close callback did not dispose the Game");
+      require(
+          adapter.renderedChunkCount() == 0, "Game-close callback committed its provisional chunk");
+      requireCandidateBuffersDisposed(
+          tracker, baseline, deletionBaseline, gl, "Game-close callback");
+    } finally {
+      adapter.close();
+      if (!game.isDisposed()) game.close();
+    }
+  }
+
+  private static void verifyReplacementCallbackRemoval(
+      BlockRegistry blocks,
+      int blockId,
+      Texture atlas,
+      GdxRenderer renderer,
+      GlTracker tracker,
+      GL20 gl) {
+    Game game = new Game();
+    PerspectiveCamera camera = createFixtureCamera(game);
+    VoxelWorld world = oneChunkWorld(blocks, blockId);
+    VoxelChunkRenderer adapter = new VoxelChunkRenderer(game, world, atlas, ATLAS_LAYOUT);
+    int allBufferGenerationBaseline = tracker.generationCount();
+    try {
+      adapter.update(camera, 1);
+      require(
+          adapter.renderedChunkCount() == 1,
+          "Replacement fixture failed to create its original chunk");
+      renderChunkFixture(renderer, game, camera);
+      GameObject object = findChunkObject(game, ZERO);
+      ModelRenderer oldRenderer = object.getComponent(ModelRenderer.class);
+      var oldModel = oldRenderer.instance.model;
+      Set<Integer> oldBuffers = tracker.buffersGeneratedSince(allBufferGenerationBaseline);
+      oldBuffers.removeIf(handle -> !gl.glIsBuffer(handle));
+      require(!oldBuffers.isEmpty(), "Replacement fixture did not allocate original chunk buffers");
+      require(
+          world.setBlock(2, 1, 1, blockId), "Replacement fixture edit did not change the chunk");
+      boolean[] removedCandidate = {false};
+      game.createObject("remove replacement callback")
+          .addComponent(
+              new Component() {
+                @Override
+                public void onCreate() {
+                  for (ModelRenderer renderer : object.getComponents(ModelRenderer.class))
+                    if (renderer != oldRenderer)
+                      removedCandidate[0] |= object.removeComponent(renderer);
+                }
+              });
+      int beforeCandidate = tracker.generationCount();
+      int beforeCandidateDeletes = tracker.deletionEventCount();
+      expectChunkUpdateFailure(adapter, camera, "callback removed replacement candidate");
+      int afterCandidateDeletes = tracker.deletionEventCount();
+      require(removedCandidate[0], "Replacement callback did not detach the candidate renderer");
+      require(adapter.renderedChunkCount() == 1, "Invalid replacement changed the chunk mapping");
+      require(
+          !object.isDestroyed() && object.getComponent(ModelRenderer.class) == oldRenderer,
+          "Invalid replacement did not keep the old renderer attached");
+      require(oldRenderer.instance.model == oldModel, "Invalid replacement changed the old model");
+      for (int handle : oldBuffers)
+        require(gl.glIsBuffer(handle), "Invalid replacement disposed old chunk buffer " + handle);
+      requireNoBufferDeletion(
+          tracker,
+          oldBuffers,
+          beforeCandidateDeletes,
+          afterCandidateDeletes,
+          "invalid replacement disposed an old chunk buffer");
+      requireCandidateBuffersDisposed(
+          tracker, beforeCandidate, beforeCandidateDeletes, gl, "replacement candidate removal");
+      require(world.dirtyChunkCount() > 0, "Removed replacement candidate was not left retryable");
+
+      int beforeAdapterClose = tracker.deletionEventCount();
+      adapter.close();
+      requireNoBufferDeletion(
+          tracker,
+          oldBuffers,
+          beforeCandidateDeletes,
+          beforeAdapterClose,
+          "Old chunk buffers were deleted before adapter close");
+      requireEachBufferDeletedOnce(
+          tracker,
+          oldBuffers,
+          beforeAdapterClose,
+          tracker.deletionEventCount(),
+          "adapter close did not release each preserved old chunk buffer exactly once");
+    } finally {
+      adapter.close();
+      game.step(0);
+      game.close();
+    }
+    for (int handle : tracker.buffersGeneratedSince(allBufferGenerationBaseline))
+      require(!gl.glIsBuffer(handle), "Replacement callback fixture leaked buffer " + handle);
+  }
+
+  private static VoxelWorld oneChunkWorld(BlockRegistry blocks, int blockId) {
+    VoxelWorld world = new VoxelWorld(blocks, 8);
+    world.loadChunk(ZERO);
+    world.setBlock(1, 1, 1, blockId);
+    return world;
+  }
+
+  private static PerspectiveCamera createFixtureCamera(Game game) {
+    GameObject cameraObject = game.createObject("callback fixture camera");
+    cameraObject.addComponent(new Transform3D());
+    Camera3D camera = cameraObject.addComponent(new Camera3D(67));
+    camera.camera.position.set(1.5f, 1.5f, 6f);
+    camera.camera.lookAt(1.5f, 1.5f, 1.5f);
+    camera.camera.near = .1f;
+    camera.camera.far = 64f;
+    game.start();
+    camera.camera.update();
+    return camera.camera;
+  }
+
+  private static void renderChunkFixture(
+      GdxRenderer renderer, Game game, PerspectiveCamera camera) {
+    clearFrame();
+    renderer.renderWorld(
+        game, game.getObjectsWith(Camera3D.class).getFirst().getComponent(Camera3D.class), null);
+    Gdx.gl.glFinish();
+  }
+
+  private static void expectChunkUpdateFailure(
+      VoxelChunkRenderer adapter, PerspectiveCamera camera, String context) {
+    boolean failed = false;
+    try {
+      adapter.update(camera, 1);
+    } catch (IllegalStateException expected) {
+      failed = true;
+    }
+    require(failed, context + " did not invalidate the candidate upload");
+  }
+
+  private static void requireCandidateBuffersDisposed(
+      GlTracker tracker, int baselineGeneration, int baselineDeletion, GL20 gl, String context) {
+    Set<Integer> candidateBuffers = tracker.buffersGeneratedSince(baselineGeneration);
+    require(!candidateBuffers.isEmpty(), context + " did not allocate candidate mesh buffers");
+    requireEachBufferDeletedOnce(
+        tracker,
+        candidateBuffers,
+        baselineDeletion,
+        tracker.deletionEventCount(),
+        context + " did not delete each candidate GL buffer exactly once");
+    for (int handle : candidateBuffers)
+      require(!gl.glIsBuffer(handle), context + " leaked provisional candidate buffer " + handle);
+  }
+
+  private static void requireEachBufferDeletedOnce(
+      GlTracker tracker, Set<Integer> handles, int startIndex, int endIndex, String message) {
+    require(!handles.isEmpty(), message + ": no tracked buffers");
+    for (int handle : handles)
+      require(
+          tracker.deletionEventCount(handle, startIndex, endIndex) == 1,
+          message
+              + ": handle "
+              + handle
+              + " had "
+              + tracker.deletionEventCount(handle, startIndex, endIndex)
+              + " delete events");
+  }
+
+  private static void requireNoBufferDeletion(
+      GlTracker tracker, Set<Integer> handles, int startIndex, int endIndex, String message) {
+    for (int handle : handles)
+      require(
+          tracker.deletionEventCount(handle, startIndex, endIndex) == 0,
+          message + ": handle " + handle);
   }
 
   private static void drainDirty(
@@ -444,7 +834,8 @@ public final class VoxelGpuSmokeProbe {
       frame(game, renderer, chunks, camera, cameraTransform, new Vector3(1.5f, 1.5f, 1.5f), 1);
       require(chunks.lastRebuilds() <= 1, "Dirty drain exceeded its one-chunk budget");
     }
-    require(world.dirtyChunkCount() == 0, "Dirty drain did not finish within its bounded frame count");
+    require(
+        world.dirtyChunkCount() == 0, "Dirty drain did not finish within its bounded frame count");
   }
 
   private static GameObject findChunkObject(Game game, ChunkPos position) {
@@ -551,8 +942,15 @@ public final class VoxelGpuSmokeProbe {
     Color actual = framebufferColor(camera, worldPoint);
     Color expected = framebufferColorForTile(atlas, tile, texelX, texelY);
     float distance = colorDistance(actual, expected);
-    require(distance < .035f,
-        label + " sampled an unexpected atlas texel: framebuffer=" + actual + ", expected=" + expected + ", RGB distance=" + distance);
+    require(
+        distance < .035f,
+        label
+            + " sampled an unexpected atlas texel: framebuffer="
+            + actual
+            + ", expected="
+            + expected
+            + ", RGB distance="
+            + distance);
   }
 
   private static Color framebufferColorForTile(Pixmap atlas, int tile, int texelX, int texelY) {
@@ -561,11 +959,19 @@ public final class VoxelGpuSmokeProbe {
     return new Color(atlas.getPixel(x, y));
   }
 
-  private static void requireCloserToTile(Color actual, Pixmap atlas, int expectedTile, int otherTile, String message) {
+  private static void requireCloserToTile(
+      Color actual, Pixmap atlas, int expectedTile, int otherTile, String message) {
     Color expected = framebufferColorForTile(atlas, expectedTile, 8, 8);
     Color other = framebufferColorForTile(atlas, otherTile, 8, 8);
-    require(colorDistance(actual, expected) + .10f < colorDistance(actual, other),
-        message + ": framebuffer=" + actual + ", expected tile=" + expected + ", hidden tile=" + other);
+    require(
+        colorDistance(actual, expected) + .10f < colorDistance(actual, other),
+        message
+            + ": framebuffer="
+            + actual
+            + ", expected tile="
+            + expected
+            + ", hidden tile="
+            + other);
   }
 
   private static void requireGreen(Color color, String message) {
@@ -573,7 +979,9 @@ public final class VoxelGpuSmokeProbe {
   }
 
   private static void requireDistinct(Color first, Color second, String label) {
-    require(colorDistance(first, second) > .12f, label + " rendered as the same atlas color: " + first + " / " + second);
+    require(
+        colorDistance(first, second) > .12f,
+        label + " rendered as the same atlas color: " + first + " / " + second);
   }
 
   private static float colorDistance(Color first, Color second) {
@@ -593,6 +1001,7 @@ public final class VoxelGpuSmokeProbe {
     private final Set<Integer> generated = new HashSet<>();
     private final Set<Integer> deleted = new HashSet<>();
     private final List<Integer> generationEvents = new ArrayList<>();
+    private final List<Integer> deletionEvents = new ArrayList<>();
     private GL20 proxy;
 
     GlTracker(GL20 delegate, List<String> driverErrors) {
@@ -602,57 +1011,106 @@ public final class VoxelGpuSmokeProbe {
 
     GL20 proxy() {
       if (proxy != null) return proxy;
-      proxy = (GL20)
-          Proxy.newProxyInstance(GL20.class.getClassLoader(), new Class<?>[] {GL20.class}, (p, method, args) -> {
-            String name = method.getName();
-            try {
-              Object result = method.invoke(delegate, args);
-              if (name.equals("glGenBuffer") && result instanceof Integer handle && handle != 0) {
-                generated.add(handle);
-                generationEvents.add(handle);
-              }
-              if (name.equals("glGenBuffers") && args != null && args.length > 0 && args[0] instanceof IntBuffer handles) {
-                IntBuffer view = handles.duplicate();
-                for (int i = view.position(); i < view.limit(); i++)
-                  if (view.get(i) != 0) {
-                    generated.add(view.get(i));
-                    generationEvents.add(view.get(i));
-                  }
-              }
-              if (name.equals("glDeleteBuffer") && args != null && args.length > 0) deleted.add((Integer) args[0]);
-              if (name.equals("glDeleteBuffers") && args != null && args.length > 0 && args[0] instanceof IntBuffer handles) {
-                IntBuffer view = handles.duplicate();
-                for (int i = view.position(); i < view.limit(); i++) deleted.add(view.get(i));
-              }
-              if (!name.equals("glGetError")) {
-                int error = delegate.glGetError();
-                if (error != GL20.GL_NO_ERROR)
-                  driverErrors.add("GL error 0x" + Integer.toHexString(error) + " after " + name);
-              }
-              return result;
-            } catch (InvocationTargetException failure) {
-              throw failure.getCause();
-            }
-          });
+      proxy =
+          (GL20)
+              Proxy.newProxyInstance(
+                  GL20.class.getClassLoader(),
+                  new Class<?>[] {GL20.class},
+                  (p, method, args) -> {
+                    String name = method.getName();
+                    try {
+                      Object result = method.invoke(delegate, args);
+                      if (name.equals("glGenBuffer")
+                          && result instanceof Integer handle
+                          && handle != 0) {
+                        generated.add(handle);
+                        generationEvents.add(handle);
+                      }
+                      if (name.equals("glGenBuffers")
+                          && args != null
+                          && args.length > 0
+                          && args[0] instanceof IntBuffer handles) {
+                        IntBuffer view = handles.duplicate();
+                        for (int i = view.position(); i < view.limit(); i++)
+                          if (view.get(i) != 0) {
+                            generated.add(view.get(i));
+                            generationEvents.add(view.get(i));
+                          }
+                      }
+                      if (name.equals("glDeleteBuffer") && args != null && args.length > 0) {
+                        deleted.add((Integer) args[0]);
+                        deletionEvents.add((Integer) args[0]);
+                      }
+                      if (name.equals("glDeleteBuffers")
+                          && args != null
+                          && args.length > 0
+                          && args[0] instanceof IntBuffer handles) {
+                        IntBuffer view = handles.duplicate();
+                        for (int i = view.position(); i < view.limit(); i++) {
+                          deleted.add(view.get(i));
+                          deletionEvents.add(view.get(i));
+                        }
+                      }
+                      if (!name.equals("glGetError")) {
+                        int error = delegate.glGetError();
+                        if (error != GL20.GL_NO_ERROR)
+                          driverErrors.add(
+                              "GL error 0x" + Integer.toHexString(error) + " after " + name);
+                      }
+                      return result;
+                    } catch (InvocationTargetException failure) {
+                      throw failure.getCause();
+                    }
+                  });
       return proxy;
     }
 
-    Set<Integer> generatedBuffers() { return Set.copyOf(generated); }
-    int generationCount() { return generationEvents.size(); }
-    Set<Integer> adapterBuffers(Set<Integer> beforeAdapter) { return difference(generated, beforeAdapter); }
+    Set<Integer> generatedBuffers() {
+      return Set.copyOf(generated);
+    }
+
+    int generationCount() {
+      return generationEvents.size();
+    }
+
+    int deletionEventCount() {
+      return deletionEvents.size();
+    }
+
+    int deletionEventCount(int handle, int startIndex, int endIndex) {
+      if (startIndex < 0 || endIndex < startIndex || endIndex > deletionEvents.size())
+        throw new IllegalArgumentException("Invalid GL buffer deletion event range");
+      int count = 0;
+      for (int i = startIndex; i < endIndex; i++) if (deletionEvents.get(i) == handle) count++;
+      return count;
+    }
+
+    Set<Integer> buffersGeneratedSince(int generationIndex) {
+      if (generationIndex < 0 || generationIndex > generationEvents.size())
+        throw new IllegalArgumentException("Invalid GL buffer generation index");
+      return new HashSet<>(generationEvents.subList(generationIndex, generationEvents.size()));
+    }
+
+    Set<Integer> adapterBuffers(Set<Integer> beforeAdapter) {
+      return difference(generated, beforeAdapter);
+    }
+
     Set<Integer> liveAdapterBuffers(Set<Integer> beforeAdapter) {
       Set<Integer> live = new HashSet<>();
-      for (int handle : adapterBuffers(beforeAdapter)) if (delegate.glIsBuffer(handle)) live.add(handle);
+      for (int handle : adapterBuffers(beforeAdapter))
+        if (delegate.glIsBuffer(handle)) live.add(handle);
       return Set.copyOf(live);
     }
+
     Set<Integer> difference(Set<Integer> first, Set<Integer> second) {
       Set<Integer> result = new HashSet<>(first);
       result.removeAll(second);
       return Set.copyOf(result);
     }
-    int deletedLiveCount(Set<Integer> handles) {
+
+    int deletionCount(Set<Integer> handles) {
       int count = 0;
-      for (int handle : handles) if (deleted.contains(handle) && !delegate.glIsBuffer(handle)) count++;
+      for (int handle : deletionEvents) if (handles.contains(handle)) count++;
       return count;
     }
   }

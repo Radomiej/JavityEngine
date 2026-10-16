@@ -1,0 +1,16 @@
+plugins { id 'java-library' }
+
+def os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+def arch = System.getProperty('os.arch')
+def arm = arch in ['aarch64', 'arm64']
+def nativeOs = os.contains('win') ? 'windows' : os.contains('mac') ? 'macos' : 'linux'
+def natives = "natives-$nativeOs" + (arm ? '-arm64' : '')
+
+dependencies {
+    api project(':javity-ui')
+    implementation platform('org.lwjgl:lwjgl-bom:3.4.3')
+    implementation 'org.lwjgl:lwjgl'
+    implementation 'org.lwjgl:lwjgl-yoga'
+    runtimeOnly "org.lwjgl:lwjgl:3.4.3:$natives"
+    runtimeOnly "org.lwjgl:lwjgl-yoga:3.4.3:$natives"
+}

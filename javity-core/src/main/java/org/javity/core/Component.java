@@ -12,6 +12,7 @@ public abstract class Component {
   public UpdateMode updateMode = UpdateMode.WORLD;
   private GameObject owner;
   private boolean enabled = true;
+  private long enabledRevision;
   boolean created, removed, destroyed;
 
   public final GameObject getGameObject() {
@@ -35,7 +36,16 @@ public abstract class Component {
   }
 
   public final void setEnabled(boolean enabled) {
+    if (this.enabled == enabled) return;
+    if (enabledRevision == Long.MAX_VALUE)
+      throw new IllegalStateException("Component enabled revision exhausted");
     this.enabled = enabled;
+    enabledRevision++;
+  }
+
+  /** Monotonically changes whenever enabled state actually transitions. */
+  public final long enabledRevision() {
+    return enabledRevision;
   }
 
   public final <T extends Component> T getComponent(Class<T> type) {

@@ -33,7 +33,14 @@ public class ScriptUiRuntimeTest {
           runtime, "JavityGame.call('volume', '1')", "exactly one numeric primitive");
       assertScriptFailure(runtime, "JavityGame.call('volume', NaN)", "must be finite");
       assertScriptFailure(runtime, "JavityGame.call('mute', 1)", "exactly one boolean primitive");
-      assertScriptFailure(runtime, "JavityGame.call('name', {})", "exactly one string primitive");
+      assertScriptFailure(runtime, "JavityGame.call('name', {})", "arguments must be null");
+      assertScriptFailure(runtime, "JavityGame.call('name', new String('boxed'))", "arguments must be null");
+      assertScriptFailure(
+          runtime,
+          "JavityGame.call('name', {toJSON(){return 'coerced'}})",
+          "arguments must be null");
+      assertScriptFailure(runtime, "JavityGame.call('name', [])", "arguments must be null");
+      assertScriptFailure(runtime, "JavityGame.call('name', () => {})", "arguments must be null");
       assertScriptFailure(runtime, "JavityGame.call('zero', false)", "requires no arguments");
       assertEquals(Double.valueOf(-1), number.get());
       runtime.bindNumberAction("volume", value -> number.set(value * 2));
@@ -44,6 +51,22 @@ public class ScriptUiRuntimeTest {
       runtime.bindBooleanAction("mute", value -> bool.set(!value));
       runtime.reload("JavityGame.call('mute', false)");
       assertEquals(Boolean.TRUE, bool.get());
+    } finally {
+      runtime.close();
+      document.close();
+    }
+  }
+
+  @Test
+  public void evalKeepsTopLevelLexicalBindingsAcrossStrictSourceUnits() {
+    UiDocument document = new UiDocument(null);
+    ScriptUiRuntime runtime = new ScriptUiRuntime(document);
+    try {
+      runtime.eval("'use strict'; const persistentAnswer=42; let persistentLabel='ready'; class PersistentProbe {}");
+      runtime.eval(
+          "'use strict'; if(persistentAnswer!==42||persistentLabel!=='ready'||"
+              + "new PersistentProbe().constructor!==PersistentProbe)"
+              + "throw new Error('top-level lexical bindings did not persist')");
     } finally {
       runtime.close();
       document.close();
@@ -293,7 +316,7 @@ public class ScriptUiRuntimeTest {
 
       assertScriptFailure(
           runtime,
-          "JavityNative.commit(JSON.stringify({type:'Progress',key:'bad-progress',classes:'',props:{value:1,duration:-1},children:[]}),{}"
+          "JavityNative.commit(JSON.stringify({type:'Progress',key:'bad-progress',classes:'',props:{value:1,duration:-1},children:[]}), '[]'"
               + " )",
           "duration must be finite and nonnegative");
       assertNotNull(document.actor("preserved"));
@@ -372,6 +395,68 @@ public class ScriptUiRuntimeTest {
     } finally {
       runtime.close();
       radio.dispose();
+      document.close();
+    }
+  }
+
+  @Test
+  public void unsubscribeAndSignalRebindingReleaseGuestCallbackClosures() {
+    UiDocument document = new UiDocument(null);
+    ScriptUiRuntime runtime = new ScriptUiRuntime(document);
+    org.javity.signals.Radio radio = new org.javity.signals.Radio();
+    var first = radio.channel("first", Integer.class, 0);
+    var replacement = radio.channel("replacement", Integer.class, 0);
+    try {
+      runtime.bindSignal("pulse", first);
+      runtime.eval(
+          "globalThis.releasedCalls=0;globalThis.releasedIds=[];"
+              + "for(let i=0;i<40;i++){const id=JavityGame.subscribe('pulse',()=>releasedCalls++);"
+              + "releasedIds.push('s'+(i+1));JavityGame.unsubscribe(id)}"
+              + "for(const id of releasedIds)JavityReact.dispatchSignal(id,1);"
+              + "if(releasedCalls!==0)throw new Error('unsubscribed callback remained available')");
+
+      runtime.eval("globalThis.unboundCalls=0;JavityGame.subscribe('pulse',()=>unboundCalls++)");
+      runtime.unbindSignal("pulse");
+      runtime.eval(
+          "JavityReact.dispatchSignal('s41',1);"
+              + "if(unboundCalls!==0)throw new Error('unbound callback remained available')");
+
+      runtime.bindSignal("pulse", first);
+      runtime.eval("globalThis.reboundCalls=0;JavityGame.subscribe('pulse',()=>reboundCalls++)");
+      runtime.bindSignal("pulse", replacement);
+      runtime.eval(
+          "JavityReact.dispatchSignal('s42',1);"
+              + "if(reboundCalls!==0)throw new Error('replaced callback remained available')");
+      runtime.eval("globalThis.currentCalls=0;JavityGame.subscribe('pulse',()=>currentCalls++)");
+      replacement.set(1);
+      runtime.eval("if(currentCalls!==1)throw new Error('current replacement callback was lost')");
+    } finally {
+      runtime.close();
+      radio.dispose();
+      document.close();
+    }
+  }
+
+  @Test
+  public void scheduledCallbackRegistryReleasesCancelledCompletedAndFailedCallbacks() {
+    UiDocument document = new UiDocument(null);
+    ScriptUiRuntime runtime = new ScriptUiRuntime(document);
+    try {
+      runtime.eval(
+          "globalThis.timerRegistryCalls=0;"
+              + "const timeoutId=setTimeout(()=>timerRegistryCalls++,1);clearTimeout(timeoutId);"
+              + "const intervalId=setInterval(()=>timerRegistryCalls++,1);clearInterval(intervalId);"
+              + "const frameId=requestAnimationFrame(()=>timerRegistryCalls++);cancelAnimationFrame(frameId);"
+              + "globalThis.completedId=setTimeout(()=>timerRegistryCalls++,0)");
+      runtime.tick(0);
+      runtime.eval(
+          "__javityRunCallback(completedId,[],true);__javityRunCallback(completedId,[],true);"
+              + "try{setTimeout(()=>timerRegistryCalls++,Infinity);throw new Error('accepted invalid timeout')}"
+              + "catch(error){if(error.message==='accepted invalid timeout')throw error;}"
+              + "__javityRunCallback(completedId+1,[],true);"
+              + "if(timerRegistryCalls!==1)throw new Error('timer callback ID leaked or repeated: '+timerRegistryCalls+' / '+completedId)");
+    } finally {
+      runtime.close();
       document.close();
     }
   }
