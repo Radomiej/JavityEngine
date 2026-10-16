@@ -111,7 +111,11 @@ Nie wywołuj `load()` ani `finishLoading()` w głównej pętli, jeśli zależy C
 
 `progress()` jest monotoniczne dla życia SceneAssets; po zakończeniu pierwszej partii nie jest procentem nowej partii. Gotowość tej partii sprawdzaj wynikiem `update`, a poszczególny plik przez `assetManager().isLoaded`. Wskaźnik nie jest licznikiem bajtów ani zużyciem GPU.
 
-To nie jest jeszcze pełny system streamingu świata: brak automatycznej eksmisji, własnych lease'ów konsumentów, priorytetów i granic pamięci. HTTP oraz hot reload nie włączają się automatycznie. `AssetSceneLoadJob` + `SceneManager.requestLoading` obsługują osobny przypadek: przygotowanie nowej sceny, anulowanie kandydata i kontrolowaną podmianę. [Przewodnik usług](game-authoring.md), [projekt streamingu](next-runtime-batch.md).
+Powyższy przykład używa istniejącego `SceneAssets`. Opcjonalny **`javity-assets`** udostępnia teraz scene-local typed lease, kolejkę priorytet/FIFO, limity oraz cache z bezpieczną eksmisją. Model/tekstura żyją przez cały okres używania lease; po ostatnim close zostają cache, a presja kolejki może je usunąć wyłącznie po rysowaniu w `finishFrame()`. Najpierw odłącz ModelRenderer, potem zamknij jego lease. Nie przekazuj jednego managera równocześnie do obu usług.
+
+Uruchom `./gradlew :javity-desktop:run --args='--asset-streaming'`: R pobiera dwa lease autorskiego modelu z teksturą, 1 zwalnia pierwszy, X odłącza model i zwalnia oba, P/O pokazują prefetch/release, E jawne failure/retry, Space pauzę WORLD. Panel rozdziela stany requestów i liczniki ready/failed bieżącej partii od root stats; nie pokazuje procentu bajtów. [API i zasady własności](asset-streaming.md), [native dowody](artifacts/asset-streaming/README.md). Android streaming pozostaje **UNVERIFIED**.
+
+HTTP, hot reload i automatyczny streaming terenu są osobnym zakresem. `AssetSceneLoadJob` + `SceneManager.requestLoading` obsługują przygotowanie nowej sceny, anulowanie kandydata i kontrolowaną podmianę. [Przewodnik usług](game-authoring.md), [projekt](next-runtime-batch.md).
 
 ## 5. Feedback, animacje, UI
 

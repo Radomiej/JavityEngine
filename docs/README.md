@@ -1,7 +1,8 @@
 # Dokumentacja JavityEngine
 
 - [Guide silnika krok po kroku](engine-guide.md) — FPS z rękami, tree viewer, gizma, ładowanie assetów, Feel i granice aktualnego API.
-- [Następny zakres: FPS, streaming, światła i skybox](next-runtime-batch.md) — zaakceptowany projekt i cztery plany do przeglądu; nowe funkcje nie są jeszcze wdrożone.
+- [Następny zakres: FPS, streaming, światła i skybox](next-runtime-batch.md) — zaakceptowany projekt; stan wdrożenia poszczególnych etapów w TODO.
+- [Streaming lokalnych assetów](asset-streaming.md) — typed lease, priorytety/cache i demo `--asset-streaming`; [dowody desktop](artifacts/asset-streaming/README.md), Android UNVERIFIED.
 
 - [Zakończenie aktualizacji bazy i API usług](finish-update.md).
 - [TODO i kolejność prac](TODO.md) — bieżący backlog; kolejność wykonania w [work-queue](work-queue.md).

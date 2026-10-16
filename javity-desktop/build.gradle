@@ -22,6 +22,7 @@ dependencies {
     implementation project(':javity-script')
     implementation project(':javity-script-graal')
     implementation project(':javity-core')
+    implementation project(':javity-assets')
     implementation project(':javity-map-core')
     implementation project(':javity-maplibre')
     implementation project(':javity-voxel')
@@ -252,4 +253,13 @@ tasks.register('instancingBenchmark', JavaExec) {
     mainClass = 'org.javity.demo.InstancingBenchmarkLauncher'
     systemProperty 'javity.benchmark.environment', providers.gradleProperty('benchmarkEnvironment').getOrElse('unspecified co-resident workloads')
     jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('assetStreamingSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Local default-loader model/texture streaming, lease/cache pressure and native resource proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--asset-streaming', '--smoke'
 }

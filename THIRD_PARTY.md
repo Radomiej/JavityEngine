@@ -89,3 +89,12 @@ intentional version-pinned split-package dependency, unsupported under a future
 JPMS modularization without further work; Android/class-loader packaging and
 runtime require separate validation. Ownership and custom-loader limitations are
 in [docs/asset-streaming.md](docs/asset-streaming.md).
+
+## Authored local asset-streaming fixture
+
+`javity-desktop/src/main/resources/org/javity/demo/asset-streaming/` contains
+original JavityEngine signal-crate geometry and 64×64 signal/checker PNG textures,
+authored 2026-10-16, copyright JavityEngine contributors, Apache-2.0 under the
+repository LICENSE. No external model/texture was copied.
+[Source and license notice](javity-desktop/src/main/resources/org/javity/demo/asset-streaming/NOTICE.md).
+The standard libGDX model/texture loaders retain their existing attribution above.

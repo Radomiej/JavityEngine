@@ -15,6 +15,7 @@ public final class DesktopLauncher {
     boolean gorzow = Arrays.asList(args).contains("--gorzow");
     boolean maplibre = Arrays.asList(args).contains("--maplibre");
     if (maplibre || gorzow) org.javity.maplibre.MapLibreDesktop.configure(config);
+    boolean assetStreaming = Arrays.asList(args).contains("--asset-streaming");
     boolean voxels = Arrays.asList(args).contains("--voxels");
     boolean physics3d = Arrays.asList(args).contains("--physics3d");
     boolean materials = Arrays.asList(args).contains("--materials");
@@ -37,7 +38,7 @@ public final class DesktopLauncher {
                     Arrays.asList(
                             "--legacy", "--map", "--runtime", "--shapes", "--plugins", "--ui-parity")
                         .contains(argument));
-    if (sceneExport != null && (mm || gorzow || maplibre || voxels || physics3d || materials || otherDemo))
+    if (sceneExport != null && (mm || gorzow || maplibre || voxels || physics3d || materials || assetStreaming || otherDemo))
       throw new IllegalArgumentException("--scene-export is available with the ModernDemo runtime inspector");
     if (devPath != null && (!mm || devPath.isBlank()))
       throw new IllegalArgumentException("--ui-dev=<bundle> requires --mm and a nonempty path");
@@ -48,7 +49,9 @@ public final class DesktopLauncher {
     config.disableAudio(!(mm || Arrays.asList(args).contains("--runtime")));
     boolean smoke = Arrays.asList(args).contains("--smoke");
     var application =
-        gorzow
+        assetStreaming
+            ? new AssetStreamingDemo(smoke)
+            : gorzow
             ? new GorzowDemo(smoke)
             : maplibre
                 ? new MapLibreDemo(smoke)

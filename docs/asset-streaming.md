@@ -120,3 +120,64 @@ thread validation. A rejected direct call leaves the system/resources intact for
 later owner-thread disposal. This does not make `Game.dispose()` thread-safe: the
 whole game must still be closed by its owner because it mutates other lifecycle
 state before visiting individual systems.
+
+## Desktop demo and native proof
+
+Add `implementation project(':javity-assets')` to the desktop application, then run:
+
+```sh
+./gradlew :javity-desktop:run --args='--asset-streaming'
+./gradlew :javity-desktop:assetStreamingSmoke
+```
+
+`AssetStreamingDemo` loads the original local `signal-crate.g3dj` with the standard
+G3dModelLoader, which discovers `signal.png` through its normal texture dependency.
+The second root, `prefetch.png`, uses the standard TextureLoader. The small fixture
+is authored in this repository under Apache-2.0; its bundled
+[notice](../javity-desktop/src/main/resources/org/javity/demo/asset-streaming/NOTICE.md)
+records source and ownership. No HTTP or external model download is needed.
+
+The panel has buttons and keyboard equivalents: **R** requests two leases of one
+model, **1** closes the first, **X** detaches its ModelRenderer before closing both,
+**P** prefetches the different texture, and **O** releases that prefetch lease.
+**E** requests an intentionally missing local model; pressing it again explicitly
+starts a new request after failure. **Space** pauses WORLD while the animated
+UI sentinel and AssetStreams continue to advance. A new ModelRenderer is attached
+only once the model is READY; no living ModelInstance is replaced in place.
+
+The demo intentionally has room for only one resident **root** (96 KiB estimated).
+The model's mesh and texture dependency fit inside its 64 KiB estimate; the
+prefetch texture has a 16 KiB estimate. Dependencies are not separate root slots.
+A pinned model blocks prefetch. After **X**, it remains unpinned cache until **P**
+queues real replacement pressure; the end-of-frame boundary then evicts it.
+Release the prefetch lease before requesting the model again. This illustrates
+backpressure, not automatic working-set management for a terrain.
+
+Request states and current-batch ready/failed **request counts** are separate from
+root statistics. Two READY leases mean two ready requests and one pinned root.
+No field is a byte-loading percentage, and SceneAssets.progress() is not reused.
+The panel reports resident estimates, not measured GPU bytes.
+
+The native smoke uses the same fixture and standard loader algorithms. Only in
+smoke, a TextureLoader subclass waits at a CPU-worker gate before delegating to
+`super.loadAsync`, and a G3dModelLoader subclass counts parser calls before
+delegating to `super.loadModelData`. This makes twelve actual rendered loading
+frames reproducible without artificial gameplay sleep or worker GL calls.
+Sentinel pixels move while WORLD is paused and the texture dependency is still
+LOADING. The proof then checks textured model pixels, one parser/dependency load
+for two leases, rendering after first close, immediate cache reacquisition,
+component removal before final close, real replacement disposal at finishFrame,
+prefetch release/cache, explicit failure/retry and scene close during active load.
+
+Native counters cover real generated/deleted **buffer and texture** generations
+through a forwarding GL20 proxy; glIsBuffer/glIsTexture verify lifetime. Disposed
+numeric GL names may be reused, so pressure cleanup is checked immediately at the
+safe boundary before admitting the replacement. The probe uses reflection only to
+read Mesh buffer handles in desktop test code; the portable service's approved
+internal bridges and ownership policy are unchanged.
+[Captures and metrics](artifacts/asset-streaming/README.md) describe the actual run.
+
+**Android asset streaming: UNVERIFIED.** This task has no per-feature Android
+packaging/instrumentation result for real local model/texture load, close during
+load or context loss/recovery. Existing unrelated Android proofs and desktop
+compilation do not satisfy that separate gate.
