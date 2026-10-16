@@ -178,3 +178,16 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [x] Rzeczywiste porównanie pikseli/poz, liczby draw calls i pełnych kompozycji, benchmark64/256/1024 oraz osobny Android/context-loss gate na emulatorze API35 x86_64. [Wyniki, koszty i ograniczenia](artifacts/instancing/README.md).
 
 [Zaakceptowany projekt i plany wykonania](gpu-instancing-design.md). A/B/C są sprawdzone w opisanym zakresie desktopu i emulatora GLES3/EGL. Fizyczny ARM64 oraz wydajność urządzenia pozostają osobnymi bramkami.
+
+## Konsolidacja core i renderingu — wymaganie 2026-10-16
+
+Status: projekt do przeglądu, nie wdrożona optymalizacja. [Projekt i zakres A1/A2/A3](superpowers/specs/2026-10-16-core-consolidation-design.md). Użytkownik zlecił agentów Luna pod nadzorem.
+
+- [x] Trzy audyty źródeł: graf core/legacy, alokacje/rendering, zależności/platformy. [Raporty](audits/2026-10-16-consolidation/).
+- [x] Sprawdzenie oficjalnych wydań: libGDX 1.14.2 nadal najnowszy stabilny; bez zmiany numeru wersji. Rozwiązane classpathy i dystrybucje wymagają osobnego dowodu po refaktorze.
+- [ ] A1: odłączyć engine/backend/map/net legacy od domyślnego reactora i dystrybucji; osobny opt-in launcher zgodności, test architektury/dependency graph, aktualizacja poleceń. Projekt oczekuje przeglądu.
+- [ ] Decyzja o pełnym wycofaniu API legacy: stare JSON/Kryo, Spine, XML/generator i adaptery mobile mają jawne koszty migracji. Nie oznaczać izolacji jako skasowania źródeł.
+- [ ] A2: baseline alokacji/retencji i bezpieczny reuse snapshotów, zapytań sceny, buforów batchy; zachować atomowość i lifecycle. Osobny projekt przed implementacją.
+- [ ] A3: wspólne dane świateł dla ordinary/static/skinned oraz parity/recovery testy przed odblokowaniem scene instancingu. Osobny projekt przed implementacją.
+
+Nie deklarujemy nowych wyników RAM/FPS ani runtime Androida na podstawie audytu źródeł.

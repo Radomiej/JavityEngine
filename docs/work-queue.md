@@ -67,3 +67,9 @@ Końcowy przegląd całego batcha oraz scoped re-review poprawek: Spec/Quality P
 ## GPU instancing — zakres zaakceptowany 2026-10-16
 
 [Projekt i plany A→B→C](gpu-instancing-design.md): statyczny instancing, niezależne zegary ze współdzieleniem dokładnej pozy, następnie GPU palette skinning. Plany są zaakceptowane. A ma implementację desktopową i niezależny przegląd; B przeszedł integrację i niezależny przegląd oraz próby Foxa; cache jest opcjonalny i ma zmierzony narzut CPU. C ma implementację, dowody niezależnych póz, benchmark64/256/1024 oraz zaliczony osobny test GLES3/EGL na emulatorze API35 x86_64. [Raport i guide](artifacts/instancing/README.md) rozdzielają te wyniki od niezweryfikowanych fizycznego ARM64 i wydajności urządzenia. Bieżące checkboxy i dowody: TODO oraz projekt. Metoda wykonania: agenci pod nadzorem, integracja etapami.
+
+## Następny zakres — konsolidacja core, 2026-10-16
+
+[Projekt do przeglądu](superpowers/specs/2026-10-16-core-consolidation-design.md), baza `48814ae`. Audyty trzech agentów Luna ukończone, kod produktu pozostaje bez zmian. Kolejność: A1 czysty domyślny core i osobna zgodność legacy; A2 pomiar/ograniczenie alokacji; A3 wspólne dane światła i zgodność shaderów instancingu. Opcjonalne moduły fizyki/map/UI pozostają zależne od jednego modelu GameObject/Component.
+
+Potwierdzono oficjalnie najnowszy stabilny libGDX 1.14.2; zależności niezależnie wersjonowane zachowują własne numery. Przed implementacją A1 pozostaje przegląd pisanego projektu i planu. Sposób wykonania: Luna pod nadzorem, sekwencyjne zmiany wspólnych plików i niezależne przeglądy. Pełne usunięcie starych API jest oddzielnym wyborem kompatybilności; bez odpowiedzi wariantem projektu pozostaje izolacja opt-in.
