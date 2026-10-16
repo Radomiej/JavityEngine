@@ -13,11 +13,13 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.Optional;
+import org.javity.avatar.AvatarPart;
 import org.javity.avatar.AvatarPreset;
 import org.javity.avatar.AvatarView;
 import org.javity.core.Game;
@@ -77,6 +79,8 @@ final class VoxelDemo extends ApplicationAdapter {
   private AvatarView worldHiddenView;
   private AvatarView worldFullView;
   private AvatarView viewmodelView;
+  private final VoxelViewmodelPresentation viewmodelPresentation = new VoxelViewmodelPresentation();
+  private final Matrix4 viewmodelBase = new Matrix4();
   private AvatarView remoteProofView;
   private final Vector3 cameraPositionScratch = new Vector3();
   private final Vector3 cameraDirectionScratch = new Vector3();
@@ -147,7 +151,7 @@ final class VoxelDemo extends ApplicationAdapter {
     avatarTransform = avatar.object.getComponent(Transform3D.class);
     worldHiddenView = avatar.binding.view().parts(java.util.Set.of());
     worldFullView = avatar.binding.view().preset(AvatarPreset.FULL_BODY).slotVisible("shirt", true);
-    viewmodelView = avatar.binding.view().preset(AvatarPreset.ARMS_ONLY).slotVisible("tool", true);
+    viewmodelView = avatar.binding.view().parts(java.util.Set.of(AvatarPart.RIGHT_ARM)).slotVisible("tool", true);
     viewmodelView.slotVisible("shirt", false);
     remoteProofView = avatar.binding.view().preset(AvatarPreset.FULL_BODY);
     cameraRig =
@@ -298,6 +302,12 @@ final class VoxelDemo extends ApplicationAdapter {
     camera.update();
     chunks.update(camera, REBUILD_BUDGET);
 
+    drawFrame(delta);
+    frames++;
+    if (smokeProbe != null) smokeProbe.afterRender();
+  }
+
+  private void drawFrame(float delta) {
     Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     Gdx.gl.glClearColor(.29f, .55f, .78f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -310,12 +320,7 @@ final class VoxelDemo extends ApplicationAdapter {
           cameraRig.mode() == AvatarCameraMode.FIRST_PERSON ? worldHiddenView : worldFullView);
     drawTargetOutline();
     if (!freeFlyMode && cameraRig.mode() == AvatarCameraMode.FIRST_PERSON) {
-      com.badlogic.gdx.math.Matrix4 viewBase =
-          new com.badlogic.gdx.math.Matrix4()
-              .translate(.05f, -.8f, -1.35f)
-              .rotate(Vector3.X, 15)
-              .scale(.65f, .65f, .65f);
-      viewmodelView.setBaseTransform(viewBase);
+      viewmodelView.setBaseTransform(viewmodelPresentation.writeBase(viewmodelBase));
       renderer.renderViewmodel(cameraRig.viewmodelCamera(), viewmodelView);
     }
     renderer.render2D(game);
@@ -324,8 +329,57 @@ final class VoxelDemo extends ApplicationAdapter {
     updateHud();
     stage.act(delta);
     stage.draw();
-    frames++;
-    if (smokeProbe != null) smokeProbe.afterRender();
+  }
+
+  /** Matched native captures: no game step, camera change, or second animation clock. */
+  void writeFpsCompositionProof() {
+    double beforeTime = avatar.locomotionTime();
+    Pixmap visible =
+        Pixmap.createFromFrameBuffer(
+            0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+    Pixmap hidden = null;
+    try {
+      writeFpsProofImage("idle", visible);
+      viewmodelView.slotVisible("tool", false);
+      drawFrame(0);
+      hidden =
+          Pixmap.createFromFrameBuffer(
+              0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+      writeFpsProofImage("tool-hidden", hidden);
+      int head = 0, shaft = 0, hand = 0, changed = 0;
+      for (int y = (int) (visible.getHeight() * .05f); y < visible.getHeight() * .65f; y++)
+        for (int x = (int) (visible.getWidth() * .55f); x < visible.getWidth() * .95f; x++) {
+          int on = visible.getPixel(x, y), off = hidden.getPixel(x, y);
+          int r = on >>> 24 & 255, g = on >>> 16 & 255, b = on >>> 8 & 255;
+          if (on != off) {
+            changed++;
+            if (g > r * 1.4f && b > g * .9f && b < g * 1.3f) head++;
+            if (r > 60 && r > g * 1.3f && g > b * 1.2f) shaft++;
+          } else if (r > 140 && g > 80 && b > 50 && r > g * 1.1f && g > b * 1.1f) hand++;
+        }
+      require(head > 100, "Pickaxe cyan head missing from matched tool-slot pixels: " + head);
+      require(shaft > 100, "Pickaxe wooden shaft missing from matched tool-slot pixels: " + shaft);
+      require(hand > 100, "Tool-hidden did not retain visible hand pixels: " + hand);
+      require(avatar.locomotionTime() == beforeTime, "Composition captures advanced canonical clock");
+      Gdx.files
+          .local("docs/artifacts/voxel-fps/composition-proof.json")
+          .writeString(
+          "{\n  \"width\": " + visible.getWidth() + ",\n  \"height\": " + visible.getHeight()
+              + ",\n  \"cyanHeadSlotPixels\": " + head + ",\n  \"woodShaftSlotPixels\": " + shaft
+              + ",\n  \"unchangedHandPixels\": " + hand + ",\n  \"toolSlotChangedPixels\": " + changed
+              + ",\n  \"pngOrientation\": \"upright (framebuffer flipped on write)\"\n}\n", false, "UTF-8");
+    } finally {
+      viewmodelView.slotVisible("tool", toolVisible);
+      drawFrame(0);
+      visible.dispose();
+      if (hidden != null) hidden.dispose();
+    }
+  }
+
+  private static void writeFpsProofImage(String name, Pixmap pixels) {
+    var image = Gdx.files.local("docs/artifacts/voxel-fps/" + name + ".png");
+    image.parent().mkdirs();
+    PixmapIO.writePNG(image, pixels, -1, true);
   }
 
   private void updateControls(float delta) {
@@ -795,6 +849,7 @@ final class VoxelDemo extends ApplicationAdapter {
       var image = Gdx.files.local("docs/artifacts/avatar/voxel-" + name + ".png");
       image.parent().mkdirs();
       PixmapIO.writePNG(image, pixels, -1, true);
+      if (name.equals("tpp-clear")) writeFpsProofImage("tpp", pixels);
       int warmPixels = 0;
       int toolPixels = 0;
       int wallPixels = 0;

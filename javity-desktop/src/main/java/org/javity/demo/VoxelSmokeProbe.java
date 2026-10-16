@@ -135,6 +135,7 @@ final class VoxelSmokeProbe {
         "Voxel scene did not start in FPS camera mode");
     locomotionBeforeModeSwitch = demo.locomotionTime();
     demo.writeAvatarScreenshot("fps");
+    demo.writeFpsCompositionProof();
     installFpsViewmodelWall();
     demo.game().pause();
     phase = Phase.WAIT_AVATAR_FPS_WALL;

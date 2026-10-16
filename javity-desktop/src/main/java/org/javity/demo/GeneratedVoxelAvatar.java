@@ -42,6 +42,17 @@ import org.javity.render.ModelRenderer;
 
 /** Original procedural voxel character; authored weighted body triangles share one pose owner. */
 final class GeneratedVoxelAvatar implements AutoCloseable {
+  // Authored dimensions are also the CPU projection contract; mesh generation consumes these.
+  record AuthoredBox(float x, float y, float z, float w, float h, float d, int tileX, int tileY) {}
+
+  static final AuthoredBox RIGHT_HAND = new AuthoredBox(.29f, .60f, -.14f, .28f, .34f, .28f, 0, 0);
+  static final List<AuthoredBox> PICKAXE =
+      List.of(
+          new AuthoredBox(.38f, .14f, .19f, .09f, .64f, .12f, 0, 1),
+          new AuthoredBox(.16f, .10f, .15f, .53f, .13f, .20f, 2, 1),
+          new AuthoredBox(.07f, .18f, .15f, .16f, .12f, .20f, 2, 1),
+          new AuthoredBox(.62f, .18f, .15f, .16f, .12f, .20f, 2, 1));
+
   final Model model;
   final Game game;
   final Texture texture;
@@ -88,9 +99,11 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
       addBodyCube(
           vertices, indices, authored, "left-arm", -.57f, .25f, -.14f, .28f, .34f, .28f, 0, 0);
       addBodyCube(
-          vertices, indices, authored, "right-arm", .29f, .57f, -.14f, .28f, .7f, .28f, 1, 0);
+          vertices, indices, authored, "right-arm", .29f, .92f, -.14f, .28f, .35f, .28f, 1, 0);
       addBodyCube(
-          vertices, indices, authored, "right-arm", .29f, .25f, -.14f, .28f, .34f, .28f, 0, 0);
+          vertices, indices, authored, "right-arm",
+          RIGHT_HAND.x(), RIGHT_HAND.y(), RIGHT_HAND.z(),
+          RIGHT_HAND.w(), RIGHT_HAND.h(), RIGHT_HAND.d(), RIGHT_HAND.tileX(), RIGHT_HAND.tileY());
       addBodyCube(
           vertices, indices, authored, "left-leg", -.28f, .06f, -.14f, .27f, .68f, .28f, 4, 0);
       addBodyCube(
@@ -145,22 +158,7 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
               0);
       NodePart shirtPart = rigidPart(createdShirt, skinMaterial, "shirt");
       torso.parts.add(shirtPart);
-      createdTool =
-          rigidCube(
-              source,
-              skinMaterial,
-              "tool",
-              .36f,
-              .3f,
-              .17f,
-              .13f,
-              .42f,
-              .16f,
-              0,
-              1,
-              .43f,
-              1.27f,
-              0);
+      createdTool = rigidPickaxe(source);
       rightArm.parts.add(rigidPart(createdTool, skinMaterial, "tool"));
 
       NodePart weighted = new NodePart(skinPart, skinMaterial);
@@ -189,7 +187,7 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
               .region(AvatarPart.LEGS, "right-leg")
               .slot("shirt", new PartKey("root/torso", 0))
               .slot("tool", new PartKey("root/right-arm", 0))
-              .socket("right-hand", "root/right-arm", new Matrix4().translate(-.005f, -.97f, .25f))
+              .socket("right-hand", "root/right-arm", new Matrix4().translate(-.005f, -.61f, .25f))
               .build();
 
       createdObject = game.createObject("voxel avatar");
@@ -354,8 +352,13 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
     com.badlogic.gdx.graphics.g3d.model.Node hand = renderer.instance.getNode("right-arm");
     Matrix4 base = new Matrix4(transform.worldMatrix());
     Matrix4 socket = binding.socketTransform("right-hand", base, new Matrix4());
+    AuthoredBox handle = PICKAXE.getFirst();
+    float gripX = handle.x() + handle.w() * .5f;
+    float gripY = RIGHT_HAND.y() + .06f;
+    float gripZ = handle.z() + handle.d() * .5f;
+    if (gripY < handle.y() || gripY > handle.y() + handle.h()) return false;
     Matrix4 toolGrip =
-        new Matrix4(base).mul(hand.globalTransform).translate(.425f - .43f, .3f - 1.27f, .25f);
+        new Matrix4(base).mul(hand.globalTransform).translate(gripX - .43f, gripY - 1.27f, gripZ);
     for (int i = 0; i < 16; i++)
       if (Math.abs(socket.val[i] - toolGrip.val[i]) > .0001f) return false;
     return true;
@@ -438,6 +441,22 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
     List<Integer> tri = new ArrayList<>();
     Map<String, List<Integer>> dummy = new LinkedHashMap<>();
     addBodyCube(v, tri, dummy, name, x, y, z, w, h, d, tileX, tileY);
+    return uploadRigid(owner, v, tri, originX, originY, originZ);
+  }
+
+  private static Mesh rigidPickaxe(Model owner) {
+    List<Float> vertices = new ArrayList<>();
+    List<Integer> indices = new ArrayList<>();
+    Map<String, List<Integer>> regions = new LinkedHashMap<>();
+    for (AuthoredBox box : PICKAXE)
+      addBodyCube(
+          vertices, indices, regions, "tool", box.x(), box.y(), box.z(),
+          box.w(), box.h(), box.d(), box.tileX(), box.tileY());
+    return uploadRigid(owner, vertices, indices, .43f, 1.27f, 0);
+  }
+
+  private static Mesh uploadRigid(
+      Model owner, List<Float> v, List<Integer> tri, float originX, float originY, float originZ) {
     float[] packed = new float[v.size()];
     for (int i = 0; i < packed.length; i++) packed[i] = v.get(i);
     // Strip the two bone fields to produce conventional rigid position/normal/UV geometry.
@@ -538,7 +557,7 @@ final class GeneratedVoxelAvatar implements AutoCloseable {
     try {
       int[] colors = {
         0xf1bc8aff, 0x397cd8ff, 0xe8ac75ff, 0x354c80ff,
-        0x65402aff, 0xe8d6b4ff, 0x58a765ff, 0x20252fff
+        0x65402aff, 0xe8d6b4ff, 0x59c9d8ff, 0x20252fff
       };
       for (int i = 0; i < colors.length; i++) {
         int ox = (i % 4) * 16, oy = (i / 4) * 16;
