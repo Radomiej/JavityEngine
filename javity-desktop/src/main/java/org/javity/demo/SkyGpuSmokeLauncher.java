@@ -529,6 +529,7 @@ public final class SkyGpuSmokeLauncher {
 
     void integrationAndRecovery() throws Exception {
       org.javity.render.GdxRenderer renderer;
+      GlProbe recoveredResources = null;
       GlProbe resources = new GlProbe();
       try {
         renderer = new org.javity.render.GdxRenderer();
@@ -550,6 +551,8 @@ public final class SkyGpuSmokeLauncher {
           renderer.renderWorld(scene, view, null);
           resources.programs.addAll(skyResources.programs);
           resources.shaders.addAll(skyResources.shaders);
+          resources.buffers.addAll(skyResources.buffers);
+          resources.vaos.addAll(skyResources.vaos);
         }
         byte[] before = frame();
         check(pixel(48, 48)[1] > 240, "world renderer omitted sky");
@@ -560,6 +563,48 @@ public final class SkyGpuSmokeLauncher {
         ShaderProgram program = (ShaderProgram) field(ownedSky, "shader");
         int oldPosition = Gdx.gl.glGetAttribLocation(program.getHandle(), "a_position"),
             oldUniform = Gdx.gl.glGetUniformLocation(program.getHandle(), "u_inverse");
+        // Recreate BOTH managed meshes and programs with their ordinary unchanged locations.
+        // Destroy old names first to simulate resources lost with the context; the actual FBO
+        // stays live because this is a desktop managed-resource regression, not EGL loss.
+        Gdx.gl.glUseProgram(0);
+        if (Gdx.gl30 != null) Gdx.gl30.glBindVertexArray(0);
+        Gdx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
+        Gdx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+        for (int id : resources.programs) if (Gdx.gl.glIsProgram(id)) Gdx.gl.glDeleteProgram(id);
+        for (int id : resources.shaders) if (Gdx.gl.glIsShader(id)) Gdx.gl.glDeleteShader(id);
+        for (int id : resources.buffers) if (Gdx.gl.glIsBuffer(id)) Gdx.gl.glDeleteBuffer(id);
+        if (Gdx.gl30 != null)
+          for (int id : resources.vaos) {
+            IntBuffer name = BufferUtils.newIntBuffer(1);
+            name.put(0, id);
+            Gdx.gl30.glDeleteVertexArrays(1, name);
+          }
+        try (GlProbe recreated = new GlProbe()) {
+          Mesh.invalidateAllMeshes(Gdx.app);
+          ShaderProgram.invalidateAllShaderPrograms(Gdx.app);
+          restoreWithInputSentinel(renderer, oldPosition);
+          recoveredResources = recreated;
+          resources.programs.clear();
+          resources.programs.addAll(recreated.programs);
+          resources.shaders.clear();
+          resources.shaders.addAll(recreated.shaders);
+        }
+        int unchangedPosition = Gdx.gl.glGetAttribLocation(program.getHandle(), "a_position");
+        check(
+            oldPosition == unchangedPosition, "unchanged-location recovery control moved position");
+        for (int frame = 0; frame < 2; frame++) {
+          clear();
+          renderer.renderWorld(scene, view, null);
+          check(
+              Arrays.equals(before, frame()),
+              "managed mesh recovery with unchanged location lost sky on frame " + frame);
+        }
+        System.out.println(
+            "sky managed mesh+shader recovery unchanged position "
+                + oldPosition
+                + " -> "
+                + unchangedPosition
+                + "; first and repeated frames match");
         // Simulate managed program recreation with real driver compilation and deliberately moved
         // locations. The stale ShaderProgram maps remain untouched throughout this test.
         Gdx.gl.glUseProgram(0);
@@ -635,6 +680,47 @@ public final class SkyGpuSmokeLauncher {
         check(pixel(48, 48)[0] == 0 && pixel(48, 48)[1] == 0, "cleared sky retained");
       } finally {
         renderer.dispose();
+        if (recoveredResources != null) recoveredResources.assertReleased();
+      }
+    }
+
+    void restoreWithInputSentinel(org.javity.render.GdxRenderer renderer, int position) {
+      IntBuffer name = BufferUtils.newIntBuffer(1);
+      int vao = 0, buffer = Gdx.gl.glGenBuffer(), elements = Gdx.gl.glGenBuffer();
+      try {
+        if (Gdx.gl30 != null) {
+          Gdx.gl30.glGenVertexArrays(1, name);
+          vao = name.get(0);
+          Gdx.gl30.glBindVertexArray(vao);
+        }
+        Gdx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, buffer);
+        Gdx.gl.glBufferData(
+            GL20.GL_ARRAY_BUFFER, 32, BufferUtils.newByteBuffer(32), GL20.GL_STATIC_DRAW);
+        Gdx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, elements);
+        Gdx.gl.glBufferData(
+            GL20.GL_ELEMENT_ARRAY_BUFFER, 6, BufferUtils.newByteBuffer(6), GL20.GL_STATIC_DRAW);
+        if (Gdx.gl30 != null) {
+          Gdx.gl.glVertexAttribPointer(position, 2, GL20.GL_FLOAT, false, 8, 8);
+          Gdx.gl.glEnableVertexAttribArray(position);
+        }
+        int[] before = stateValues();
+        renderer.restoreContextShaderBindings();
+        check(
+            Arrays.equals(before, stateValues()), "mesh recovery hook changed caller input/state");
+        if (Gdx.gl30 != null) {
+          Gdx.gl.glGetVertexAttribiv(position, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, name);
+          check(name.get(0) == buffer, "mesh recovery hook changed caller VAO descriptor");
+        }
+      } finally {
+        if (Gdx.gl30 != null) {
+          Gdx.gl30.glBindVertexArray(0);
+          name.put(0, vao);
+          Gdx.gl30.glDeleteVertexArrays(1, name);
+        }
+        Gdx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
+        Gdx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
+        Gdx.gl.glDeleteBuffer(buffer);
+        Gdx.gl.glDeleteBuffer(elements);
       }
     }
 

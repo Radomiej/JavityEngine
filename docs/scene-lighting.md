@@ -97,6 +97,8 @@ shader and mesh. Managed context recovery must recreate libGDX resources first,
 then call `GdxRenderer.restoreContextShaderBindings()` (or the standalone sky
 hook) before drawing. The sky hook queries actual uniform **and attribute**
 locations directly from GL, bypassing pinned libGDX 1.14.2's stale alias maps.
+It also replaces its tiny owned mesh so fresh VAO descriptors are configured even
+when managed recreation preserves every attribute location.
 The existing model-provider alias-refresh requirement still applies to models.
 
 The sky pass restores the actual program, buffers/VAO, texture-unit/cubemap

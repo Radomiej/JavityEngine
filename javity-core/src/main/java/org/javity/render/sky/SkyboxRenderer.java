@@ -33,7 +33,7 @@ public final class SkyboxRenderer implements Disposable {
           + " c=mix(u_horizon,d.y>=0.0?u_zenith:u_nadir,abs(d.y));gl_FragColor=vec4(c,1.0);}";
   private final Thread owner = Thread.currentThread();
   private final ShaderProgram shader;
-  private final Mesh mesh;
+  private Mesh mesh;
   private final Matrix4 inverse = new Matrix4(), rotationView = new Matrix4();
   private final Color color = new Color();
   private final int[] attributes = new int[1];
@@ -60,14 +60,11 @@ public final class SkyboxRenderer implements Disposable {
       created = new ShaderProgram(sources[0], sources[1]);
       if (!created.isCompiled())
         throw new IllegalArgumentException("Sky shader: " + created.getLog());
-      createdMesh =
-          new Mesh(
-              true, 3, 0, new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"));
-      createdMesh.setVertices(new float[] {-1, -1, 3, -1, -1, 3});
+      createdMesh = createMesh();
       shader = created;
       mesh = createdMesh;
       if (Gdx.gl30 == null) reservePosition();
-      contextRestored();
+      refreshLocations();
     } catch (RuntimeException | Error failure) {
       if (createdMesh != null)
         try {
@@ -90,9 +87,47 @@ public final class SkyboxRenderer implements Disposable {
     }
   }
 
-  /** Refreshes raw locations after managed relink; never consults libGDX's stale alias caches. */
+  /**
+   * Rebuilds owned mesh descriptors and refreshes raw locations after managed resource recovery.
+   */
   public void contextRestored() {
     checkOpen();
+    refreshLocations();
+    int array = integer(GL20.GL_ARRAY_BUFFER_BINDING);
+    int elements = integer(GL20.GL_ELEMENT_ARRAY_BUFFER_BINDING);
+    int vao = Gdx.gl30 == null ? 0 : integer(GL30.GL_VERTEX_ARRAY_BINDING);
+    try {
+      // Pinned VertexBufferObjectWithVAO.invalidate retains cachedLocations although its new VAO
+      // has no descriptors. Replace only our tiny owned mesh, even if every location is unchanged.
+      Mesh replacement = createMesh();
+      Mesh previous = mesh;
+      mesh = replacement;
+      previous.dispose();
+    } finally {
+      if (Gdx.gl30 != null) Gdx.gl30.glBindVertexArray(vao);
+      Gdx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, array);
+      Gdx.gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, elements);
+    }
+  }
+
+  private static Mesh createMesh() {
+    Mesh created =
+        new Mesh(true, 3, 0, new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"));
+    try {
+      created.setVertices(new float[] {-1, -1, 3, -1, -1, 3});
+      return created;
+    } catch (RuntimeException | Error failure) {
+      try {
+        created.dispose();
+      } catch (RuntimeException | Error cleanup) {
+        failure.addSuppressed(cleanup);
+      }
+      throw failure;
+    }
+  }
+
+  /** Never consults libGDX's stale alias caches. */
+  private void refreshLocations() {
     int program = shader.getHandle();
     attributes[0] = Gdx.gl.glGetAttribLocation(program, "a_position");
     if (Gdx.gl30 == null && !state.pristine(attributes[0])) {
