@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.g3d.environment.*;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import java.util.Arrays;
+import java.util.Objects;
 import org.javity.core.*;
+import org.javity.render.sky.SkySettings;
 
 /** Scene-owned CPU snapshot, rebuilt on the render thread before batching. No implicit sun. */
 public final class RenderEnvironment3D extends GameSystem {
@@ -18,6 +20,20 @@ public final class RenderEnvironment3D extends GameSystem {
   private final Color ambient = new Color(0, 0, 0, 1), fog = new Color();
   private float fogNear, fogFar = 1;
   private boolean fogEnabled;
+  private SkySettings sky;
+
+  public void setSky(SkySettings settings) {
+    sky = Objects.requireNonNull(settings, "settings");
+  }
+
+  public SkySettings sky() {
+    return sky;
+  }
+
+  public void clearSky() {
+    sky = null;
+  }
+
   private Overflow overflow = new Overflow(0, 0, 0);
 
   public record Overflow(int directional, int point, int spot) {}

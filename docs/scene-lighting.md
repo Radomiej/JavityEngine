@@ -57,6 +57,64 @@ This can produce a visible lighting difference between hands and world objects.
 
 The implementation is forward lighting without dynamic shadows or PBR. Task 1
 checks CPU snapshots, retained-uniform recovery and actual scene shader draws on
-desktop GL20/GL30. Full measured lighting/fog pixel controls, sky/day-night and
+desktop GL20/GL30. Full measured lighting/fog pixel controls, day/night and
 Android EGL feature gates belong to later tasks; they are not implied by these
 foundation checks.
+
+## Sky backgrounds
+
+Choose one immutable background on the scene environment:
+
+```java
+environment.setSky(SkySettings.gradient(
+    new Color(.1f, .3f, .8f, 1),   // zenith (+Y)
+    new Color(.7f, .8f, .9f, 1),   // horizon
+    new Color(.15f, .12f, .1f, 1) // nadir (-Y)
+));
+// Or use a cubemap owned by an asset loader/lease:
+environment.setSky(SkySettings.cubemap(borrowedCubemap));
+environment.clearSky();
+```
+
+`SkySettings` copies finite, nonnegative RGB values without clamping and always
+renders an opaque background; input alpha is ignored. Gradient and cubemap modes
+are exclusive. Colors read through `zenith(out)`, `horizon(out)` and `nadir(out)`
+are copied into the supplied color. The cubemap is borrowed: keep its owner or
+lease alive until every scene/pass stops using it. Settings, scene closure and
+sky-pass disposal do not dispose that cubemap.
+
+`GdxRenderer` lazily owns one `SkyboxRenderer`, drawing it before world batching.
+Camera translation causes no parallax; rotation changes the sampled direction.
+Both perspective and orthographic cameras are supported. The pass writes no
+depth and preserves nearer geometry. World postprocessing can include it by
+capturing the world pass. It does not run during viewmodel or 2D/UI rendering.
+A scene without sky settings adds no background draw.
+
+Standalone `SkyboxRenderer.render(camera, settings)` also uses the caller's
+framebuffer and viewport. Creation, rendering, `contextRestored()` and repeated
+`dispose()` belong on its original GL thread, outside all batches. It owns its
+shader and mesh. Managed context recovery must recreate libGDX resources first,
+then call `GdxRenderer.restoreContextShaderBindings()` (or the standalone sky
+hook) before drawing. The sky hook queries actual uniform **and attribute**
+locations directly from GL, bypassing pinned libGDX 1.14.2's stale alias maps.
+The existing model-provider alias-refresh requirement still applies to models.
+
+The sky pass restores the actual program, buffers/VAO, texture-unit/cubemap
+binding, depth test/function/mask/range, blend, cull, scissor, stencil and color
+mask after success or drawing failure. Viewport, framebuffer, blend factors and
+cull mode are left untouched. GL30 uses its own VAO. GL20 reserves a disabled
+attribute slot with default descriptor and buffer zero, and rejects a configured
+reserved slot before drawing. No client-side pointer may be configured at that
+slot: it is checked where the backend supports pointer queries; otherwise the
+caller must guarantee this precondition. If construction/recovery cannot find
+an eligible slot, it fails without drawing. This is bounded GL20 input-state
+support, not arbitrary client-array restoration.
+
+Run `./gradlew :javity-desktop:skySmoke` for the dedicated real GL30 and GL20
+pixel/state/resource gate. It checks both modes, translation/rotation, depth,
+exception cleanup, borrowed lifetime, repeated disposal, actual program relink
+with moved locations, viewmodel and SCREEN isolation. Evidence snapshots are
+[GL30](sky-pass-task2-gl30.png) and [GL20](sky-pass-task2-gl20.png). The local
+GLES300 sources also compile/link on the desktop Mesa compiler; this does not
+prove GLES device rendering or actual Android EGL loss/recovery. Desktop shaders
+use GLSL120, and no global shader prefixes or pedantic setting are changed.

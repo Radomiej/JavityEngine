@@ -271,3 +271,11 @@ tasks.register('sceneLightingShaderSmoke', JavaExec) {
     mainClass = 'org.javity.demo.SceneLightingGpuSmokeLauncher'
     jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
+
+tasks.register('skySmoke', JavaExec) {
+    group = 'verification'
+    description = 'Real GL20/GL30 sky pixels, state, ownership and recovery contract.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkyGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}

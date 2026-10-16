@@ -20,6 +20,7 @@ import org.javity.core.*;
 import org.javity.presentation.Presentation2D;
 import org.javity.presentation.Presentation3D;
 import org.javity.render.lighting.RenderEnvironment3D;
+import org.javity.render.sky.SkyboxRenderer;
 
 /** Render passes: models with depth, sprites without depth, then caller-owned UI. */
 public final class GdxRenderer implements Disposable {
@@ -82,6 +83,7 @@ public final class GdxRenderer implements Disposable {
       };
   private final RecoverableDefaultShaderProvider modelShaders;
   private final AssetManager assets;
+  private SkyboxRenderer sky;
   public final OrthographicCamera camera2D;
   public final Environment environment;
   private int width = 1, height = 1;
@@ -178,6 +180,7 @@ public final class GdxRenderer implements Disposable {
    */
   public void restoreContextShaderBindings() {
     modelShaders.contextRestored();
+    if (sky != null) sky.contextRestored();
     if (staticInstances != null) staticInstances.contextRestored();
     if (skinnedInstances != null) skinnedInstances.contextRestored();
   }
@@ -250,6 +253,11 @@ public final class GdxRenderer implements Disposable {
     camera.camera.viewportWidth = width;
     camera.camera.viewportHeight = height;
     camera.camera.update();
+    RenderEnvironment3D sceneEnvironment = game.getSystem(RenderEnvironment3D.class);
+    if (sceneEnvironment != null && sceneEnvironment.sky() != null) {
+      if (sky == null) sky = new SkyboxRenderer();
+      sky.render(camera.camera, sceneEnvironment.sky());
+    }
     worldOrdinary.clear();
     worldCandidates.clear();
     worldCandidateOwners.clear();
@@ -697,6 +705,7 @@ public final class GdxRenderer implements Disposable {
   @Override
   public void dispose() {
     releaseInstanceBatches();
+    if (sky != null) sky.dispose();
     models.dispose();
     sprites.dispose();
     shapes.dispose();
