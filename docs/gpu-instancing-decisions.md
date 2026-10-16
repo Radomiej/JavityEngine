@@ -48,6 +48,10 @@ Zapis decyzji z nadzorowanej implementacji i przeglądów. Dowody pomiarowe są 
 
 - The fixed numerical crowd/oracle view stays separate from the larger perspective showcase. Showcase PNG capture explicitly flips framebuffer Y; historical raw numerical captures retain their orientation. Cost: two documented camera/capture configurations, no tolerance change.
 
+- CPU cache has one additional controlled256 synchronous benchmark case, separate from the12 mandatory GPU variants. This keeps GPU independence and actual composition deltas explicit. Cost: there is no full CPU-cache performance matrix for every count and phase.
+
+- Desktop GPU timings use actual GL33/ARB_timer_query capability and asynchronous results collected after completion outside timed CPU sections. The portable GL30 interface lacking a result API is not treated as hardware lacking timers. Cost: benchmark instrumentation depends on the desktop LWJGL backend.
+
 ## Zakres pozostałych prac
 
 Optymalizacja kosztu walidacji mutable źródeł pozy wymaga osobnego jawnego kontraktu assetów. Cache CPU pozostaje opcjonalny; ograniczenie liczby pełnych kompozycji nie oznacza poprawy całkowitego czasu CPU. Fizyczny Android ARM i pomiary na urządzeniu pozostają oddzielnymi bramkami. Bieżące dowody GLES/EGL i benchmarków należy sprawdzać w artefaktach, nie wnioskować z kompilacji.
