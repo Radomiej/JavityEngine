@@ -42,3 +42,5 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 
 - [Projekt backendów Android Yoga/QuickJS i zakres testów](superpowers/specs/2026-10-15-android-port-architecture.md) — zweryfikowane artefakty; projekt, nie deklaracja wdrożenia.
 - [Szczegóły skinningu i warstw avatarów](superpowers/specs/2026-10-15-avatar-api-architecture.md) — własność geometrii i ograniczenia libGDX.
+
+- [Darmowy Fox: animacje na prawdziwym rigu](artifacts/imported-animation/README.md) — GIF, wyniki GL20/GL30 i interaktywny test naszego ModelPoseAnimator.

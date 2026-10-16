@@ -162,3 +162,5 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [ ] Streaming nad AssetManager: typed lease, kolejki/priorytety, limity i eksmisja tylko nieużywanych zasobów; pierwszy zakres lokalne modele/tekstury. HTTP, hot reload i streaming chunków osobno.
 - [ ] Światła sceny (directional/point/spot), ambient, skybox, mgła i prosty dzień/noc; jawne shader capacities i testy pikseli/context recovery.
 - [x] Guide istniejącego API z komendami, zrzutami i przykładem SceneAssets: [engine-guide.md](engine-guide.md). Nowe API powyżej pozostaje propozycją.
+
+- [x] Niezależna walidacja animacji na darmowym importowanym Fox: GL20/GL30, 24 kości, Survey/Walk/Run, crossfade, maska, mikser, zegary, callbacki i cleanup. [Dowody](artifacts/imported-animation/README.md). Nie zamyka zadań FPS/streamingu/oświetlenia ani importu dowolnych rigów.

@@ -83,3 +83,12 @@ Obsługiwane: nazwany klip bazowy, mixer→klip przez zamrożone źródło, nazw
 Dowód pikseli i macierzy GPU z proceduralnego rigu znajduje się w [artifactach crossfade](artifacts/animation-crossfade/README.md). Fixture potwierdza widoczne przejście, izolację maski i instancji, pauzę WORLD oraz zgodność endpointu z natychmiastowym odtworzeniem klipu. Nie jest to walidacja importowanego rigu produkcyjnego.
 
 Zapisane próby `artifacts/j-model-*.png` pochodzą z rzeczywistego OpenGL: stała kamera, niezależne fragmenty siatki, parametry 0/.5/1, wagi maski 0/.5/1 i niezmieniony obszar poza maską. Pomiary potwierdzają 7340/14820 zmienionych pikseli dla midpoint/endpoint, 6054/10668 dla half/full maski i 0 w obszarze poza maską. Klasyczny seek daje 5883 zmienionych pikseli. Wspólne demo Relay Ward łączy mixer, upper masked layer, markers, gameplay, feedback i HUD; końcowe próby native/pakietu przeszły. [Wyniki](plugin-feature-coverage.md).
+
+
+## Importowany darmowy rig — Fox, 2026-10-16
+
+[Powtarzalny test i viewer](../tools/animation-validation/README.md) korzystają z rzeczywistego modelu Fox (24 kości; CC0 + CC BY4.0) z trzema klipami. [Ruchomy podgląd i wyniki GL20/GL30](artifacts/imported-animation/README.md) potwierdzają odtwarzanie, crossfade, maskę ogona, mikser fazowy, zegary/instancje/callbacki oraz cleanup tekstury. Porównanie odnosi się do oryginalnego glTF z udokumentowaną tolerancją, nie tylko do drugiego renderu tego samego kodu. Asset jest konwertowany offline do G3DJ; loader runtime nadal nie obsługuje GLB. To dodatkowy dowód importowanej animacji, nie dowód klasyfikacji regionów avataru, retargetingu lub wszystkich produkcyjnych rigów.
+
+```sh
+python3 tools/animation-validation/run.py --interactive
+```
