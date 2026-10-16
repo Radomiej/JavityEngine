@@ -1,0 +1,36 @@
+> Task :javity-core:compileJava
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes
+> Task :javity-core:compileTestJava
+> Task :javity-core:processTestResources NO-SOURCE
+> Task :javity-core:testClasses
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+
+> Task :javity-core:test FAILED
+
+StaticInstanceLifecycleTest > failedShaderReleaseStillInvalidatesRawNames FAILED
+    java.lang.AssertionError at StaticInstanceLifecycleTest.java:43
+
+StaticInstanceLifecycleTest > replacingPartsAndNodesOfLiveRendererPrunesDetachedIdsAndKeepsDisabledSurvivor FAILED
+    java.lang.AssertionError at StaticInstanceLifecycleTest.java:71
+
+StaticInstanceLifecycleTest > twoRecoveryNotificationsWithoutPreparationAlwaysInvalidateRawNames FAILED
+    java.lang.NullPointerException at StaticInstanceLifecycleTest.java:27
+
+3 tests completed, 3 failed
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':javity-core:test'.
+> There were failing tests. See the report at: file:///workspace/JavityEngine/javity-core/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 1s
+3 actionable tasks: 3 executed

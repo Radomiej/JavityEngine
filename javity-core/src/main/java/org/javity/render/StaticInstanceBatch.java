@@ -192,12 +192,24 @@ public final class StaticInstanceBatch implements Disposable {
     requireOwner();
     capabilities = InstanceCapabilities.detect();
     for (Group group : groups.values()) {
-      group.shader.dispose();
+      InstanceShader shader = group.shader;
       group.shader = null;
-      for (Chunk chunk : group.chunks) {
-        chunk.buffer = 0;
-        chunk.uploaded = false;
-      }
+      discardRecoveredShader(
+          shader,
+          () -> {
+            for (Chunk chunk : group.chunks) {
+              chunk.buffer = 0;
+              chunk.uploaded = false;
+            }
+          });
+    }
+  }
+
+  static void discardRecoveredShader(Disposable shader, Runnable invalidateRawInstances) {
+    try {
+      if (shader != null) shader.dispose();
+    } finally {
+      invalidateRawInstances.run();
     }
   }
 

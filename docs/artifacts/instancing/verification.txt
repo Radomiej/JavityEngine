@@ -32,3 +32,10 @@ The injected instance-buffer allocation exception in build.log is expected.
 Actual new-context recovery / Android GLES runtime: UNVERIFIED; stage-C gate.
 
 Additional unchanged-path regressions: avatarGl30Smoke PASS; presentation3dSmoke PASS.
+
+fix1 review follow-up:
+- RED: 3/3 lifecycle regressions fail before fixes (repeat recovery NPE, skipped raw reset, detached-part growth).
+- Core suite: 374 tests across 41 suites, 0 failures/errors.
+- Native GL33: PASS assertions=71; GL20: PASS assertions=7.
+- Repeated part/node replacement: retained map bounded to 3 attached parts across 100 replacements, disabled survivor ID stable.
+- Recovery CPU proxy tests cover two notifications without prepare and shader-cleanup failure; no actual new-context claim.

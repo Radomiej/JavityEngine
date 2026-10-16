@@ -242,6 +242,10 @@ public final class GdxRenderer implements Disposable {
               seenInstanceOwners.add(r);
               IdentityHashMap<NodePart, Long> parts =
                   instanceOwnerIds.computeIfAbsent(r, ignored -> new IdentityHashMap<>());
+              refreshInstancePartIds(
+                  r.instance,
+                  parts,
+                  () -> nextInstanceOwnerId = Math.incrementExact(nextInstanceOwnerId));
               for (Node node : r.instance.nodes) collectInstances(r.instance, node, parts);
             } else r.instance.getRenderables(worldOrdinary, worldPool);
           }
@@ -274,13 +278,32 @@ public final class GdxRenderer implements Disposable {
       ModelInstance instance, Node node, IdentityHashMap<NodePart, Long> parts) {
     for (NodePart part : node.parts)
       if (part.enabled) {
-        long id =
-            parts.computeIfAbsent(
-                part, ignored -> nextInstanceOwnerId = Math.incrementExact(nextInstanceOwnerId));
+        long id = parts.get(part);
         worldCandidates.add(instance.getRenderable(worldPool.obtain(), node, part));
         worldCandidateOwners.add(id);
       }
     for (Node child : node.getChildren()) collectInstances(instance, child, parts);
+  }
+
+  static void refreshInstancePartIds(
+      ModelInstance instance,
+      IdentityHashMap<NodePart, Long> ids,
+      java.util.function.LongSupplier nextId) {
+    Set<NodePart> attached = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (Node node : instance.nodes) collectAttachedPartIds(node, ids, nextId, attached);
+    ids.keySet().retainAll(attached);
+  }
+
+  private static void collectAttachedPartIds(
+      Node node,
+      IdentityHashMap<NodePart, Long> ids,
+      java.util.function.LongSupplier nextId,
+      Set<NodePart> attached) {
+    for (NodePart part : node.parts) {
+      attached.add(part);
+      if (part.enabled) ids.computeIfAbsent(part, ignored -> nextId.getAsLong());
+    }
+    for (Node child : node.getChildren()) collectAttachedPartIds(child, ids, nextId, attached);
   }
 
   /** Statistics for opt-in world candidates in the most recently completed view. */
