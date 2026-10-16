@@ -19,7 +19,7 @@ import org.javity.render.*;
 /** External-asset validation harness. Uses production Javity animation/rendering unchanged. */
 public final class ImportedAnimationProbe extends ApplicationAdapter {
   static String root, output;
-  static boolean interactive, gl30;
+  static boolean interactive, gl30, poseCache;
   Game game;
   Model source;
   ModelRenderer model;
@@ -39,6 +39,7 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
     output = args[1];
     interactive = Arrays.asList(args).contains("--interactive");
     gl30 = Arrays.asList(args).contains("--gl30");
+    poseCache = Arrays.asList(args).contains("--pose-cache");
     var c = new Lwjgl3ApplicationConfiguration();
     c.setTitle("Javity - imported Fox animation validation");
     c.setWindowedMode(1000, 700);
@@ -65,6 +66,7 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
       batch = new SpriteBatch();
       font = new BitmapFont();
       game = new Game();
+      if (poseCache) game.addSystem(new PoseBatchSystem(128));
       GameObject hero = game.createObject("Imported Fox - 24 joints");
       hero.addComponent(new Transform3D()).scale.set(.02f, .02f, .02f);
       model = hero.addComponent(new ModelRenderer(source));
@@ -82,8 +84,15 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
       report.put("vertices", 1728);
       require(!gl30 || Gdx.gl30 != null, "requested GL30 available");
       report.put("profile", gl30 ? "GL30" : "GL20");
+      report.put("poseCacheEnabled", poseCache);
+      Path coreJar =
+          Path.of(
+              ModelPoseAnimator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+      report.put("loadedCoreJarSha256", sha256(coreJar));
+      report.put("loadedCoreJar", coreJar.getFileName().toString());
       report.put("glVersion", Gdx.gl.glGetString(GL20.GL_VERSION));
       validate();
+      if (poseCache) validateBatching();
       if (!interactive && !gl30)
         for (String clip : new String[] {"Survey", "Walk", "Run"}) {
           var clipPlayback = animator.play(clip, PlayMode.LOOP);
@@ -265,6 +274,135 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
     checks.add("named marker and ONCE completion fire once");
   }
 
+  static String sha256(Path path) throws Exception {
+    byte[] digest =
+        java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path));
+    return java.util.HexFormat.of().formatHex(digest);
+  }
+
+  void validateBatching() {
+    final int count = 256, frames = 20;
+    int[] cachedEvents = {0}, plainEvents = {0};
+    try (Game cached = new Game();
+        Game uncached = new Game()) {
+      PoseBatchSystem service = cached.addSystem(new PoseBatchSystem(32));
+      ModelRenderer[] shared = new ModelRenderer[count], plain = new ModelRenderer[count];
+      ModelPoseAnimator[] a = new ModelPoseAnimator[count], b = new ModelPoseAnimator[count];
+      for (int i = 0; i < count; i++) {
+        GameObject co = cached.createObject("cached Fox " + i),
+            uo = uncached.createObject("uncached Fox " + i);
+        shared[i] = co.addComponent(new ModelRenderer(source));
+        plain[i] = uo.addComponent(new ModelRenderer(source));
+        a[i] = co.addComponent(new ModelPoseAnimator());
+        b[i] = uo.addComponent(new ModelPoseAnimator());
+      }
+      cached.start();
+      uncached.start();
+      for (int i = 0; i < count; i++) {
+        a[i].play(AnimationTransition.clip("Walk").loop().markers(new AnimationMarker("hit", .05)))
+            .onMarker("hit", () -> cachedEvents[0]++);
+        b[i].play(AnimationTransition.clip("Walk").loop().markers(new AnimationMarker("hit", .05)))
+            .onMarker("hit", () -> plainEvents[0]++);
+      }
+      cached.step(.1f);
+      uncached.step(.1f);
+      require(
+          service.stats().frameSamplerExecutions() == 1 && service.stats().frameHits() == 255,
+          "256 imported Fox owners share one actual composition");
+      require(
+          cachedEvents[0] == 256 && plainEvents[0] == 256,
+          "256 independent imported Fox marker events");
+      for (int i = 0; i < count; i++) {
+        compareBoundNodes(shared[i].instance.nodes, plain[i].instance.nodes);
+        NodePart sharedPart = findSkinned(shared[i].instance.nodes),
+            plainPart = findSkinned(plain[i].instance.nodes);
+        require(sharedPart.bones != plainPart.bones, "independent palette arrays");
+        for (int bone = 0; bone < sharedPart.bones.length; bone++) {
+          require(sharedPart.bones[bone] != plainPart.bones[bone], "independent skin matrices");
+          require(
+              Arrays.equals(sharedPart.bones[bone].val, plainPart.bones[bone].val),
+              "bit exact cached and uncached skin matrices");
+          if (i > 0)
+            require(
+                sharedPart.bones[bone] != findSkinned(shared[0].instance.nodes).bones[bone],
+                "per owner cached skin matrices");
+        }
+      }
+      require(
+          arrayDelta(skin(shared[0]), skin(plain[0])) == 0,
+          "bit exact cached and uncached imported skinned vertices");
+      require(
+          service.sourceStats().snapshotsCreated() == 1,
+          "one copied immutable Fox clip snapshot for 256 bindings");
+      for (int warm = 0; warm < 10; warm++) {
+        cached.step(.016f);
+        uncached.step(.016f);
+      }
+      var bean =
+          (com.sun.management.ThreadMXBean)
+              java.lang.management.ManagementFactory.getThreadMXBean();
+      require(bean.isThreadAllocatedMemorySupported(), "thread allocation measurement available");
+      bean.setThreadAllocatedMemoryEnabled(true);
+      long thread = Thread.currentThread().threadId();
+      long allocations = bean.getThreadAllocatedBytes(thread), start = System.nanoTime();
+      for (int frame = 0; frame < frames; frame++) cached.step(.016f);
+      long cachedNanos = System.nanoTime() - start,
+          cachedBytes = bean.getThreadAllocatedBytes(thread) - allocations;
+      allocations = bean.getThreadAllocatedBytes(thread);
+      start = System.nanoTime();
+      for (int frame = 0; frame < frames; frame++) uncached.step(.016f);
+      long plainNanos = System.nanoTime() - start,
+          plainBytes = bean.getThreadAllocatedBytes(thread) - allocations;
+      compareBoundNodes(shared[0].instance.nodes, plain[0].instance.nodes);
+      require(
+          service.stats().frameSamplerExecutions() == 1 && service.stats().frameHits() == 255,
+          "one composition every measured frame");
+      require(
+          service.sourceStats().snapshotsCreated() == 1,
+          "steady state has no full clip snapshot copies");
+      Map<String, Object> cost = new LinkedHashMap<>();
+      cost.put("owners", count);
+      cost.put("frames", frames);
+      cost.put("warmupFrames", 10);
+      cost.put("cachedNanosecondsPerFrame", cachedNanos / frames);
+      cost.put("uncachedNanosecondsPerFrame", plainNanos / frames);
+      cost.put("cachedAllocatedBytesPerFrame", cachedBytes / frames);
+      cost.put("uncachedAllocatedBytesPerFrame", plainBytes / frames);
+      cost.put("actualCachedCompositionsLastFrame", service.stats().frameSamplerExecutions());
+      cost.put("actualCachedHitsLastFrame", service.stats().frameHits());
+      cost.put("snapshotCopies", service.sourceStats().snapshotsCreated());
+      cost.put("livePrimitiveComparisons", service.sourceStats().comparisons());
+      cost.put("markerEvents", cachedEvents[0]);
+      report.put("batchingCost", cost);
+      checks.add(
+          "256 Fox owners: exact local/socket/skin matrices and vertices versus uncached;"
+              + " independent 256 events; one composition and immutable source copy; measured"
+              + " CPU/allocation cost");
+    }
+  }
+
+  static void compareBoundNodes(Array<Node> cached, Array<Node> plain) {
+    require(cached.size == plain.size, "equal bound node count");
+    for (int i = 0; i < cached.size; i++) compareBoundNode(cached.get(i), plain.get(i));
+  }
+
+  static void compareBoundNode(Node cached, Node plain) {
+    require(
+        cached != plain
+            && cached.localTransform != plain.localTransform
+            && cached.globalTransform != plain.globalTransform,
+        "per owner node and socket matrices");
+    require(
+        Arrays.equals(cached.localTransform.val, plain.localTransform.val),
+        "bit exact cached local pose");
+    require(
+        Arrays.equals(cached.globalTransform.val, plain.globalTransform.val),
+        "bit exact cached socket pose");
+    require(cached.getChildCount() == plain.getChildCount(), "equal child count");
+    for (int i = 0; i < cached.getChildCount(); i++)
+      compareBoundNode(cached.getChild(i), plain.getChild(i));
+  }
+
   void advance(double seconds) {
     while (seconds > 1e-8) {
       float dt = (float) Math.min(.05, seconds);
@@ -340,6 +478,10 @@ public final class ImportedAnimationProbe extends ApplicationAdapter {
   }
 
   float[] skin() {
+    return skin(model);
+  }
+
+  static float[] skin(ModelRenderer model) {
     NodePart part = findSkinned(model.instance.nodes);
     Mesh mesh = part.meshPart.mesh;
     int stride = mesh.getVertexSize() / 4;

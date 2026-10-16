@@ -17,7 +17,25 @@ import org.javity.render.ModelRenderer;
 import org.javity.services.TimeManager;
 import org.junit.Test;
 
+@org.junit.runner.RunWith(org.junit.runners.Parameterized.class)
 public class ModelPoseAnimatorTest {
+  @org.junit.runners.Parameterized.Parameters(name = "poseCache={0}")
+  public static Object[] modes() {
+    return new Object[] {false, true};
+  }
+
+  private final boolean poseCache;
+
+  public ModelPoseAnimatorTest(boolean poseCache) {
+    this.poseCache = poseCache;
+  }
+
+  private Game newGame() {
+    Game game = new Game();
+    if (poseCache) game.addSystem(new PoseBatchSystem(64));
+    return game;
+  }
+
   @Test
   public void mixerBlendsRealTrsAtEndpointsAndSynchronousMidpoint() {
     Model model = animatedModel();
@@ -35,7 +53,7 @@ public class ModelPoseAnimatorTest {
         secondRotation.z * 1.0e20f,
         secondRotation.w * 1.0e20f);
     Quaternion sourceFirst = firstRotation.cpy(), sourceSecond = secondRotation.cpy();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("pose");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -68,7 +86,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void sparseMaskedOverridePreservesLowerPoseAndWeightFadeChangesPose() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("layers");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -112,7 +130,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void fadesStartedByEarlierComponentsWaitOneFrameAndUseWorldTime() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       TimeManager time = game.addSystem(new TimeManager());
       ModelAnimationLayer[] layerRef = {null};
       GameObject object = game.createObject("deferred fade");
@@ -153,7 +171,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void invalidInputsAndStaleOwnershipRejectBeforePoseMutation() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("lifecycle");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -186,7 +204,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void namedBaseClipCrossfadeUsesFrozenSourceAndSurvivesInterruptionWithoutPop() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("base clip fade");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -234,7 +252,7 @@ public class ModelPoseAnimatorTest {
     Model model = animatedModel();
     node(model, "root").translation.set(2, 0, 0);
     node(model, "root/arm").translation.set(1, 0, 0);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("first transition bind source");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -287,7 +305,7 @@ public class ModelPoseAnimatorTest {
             rotations(0, 90, 1),
             vector(new Vector3(1, 1, 1), new Vector3(2, 1, 1), 1)));
     model.animations.add(lower);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("sparse clip fade");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -367,7 +385,7 @@ public class ModelPoseAnimatorTest {
     legOnly.nodeAnimations.add(
         track(leg, vector(new Vector3(8, 0, 0), new Vector3(8, 0, 0), 1), null, null));
     model.animations.add(legOnly);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("sparse missing track fade");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -398,7 +416,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void clipFadeHonorsPlaybackPauseWorldPauseAndStartCallbackRevision() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       TimeManager time = game.addSystem(new TimeManager());
       GameObject object = game.createObject("fade clocks");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
@@ -446,7 +464,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void laterLayerPreflightFailureLeavesEarlierFadeClocksWeightsAndPoseUntouched() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("atomic fade frame");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -490,7 +508,7 @@ public class ModelPoseAnimatorTest {
     attack20.nodeAnimations.add(
         track(arm, vector(new Vector3(20, 0, 0), new Vector3(20, 0, 0), 1), null, null));
     model.animations.add(attack20);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("fractional coverage");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -527,7 +545,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void movingOutgoingClockStopsCallbacksAndItsSampleRemainsFrozen() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("frozen outgoing");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -557,7 +575,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void repeatedBaseFadeInterruptionsKeepPoseContinuousAndRetireEveryOldHandle() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("bounded repeated interruptions");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -587,7 +605,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void onceCompletionCanPrecedeFadeEndAndZeroDeltaStillDispatchesEligibleStart() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("once fade endpoint");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -623,7 +641,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void completedOnceBaseCanPauseItsFadeFromOnCompleteWithoutPausingOtherSlots() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("completed base pause");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -669,7 +687,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void completedOnceLayerCanPauseItsFadeAndResumeBesideContinuingBase() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("completed layer pause");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -715,7 +733,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void seekRestartAndMixerBoundaryPreserveOnlyTheDocumentedTransitionState() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("transition manipulation");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -767,7 +785,7 @@ public class ModelPoseAnimatorTest {
     fast.nodeAnimations.first().rotation.peek().value.set(opposite);
     Quaternion authoredFirst = first.cpy();
     Quaternion authoredOpposite = opposite.cpy();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("equivalent quaternion keys");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -808,7 +826,7 @@ public class ModelPoseAnimatorTest {
     model.animations.add(extreme);
     Quaternion authoredFirst = huge.cpy();
     Quaternion authoredSecond = hugeOpposite.cpy();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("finite TRS fade");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -837,7 +855,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void markerReplacementCapturesCommittedMidstepFadeAndSuppressesOldEvents() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("marker fade replacement");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -872,7 +890,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void baseMarkerMutationCancelsLaterLayerFadeFromTheSameFramePlan() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("cross-slot callback cancellation");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -906,7 +924,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void earlierStartCallbackRestartDefersLaterSlotStartToItsNextFramePlan() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("later layer restart preflight");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -940,7 +958,7 @@ public class ModelPoseAnimatorTest {
 
   @Test
   public void componentMembershipUsesIdentityBeforeStartAndAfterRemoval() {
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("membership");
       Component component = new Component() {};
       assertFalse(object.containsComponent(null));
@@ -956,7 +974,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void removingFailedConflictingSiblingDoesNotBreakPoseOwnerCleanup() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("conflict cleanup");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -980,7 +998,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void extremeFiniteMixerThresholdsKeepStableMidpointAndEndpoints() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("extreme mixer thresholds");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1005,7 +1023,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void secondaryRendererKeepsLegacyControllerAndPrimaryRebindsAfterRemoval() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("multiple model renderers");
       ModelRenderer primary = object.addComponent(new ModelRenderer(model));
       ModelRenderer secondary = object.addComponent(new ModelRenderer(model));
@@ -1050,7 +1068,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void malformedChannelTypesAreRejectedBeforeReplacingCurrentPose() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("malformed model clip");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1080,7 +1098,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void vectorSamplingUsesFiniteIntermediateForExtremeOppositeEndpoints() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("extreme vector keys");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1115,7 +1133,7 @@ public class ModelPoseAnimatorTest {
     middle.nodeAnimations.add(
         track(model.nodes.first(), vector(new Vector3(), new Vector3(30, 0, 0), 2), null, null));
     model.animations.add(middle);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("three point mixer");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1144,7 +1162,7 @@ public class ModelPoseAnimatorTest {
     rotationOnly.nodeAnimations.add(
         track(model.nodes.first().getChild(0), null, rotations(0, 90, 2), null));
     model.animations.add(rotationOnly);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("ordered sparse layers");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1172,7 +1190,7 @@ public class ModelPoseAnimatorTest {
     duplicateArm.id = "arm";
     duplicateParent.addChild(duplicateArm);
     model.nodes.add(duplicateParent);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("mask and owner limits");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1225,7 +1243,7 @@ public class ModelPoseAnimatorTest {
     duplicateArm.id = "arm";
     duplicateParent.addChild(duplicateArm);
     model.nodes.add(duplicateParent);
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("composed masks");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1298,7 +1316,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void twoInstancesShareOnlyImmutableModelAnimationData() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject a = game.createObject("a"), b = game.createObject("b");
       ModelRenderer ra = a.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pa = a.addComponent(new ModelPoseAnimator());
@@ -1320,7 +1338,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void callbacksCannotAdvanceOrStartReplacedOrNewLayersFromAnOldFramePlan() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("callback layer plan");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1369,7 +1387,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void removingOwnerFromLayerCallbackStopsRemainingFrameCallbacks() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("removed callback owner");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1396,7 +1414,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void disabledOwnerOrRendererRestoresBindPoseAndStopsCurrentHandle() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("disabled pose owner");
       ModelRenderer renderer = object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());
@@ -1424,7 +1442,7 @@ public class ModelPoseAnimatorTest {
   @Test
   public void singleClipPlaybackSeekMarkersCompletionRestartAndStopUseSharedClock() {
     Model model = animatedModel();
-    try (Game game = new Game()) {
+    try (Game game = newGame()) {
       GameObject object = game.createObject("pose clock contract");
       object.addComponent(new ModelRenderer(model));
       ModelPoseAnimator pose = object.addComponent(new ModelPoseAnimator());

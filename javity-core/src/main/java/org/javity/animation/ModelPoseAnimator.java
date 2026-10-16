@@ -30,6 +30,9 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   private final ModelPosePlayback[] layerPlaybacks = new ModelPosePlayback[MAX_LAYERS];
   private final TransitionState[] layerTransitions = new TransitionState[MAX_LAYERS];
   private final long[] layerTransitionRevisions = new long[MAX_LAYERS];
+  private final List<SharedPoseData.LayoutNode> sharedLayout = new ArrayList<>();
+  private float[] bindLocalTrs;
+  private SharedPoseData sharedData;
   private ModelRenderer renderer;
   private ModelPosePlayback current;
   private TransitionState baseTransition;
@@ -348,6 +351,12 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     IdentityHashMap<Node, Integer> newIndices = new IdentityHashMap<>();
     for (Node root : instance.nodes) indexNode(root, root.id, newIndices);
     nodeIndices.putAll(newIndices);
+    bindLocalTrs = new float[nodes.size() * 10];
+    for (PoseNode node : nodes) {
+      Integer parent = nodeIndices.get(node.node.getParent());
+      sharedLayout.add(new SharedPoseData.LayoutNode(node.path, parent == null ? -1 : parent));
+      storeTrs(bindLocalTrs, node.index * 10, node.bindT, node.bindR, node.bindS);
+    }
     for (ModelAnimationLayer layer : layers) layer.resolvedMask = resolveMask(layer.mask);
   }
 
@@ -452,7 +461,20 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       tracks[index] =
           new NodeTrack(nodeAnimation.translation, nodeAnimation.rotation, nodeAnimation.scaling);
     }
-    ClipData result = new ClipData(name, animation.duration, tracks);
+    Animation retained = new Animation();
+    retained.id = name;
+    retained.duration = animation.duration;
+    for (PoseNode node : nodes) {
+      NodeTrack track = tracks[node.index];
+      if (track == null) continue;
+      NodeAnimation bound = new NodeAnimation();
+      bound.node = node.node;
+      bound.translation = track.translation;
+      bound.rotation = track.rotation;
+      bound.scaling = track.scaling;
+      retained.nodeAnimations.add(bound);
+    }
+    ClipData result = new ClipData(name, animation.duration, tracks, retained);
     clips.put(name, result);
     return result;
   }
@@ -647,6 +669,123 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     if (renderer == null || nodes.isEmpty() || !isAttachedUsable() || !isRendererPresent()) return;
     if (!isOwnerRunnable()) return;
     ensureSetup();
+    PoseBatchSystem batch = getGame().getSystem(PoseBatchSystem.class);
+    if (batch == null || batch.isDisposed()) {
+      composeLocal();
+    } else {
+      List<Animation> selected = new ArrayList<>();
+      selectClips(current, selected);
+      for (ModelAnimationLayer layer : layers) selectClips(layer.current, selected);
+      sharedData =
+          batch.source(
+              sharedData,
+              data ->
+                  data.matchesResolved(
+                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices),
+              () ->
+                  SharedPoseData.captureResolved(
+                      renderer.instance.model, sharedLayout, bindLocalTrs, selected, nodeIndices));
+      ExactPoseKey.Builder key = ExactPoseKey.builder(sharedData);
+      keyPlayback(key, current);
+      keyFade(key, baseTransition);
+      key.tag(layers.size());
+      for (ModelAnimationLayer layer : layers) {
+        key.number(layer.weight).tag(layer.resolvedMask == null ? 0 : 1);
+        if (layer.resolvedMask != null) key.mask(layer.resolvedMask);
+        keyPlayback(key, layer.current);
+        keyFade(key, layer.transition);
+      }
+      ExactPoseCache.Pose pose =
+          batch.resolve(
+              key.build(),
+              () -> {
+                composeLocal();
+                float[] result = new float[nodes.size() * 10];
+                for (PoseNode node : nodes)
+                  storeTrs(result, node.index * 10, node.outT, node.outR, node.outS);
+                return result;
+              });
+      for (PoseNode node : nodes) {
+        int i = node.index * 10;
+        node.outT.set(pose.component(i), pose.component(i + 1), pose.component(i + 2));
+        node.outR.set(
+            pose.component(i + 3),
+            pose.component(i + 4),
+            pose.component(i + 5),
+            pose.component(i + 6));
+        node.outS.set(pose.component(i + 7), pose.component(i + 8), pose.component(i + 9));
+      }
+    }
+    for (PoseNode node : nodes) {
+      node.node.translation.set(node.outT);
+      node.node.rotation.set(node.outR);
+      node.node.scale.set(node.outS);
+      node.node.localTransform.set(node.outT, node.outR, node.outS);
+      node.node.isAnimated = true;
+    }
+    renderer.instance.calculateTransforms();
+  }
+
+  private void selectClips(ModelPosePlayback playback, List<Animation> selected) {
+    if (playback == null) return;
+    if (playback.mixer == null) selected.add(clip(playback.animationName()).retained);
+    else
+      for (LinearModelMixer.Entry entry : playback.mixer.entries())
+        selected.add(clip(entry.animationName()).retained);
+  }
+
+  private void keyPlayback(ExactPoseKey.Builder key, ModelPosePlayback playback) {
+    if (playback == null) {
+      key.tag(0);
+      return;
+    }
+    key.tag(playback.clock.isActive() ? 1 : 2);
+    if (playback.mixer == null) {
+      ClipData data = clip(playback.animationName());
+      key.tag(0).number(playback.clock.normalizedTime() * data.duration);
+    } else {
+      LinearModelMixer mixer = playback.mixer;
+      key.tag(1)
+          .tag(mixer.entries().size())
+          .number(playback.parameter)
+          .number(playback.clock.normalizedTime());
+      for (LinearModelMixer.Entry entry : mixer.entries()) {
+        ClipData data = clip(entry.animationName());
+        key.number(entry.threshold()).number(playback.clock.normalizedTime() * data.duration);
+      }
+      int lower = lowerIndex(mixer, playback.parameter);
+      int upper = upperIndex(mixer, playback.parameter, lower);
+      key.tag(lower).tag(upper).number(pairMix(mixer, playback.parameter, lower, upper));
+    }
+  }
+
+  private static void keyFade(ExactPoseKey.Builder key, TransitionState fade) {
+    key.tag(fade == null ? 0 : 1);
+    if (fade == null) return;
+    key.number(fade.progress());
+    float[] frozen = new float[fade.outgoing.length * 10];
+    for (int i = 0; i < fade.outgoing.length; i++) {
+      PoseValue value = fade.outgoing[i];
+      storeTrs(frozen, i * 10, value.t, value.r, value.s);
+      key.number(value.tc).number(value.rc).number(value.sc);
+    }
+    key.floats(frozen);
+  }
+
+  private static void storeTrs(float[] target, int i, Vector3 t, Quaternion r, Vector3 s) {
+    target[i] = t.x;
+    target[i + 1] = t.y;
+    target[i + 2] = t.z;
+    target[i + 3] = r.x;
+    target[i + 4] = r.y;
+    target[i + 5] = r.z;
+    target[i + 6] = r.w;
+    target[i + 7] = s.x;
+    target[i + 8] = s.y;
+    target[i + 9] = s.z;
+  }
+
+  private void composeLocal() {
     int layerCount = layers.size();
     int nodeCount = nodes.size();
     for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
@@ -671,13 +810,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
         if (rWeight > 0) blendRotation(node.outR, contribution.r, rWeight, node.outR, node.tempR);
         if (sWeight > 0) blendVector(node.outS, contribution.s, sWeight, node.outS);
       }
-      node.node.translation.set(node.outT);
-      node.node.rotation.set(node.outR);
-      node.node.scale.set(node.outS);
-      node.node.localTransform.set(node.outT, node.outR, node.outS);
-      node.node.isAnimated = true;
     }
-    renderer.instance.calculateTransforms();
   }
 
   private static void sampleVector(Array<NodeKeyframe<Vector3>> keys, double time, Vector3 out) {
@@ -821,6 +954,9 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   }
 
   private void clearIndex() {
+    sharedData = null;
+    bindLocalTrs = null;
+    sharedLayout.clear();
     nodes.clear();
     pathIndices.clear();
     idIndices.clear();
@@ -952,7 +1088,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       Array<NodeKeyframe<Quaternion>> rotation,
       Array<NodeKeyframe<Vector3>> scaling) {}
 
-  private record ClipData(String name, float duration, NodeTrack[] tracks) {}
+  private record ClipData(String name, float duration, NodeTrack[] tracks, Animation retained) {}
 
   private static final class PoseValue {
     final Vector3 t = new Vector3(), s = new Vector3();

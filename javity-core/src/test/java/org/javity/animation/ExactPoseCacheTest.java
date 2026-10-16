@@ -20,6 +20,33 @@ public class ExactPoseCacheTest {
   }
 
   @Test
+  public void immutablePoseViewSharesOnHitsWithoutExposingSupplierOrResultArrays() {
+    ExactPoseCache cache = new ExactPoseCache(1);
+    ExactPoseKey key = ExactPoseKey.builder(data(new Object(), 0)).build();
+    float[] original = {3, 4};
+    ExactPoseCache.Pose pose = cache.resolvePose(key, () -> original);
+    original[0] = 9;
+    assertEquals(3, pose.component(0), 0);
+    assertEquals(2, pose.size());
+    assertSame(
+        pose,
+        cache.resolvePose(
+            key,
+            () -> {
+              throw new AssertionError();
+            }));
+    float[] publicCopy =
+        cache.resolve(
+            key,
+            () -> {
+              throw new AssertionError();
+            });
+    publicCopy[0] = 8;
+    assertEquals(3, pose.component(0), 0);
+    assertEquals(1, cache.stats().totalSamplerExecutions());
+  }
+
+  @Test
   public void collisionDoesNotShare() {
     SharedPoseData data = data(new Object(), 0);
     ExactPoseKey a =

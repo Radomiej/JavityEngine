@@ -7,6 +7,23 @@ import java.util.function.Supplier;
 
 /** Scene-owned frame-local cache. Capacity overflow samples without retaining another entry. */
 public final class ExactPoseCache {
+  /** Immutable component-only view. The owned primitive array is never exposed. */
+  public static final class Pose {
+    private final float[] values;
+
+    private Pose(float[] sampled) {
+      values = sampled.clone();
+    }
+
+    public int size() {
+      return values.length;
+    }
+
+    public float component(int index) {
+      return values[index];
+    }
+  }
+
   public record Stats(
       int retainedEntries,
       long frameHits,
@@ -17,7 +34,7 @@ public final class ExactPoseCache {
       long totalSamplerExecutions) {}
 
   private final int maxEntries;
-  private final Map<ExactPoseKey, float[]> entries = new LinkedHashMap<>();
+  private final Map<ExactPoseKey, Pose> entries = new LinkedHashMap<>();
   private long frameIndex;
   private boolean hasFrame;
   private long hits, misses, executions, totalHits, totalMisses, totalExecutions;
@@ -36,21 +53,26 @@ public final class ExactPoseCache {
   }
 
   public float[] resolve(ExactPoseKey key, Supplier<float[]> sampler) {
+    return resolvePose(key, sampler).values.clone();
+  }
+
+  // Internal sampler integration reads the immutable view without a per-owner pose-array copy.
+  Pose resolvePose(ExactPoseKey key, Supplier<float[]> sampler) {
     Objects.requireNonNull(key);
     Objects.requireNonNull(sampler);
-    float[] value = entries.get(key);
+    Pose value = entries.get(key);
     if (value != null) {
       hits++;
       totalHits++;
-      return value.clone();
+      return value;
     }
     misses++;
     totalMisses++;
     executions++;
     totalExecutions++;
-    value = Objects.requireNonNull(sampler.get(), "Sampler returned null");
-    if (entries.size() < maxEntries) entries.put(key, value.clone());
-    return value.clone();
+    value = new Pose(Objects.requireNonNull(sampler.get(), "Sampler returned null"));
+    if (entries.size() < maxEntries) entries.put(key, value);
+    return value;
   }
 
   /** Releases all retained pose/source references; cumulative metrics remain available. */
