@@ -274,3 +274,5 @@ ustalonego trybu AABB `--voxels`. [API, granice i dowód GPU](docs/physics3d.md)
 ### Inspektor sceny w runtime
 
 F1 w podstawowym demie otwiera panel na naszym UI Yoga: GameObjecty, komponenty i transformacje. Start od razu z panelem: `./gradlew :javity-desktop:run --args='--inspector'`. Panel obsługuje typowaną edycję Transform2D/Transform3D, undo/redo, gizmos local/world ze snappingiem oraz jawnie konfigurowany eksport runtime SceneJson (`--scene-export=/absolute/path/runtime-scene.json`). Właściciele ruchu blokują bezpośrednią edycję, a assety wymagają jawnych codeców/resolverów. Drzewo UiDocument/React i diagnostyka reload pozostają osobnym etapem. [Instrukcja](docs/runtime-tools.md), [zrzut](docs/demo-runtime-inspector.png), [audyt OneJS](docs/onejs-coverage-audit.md), [kolejność kolejnych prac](docs/work-queue.md).
+
+Przewodnik od pierwszego uruchomienia: [guide silnika](docs/engine-guide.md). Demo blokowego FPS z rękami/narzędziem: `./gradlew :javity-desktop:run --args='--voxels'`; drzewo GameObjectów i gizma: `--inspector`, F1. [Rzeczywisty obecny widok FPS](docs/artifacts/avatar/voxel-fps.png).
