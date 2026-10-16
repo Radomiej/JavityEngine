@@ -1,6 +1,6 @@
-# GPU instancing i batching animacji — projekt do uzgodnienia
+# GPU instancing i batching animacji — zaakceptowany projekt
 
-2026-10-16. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **To projekt, nie wdrożona funkcja.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
+2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **To projekt, nie wdrożona funkcja.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
 
 ## Co mamy
 
@@ -67,6 +67,12 @@ Odtworzenie EGL wymaga ponownego uploadu instancji/palet oraz konfiguracji VAO/d
 
 Demo powinno pokazywać zwykłą/instanced ścieżkę i stats side-by-side, zachować licencję Foxa oraz powtarzalne zrzuty i raport. Kryterium sukcesu: taka sama animacja i obraz w określonej tolerancji oraz udowodnione ograniczenie draw calls/samplingu, nie samo glDrawElementsInstanced w kodzie.
 
-## Następny krok
+## Plany wykonania
 
-Potwierdzić źródłowe repo/kod użytkownika i uzgodnić wariant A→B→C. Następnie specyfikacje i małe plany wykonania dla kolejnych etapów. Niniejszy dokument nie zmienia zaakceptowanej kolejki FPS/narzędzi/streamingu/otoczenia i nie oznacza implementacji instancingu.
+Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania przygotowane do przeglądu; implementacja nie rozpoczęła się:
+
+1. [A — statyczny instancing](superpowers/plans/2026-10-16-static-gpu-instancing.md).
+2. [B — dokładny cache póz](superpowers/plans/2026-10-16-exact-pose-batching.md).
+3. [C — instanced skinning](superpowers/plans/2026-10-16-instanced-skinning.md).
+
+Kod projektu referencyjnego pozostaje dodatkowym źródłem do porównania, gdy będzie dostępny. Nie blokuje własnej implementacji. Ten zakres nie oznacza ukończenia wcześniejszej kolejki FPS/narzędzi/streamingu/otoczenia.

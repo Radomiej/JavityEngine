@@ -55,3 +55,7 @@ Historyczny checkpoint integracyjny: wydzielony provider Graal i przenośny host
 ## Kolejny zaakceptowany zakres — 2026-10-16
 
 [Projekt FPS/narzędzi/streamingu/otoczenia](next-runtime-batch.md) zaakceptowany przez użytkownika. Cztery powiązane plany wykonania są gotowe do przeglądu. Kolejność: czytelna ręka i kilof w --voxels → tree viewer i Feel → asset streaming → światła/skybox/mgła. Guide obecnego API jest w [engine-guide.md](engine-guide.md). Nowe funkcje pozostają otwarte; akceptacja projektu ani plany nie oznaczają ich wdrożenia. Zachowujemy wcześniejszą metodę pracy agentów i niezależnego review.
+
+## GPU instancing — zakres zaakceptowany 2026-10-16
+
+[Projekt i plany A→B→C](gpu-instancing-design.md): statyczny instancing, niezależne zegary ze współdzieleniem dokładnej pozy, następnie GPU palette skinning. Plany oczekują przeglądu przed implementacją; wszystkie funkcje pozostają otwarte w TODO. Metoda wykonania: agenci pod nadzorem, integracja etapami.

@@ -174,4 +174,4 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [ ] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
 - [ ] Rzeczywiste porównanie pikseli/poz, liczby draw calls i sampler calls, benchmark64/256/1024 oraz osobny Android/context-loss gate.
 
-[Projekt do uzgodnienia](gpu-instancing-design.md). Nic z tego nie jest jeszcze oznaczone jako wdrożone.
+[Zaakceptowany projekt i trzy plany do przeglądu](gpu-instancing-design.md). Nic z tego nie jest jeszcze oznaczone jako wdrożone.
