@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "actualStageClicks": ["play","pause","resume","stop"],
+  "modelCenterX": [127,186,186,173,127],
+  "gameplayClicks": 0, "canonicalTransformPreserved": true, "overlayTreeDetached": true,
+  "ownedFlexTreesClosed": 20, "clockUnavailableRefused": true, "sceneIdentityIsolation": true,
+  "pngOrientation": "upright"
+}

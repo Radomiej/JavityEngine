@@ -32,6 +32,31 @@ game.step(0);
 
 Manager obiektu wymaga `Presentation3D`; manager kamery wymaga providera odpowiadającego wybranej powierzchni. Jeśli nie używasz callbacków końca efektu, możesz pominąć `EffectSystem`. `PresentationEffects3D` obsługuje zegar `Clock.WORLD` (domyślny) i `Clock.UI`. Przy użyciu `PresentationEffects3D.feedback(...)` ustaw taki sam zegar managera i `FeedbackPlayer`.
 
+## Panel podglądu Feel
+
+`RuntimeToolsOverlay` udostępnia `feelPreview()` obok inspektora sceny. F1 pokazuje oba panele, oddaje im kursor i przy zamknięciu zatrzymuje tylko podgląd należący do panelu. Zaznacz konkretny obiekt w inspektorze; panel nie wyszukuje zastępczego celu w scenie. Przycisk presetu przełącza `USE_TOOL` (recoil), `HIT` (punchScale), `LANDING` (recoil kamery) i `SPRINT` (timeBob). Przyciski powierzchni i zegara wybierają `MODEL` / `WORLD_CAMERA` / `VIEWMODEL_CAMERA` oraz `WORLD` / `UI`. `HIT` wymaga powierzchni MODEL.
+
+Play odczytuje typowane pola X/Y/Z, Hz, damping i seconds i tworzy nowy niezmienny preset; zmiana pól nie przepisuje już odtwarzanego efektu. Pozycja/recoil używa lokalnych jednostek (recoil: prędkość początkowa), HIT używa prędkości delta-skali, a sprint amplitudy bob. Pause/Resume trzymają i wznawiają wyłącznie uchwyt panelu. Stop, nowe Play, zmiana zaznaczenia/zegara/sceny i close anulują tylko ten uchwyt; efekty utworzone przez gameplay pozostają niezależne. Licznik pokazuje aktywne playbacki wybranego managera i osobno uchwyt panelu.
+
+Obiekt musi już mieć aktywny, zainicjalizowany `PresentationEffects3D` z wybranym zegarem i pasujący provider. Panel zgłasza brak celu, managera danego zegara lub powierzchni. Nie dodaje komponentów, `EffectSystem`, `FeedbackPlayer`, `TimeManager` ani innego schedulera. Host konfiguruje te zależności jawnie przed użyciem; istniejący manager WORLD nie zmienia zegara po wybraniu UI. Przy kilku managerach tego samego zegara panel używa pierwszego aktywnego i zainicjalizowanego w kolejności komponentów. WORLD zatrzymuje się z pauzą gry, UI nadal aktualizuje `Game` nieskalowanym czasem. Samo `panel.update(delta)` nie przesuwa zegara efektu.
+
+```java
+RuntimeToolsOverlay tools = new RuntimeToolsOverlay(stage, theme, () -> game);
+// Host: inspector keys -> Stage -> inspector gizmo -> gameplay.
+// Obiekt actor ma już Transform3D, Presentation3D i manager WORLD.
+tools.inspector().selectObject(actor);
+tools.feelPreview().selectPreset(FeelPreviewPanel.Preview.USE_TOOL);
+tools.feelPreview().setParameters(
+    new FeelPreviewPanel.Parameters(8, -2, 0, 2, .7, 1));
+tools.feelPreview().setClock(Clock.WORLD);
+// Co klatkę: game.step(delta); tools.update(unscaledDelta); stage.act(unscaledDelta).
+// Przy zamknięciu: usuń procesory overlay z hosta, tools.close(), potem Stage/theme.
+```
+
+Osobny `new FeelPreviewPanel(stage, theme, selectionSupplier)` pożycza Stage/theme i wymaga tego samego cyklu update/close. Przejście sceny pozostaje własnością `SceneManager`; uruchom `./gradlew :javity-desktop:run --args='--mm'` i [opis systemów mm](mm-systems-audit.md), zamiast dodawać drugi mechanizm przejść do panelu.
+
+`./gradlew :javity-desktop:feel3dSmoke` klika prawdziwe przyciski Stage przez multiplexer, porównuje piksele modelu/kamery, sprawdza pauzę, walidację pól, odmowę brakującego zegara, izolację scen i zamknięcie wszystkich własnych drzew Flex/Yoga. [Panel modelu](artifacts/feel-preview/panel-model.png), [panel kamery](artifacts/feel-preview/panel-camera.png), [brak zegara UI](artifacts/feel-preview/panel-unavailable-clock.png) i [wyniki](artifacts/feel-preview/verification.json) są oddzielne od starszych dowodów FPS. To dowód desktop GL30; Android wymaga osobnej bramki.
+
 ## Odtwarzanie efektów
 
 Presety są niezmiennymi opisami i można ich używać wielokrotnie. Każde wywołanie `play` tworzy osobne odtwarzanie i własny addytywny lease providera. Na przykład:

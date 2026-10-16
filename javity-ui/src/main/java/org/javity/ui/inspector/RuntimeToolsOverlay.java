@@ -13,6 +13,7 @@ import org.javity.ui.flex.UiTheme;
 /** Optional scene tools. Borrows Stage/theme/Game/cameras; host owns processor installation. */
 public final class RuntimeToolsOverlay implements AutoCloseable {
   private final RuntimeInspector inspector;
+  private final FeelPreviewPanel feelPreview;
   private Supplier<Camera> debugCamera = () -> null;
   private Runnable interactionChanged = () -> {};
   private boolean focused = true, restoreCapture, closed;
@@ -20,6 +21,13 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
   public RuntimeToolsOverlay(Stage stage, UiTheme theme, Supplier<Game> scene) {
     inspector = new RuntimeInspector(stage, theme, scene);
     inspector.setVisible(false);
+    try {
+      feelPreview = new FeelPreviewPanel(stage, theme, inspector::selectedObject);
+    } catch (RuntimeException | Error failure) {
+      inspector.close();
+      throw failure;
+    }
+    feelPreview.setVisible(false);
     inspector.setVisibilityListener(this::visibilityChanged);
     inspector.setFocusSelectedHandler(object -> {
       Camera camera = debugCamera.get();
@@ -35,6 +43,7 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
   }
 
   public RuntimeInspector inspector() { return inspector; }
+  public FeelPreviewPanel feelPreview() { return feelPreview; }
 
   /** Return a camera only after the host explicitly entered its debug/free-fly mode. */
   public void setDebugCameraProvider(Supplier<Camera> provider) {
@@ -47,6 +56,8 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
   }
 
   private void visibilityChanged(boolean visible) {
+    feelPreview.setVisible(visible);
+    if (!visible) feelPreview.stop();
     if (visible) {
       restoreCapture = focused && Gdx.input.isCursorCatched();
       Gdx.input.setCursorCatched(false);
@@ -57,7 +68,10 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
     interactionChanged.run();
   }
 
-  public void update(float unscaledDelta) { inspector.update(unscaledDelta); }
+  public void update(float unscaledDelta) {
+    inspector.update(unscaledDelta);
+    feelPreview.update(unscaledDelta);
+  }
   public void drawGizmos() { inspector.drawGizmos(); }
 
   public void onFocusLost() {
@@ -74,6 +88,7 @@ public final class RuntimeToolsOverlay implements AutoCloseable {
     if (closed) return;
     if (inspector.isVisible()) inspector.setVisible(false);
     closed = true;
+    feelPreview.close();
     inspector.close();
   }
 }

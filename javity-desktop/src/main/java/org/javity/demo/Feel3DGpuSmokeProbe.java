@@ -2,6 +2,18 @@ package org.javity.demo;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.javity.ui.flex.UiTheme;
+import org.javity.ui.inspector.RuntimeToolsOverlay;
+import org.javity.ui.inspector.FeelPreviewPanel;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -168,6 +180,8 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
     require(
         base.redCount > 20,
         "baseline viewmodel did not produce enough red pixels: " + base.redCount);
+
+    previewPanelProof(base, canonicalPosition, canonicalScale);
 
     // Real analytic preset output moves the mesh rendered by GdxRenderer.
     var punch = worldEffects.play(PresentationEffects3D.punchPosition(22, 0, 0, 2, .7, 1));
@@ -362,6 +376,139 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
         "probe output framebuffer texture leaked after disposal");
   }
 
+  /** Actual Stage/multiplexer clicks drive the same public overlay used by game hosts. */
+  private void previewPanelProof(ImageStats base, float[] position, float[] scale) throws IOException {
+    var previousInput = Gdx.input.getInputProcessor();
+    boolean previousCapture = Gdx.input.isCursorCatched();
+    Stage stage = new Stage(new ScreenViewport());
+    UiTheme theme = new UiTheme();
+    RuntimeToolsOverlay tools = null;
+    try {
+      stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+      TextureRegion region = new TextureRegion(output.getColorBufferTexture());
+      region.flip(false, true);
+      Image image = new Image(region);
+      image.setBounds(342, 240, SIZE, SIZE); stage.addActor(image);
+      int borrowedChildren = stage.getRoot().getChildren().size;
+      tools = new RuntimeToolsOverlay(stage, theme, () -> game);
+      final int[] gameplayClicks = {0};
+      InputMultiplexer input = new InputMultiplexer(tools.inspector().inputProcessor(), stage,
+          tools.inspector().gizmoInputProcessor(), new InputAdapter() {
+            @Override public boolean touchDown(int x, int y, int p, int b) { gameplayClicks[0]++; return true; }
+          });
+      Gdx.input.setInputProcessor(input);
+      tools.update(0);
+      tools.inspector().selectObject(worldTransform.getGameObject());
+      input.keyDown(Input.Keys.F1); input.keyUp(Input.Keys.F1); tools.update(0); stage.act(0);
+      ((com.badlogic.gdx.scenes.scene2d.ui.TextField) stage.getRoot().findActor("feel-parameter-Hz")).setText("bad");
+      click(stage, input, "feel-play"); tools.update(0);
+      require(((com.badlogic.gdx.scenes.scene2d.ui.Label) stage.getRoot().findActor("feel-status"))
+          .getText().toString().contains("Invalid next preset"), "invalid typed parameter error vanished on update");
+      tools.feelPreview().setParameters(new FeelPreviewPanel.Parameters(22, 0, 0, 2, .7, 1));
+      click(stage, input, "feel-play");
+      require(tools.feelPreview().isPlaying(), "native Play click did not start owned playback");
+      game.step(.1f); updateRig(); tools.update(.1f);
+      ImageStats moved = render("preview-model-play.png", false);
+      require(Math.abs(moved.greenCenterX - base.greenCenterX) > 5, "panel Play did not move actual model pixels");
+      click(stage, input, "feel-pause");
+      game.step(.1f); updateRig(); tools.update(.1f);
+      ImageStats paused = render("preview-model-paused.png", false);
+      require(paused.greenCenterX == moved.greenCenterX && paused.greenCount == moved.greenCount,
+          "panel Pause did not hold actual model pixels");
+      click(stage, input, "feel-resume");
+      game.step(.05f); updateRig(); tools.update(.05f);
+      ImageStats resumed = render("preview-model-resumed.png", false);
+      require(resumed.greenCenterX != paused.greenCenterX, "panel Resume did not advance actual model pixels");
+      capturePanel(stage, "panel-model.png");
+      click(stage, input, "feel-stop"); updateRig();
+      ImageStats stopped = render("preview-model-stopped.png", false);
+      require(stopped.greenCenterX == base.greenCenterX && stopped.greenCount == base.greenCount,
+          "panel Stop did not restore model pixels");
+      require(canonical(worldTransform, position, scale), "panel preview changed canonical Transform3D");
+
+      // The selected object is explicit; changing to the camera uses its existing manager/providers.
+      tools.inspector().selectObject(worldCamera.getGameObject()); tools.update(0);
+      tools.feelPreview().selectPreset(FeelPreviewPanel.Preview.LANDING);
+      tools.feelPreview().setParameters(new FeelPreviewPanel.Parameters(0, -12, 0, 2, .7, 1));
+      click(stage, input, "feel-play"); game.step(.1f); updateRig(); tools.update(.1f);
+      ImageStats camera = render("preview-camera-play.png", false);
+      require(camera.greenCount != base.greenCount || camera.greenCenterX != base.greenCenterX
+          || camera.greenCenterY != base.greenCenterY, "panel camera preset did not change actual model pixels");
+      capturePanel(stage, "panel-camera.png");
+      click(stage, input, "feel-stop"); updateRig();
+      ImageStats cameraStopped = render("preview-camera-stopped.png", false);
+      require(cameraStopped.greenCount == base.greenCount, "camera Stop failed to restore rendered output");
+      click(stage, input, "feel-clock"); click(stage, input, "feel-play"); tools.update(0);
+      require(((com.badlogic.gdx.scenes.scene2d.ui.Label) stage.getRoot().findActor("feel-status"))
+          .getText().toString().contains("Clock unavailable"), "missing UI manager was not reported clearly");
+      require(cameraEffects.activeCount() == 0, "unavailable clock installed an effect");
+      capturePanel(stage, "panel-unavailable-clock.png");
+      click(stage, input, "feel-clock"); click(stage, input, "feel-play");
+      var external = cameraEffects.play(PresentationEffects3D.fovKick(
+          PresentationEffects3D.Surface.WORLD_CAMERA, 3, 2, .7, 1));
+      Game original = game;
+      try (Game replacement = new Game()) {
+        replacement.createObject("same-id replacement"); replacement.start();
+        game = replacement; tools.update(0);
+        require(!tools.feelPreview().isPlaying() && cameraEffects.activeCount() == 1 && external.isActive(),
+            "scene transition did not isolate exact owned preview");
+      } finally { game = original; external.cancel(); }
+      require(gameplayClicks[0] == 0, "panel clicks reached gameplay");
+      java.util.List<org.javity.ui.flex.Flex> ownedTrees = new java.util.ArrayList<>();
+      collectFlex(stage.getRoot(), ownedTrees);
+      tools.close(); tools.close();
+      for (var tree : ownedTrees) {
+        boolean disposed = false;
+        try { tree.getPrefWidth(); } catch (IllegalStateException expected) { disposed = true; }
+        require(disposed, "overlay retained a live Yoga Flex after close");
+      }
+      require(stage.getRoot().getChildren().size == borrowedChildren, "overlay tree retained actors after close");
+      require(worldEffects.activeCount() == 0 && cameraEffects.activeCount() == 0,
+          "preview owned effects survived overlay close");
+      require(Gdx.gl.glIsTexture(output.getColorBufferTexture().getTextureObjectHandle()),
+          "overlay closed borrowed texture");
+      Path proof = Path.of("docs/artifacts/feel-preview/verification.json");
+      Files.writeString(proof, "{\n  \"result\": \"PASS\",\n  \"actualStageClicks\": [\"play\",\"pause\",\"resume\",\"stop\"],\n"
+          + "  \"modelCenterX\": [" + base.greenCenterX + "," + moved.greenCenterX + "," + paused.greenCenterX + "," + resumed.greenCenterX + "," + stopped.greenCenterX + "],\n"
+          + "  \"gameplayClicks\": 0, \"canonicalTransformPreserved\": true, \"overlayTreeDetached\": true,\n"
+          + "  \"ownedFlexTreesClosed\": " + ownedTrees.size() + ", \"clockUnavailableRefused\": true, \"sceneIdentityIsolation\": true,\n"
+          + "  \"pngOrientation\": \"upright\"\n}\n");
+    } finally {
+      if (tools != null) tools.close();
+      stage.dispose(); theme.dispose();
+      Gdx.input.setInputProcessor(previousInput); Gdx.input.setCursorCatched(previousCapture);
+    }
+  }
+
+  private void collectFlex(Actor actor, java.util.List<org.javity.ui.flex.Flex> trees) {
+    if (actor instanceof org.javity.ui.flex.Flex flex) trees.add(flex);
+    if (actor instanceof com.badlogic.gdx.scenes.scene2d.Group group)
+      for (Actor child : group.getChildren()) collectFlex(child, trees);
+  }
+
+  private void click(Stage stage, InputMultiplexer input, String name) {
+    stage.act(0); stage.draw();
+    Actor actor = stage.getRoot().findActor(name);
+    require(actor != null && actor.getWidth() > 0 && actor.getHeight() > 0, "button has no actual bounds: " + name);
+    Vector2 point = actor.localToStageCoordinates(new Vector2(actor.getWidth() / 2, actor.getHeight() / 2));
+    require(stage.hit(point.x, point.y, true) == actor || actor.isAscendantOf(stage.hit(point.x, point.y, true)),
+        "button obscured or clipped: " + name + " at " + point);
+    Vector2 screen = stage.stageToScreenCoordinates(point);
+    require(input.touchDown(Math.round(screen.x), Math.round(screen.y), 0, Input.Buttons.LEFT), "unhandled click: " + name);
+    input.touchUp(Math.round(screen.x), Math.round(screen.y), 0, Input.Buttons.LEFT);
+  }
+
+  private void capturePanel(Stage stage, String file) {
+    Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    Gdx.gl.glClearColor(.025f, .035f, .06f, 1); Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    stage.act(0); stage.draw();
+    Pixmap pixels = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    try {
+      FileHandle out = Gdx.files.local("docs/artifacts/feel-preview/" + file); out.parent().mkdirs();
+      PixmapIO.writePNG(out, pixels, -1, true);
+    } finally { pixels.dispose(); }
+  }
+
   private ImageStats render(String file, boolean drawParticles) {
     output.begin();
     clear();
@@ -374,9 +521,11 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
       renderer.renderViewmodel(rig.viewmodelCamera(), viewInstance);
       Pixmap pixels = Pixmap.createFromFrameBuffer(0, 0, SIZE, SIZE);
       try {
-        FileHandle out = Gdx.files.local("docs/artifacts/feel3d/" + file);
+        FileHandle out = Gdx.files.local((file.startsWith("preview-")
+            ? "docs/artifacts/feel-preview/" : "docs/artifacts/feel3d/") + file);
         out.parent().mkdirs();
-        PixmapIO.writePNG(out, pixels);
+        if (file.startsWith("preview-")) PixmapIO.writePNG(out, pixels, -1, true);
+        else PixmapIO.writePNG(out, pixels);
       } finally {
         pixels.dispose();
       }
@@ -421,6 +570,7 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
     return new ImageStats(
         green,
         green == 0 ? 0 : gx / green,
+        green == 0 ? 0 : gy / green,
         red,
         red == 0 ? 0 : rx / red,
         red == 0 ? 0 : ry / red,
@@ -586,6 +736,7 @@ final class Feel3DGpuSmokeProbe extends ApplicationAdapter {
   private record ImageStats(
       int greenCount,
       int greenCenterX,
+      int greenCenterY,
       int redCount,
       int redCenterX,
       int redCenterY,

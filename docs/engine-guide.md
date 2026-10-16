@@ -119,6 +119,9 @@ Do tweenów i kompozycji użyj `EffectSystem`, `FeedbackPlayer` i niemutowalnych
 
 `PresentationEffects3D` daje modelom i kamerom punch, shake, recoil, bob i FOV. Nie przesuwa fizyki ani stanu gameplay. Świat i viewmodel mają osobne powierzchnie prezentacji. [Presety i konfiguracja](feel3d.md), [particles](particles3d.md), [world postprocess](world-postprocess.md).
 
+W overlay F1 panel Feel korzysta z dokładnie zaznaczonego obiektu: wybierz preset use-tool/hit/landing/sprint, powierzchnię i WORLD/UI, edytuj typowane parametry, następnie Play/Pause/Resume/Stop. Wymaga istniejącego managera `PresentationEffects3D` danego zegara i pasującego providera; brak konfiguracji pokazuje w statusie, bez automatycznego dodawania komponentów. Anuluje tylko własny playback przy zmianie zaznaczenia/sceny i close. [Konfiguracja i przykład API](feel3d.md#panel-podglądu-feel), [rzeczywisty panel](artifacts/feel-preview/panel-model.png). Przejście sceny demonstruje istniejący tryb `--mm` z `SceneManager`.
+
+
 `ModelPoseAnimator` obsługuje klipy, warstwy, maski i crossfade. Widoczność części avataru nie usuwa kości potrzebnych socketom. [Animacje](animation-api.md), [avatary](avatars.md). Są to własne odpowiedniki wybranych zachowań Animancer/Feel, bez deklaracji pełnego API Unity.
 
 UI jest opcjonalne: Scene2D/Yoga bez JS albo React/TSX na wspólnym hoście. Zwykły JDK25 + GraalJS działa na desktopie, QuickJS na Androidzie; nie potrzebujesz dystrybucji GraalVM. Katalog UtilityStyles jest ograniczony i jawny, nie pełny HTML/CSS/Tailwind. [TSX i hot reload UI](onejs-port.md), [porównanie HTML](ui-html-parity.md).

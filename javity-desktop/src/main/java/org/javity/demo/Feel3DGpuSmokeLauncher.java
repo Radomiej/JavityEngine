@@ -10,7 +10,7 @@ public final class Feel3DGpuSmokeLauncher {
   public static void main(String[] args) {
     Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
     config.setTitle("Javity Feel3D integrated smoke");
-    config.setWindowedMode(256, 256);
+    config.setWindowedMode(1000, 760);
     config.setForegroundFPS(60);
     config.setInitialVisible(false);
     config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL30, 3, 2);
