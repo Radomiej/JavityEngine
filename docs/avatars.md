@@ -138,17 +138,32 @@ an obstacle. A copied rigid presentation offset is limited to 64 world units and
 segment is swept before the boom segment (also in FPS), so presentation translation cannot bypass
 clearance. The exposed clearance is the minimum returned fraction across these segments.
 
-The actual Xorg/Mesa scene smoke and images are under [`docs/artifacts/avatar`](artifacts/avatar/).
-`voxel-proof.json` records the measured wall clearance fraction, clock behavior, F5/pause checks,
-pose/camera metrics and cleanup. `voxel-tpp-wall.png` shows camera-volume contraction,
-`voxel-tpp-clear.png` the grounded clear-space boom, `voxel-fps.png` the isolated hands, and
-`voxel-fps-wall-viewmodel.png` verifies that the world wall covers the center while hands and tool
-remain visible in the final pass. `voxel-same-frame-second-camera-full-body.png` shows the full
-avatar from the observer view.
-`voxel-tpp-body-without-head.png` and `voxel-tpp-arms-only-preset.png` record the two alternate
-presets. Shirt/tool slot off/on, paused use, and resumed TPP have separate captures. Run the
-real-window scene with
-`./gradlew :javity-desktop:voxelSmoke`; CPU rig and voxel sweep coverage runs with
+The FPS view selects the right arm and the `tool` slot. Its authored wooden shaft and stepped cyan
+pickaxe head share one owned mesh attached to the existing right-hand bone/socket. The fixed
+camera-local `VoxelViewmodelPresentation` base leaves the gameplay transform and TPP composition
+independent. Walking/sprinting already drive a gentle arm bob through the canonical locomotion mixer.
+
+LMB removes one raycast block and starts the masked swing on its rising edge; E starts only the swing.
+Holding either input does not restart the playback. The first uncaptured click captures the cursor.
+Scene2D receives UI events first; keyboard focus, WORLD pause/freeze and native window focus gate tool
+use. Key/button releases clear the held guards even if a widget consumes the release. Native focus
+loss releases cursor capture, clears the guards and cancels the owned recoil.
+
+The demo explicitly attaches `PresentationEffects3D` and `CameraPresentation3D(VIEWMODEL)` to its
+camera owner. A new use replaces its one finite recoil handle, sampled once by the ordinary WORLD
+component update. `CameraRig3D.update(..., null, toolCameraPresentation)` composes it only into the
+viewmodel camera. F5 changes view selection while preserving the same pose, clock and socket;
+WORLD pause freezes both animation and recoil. Closing the demo cancels its playback before the
+scene and GPU resources close. No secondary animator or scheduler is involved.
+
+Current real Xorg/Mesa captures and matched ROI metrics live under
+[`docs/artifacts/voxel-fps`](artifacts/voxel-fps/README.md). `task2-proof.json` covers separate hand,
+shaft and head masks during action start/mid/end, wall, tool hiding, walking, sprint, jump, F5 during
+use and actual 960×720 native resize. Tool-hidden and no-viewmodel controls isolate geometry from
+similarly colored terrain. `task2-scene-proof.json` retains the camera-volume, seam-edit and controller
+checks; historical Task 1 captures remain unchanged. Run
+`./gradlew :javity-desktop:voxelSmoke :javity-desktop:avatarSmoke :javity-desktop:avatarGl30Smoke`.
+CPU rig and voxel sweep coverage runs with
 `./gradlew :javity-core:test --tests org.javity.render.CameraRig3DTest :javity-voxel:test --tests org.javity.voxel.controller.VoxelCameraObstructionTest`.
 
 This is procedural-rig integration evidence. It does not claim imported production-avatar asset

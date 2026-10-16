@@ -25,6 +25,8 @@ import org.javity.avatar.AvatarView;
 import org.javity.core.Game;
 import org.javity.core.GameObject;
 import org.javity.core.Transform3D;
+import org.javity.presentation.CameraPresentation3D;
+import org.javity.presentation.PresentationEffects3D;
 import org.javity.render.AvatarCameraMode;
 import org.javity.render.Camera3D;
 import org.javity.render.CameraRig3D;
@@ -64,7 +66,6 @@ final class VoxelDemo extends ApplicationAdapter {
   private UiTheme theme;
   private Flex hud;
   private com.badlogic.gdx.scenes.scene2d.ui.Label status;
-  private com.badlogic.gdx.scenes.scene2d.ui.Label counters;
   private com.badlogic.gdx.scenes.scene2d.ui.Label targetStatus;
   private GameObject cameraObject;
   private GameObject remoteCameraObject;
@@ -101,6 +102,15 @@ final class VoxelDemo extends ApplicationAdapter {
   private boolean cameraModeToggleHeld;
   private boolean clothingVisible = true;
   private boolean toolVisible = true;
+  private boolean useHeld;
+  private boolean mineHeld;
+  private CameraPresentation3D toolCameraPresentation;
+  private PresentationEffects3D toolEffects;
+  private PresentationEffects3D.Playback toolRecoil;
+  private static final PresentationEffects3D.Preset TOOL_RECOIL =
+      PresentationEffects3D.recoil(
+          PresentationEffects3D.Surface.VIEWMODEL_CAMERA,
+          0, -.22, 1.8, -30, 0, 8, 5, .65, .42);
 
   VoxelDemo(boolean smoke) {
     this.smoke = smoke;
@@ -136,7 +146,12 @@ final class VoxelDemo extends ApplicationAdapter {
     cameraObject = game.createObject("voxel FPS player");
     cameraTransform = cameraObject.addComponent(new Transform3D());
     cameraComponent = cameraObject.addComponent(new Camera3D(67));
+    // The host explicitly supplies its view-local feedback provider; gameplay TRS stays authoritative.
+    toolCameraPresentation = cameraObject.addComponent(
+        new CameraPresentation3D(CameraPresentation3D.Space.VIEWMODEL));
+    toolEffects = cameraObject.addComponent(new PresentationEffects3D());
     fpsController = cameraObject.addComponent(new VoxelFpsController(world));
+    fpsController.addLookInput(0, -22);
     remoteCameraObject = game.createObject("avatar observer camera");
     remoteCameraComponent = remoteCameraObject.addComponent(new Camera3D(67));
     remoteCameraComponent.camera.near = .1f;
@@ -166,30 +181,36 @@ final class VoxelDemo extends ApplicationAdapter {
     stage = new Stage(new ScreenViewport());
     theme = new UiTheme();
     createHud();
-    inputMultiplexer = new InputMultiplexer(stage, createInputProcessor());
+    inputMultiplexer = new InputMultiplexer(stage, createInputProcessor()) {
+      @Override public boolean keyUp(int keycode) {
+        // Releases must reach latches even when a UI widget consumes the event.
+        if (keycode == Input.Keys.E) useHeld = false;
+        if (keycode == Input.Keys.F) freeFlyToggleHeld = false;
+        if (keycode == Input.Keys.F5) cameraModeToggleHeld = false;
+        return super.keyUp(keycode);
+      }
+      @Override public boolean touchUp(int x, int y, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) mineHeld = false;
+        return super.touchUp(x, y, pointer, button);
+      }
+    };
     Gdx.input.setInputProcessor(inputMultiplexer);
     resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     if (smoke) smokeProbe = VoxelSmokeProbe.install(this);
   }
 
   private void createHud() {
-    hud = new Flex(theme, "flex-col p-4 gap-1 bg-slate-900 rounded-lg border-2 border-slate-700");
-    hud.add(theme.label("JAVITY / VOXEL FIELD", "text-xl text-cyan-400"), "h-8");
+    hud = new Flex(theme, "flex-col p-3 gap-1 bg-slate-900 rounded-lg border-2 border-slate-700");
+    hud.add(theme.label("JAVITY / VOXEL FPS", "text-lg text-cyan-400"), "h-6");
     status = theme.label("FPS ready", "text-sm text-emerald-500");
-    hud.add(status, "h-6");
-    counters =
-        theme.label(
-            "Chunks 0 / 18  |  visible 0  |  dirty 0  |  faces 0", "text-sm text-slate-200");
-    hud.add(counters, "h-6");
-    targetStatus = theme.label("Target: none  |  seed " + TERRAIN_SEED, "text-sm text-amber-400");
-    hud.add(targetStatus, "h-6");
-    hud.add(
-        theme.label(
-            "WASD move  Space jump  Shift sprint  F free-fly\n"
-                + "F5 FPS/TPP  E use  C shirt  T tool  Esc cursor\nLMB remove  RMB place",
-            "text-sm text-slate-400",
-            true),
-        "h-10");
+    hud.add(status, "h-5");
+    targetStatus = theme.label("Target: none", "text-sm text-amber-400");
+    hud.add(targetStatus, "h-5");
+    hud.add(theme.label(
+        "WASD move  Mouse look  Space jump  Shift sprint\n"
+            + "LMB mine  RMB place  E swing  F5 FPS/TPP\n"
+            + "T tool  C shirt  F fly  Esc cursor  1-5 block",
+        "text-sm text-slate-400", true), "h-14");
     stage.addActor(hud);
   }
 
@@ -197,6 +218,7 @@ final class VoxelDemo extends ApplicationAdapter {
     return new InputAdapter() {
       @Override
       public boolean keyDown(int keycode) {
+        if (!focused || stage.getKeyboardFocus() != null) return false;
         if (keycode == Input.Keys.F) {
           if (!freeFlyToggleHeld) {
             freeFlyToggleHeld = true;
@@ -216,7 +238,10 @@ final class VoxelDemo extends ApplicationAdapter {
           return true;
         }
         if (keycode == Input.Keys.E) {
-          avatar.beginUse();
+          if (!useHeld) {
+            useHeld = true;
+            if (toolInputAllowed()) beginToolUse();
+          }
           return true;
         }
         if (keycode == Input.Keys.C) {
@@ -231,6 +256,7 @@ final class VoxelDemo extends ApplicationAdapter {
           return true;
         }
         if (keycode == Input.Keys.ESCAPE) {
+          stopPlayerInput();
           Gdx.input.setCursorCatched(!Gdx.input.isCursorCatched());
           discardFirstMouseDelta = true;
           return true;
@@ -258,6 +284,11 @@ final class VoxelDemo extends ApplicationAdapter {
 
       @Override
       public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (!toolInputAllowed()) return false;
+        if (button == Input.Buttons.LEFT) {
+          if (mineHeld) return true;
+          mineHeld = true;
+        }
         if (!Gdx.input.isCursorCatched()) {
           if (button == Input.Buttons.LEFT) {
             Gdx.input.setCursorCatched(true);
@@ -265,18 +296,39 @@ final class VoxelDemo extends ApplicationAdapter {
           }
           return true;
         }
-        if (button == Input.Buttons.LEFT) removeTarget();
+        if (button == Input.Buttons.LEFT) {
+          removeTarget();
+          beginToolUse();
+        }
         else if (button == Input.Buttons.RIGHT) placeTarget();
         return true;
       }
 
       @Override
       public boolean scrolled(float amountX, float amountY) {
+        if (!toolInputAllowed()) return false;
         int size = terrain.registry().size();
         selectedBlockId = 1 + Math.floorMod(selectedBlockId - 1 + Math.round(amountY), size);
         return true;
       }
     };
+  }
+
+  private boolean toolInputAllowed() {
+    return focused && !disposed && !game.isPaused() && !game.isWorldFrozen()
+        && stage.getKeyboardFocus() == null;
+  }
+
+  private void beginToolUse() {
+    avatar.beginUse();
+    if (toolRecoil != null) toolRecoil.close();
+    toolRecoil = toolEffects.play(TOOL_RECOIL);
+  }
+
+  private void stopPlayerInput() {
+    fpsController.setMoveInput(0, 0);
+    fpsController.setSprint(false);
+    fpsController.setJump(false);
   }
 
   @Override
@@ -297,7 +349,8 @@ final class VoxelDemo extends ApplicationAdapter {
         avatar.setWalking(MathUtils.clamp(speed / VoxelFpsController.SPRINT_SPEED, 0f, 1f));
         previousPlayerFeet.set(cameraTransform.position);
       }
-      cameraRig.update(cameraPositionScratch, cameraDirectionScratch, cameraObject);
+      cameraRig.update(cameraPositionScratch, cameraDirectionScratch, cameraObject,
+          null, toolCameraPresentation);
     }
     camera.update();
     chunks.update(camera, REBUILD_BUDGET);
@@ -308,6 +361,10 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private void drawFrame(float delta) {
+    drawFrame(delta, true);
+  }
+
+  private void drawFrame(float delta, boolean includeViewmodel) {
     Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     Gdx.gl.glClearColor(.29f, .55f, .78f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -319,7 +376,7 @@ final class VoxelDemo extends ApplicationAdapter {
           cameraComponent,
           cameraRig.mode() == AvatarCameraMode.FIRST_PERSON ? worldHiddenView : worldFullView);
     drawTargetOutline();
-    if (!freeFlyMode && cameraRig.mode() == AvatarCameraMode.FIRST_PERSON) {
+    if (includeViewmodel && !freeFlyMode && cameraRig.mode() == AvatarCameraMode.FIRST_PERSON) {
       viewmodelView.setBaseTransform(viewmodelPresentation.writeBase(viewmodelBase));
       renderer.renderViewmodel(cameraRig.viewmodelCamera(), viewmodelView);
     }
@@ -339,13 +396,13 @@ final class VoxelDemo extends ApplicationAdapter {
             0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     Pixmap hidden = null;
     try {
-      writeFpsProofImage("idle", visible);
+      writeFpsProofImage("task2-idle", visible);
       viewmodelView.slotVisible("tool", false);
       drawFrame(0);
       hidden =
           Pixmap.createFromFrameBuffer(
               0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
-      writeFpsProofImage("tool-hidden", hidden);
+      writeFpsProofImage("task2-idle-tool-hidden", hidden);
       int head = 0, shaft = 0, hand = 0, changed = 0;
       for (int y = (int) (visible.getHeight() * .05f); y < visible.getHeight() * .65f; y++)
         for (int x = (int) (visible.getWidth() * .55f); x < visible.getWidth() * .95f; x++) {
@@ -362,7 +419,7 @@ final class VoxelDemo extends ApplicationAdapter {
       require(hand > 100, "Tool-hidden did not retain visible hand pixels: " + hand);
       require(avatar.locomotionTime() == beforeTime, "Composition captures advanced canonical clock");
       Gdx.files
-          .local("docs/artifacts/voxel-fps/composition-proof.json")
+          .local("docs/artifacts/voxel-fps/task2-composition-proof.json")
           .writeString(
           "{\n  \"width\": " + visible.getWidth() + ",\n  \"height\": " + visible.getHeight()
               + ",\n  \"cyanHeadSlotPixels\": " + head + ",\n  \"woodShaftSlotPixels\": " + shaft
@@ -387,10 +444,9 @@ final class VoxelDemo extends ApplicationAdapter {
       updateFreeFly(delta);
       return;
     }
-    if (!focused) {
-      fpsController.setMoveInput(0, 0);
-      fpsController.setSprint(false);
-      fpsController.setJump(false);
+    if (!focused || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
+        || game.isPaused() || game.isWorldFrozen()) {
+      stopPlayerInput();
       return;
     }
     fpsController.setMoveInput(axis(Input.Keys.W, Input.Keys.S), axis(Input.Keys.D, Input.Keys.A));
@@ -409,7 +465,8 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private void updateFreeFly(float delta) {
-    if (!focused) return;
+    if (!focused || stage.getKeyboardFocus() != null || !Gdx.input.isCursorCatched()
+        || game.isPaused() || game.isWorldFrozen()) return;
     float strafe = axis(Input.Keys.D, Input.Keys.A);
     float vertical =
         (Gdx.input.isKeyPressed(Input.Keys.SPACE) ? 1 : 0)
@@ -651,23 +708,12 @@ final class VoxelDemo extends ApplicationAdapter {
   }
 
   private void updateHud() {
-    counters.setText(
-        "Chunks "
-            + world.loadedChunkCount()
-            + " / 18  |  visible "
-            + chunks.visibleChunkCount()
-            + "  |  dirty "
-            + world.dirtyChunkCount()
-            + "  |  rebuilds "
-            + chunks.totalRebuilds()
-            + "  |  faces "
-            + chunks.faceCount());
     String selected = terrain.registry().get(selectedBlockId).name();
     status.setText(
-        (freeFlyMode ? "Free-fly" : "FPS " + (fpsController.isGrounded() ? "grounded" : "airborne"))
-            + "  |  selected: "
+        (freeFlyMode ? "Free-fly" : cameraRig.mode() == AvatarCameraMode.FIRST_PERSON ? "FPS" : "TPP")
+            + "  |  "
             + selected
-            + "  |  reach 8");
+            + "  |  LMB / E: press once");
     Optional<VoxelHit> hit = currentHit();
     targetStatus.setText(
         hit.map(
@@ -679,8 +725,7 @@ final class VoxelDemo extends ApplicationAdapter {
                             + ", "
                             + value.block().z())
                 .orElse("Target: none")
-            + "  |  seed "
-            + TERRAIN_SEED);
+            + "  |  chunks " + world.loadedChunkCount() + "/18");
   }
 
   @Override
@@ -693,10 +738,10 @@ final class VoxelDemo extends ApplicationAdapter {
       camera.update();
     }
     if (stage != null) {
-      stage.getViewport().update(width, height, false);
+      stage.getViewport().update(width, height, true);
       if (hud != null) {
         hud.setBounds(
-            16, Math.max(16, height - 224), Math.min(640, Math.max(340, width - 32)), 208);
+            12, Math.max(0, height - 180), Math.min(380, Math.max(1, width - 24)), 168);
         hud.invalidateHierarchy();
       }
     }
@@ -705,6 +750,9 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void pause() {
     focused = false;
+    useHeld = false;
+    mineHeld = false;
+    if (toolRecoil != null) toolRecoil.cancel();
     freeFlyToggleHeld = false;
     cameraModeToggleHeld = false;
     if (fpsController != null) {
@@ -719,6 +767,8 @@ final class VoxelDemo extends ApplicationAdapter {
   @Override
   public void resume() {
     focused = true;
+    useHeld = false;
+    mineHeld = false;
     freeFlyToggleHeld = false;
     cameraModeToggleHeld = false;
     discardFirstMouseDelta = true;
@@ -730,9 +780,14 @@ final class VoxelDemo extends ApplicationAdapter {
     disposed = true;
     Throwable failure = null;
     try {
-      if (chunks != null) chunks.close();
+      if (toolRecoil != null) toolRecoil.close();
     } catch (RuntimeException | Error e) {
       failure = e;
+    }
+    try {
+      if (chunks != null) chunks.close();
+    } catch (RuntimeException | Error e) {
+      failure = combine(failure, e);
     }
     try {
       if (avatar != null) avatar.close();
@@ -846,10 +901,10 @@ final class VoxelDemo extends ApplicationAdapter {
         Pixmap.createFromFrameBuffer(
             0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     try {
-      var image = Gdx.files.local("docs/artifacts/avatar/voxel-" + name + ".png");
+      var image = Gdx.files.local("docs/artifacts/voxel-fps/task2-" + name + ".png");
       image.parent().mkdirs();
       PixmapIO.writePNG(image, pixels, -1, true);
-      if (name.equals("tpp-clear")) writeFpsProofImage("tpp", pixels);
+      if (name.equals("tpp-clear")) writeFpsProofImage("task2-tpp", pixels);
       int warmPixels = 0;
       int toolPixels = 0;
       int wallPixels = 0;
@@ -933,7 +988,7 @@ final class VoxelDemo extends ApplicationAdapter {
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
       Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
       renderer.renderWorld(game, cameraComponent, worldFullView);
-      writeScreenshot("docs/artifacts/avatar/voxel-tpp-clear-culling-off.png");
+      writeScreenshot("docs/artifacts/voxel-fps/task2-tpp-clear-culling-off.png");
     } finally {
       chunks.setCullingEnabled(true);
     }
@@ -958,7 +1013,7 @@ final class VoxelDemo extends ApplicationAdapter {
     require(glError == GL20.GL_NO_ERROR, "OpenGL error after voxel scene cleanup: " + glError);
     Gdx.files.local("artifacts/voxels/proof.json").writeString(proofJson, false, "UTF-8");
     Gdx.files
-        .local("docs/artifacts/avatar/voxel-proof.json")
+        .local("docs/artifacts/voxel-fps/task2-scene-proof.json")
         .writeString(proofJson, false, "UTF-8");
     Gdx.app.log(
         "Voxels", "SCENE PASS: FPS movement, camera controls, seam edits, resize and cleanup");

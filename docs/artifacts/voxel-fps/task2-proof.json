@@ -1,0 +1,25 @@
+{
+  "captures": [
+    {"name":"wall","width":1280,"height":720,"handPixels":10678,"shaftPixels":1730,"headPixels":8165,"minimumCameraDepth":1.1315113},
+    {"name":"action-start","width":1280,"height":720,"handPixels":11025,"shaftPixels":1818,"headPixels":8329,"minimumCameraDepth":1.1241732},
+    {"name":"action-mid","width":1280,"height":720,"handPixels":5878,"shaftPixels":448,"headPixels":6102,"minimumCameraDepth":1.3525594},
+    {"name":"action-paused","width":1280,"height":720,"handPixels":5878,"shaftPixels":448,"headPixels":6102,"minimumCameraDepth":1.3525594},
+    {"name":"action-end","width":1280,"height":720,"handPixels":11016,"shaftPixels":1772,"headPixels":8421,"minimumCameraDepth":1.1247829},
+    {"name":"tool-hidden","width":1280,"height":720,"handPixels":11016,"shaftPixels":0,"headPixels":0,"minimumCameraDepth":1.1247829},
+    {"name":"resize-960x720","width":960,"height":720,"handPixels":11010,"shaftPixels":1766,"headPixels":8386,"minimumCameraDepth":1.125393},
+    {"name":"walking","width":1280,"height":720,"handPixels":10084,"shaftPixels":1624,"headPixels":8035,"minimumCameraDepth":1.1451472},
+    {"name":"sprint","width":1280,"height":720,"handPixels":9387,"shaftPixels":1307,"headPixels":7614,"minimumCameraDepth":1.1756864},
+    {"name":"f5-fps-during-use","width":1280,"height":720,"handPixels":5290,"shaftPixels":1502,"headPixels":8591,"minimumCameraDepth":1.2802397},
+    {"name":"jump","width":1280,"height":720,"handPixels":5360,"shaftPixels":238,"headPixels":5374,"minimumCameraDepth":1.3364757}
+  ],
+  "recoilChangedPixels": 34749,
+  "LMBRealMiningAndRisingEdge": true,
+  "pauseResumeUiCursorFocusGates": true,
+  "gameplayAndWorldCameraUnchangedByRecoil": true,
+  "F5DuringUsePreservesCanonicalPose": true,
+  "nativeWindowResize": true,
+  "closeDuringSwingReleasesLeases": true,
+  "toolBufferDeleteCounts": [1,1],
+  "chunkClosePreservesBorrowedAtlas": true,
+  "ownedTexturesReleased": true
+}

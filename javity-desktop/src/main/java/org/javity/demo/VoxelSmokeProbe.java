@@ -4,6 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
+import org.javity.avatar.AvatarView;
+import org.javity.presentation.CameraPresentation3D;
+import org.javity.presentation.PresentationEffects3D;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import java.lang.reflect.Field;
@@ -61,6 +66,13 @@ final class VoxelSmokeProbe {
   private boolean fpsControllerVerified;
   private long mainWindow, focusWindow;
   private int focusDeadline;
+  private int actionStartFrame;
+  private boolean toolActionProof;
+  private int recoilChangedPixels;
+  private Matrix4 actionStartPose;
+  private Vector3 recoilFeet;
+  private Matrix4 recoilWorldCamera;
+  private final StringBuilder toolMetrics = new StringBuilder();
 
   private VoxelSmokeProbe(VoxelDemo demo, int originalTargetBlock, int originalNeighborBlock) {
     this.demo = demo;
@@ -91,6 +103,11 @@ final class VoxelSmokeProbe {
       case WAIT_FIXTURE_RESTORE -> waitForFixtureRestore();
       case RESTORE_VIEWPORT -> restoreViewport();
       case WAIT_STATIONARY -> verifyStationaryWorld();
+      case WAIT_TOOL_ACTION -> verifyToolAction();
+      case WAIT_TOOL_RESIZE -> verifyToolResize();
+      case WAIT_TOOL_RESIZE_RESTORE -> verifyToolResizeRestore();
+      case WAIT_TOOL_WALK -> verifyToolWalk();
+      case WAIT_TOOL_SPRINT -> verifyToolSprint();
       case WAIT_AVATAR_TPP -> verifyAvatarTpp();
       case WAIT_AVATAR_FPS_WALL -> verifyFpsViewmodelWall();
       case WAIT_AVATAR_SLOTS_OFF -> verifyAvatarSlotsOff();
@@ -133,6 +150,8 @@ final class VoxelSmokeProbe {
     require(
         demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.FIRST_PERSON,
         "Voxel scene did not start in FPS camera mode");
+    require(demo.currentTargetBlock() != null,
+        "Initial voxel FPS camera must face a reachable terrain mining target");
     locomotionBeforeModeSwitch = demo.locomotionTime();
     demo.writeAvatarScreenshot("fps");
     demo.writeFpsCompositionProof();
@@ -181,6 +200,10 @@ final class VoxelSmokeProbe {
     require(
         fpsWallViewmodelWallPixels > 10_000,
         "Viewmodel occlusion fixture did not cover the center of the world image");
+    if (!toolActionProof) {
+      beginToolActionProof();
+      return;
+    }
     for (int i = 0; i < viewmodelWallCells.size(); i++) {
       BlockPos cell = viewmodelWallCells.get(i);
       demo.world().setBlock(cell.x(), cell.y(), cell.z(), viewmodelWallOriginal.get(i));
@@ -210,6 +233,302 @@ final class VoxelSmokeProbe {
         "Repeated F5 keyDown toggled more than once");
     demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
     phase = Phase.WAIT_AVATAR_TPP;
+  }
+
+
+  private void beginToolActionProof() {
+    captureToolRoi("wall");
+    double before = demo.useTime();
+    Gdx.input.setCursorCatched(true);
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    Gdx.input.getInputProcessor().touchUp(640, 500, 0, Input.Buttons.LEFT);
+    demo.dispatchKeyDownForSmoke(Input.Keys.E);
+    require(demo.useTime() == before, "Paused WORLD accepted a tool action");
+    demo.game().resume();
+
+    var stage = (com.badlogic.gdx.scenes.scene2d.Stage) field(demo, "stage");
+    var blocker = new com.badlogic.gdx.scenes.scene2d.Actor();
+    blocker.setBounds(600, 180, 160, 100);
+    blocker.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
+      @Override public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent e,
+          float x, float y, int pointer, int button) { return true; }
+    });
+    stage.addActor(blocker);
+    stage.setKeyboardFocus(blocker);
+    BlockPos target = demo.currentTargetBlock();
+    require(target != null, "Mining proof needs a real wall target");
+    int original = demo.world().getBlock(target.x(), target.y(), target.z());
+    demo.dispatchKeyDownForSmoke(Input.Keys.E);
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    Gdx.input.getInputProcessor().touchUp(640, 500, 0, Input.Buttons.LEFT);
+    require(demo.useTime() == before, "Focused UI started a swing");
+    require(demo.world().getBlock(target.x(), target.y(), target.z()) == original,
+        "Focused UI mined a world block");
+    stage.setKeyboardFocus(null);
+    blocker.remove();
+
+    Gdx.input.setCursorCatched(false);
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    Gdx.input.getInputProcessor().touchUp(640, 500, 0, Input.Buttons.LEFT);
+    require(demo.world().getBlock(target.x(), target.y(), target.z()) == original,
+        "Cursor capture click also mined a block");
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    require(demo.world().getBlock(target.x(), target.y(), target.z()) == 0,
+        "LMB did not remove its actual raycast target");
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 1,
+        "LMB did not acquire exactly one recoil playback");
+    BlockPos next = demo.currentTargetBlock();
+    int nextBlock = next == null ? 0 : demo.world().getBlock(next.x(), next.y(), next.z());
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    require(next == null || demo.world().getBlock(next.x(), next.y(), next.z()) == nextBlock,
+        "Held LMB removed a second block");
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 1,
+        "Held LMB acquired a second recoil playback");
+    Gdx.input.getInputProcessor().touchUp(640, 500, 0, Input.Buttons.LEFT);
+    demo.world().setBlock(target.x(), target.y(), target.z(), original);
+    recoilFeet = demo.playerFeet().cpy();
+    recoilWorldCamera = ((com.badlogic.gdx.graphics.PerspectiveCamera) field(demo, "camera")).combined.cpy();
+    actionStartPose = demo.rightArmPoseForSmoke();
+    captureToolRoi("action-start");
+    actionStartFrame = demo.frameNumber();
+    phase = Phase.WAIT_TOOL_ACTION;
+  }
+
+  private void verifyToolAction() {
+    int age = demo.frameNumber() - actionStartFrame;
+    verifyHandAndToolNearPlane();
+    require(demo.playerFeet().epsilonEquals(recoilFeet, 1e-5f),
+        "Recoil moved gameplay feet");
+    require(matricesNear(recoilWorldCamera,
+        ((com.badlogic.gdx.graphics.PerspectiveCamera) field(demo, "camera")).combined, 1e-5f),
+        "Viewmodel recoil changed world camera/picking");
+    if (age == 6) {
+      require(!matricesNear(actionStartPose, demo.rightArmPoseForSmoke(), 1e-4f),
+          "LMB swing did not change the canonical arm pose");
+      CameraPresentation3D.Snapshot snapshot = new CameraPresentation3D.Snapshot();
+      ((CameraPresentation3D) field(demo, "toolCameraPresentation")).snapshot(snapshot);
+      require(Math.abs(snapshot.translationZ()) > .0001f,
+          "Active tool recoil produced no viewmodel contribution");
+      captureToolRoi("action-mid");
+      captureRecoilControl(snapshot);
+      demo.game().pause();
+      useWhilePaused = demo.useTime();
+      pausedArmPose = demo.rightArmPoseForSmoke();
+    }
+    if (age == 7) {
+      require(demo.useTime() == useWhilePaused, "Paused mining animation advanced");
+      require(matricesNear(pausedArmPose, demo.rightArmPoseForSmoke(), 1e-5f),
+          "Paused mining pose changed");
+      captureToolRoi("action-paused");
+      demo.game().resume();
+    }
+    if (age == 8) require(demo.useTime() > useWhilePaused,
+        "Mining animation did not resume");
+    if (age < 44) return;
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 0,
+        "Completed recoil retained a playback");
+    require(((CameraPresentation3D) field(demo, "toolCameraPresentation")).activeCount() == 0,
+        "Completed recoil retained a camera lease");
+    captureToolRoi("action-end");
+    demo.dispatchKeyDownForSmoke(Input.Keys.T);
+    captureToolRoi("tool-hidden");
+    demo.dispatchKeyDownForSmoke(Input.Keys.T);
+    require(Gdx.graphics.setWindowedMode(960, 720), "Native resize request failed");
+    phase = Phase.WAIT_TOOL_RESIZE;
+  }
+
+  private void verifyToolResize() {
+    if (Gdx.graphics.getWidth() != 960 || Gdx.graphics.getHeight() != 720) return;
+    captureToolRoi("resize-960x720");
+    require(demo.hudFitsViewport(), "Resized native HUD exceeded viewport");
+    var stage = (com.badlogic.gdx.scenes.scene2d.Stage) field(demo, "stage");
+    var hud = (com.badlogic.gdx.scenes.scene2d.Actor) field(demo, "hud");
+    var left = stage.stageToScreenCoordinates(new com.badlogic.gdx.math.Vector2(hud.getX(), hud.getY()));
+    var right = stage.stageToScreenCoordinates(new com.badlogic.gdx.math.Vector2(
+        hud.getX() + hud.getWidth(), hud.getY() + hud.getHeight()));
+    require(left.x >= 0 && right.x <= Gdx.graphics.getWidth()
+        && right.y >= 0 && left.y <= Gdx.graphics.getHeight(),
+        "Native resize clipped HUD in screen space: " + left + " / " + right);
+
+    require(Gdx.graphics.setWindowedMode(1280, 720), "Native restore resize request failed");
+    phase = Phase.WAIT_TOOL_RESIZE_RESTORE;
+  }
+
+  private void verifyToolResizeRestore() {
+    if (Gdx.graphics.getWidth() != 1280 || Gdx.graphics.getHeight() != 720) return;
+    demo.setAvatarMoveForSmoke(0, .25f);
+    actionStartFrame = demo.frameNumber();
+    phase = Phase.WAIT_TOOL_WALK;
+  }
+
+  private void verifyToolWalk() {
+    if (demo.frameNumber() - actionStartFrame < 6) return;
+    require(demo.locomotionParameter() > 0, "Walking did not drive canonical arm bob");
+    captureToolRoi("walking");
+    demo.fpsController().setSprint(true);
+    actionStartFrame = demo.frameNumber();
+    phase = Phase.WAIT_TOOL_SPRINT;
+  }
+
+  private void verifyToolSprint() {
+    if (demo.frameNumber() - actionStartFrame < 6) return;
+    require(demo.locomotionParameter() > 0, "Sprinting did not drive canonical arm bob");
+    captureToolRoi("sprint");
+    demo.setAvatarMoveForSmoke(0, 0);
+    demo.fpsController().setSprint(false);
+    demo.resetPlayerForSmoke();
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.E);
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.E);
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 1,
+        "Held E acquired multiple recoil playbacks");
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.E);
+    toolActionProof = true;
+    demo.game().pause();
+    phase = Phase.WAIT_AVATAR_FPS_WALL;
+
+  }
+
+  private void captureToolRoi(String name) {
+    double clock = demo.locomotionTime(), use = demo.useTime();
+    float nearDepth = verifyHandAndToolNearPlane();
+    AvatarView view = (AvatarView) field(demo, "viewmodelView");
+    boolean toolOn = demo.toolVisible();
+    Pixmap on = null, hidden = null, absent = null;
+    try {
+      drawForProbe(true);
+      on = framebuffer();
+      var output = Gdx.files.local("docs/artifacts/voxel-fps/task2-" + name + ".png");
+      output.parent().mkdirs();
+      PixmapIO.writePNG(output, on, -1, true);
+      view.slotVisible("tool", false);
+      drawForProbe(true);
+      hidden = framebuffer();
+      drawForProbe(false);
+      absent = framebuffer();
+      if (name.equals("wall")) {
+        PixmapIO.writePNG(Gdx.files.local(
+            "docs/artifacts/voxel-fps/task2-wall-tool-hidden-control.png"), hidden, -1, true);
+        PixmapIO.writePNG(Gdx.files.local(
+            "docs/artifacts/voxel-fps/task2-wall-no-viewmodel-control.png"), absent, -1, true);
+      }
+      int hand = 0, shaft = 0, head = 0, leakedTool = 0;
+      for (int y = 0; y < on.getHeight() * .75f; y++)
+        for (int x = (int) (on.getWidth() * .45f); x < on.getWidth() * .99f; x++) {
+          int a = on.getPixel(x, y), h = hidden.getPixel(x, y), n = absent.getPixel(x, y);
+          int r = a >>> 24 & 255, g = a >>> 16 & 255, b = a >>> 8 & 255;
+          if (a != h && y > on.getHeight() * .15f && g > r * 1.4f
+              && b > g * .9f && b < g * 1.3f) head++;
+          if (a != h && x > on.getWidth() * .55f && y > on.getHeight() * .05f
+              && r > 60 && r > g * 1.3f && g > b * 1.2f) shaft++;
+          int hr = h >>> 24 & 255, hg = h >>> 16 & 255, hb = h >>> 8 & 255;
+          if (h != n && x > on.getWidth() * .55f && y < on.getHeight() * .5f
+              && hr > 140 && hg > 80 && hb > 50 && hr > hg * 1.1f && hg > hb * 1.1f) hand++;
+          if (!toolOn && a != h) leakedTool++;
+        }
+      require(hand > 100, name + " missing isolated hand ROI: " + hand);
+      require(toolOn ? head > 100 : head == 0, name + " wrong cyan head ROI: " + head);
+      require(toolOn ? shaft > 100 : shaft == 0, name + " wrong wood shaft ROI: " + shaft);
+      require(leakedTool == 0, "Tool-hidden retained head/shaft contributions");
+      require(clock == demo.locomotionTime() && use == demo.useTime(),
+          "Matched ROI/negative renders advanced animation clocks");
+      if (toolMetrics.length() > 0) toolMetrics.append(",\n");
+      toolMetrics.append("    {\"name\":\"").append(name)
+          .append("\",\"width\":").append(on.getWidth())
+          .append(",\"height\":").append(on.getHeight())
+          .append(",\"handPixels\":").append(hand)
+          .append(",\"shaftPixels\":").append(shaft)
+          .append(",\"headPixels\":").append(head)
+          .append(",\"minimumCameraDepth\":").append(nearDepth).append('}');
+    } finally {
+      view.slotVisible("tool", toolOn);
+      drawForProbe(true);
+      if (on != null) on.dispose();
+      if (hidden != null) hidden.dispose();
+      if (absent != null) absent.dispose();
+    }
+  }
+
+  private void captureRecoilControl(CameraPresentation3D.Snapshot snapshot) {
+    var rig = (org.javity.render.CameraRig3D) field(demo, "cameraRig");
+    var provider = (CameraPresentation3D) field(demo, "toolCameraPresentation");
+    var owner = (org.javity.core.GameObject) field(demo, "cameraObject");
+    require(Math.abs(rig.viewmodelCamera().position.z - snapshot.translationZ()) < 1e-5f,
+        "Host did not compose recoil into the actual viewmodel camera");
+    Matrix4 worldBefore = ((com.badlogic.gdx.graphics.PerspectiveCamera) field(demo, "camera")).combined.cpy();
+    double clock = demo.useTime();
+    Pixmap on = framebuffer(), off = null;
+    Vector3 eye = demo.playerEye();
+    Vector3 look = demo.fpsController().getLookDirection(new Vector3());
+    try {
+      rig.update(eye, look, owner, null, null);
+      drawForProbe(true);
+      off = framebuffer();
+      PixmapIO.writePNG(Gdx.files.local(
+          "docs/artifacts/voxel-fps/task2-recoil-disabled-control.png"), off, -1, true);
+      for (int y = 0; y < on.getHeight() * .75f; y++)
+        for (int x = (int) (on.getWidth() * .45f); x < on.getWidth() * .99f; x++)
+          if (on.getPixel(x, y) != off.getPixel(x, y)) recoilChangedPixels++;
+      require(recoilChangedPixels > 100, "Disabling recoil did not change native tool pixels");
+      require(demo.useTime() == clock && matricesNear(worldBefore,
+          ((com.badlogic.gdx.graphics.PerspectiveCamera) field(demo, "camera")).combined, 1e-5f),
+          "Recoil negative-control renders changed world camera or canonical time");
+    } finally {
+      rig.update(eye, look, owner, null, provider);
+      drawForProbe(true);
+      on.dispose();
+      if (off != null) off.dispose();
+    }
+  }
+
+  private float verifyHandAndToolNearPlane() {
+    var avatar = (GeneratedVoxelAvatar) field(demo, "avatar");
+    var rig = (org.javity.render.CameraRig3D) field(demo, "cameraRig");
+    var view = (AvatarView) field(demo, "viewmodelView");
+    var camera = rig.viewmodelCamera();
+    // Authored boxes are in bind coordinates; the same canonical bone drives the rigid
+    // pickaxe and the weighted hand. Remove the authored bind translation before posing.
+    Matrix4 posed = view.baseTransform()
+        .mul(avatar.renderer.instance.getNode("right-arm").globalTransform)
+        .translate(-.43f, -1.27f, 0);
+    var boxes = new java.util.ArrayList<>(GeneratedVoxelAvatar.PICKAXE);
+    boxes.add(GeneratedVoxelAvatar.RIGHT_HAND);
+    float minimum = Float.POSITIVE_INFINITY;
+    for (var box : boxes) for (int corner = 0; corner < 8; corner++) {
+      Vector3 point = new Vector3(
+          box.x() + ((corner & 1) == 0 ? 0 : box.w()),
+          box.y() + ((corner & 2) == 0 ? 0 : box.h()),
+          box.z() + ((corner & 4) == 0 ? 0 : box.d()))
+          .mul(posed).mul(camera.view);
+      minimum = Math.min(minimum, -point.z);
+    }
+    require(minimum > camera.near + .1f,
+        "Actual posed hand/tool intersects viewmodel near plane: " + minimum);
+    return minimum;
+  }
+
+  private Pixmap framebuffer() {
+    return Pixmap.createFromFrameBuffer(0, 0,
+        Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+  }
+
+  private void drawForProbe(boolean viewmodel) {
+    try {
+      var method = VoxelDemo.class.getDeclaredMethod("drawFrame", float.class, boolean.class);
+      method.setAccessible(true);
+      method.invoke(demo, 0f, viewmodel);
+    } catch (ReflectiveOperationException failure) {
+      throw new IllegalStateException("Cannot invoke matched native render", failure);
+    }
+  }
+
+  private static Object field(Object owner, String name) {
+    try {
+      var f = owner.getClass().getDeclaredField(name);
+      f.setAccessible(true);
+      return f.get(owner);
+    } catch (ReflectiveOperationException failure) {
+      throw new IllegalStateException("Cannot inspect " + name, failure);
+    }
   }
 
   private void verifyAvatarTpp() {
@@ -298,11 +617,33 @@ final class VoxelSmokeProbe {
         "F5 did not switch modes during simultaneous locomotion and use");
     require(demo.locomotionParameter() > 0, "The locomotion mixer remained at idle during use");
     require(demo.useTime() > useWhilePaused, "Masked use did not advance during locomotion");
+    double heldUseTime = demo.useTime();
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.E);
+    require(demo.useTime() == heldUseTime,
+        "Held E restarted the canonical use playback instead of requiring a rising edge");
+    demo.dispatchRawKeyUpForSmoke(Input.Keys.E);
+    captureToolRoi("f5-fps-during-use");
+    double useBeforeSwitch = demo.useTime();
+    Matrix4 armBeforeSwitch = demo.rightArmPoseForSmoke();
     demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
     demo.dispatchRawKeyUpForSmoke(Input.Keys.F5);
     require(
         demo.avatarCameraMode() == org.javity.render.AvatarCameraMode.THIRD_PERSON,
         "F5 did not return to TPP after the active-use check");
+    require(demo.useTime() == useBeforeSwitch
+        && matricesNear(armBeforeSwitch, demo.rightArmPoseForSmoke(), 1e-5f),
+        "F5 during use changed the canonical pose or time");
+    // Apply the newly selected boom before the draw-only capture, without advancing a clock.
+    ((org.javity.render.CameraRig3D) field(demo, "cameraRig")).update(
+        demo.playerEye(), demo.fpsController().getLookDirection(new Vector3()),
+        (org.javity.core.GameObject) field(demo, "cameraObject"), null,
+        (CameraPresentation3D) field(demo, "toolCameraPresentation"));
+    drawForProbe(true);
+    Pixmap tppUse = framebuffer();
+    try {
+      PixmapIO.writePNG(Gdx.files.local(
+          "docs/artifacts/voxel-fps/task2-f5-tpp-during-use.png"), tppUse, -1, true);
+    } finally { tppUse.dispose(); }
     pausedArmPose = demo.rightArmPoseForSmoke();
     pausedLegPose = demo.leftLegPoseForSmoke();
     pausedMarkerCount = demo.avatarMarkerCountForSmoke();
@@ -413,6 +754,7 @@ final class VoxelSmokeProbe {
     require(
         !matricesNear(firstJumpPose, demo.leftLegPoseForSmoke(), 1e-4f),
         "First jump did not change the leg pose");
+    captureToolRoi("jump");
     phase = Phase.WAIT_JUMP_FIRST_RELEASE;
   }
 
@@ -617,6 +959,9 @@ final class VoxelSmokeProbe {
     require(demo.frameNumber() <= focusDeadline, "Main GLFW window never gained focus");
     if (GLFW.glfwGetWindowAttrib(mainWindow, GLFW.GLFW_FOCUSED) != GLFW.GLFW_TRUE
         || !inputGuard("focused")) return;
+    demo.dispatchRawKeyDownForSmoke(Input.Keys.E);
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 1,
+        "Native focus fixture did not start active recoil");
     demo.dispatchRawKeyDownForSmoke(Input.Keys.F5);
     require(
         inputGuard("cameraModeToggleHeld"), "F5 native latch was not held before focus-loss proof");
@@ -648,6 +993,20 @@ final class VoxelSmokeProbe {
     require(inputGuard("discardFirstMouseDelta"), "Native focus loss did not reset mouse delta");
     require(
         !inputGuard("cameraModeToggleHeld"), "Focus loss did not clear the held F5 toggle latch");
+    require(!inputGuard("useHeld") && !inputGuard("mineHeld"),
+        "Native focus loss did not clear tool input guards");
+    require(((PresentationEffects3D) field(demo, "toolEffects")).activeCount() == 0
+        && ((CameraPresentation3D) field(demo, "toolCameraPresentation")).activeCount() == 0,
+        "Native focus loss retained owned recoil or camera lease");
+    double beforeUse = demo.useTime();
+    BlockPos target = demo.currentTargetBlock();
+    int value = target == null ? 0 : demo.world().getBlock(target.x(), target.y(), target.z());
+    demo.dispatchKeyDownForSmoke(Input.Keys.E);
+    Gdx.input.getInputProcessor().touchDown(640, 500, 0, Input.Buttons.LEFT);
+    Gdx.input.getInputProcessor().touchUp(640, 500, 0, Input.Buttons.LEFT);
+    require(demo.useTime() == beforeUse, "Unfocused window started tool animation");
+    require(target == null || demo.world().getBlock(target.x(), target.y(), target.z()) == value,
+        "Unfocused window mined a block");
     GLFW.glfwFocusWindow(mainWindow);
     focusDeadline = demo.frameNumber() + 120;
     phase = Phase.WAIT_FOCUS_REGAIN;
@@ -772,7 +1131,7 @@ final class VoxelSmokeProbe {
     require(focusVerified, "Native focus probe was not completed");
     require(avatarModeProof, "Native FPS/TPP avatar mode proof did not complete");
     demo.writeGalleryScreenshot();
-    demo.finishSmoke(
+    String sceneProof = (
         "{\n"
             + "  \"frames\": "
             + demo.frameNumber()
@@ -874,11 +1233,76 @@ final class VoxelSmokeProbe {
             + "  \"resize\": true,\n"
             + "  \"glErrorAfterCleanup\": 0\n"
             + "}\n");
+    verifyCloseDuringSwing();
+    demo.finishSmoke(sceneProof);
     artifactsWritten = true;
     phase = Phase.COMPLETE;
     Gdx.app.log(
         "Voxels",
         "SCENE PASS: grounded FPS movement, free-fly, seam edits, resize and gallery proof");
+  }
+
+  private void verifyCloseDuringSwing() {
+    demo.dispatchKeyDownForSmoke(Input.Keys.E);
+    var manager = (PresentationEffects3D) field(demo, "toolEffects");
+    var provider = (CameraPresentation3D) field(demo, "toolCameraPresentation");
+    require(manager.activeCount() == 1 && provider.activeCount() == 1,
+        "Close fixture did not begin during active recoil");
+    var avatar = (GeneratedVoxelAvatar) field(demo, "avatar");
+    var mesh = (com.badlogic.gdx.graphics.Mesh) field(avatar, "toolMesh");
+    int vbo = (Integer) field(field(mesh, "vertices"), "bufferHandle");
+    int ibo = (Integer) field(field(mesh, "indices"), "bufferHandle");
+    int avatarTexture = avatar.texture.getTextureObjectHandle();
+    int atlas = ((com.badlogic.gdx.graphics.Texture) field(demo, "atlas")).getTextureObjectHandle();
+    require(vbo > 0 && ibo > 0 && Gdx.gl.glIsBuffer(vbo) && Gdx.gl.glIsBuffer(ibo),
+        "Close fixture tool mesh has no real native buffers");
+    require(Gdx.gl.glIsTexture(avatarTexture) && Gdx.gl.glIsTexture(atlas),
+        "Close fixture textures were already released");
+    // The chunk adapter borrows the atlas; its close must preserve the host's texture.
+    ((org.javity.voxel.gpu.VoxelChunkRenderer) field(demo, "chunks")).close();
+    require(Gdx.gl.glIsTexture(atlas), "Chunk adapter disposed its borrowed atlas");
+    GL20 originalGl = Gdx.gl, original20 = Gdx.gl20;
+    var deleted = new java.util.HashMap<Integer, Integer>();
+    GL20 counting = (GL20) java.lang.reflect.Proxy.newProxyInstance(
+        GL20.class.getClassLoader(), new Class<?>[] {GL20.class}, (proxy, method, args) -> {
+          if (method.getName().equals("glDeleteBuffer"))
+            deleted.merge((Integer) args[0], 1, Integer::sum);
+          if (method.getName().equals("glDeleteBuffers")) {
+            java.nio.IntBuffer ids = ((java.nio.IntBuffer) args[1]).duplicate();
+            for (int i = 0; i < (Integer) args[0]; i++)
+              deleted.merge(ids.get(), 1, Integer::sum);
+          }
+          try { return method.invoke(original20, args); }
+          catch (java.lang.reflect.InvocationTargetException e) { throw e.getCause(); }
+        });
+    Gdx.gl = Gdx.gl20 = counting;
+    try {
+      demo.dispose();
+      demo.dispose();
+    } finally {
+      Gdx.gl = originalGl;
+      Gdx.gl20 = original20;
+    }
+    require(manager.activeCount() == 0 && provider.activeCount() == 0,
+        "Scene close during swing retained a playback or presentation lease");
+    require(!Gdx.gl.glIsBuffer(vbo) && !Gdx.gl.glIsBuffer(ibo),
+        "Scene close leaked the source pickaxe buffers");
+    require(deleted.getOrDefault(vbo, 0) == 1 && deleted.getOrDefault(ibo, 0) == 1,
+        "Scene double-close did not release tool buffers exactly once: " + deleted);
+    require(!Gdx.gl.glIsTexture(avatarTexture) && !Gdx.gl.glIsTexture(atlas),
+        "Scene close leaked its owned avatar/atlas textures");
+    Gdx.files.local("docs/artifacts/voxel-fps/task2-proof.json").writeString(
+        "{\n  \"captures\": [\n" + toolMetrics + "\n  ],\n"
+            + "  \"recoilChangedPixels\": " + recoilChangedPixels + ",\n"
+            + "  \"LMBRealMiningAndRisingEdge\": true,\n"
+            + "  \"pauseResumeUiCursorFocusGates\": true,\n"
+            + "  \"gameplayAndWorldCameraUnchangedByRecoil\": true,\n"
+            + "  \"F5DuringUsePreservesCanonicalPose\": true,\n"
+            + "  \"nativeWindowResize\": true,\n"
+            + "  \"closeDuringSwingReleasesLeases\": true,\n"
+            + "  \"toolBufferDeleteCounts\": [" + deleted.get(vbo) + "," + deleted.get(ibo) + "],\n"
+            + "  \"chunkClosePreservesBorrowedAtlas\": true,\n"
+            + "  \"ownedTexturesReleased\": true\n}\n", false, "UTF-8");
   }
 
   private static void require(boolean condition, String message) {
@@ -895,6 +1319,11 @@ final class VoxelSmokeProbe {
   }
 
   private enum Phase {
+    WAIT_TOOL_ACTION,
+    WAIT_TOOL_RESIZE,
+    WAIT_TOOL_RESIZE_RESTORE,
+    WAIT_TOOL_WALK,
+    WAIT_TOOL_SPRINT,
     WAIT_INITIAL_MESHES,
     WAIT_MAIN_FOCUS,
     WAIT_FOCUS_LOSS,

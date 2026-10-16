@@ -8,18 +8,20 @@ Wymagania desktopu: pełne JDK25 i OpenGL. Polecenia uruchamiaj z katalogu repoz
 
 | Cel | Polecenie |
 | --- | --- |
-| Świat blokowy, FPS z rękami/narzędziem, przełączany TPP | `./gradlew :javity-desktop:run --args='--voxels'` |
+| Voxel FPS z autorskim kilofem i przełączanym TPP | `./gradlew :javity-desktop:run --args='--voxels'` |
 | Ten sam rodzaj gry z opcjonalną fizyką Bullet | `./gradlew :javity-desktop:run --args='--physics3d'` |
 | Drzewo obiektów, komponenty, transformacje i gizma | `./gradlew :javity-desktop:run --args='--inspector'` |
 | Feedback, zegary, scena i React HUD | `./gradlew :javity-desktop:run --args='--mm'` |
 | Prezentacyjne efekty kamery/modelu 3D | `./gradlew :javity-desktop:feel3d` |
 | Porównanie kontrolek z HTML | `./gradlew :javity-desktop:run --args='--ui-parity'` |
 
-**Voxele:** WASD — ruch, mysz — rozglądanie, Space — skok, Shift — sprint, F5 — FPS/TPP, E — animacja użycia, T — pokaż/ukryj narzędzie, C — ubranie, F — lot debugowy, Escape — kursor, LMB/RMB — usuń/dodaj blok. Narzędzie w tym przykładzie jest obecnie prostym proceduralnym modelem; nie jest jeszcze czytelnym kilofem z dopracowaną pozą dłoni. Android ma osobny launcher i demo dotykowe, nie ten desktopowy avatar FPS: [instrukcja Androida](../javity-android-app/README.md).
+**Voxel FPS:** WASD — ruch, mysz — rozglądanie, Space — skok, Shift — sprint, F5 — FPS/TPP, E — zamach bez edycji świata, T — pokaż/ukryj kilof, C — ubranie, F — lot debugowy, Escape — kursor, LMB/RMB — usuń/dodaj blok, 1–5 — wybór bloku. Pierwsze kliknięcie przechwytuje kursor. Każde kolejne naciśnięcie LMB usuwa jeden blok przez istniejący raycast i uruchamia zamach; przytrzymanie LMB lub E nie powtarza akcji. Fokus UI, pauza WORLD i utrata fokusu okna blokują użycie. Po powrocie fokusu kliknij, aby ponownie przechwycić kursor.
 
-![Obecny proceduralny FPS: ręce i narzędzie](artifacts/avatar/voxel-fps.png)
+![Voxel FPS: prawa dłoń, drewniany trzonek i cyjanowa głowica kilofa](artifacts/voxel-fps/task2-idle.png)
 
-To rzeczywisty zrzut istniejącego renderera, nie makieta docelowego wyglądu. Postać ma jeden animator, a `AvatarView` wybiera części widoczne w danej kamerze. Pass viewmodelu ma osobny depth i projekcję; ręce nie znikają wewnątrz ściany. [Konfiguracja avatarów i ograniczenia](avatars.md#fpstpp-voxel-demo-task-4c).
+To rzeczywisty zrzut renderera. Kamera startuje skierowana na blok w zasięgu kopania, a mały HUD pozostawia miejsce na teren. Prawa dłoń, drewniany trzonek i stopniowana głowica pochodzą z autorskiego modelu i atlasu. Postać ma jeden animator; chód, sprint, skok oraz zamach używają tej samej pozy. Lekki recoil trafia wyłącznie do kamery viewmodelu przez `PresentationEffects3D` i jawny provider `CameraPresentation3D(VIEWMODEL)`. Nie zmienia transformacji gracza, kamery świata ani raycastu. Pass viewmodelu czyści depth, więc kilof pozostaje widoczny przy ścianie i po resize. [Zrzuty i pomiary ROI](artifacts/voxel-fps/README.md), [konfiguracja avatarów](avatars.md#fpstpp-voxel-demo-task-4c).
+
+Android ma osobny launcher i demo dotykowe; te dowody dotyczą desktopu: [instrukcja Androida](../javity-android-app/README.md).
 
 ## 2. Scena i komponenty
 
