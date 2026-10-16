@@ -86,11 +86,19 @@ public class PoseBatchingTest {
             0);
       }
       assertNotSame(root(owners[0]).globalTransform, root(owners[1]).globalTransform);
-      for (int i = 0; i < 10; i++) game.step(.1f);
+      for (int i = 0; i < 10; i++) {
+        game.step(.1f);
+        assertEquals(1, batch.stats().frameSamplerExecutions());
+        assertEquals(255, batch.stats().frameHits());
+      }
       assertEquals(256, loops[0]);
       for (Owner owner : owners)
         owner.animator.play("clip0", PlayMode.ONCE).onComplete(() -> completions[0]++);
-      for (int i = 0; i < 11; i++) game.step(.1f);
+      for (int i = 0; i < 11; i++) {
+        game.step(.1f);
+        assertEquals(1, batch.stats().frameSamplerExecutions());
+        assertEquals(255, batch.stats().frameHits());
+      }
       assertEquals(256, completions[0]);
       long samples = batch.stats().totalSamplerExecutions();
       owners[0].renderer.prepareForRender();
