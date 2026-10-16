@@ -71,3 +71,21 @@ Natywne libGDX 1.14.2 zawiera także stb_image (wybrana licencja MIT, Sean Barre
 ## Fox — external animation validation fixture
 
 `tools/animation-validation/fox/` contains the pinned Khronos glTF Sample Assets Fox and a derived offline G3DJ fixture. Model by PixelMannen (2014, CC0 1.0); rig/animations by tomkranis (2014, CC BY4.0); glTF conversion by AsoboStudio/scurest (2017, CC BY4.0). See [original legal notice](tools/animation-validation/fox/SOURCE.md), [attribution, license links and modifications](tools/animation-validation/fox/NOTICE.md), and revision/hash files there. The project code license does not replace these asset licenses. Captures retain visible attribution. Conversion adds generated normals and rearranges bind/vertex attributes without claiming general glTF import support.
+
+## AssetManager failure cleanup bridge (libGDX 1.14.2)
+
+`javity-assets/.../com/badlogic/gdx/assets/JavityAssetInternals142.java` and
+`.../assets/loaders/JavityModelPreparation142.java` are original Javity adapters
+based on a source audit of libGDX 1.14.2 `AssetManager`, `AssetLoadingTask`,
+`AsyncExecutor`, and `ModelLoader`. libGDX is Apache-2.0, copyright 2011 libGDX
+contributors (upstream AUTHORS); source: https://github.com/libgdx/libgdx/tree/1.14.2/gdx/src/com/badlogic/gdx.
+The existing libGDX license attribution applies; https://www.apache.org/licenses/LICENSE-2.0.
+
+The adapters access package/protected internals to recover registered assets,
+remove abandoned dependency entries, and discard default ModelLoader's pending
+ModelData, preserving the configured loaders and ordinary loading algorithms.
+They do not use reflection or include a fork of those loaders. This is an
+intentional version-pinned split-package dependency, unsupported under a future
+JPMS modularization without further work; Android/class-loader packaging and
+runtime require separate validation. Ownership and custom-loader limitations are
+in [docs/asset-streaming.md](docs/asset-streaming.md).

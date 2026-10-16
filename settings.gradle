@@ -33,3 +33,5 @@ if (providers.gradleProperty('javityAndroid').map { it.toBoolean() }.getOrElse(f
     include 'javity-script-quickjs-android'
     include 'javity-android-app'
 }
+
+include 'javity-assets'

@@ -28,6 +28,10 @@ public abstract class GameSystem implements Disposable {
 
   protected void onRelease() {}
 
+  /** Side-effect-free disposal precondition, checked even on repeated disposal. Overrides must
+   * not allocate, release resources, mutate lifecycle state, or recursively call dispose. */
+  protected void validateDispose() {}
+
   final void attach(Game game) {
     if (this.game != null || disposed)
       throw new IllegalArgumentException("System already attached or disposed");
@@ -43,6 +47,7 @@ public abstract class GameSystem implements Disposable {
 
   @Override
   public final void dispose() {
+    validateDispose();
     if (disposed) return;
     disposed = true;
     Throwable failure = null;
