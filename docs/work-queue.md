@@ -58,4 +58,4 @@ Historyczny checkpoint integracyjny: wydzielony provider Graal i przenośny host
 
 ## GPU instancing — zakres zaakceptowany 2026-10-16
 
-[Projekt i plany A→B→C](gpu-instancing-design.md): statyczny instancing, niezależne zegary ze współdzieleniem dokładnej pozy, następnie GPU palette skinning. Plany oczekują przeglądu przed implementacją; wszystkie funkcje pozostają otwarte w TODO. Metoda wykonania: agenci pod nadzorem, integracja etapami.
+[Projekt i plany A→B→C](gpu-instancing-design.md): statyczny instancing, niezależne zegary ze współdzieleniem dokładnej pozy, następnie GPU palette skinning. Plany są zaakceptowane. A ma implementację desktopową i niezależny przegląd; B przeszedł integrację i niezależny przegląd oraz próby Foxa; cache jest opcjonalny i ma zmierzony narzut CPU. C pozostaje kolejnym etapem. Bieżące checkboxy i dowody: TODO oraz projekt. Metoda wykonania: agenci pod nadzorem, integracja etapami.

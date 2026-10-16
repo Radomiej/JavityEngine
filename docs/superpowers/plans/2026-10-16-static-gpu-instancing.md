@@ -63,3 +63,6 @@
 - [x] **Step 4: Verify GREEN.** Run `./gradlew build :javity-desktop:instancingSmoke :javity-desktop:instancingGl20Smoke`; require all named assertions to pass and preserve the evidence.
 - [x] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(render): add verified static GPU instancing"`.
 
+## Execution notes — 2026-10-16
+
+Desktop tasks completed and independently reviewed through `f0915f8`. Full reactor before review fixes:657 tests/76 suites; fixes:374 core tests, GL33:71 assertions, GL20:7. Actual new-context restoration is intentionally verified together with stage C on Android, not by a simulated reset in this plan. The shifted-hierarchy integration has one explicitly bounded crease-pixel exception with negative controls; the main256 comparison retains strict RGB≤2 and measured RGB0. [Evidence and exact limits](../../artifacts/instancing/README.md).

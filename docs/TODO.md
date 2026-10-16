@@ -170,7 +170,8 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 
 - [ ] Porównać źródłowy projekt użytkownika, gdy będzie dostępny kod; nie deklarować portu na podstawie nazwy/pustego repo.
 - [x] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i fallback GL20 — desktop oraz niezależny przegląd; [dowody](artifacts/instancing/README.md). Android/EGL nowej ścieżki pozostają bramką C.
-- [ ] Frame-local cache dokładnie zgodnych póz; osobne zegary/zdarzenia każdej postaci i bez współdzielonych mutable kości.
+- [x] Frame-local cache dokładnie zgodnych póz; osobne zegary/zdarzenia i własne kości — [Fox, dowody i koszt CPU](artifacts/imported-animation/pose-cache-fix1/README.md). Opcjonalny cache zmniejsza kompozycje256→1, ale w tym fixture zwiększa całkowity czas CPU.
+- [ ] Dalsza optymalizacja CPU cache po pomiarach: jawny kontrakt niemutowalnych assetów/rewizji, jeśli będzie potrzebny; obecna ścieżka zachowuje widoczne bezpośrednie edycje kanałów. Nie utożsamiać mniejszej liczby kompozycji z niższym całkowitym kosztem CPU.
 - [ ] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
 - [ ] Rzeczywiste porównanie pikseli/poz, liczby draw calls i sampler calls, benchmark64/256/1024 oraz osobny Android/context-loss gate.
 

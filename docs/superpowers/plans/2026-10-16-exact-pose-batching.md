@@ -38,11 +38,11 @@
 - Consumes: source rig/node paths and animation channels currently sampled by `ModelPoseAnimator`.
 - Produces: immutable `SharedPoseData`; immutable `ExactPoseKey`; `ExactPoseCache(int maxEntries)`, `beginFrame(long frameIndex): void`, `resolve(ExactPoseKey key, Supplier<float[]> sampler): float[]`, `clear(): void`; resolve returns a defensive local-TRS copy, never cached mutable storage.
 
-- [ ] **Step 1: Write failing tests.** `collisionDoesNotShare` forces equal hashes but unequal sample states; `exactTimeDoesNotQuantize` distinguishes neighboring float times. `rigRevisionAndFrozenFade` separates rigs/revisions/outgoing poses. `boundedFrameLifetime` asserts entries≤capacity, old frames evicted and clear releases data.
-- [ ] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.animation.ExactPoseCacheTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
-- [ ] **Step 3: Implement.** Move immutable clip indexing into SharedPoseData without changing interpolation. Key exact sample times, rig/clip identity and revision, mixer parameters, layers/masks/weights and frozen outgoing local TRS with content equality. Keep a frame-local bounded insertion-order cache; overflow computes uncached rather than changing pose. Expose sampler-hit counters for verification.
-- [ ] **Step 4: Verify GREEN.** Run `./gradlew :javity-core:test --tests org.javity.animation.ExactPoseCacheTest`; require all named assertions to pass and preserve the evidence.
-- [ ] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(animation): add bounded exact pose cache"`.
+- [x] **Step 1: Write failing tests.** `collisionDoesNotShare` forces equal hashes but unequal sample states; `exactTimeDoesNotQuantize` distinguishes neighboring float times. `rigRevisionAndFrozenFade` separates rigs/revisions/outgoing poses. `boundedFrameLifetime` asserts entries≤capacity, old frames evicted and clear releases data.
+- [x] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.animation.ExactPoseCacheTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
+- [x] **Step 3: Implement.** Move immutable clip indexing into SharedPoseData without changing interpolation. Key exact sample times, rig/clip identity and revision, mixer parameters, layers/masks/weights and frozen outgoing local TRS with content equality. Keep a frame-local bounded insertion-order cache; overflow computes uncached rather than changing pose. Expose sampler-hit counters for verification.
+- [x] **Step 4: Verify GREEN.** Run `./gradlew :javity-core:test --tests org.javity.animation.ExactPoseCacheTest`; require all named assertions to pass and preserve the evidence.
+- [x] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(animation): add bounded exact pose cache"`.
 
 ### Task 2: Animator integration with independent gameplay
 
@@ -56,9 +56,13 @@
 - Consumes: Task 1 `ExactPoseCache.resolve` and existing per-owner playback callbacks.
 - Produces: opt-in `PoseBatchSystem extends GameSystem`, constructor `(int maxEntries)`; animator observes same-scene system without a required gameplay API change.
 
-- [ ] **Step 1: Write failing tests.** Assert256 identical characters cause one composition per frame,256 per-owner events, and equal but independently owned node/socket matrices. Cover pause/WORLD pause, speed, seek, masked edit after step, fade interruption, mixer, renderer remove/rebind, scene replacement and two renders without update. Compare Fox local/skinned poses against uncached path and existing original glTF oracle; no tolerance increase.
-- [ ] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.animation.PoseBatchingTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
-- [ ] **Step 3: Implement.** Advance clocks/callbacks per owner before cache lookup; route all immediate compose paths through a fresh exact key. Copy pose into each own binding and calculate its transforms; avatar visibility is excluded from pose key. Reset cache by scene frame, invalidate binding/data revisions on rebind and dispose with GameSystem. Avoid global cache/scene ownership changes.
-- [ ] **Step 4: Verify GREEN.** Run `./gradlew build :javity-core:test --tests org.javity.animation.PoseBatchingTest`; require all named assertions to pass and preserve the evidence.
-- [ ] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(animation): integrate independent playback with shared poses"`.
+- [x] **Step 1: Write failing tests.** Assert256 identical characters cause one composition per frame,256 per-owner events, and equal but independently owned node/socket matrices. Cover pause/WORLD pause, speed, seek, masked edit after step, fade interruption, mixer, renderer remove/rebind, scene replacement and two renders without update. Compare Fox local/skinned poses against uncached path and existing original glTF oracle; no tolerance increase.
+- [x] **Step 2: Verify RED.** Run `./gradlew :javity-core:test --tests org.javity.animation.PoseBatchingTest`; expect failure for the missing API or named behavioral assertion, never an unrelated environment error.
+- [x] **Step 3: Implement.** Advance clocks/callbacks per owner before cache lookup; route all immediate compose paths through a fresh exact key. Copy pose into each own binding and calculate its transforms; avatar visibility is excluded from pose key. Reset cache by scene frame, invalidate binding/data revisions on rebind and dispose with GameSystem. Avoid global cache/scene ownership changes.
+- [x] **Step 4: Verify GREEN.** Run `./gradlew build :javity-core:test --tests org.javity.animation.PoseBatchingTest`; require all named assertions to pass and preserve the evidence.
+- [x] **Step 5: Commit.** Stage only this task's listed files and run `git commit -m "feat(animation): integrate independent playback with shared poses"`.
 
+
+## Execution evidence
+
+Completed through98d7d8c and independently reviewed, including a narrow uncached fallback for post-validation source data that cannot be snapshotted. Full reactor714 tests/79 suites;123 animation tests independently repeated; four realGL20/GL30 Fox proofs retain original tolerances and actual loaded JAR hashes. [Evidence and measured CPU/allocation cost](../../artifacts/imported-animation/pose-cache-fix1/README.md). CPU sharing is opt-in and was slower overall for this fixture despite256→1 compositions; do not infer total speedup.

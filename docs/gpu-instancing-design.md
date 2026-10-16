@@ -1,6 +1,6 @@
 # GPU instancing i batching animacji — zaakceptowany projekt
 
-2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etapy B/C pozostają planem.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
+2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etap B również ma sprawdzoną implementację; C pozostaje planem.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
 
 ## Co mamy
 
@@ -69,7 +69,7 @@ Demo powinno pokazywać zwykłą/instanced ścieżkę i stats side-by-side, zach
 
 ## Plany wykonania
 
-Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania zaakceptowane. Etap A wdrożony i sprawdzony na desktopie; etapy B/C oczekują wykonania:
+Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania zaakceptowane. Etap A wdrożony i sprawdzony na desktopie; B jest sprawdzony, C oczekuje wykonania:
 
 1. [A — statyczny instancing](superpowers/plans/2026-10-16-static-gpu-instancing.md).
 2. [B — dokładny cache póz](superpowers/plans/2026-10-16-exact-pose-batching.md).
