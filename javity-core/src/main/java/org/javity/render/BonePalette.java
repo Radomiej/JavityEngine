@@ -158,8 +158,8 @@ public final class BonePalette implements Disposable {
    * runs upload once until modified again. The caller must reserve this unit from its material
    * binder and restore its prior GL_TEXTURE_BINDING_2D at the pass boundary. The active texture
    * unit is restored here, including on errors. A failed bind also restores the touched binding.
-   * Pixel-unpack buffer, alignment, row length and row/pixel skips are normalized for client memory
-   * upload and restored before returning.
+   * Pixel-unpack buffer, alignment, row length, row/pixel skips and desktop byte swapping are
+   * normalized for client memory upload and restored before returning.
    *
    * <p>This page-only operation requires a current-frame page but cannot validate a particular Row;
    * validate every selected lease with isValid before drawing, or use bind(Row, unit).
@@ -385,6 +385,10 @@ public final class BonePalette implements Disposable {
   }
 
   private static final class UnpackState {
+    // Desktop-only state; this enum must never be queried or set on GLES.
+    private static final int GL_UNPACK_SWAP_BYTES = 0x0CF0;
+    final boolean desktop = Gdx.graphics.getGLVersion().getType() == GLVersion.Type.OpenGL;
+    final int swapBytes = desktop ? limit(GL_UNPACK_SWAP_BYTES) : 0;
     final int buffer = limit(GL30.GL_PIXEL_UNPACK_BUFFER_BINDING);
     final int alignment = limit(GL20.GL_UNPACK_ALIGNMENT);
     final int rowLength = limit(GL30.GL_UNPACK_ROW_LENGTH);
@@ -392,6 +396,7 @@ public final class BonePalette implements Disposable {
     final int skipPixels = limit(GL30.GL_UNPACK_SKIP_PIXELS);
 
     void normalize(GL30 gl) {
+      if (desktop) gl.glPixelStorei(GL_UNPACK_SWAP_BYTES, 0);
       gl.glBindBuffer(GL30.GL_PIXEL_UNPACK_BUFFER, 0);
       gl.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 4);
       gl.glPixelStorei(GL30.GL_UNPACK_ROW_LENGTH, 0);
@@ -400,6 +405,7 @@ public final class BonePalette implements Disposable {
     }
 
     void restore(GL30 gl) {
+      if (desktop) gl.glPixelStorei(GL_UNPACK_SWAP_BYTES, swapBytes);
       gl.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, alignment);
       gl.glPixelStorei(GL30.GL_UNPACK_ROW_LENGTH, rowLength);
       gl.glPixelStorei(GL30.GL_UNPACK_SKIP_ROWS, skipRows);

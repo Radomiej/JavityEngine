@@ -18,6 +18,27 @@ import org.javity.animation.ExactPoseKey;
 import org.junit.Test;
 
 public class BonePaletteTest {
+  private static final int GL_UNPACK_SWAP_BYTES = 0x0CF0;
+
+  @Test
+  public void desktopByteSwapIsDisabledForFloatUploadAndRestoredAfterSuccessAndFailure() {
+    try (GlCalls gl = new GlCalls()) {
+      gl.swapBytes = 1;
+      BonePalette palette = new BonePalette(1, 1);
+      palette.beginFrame(0);
+      palette.put(new Matrix4[] {matrix(1)});
+      gl.failUpload = true;
+      assertThrows(IllegalStateException.class, () -> palette.bindPage(0, 1));
+      assertEquals(1, gl.swapBytes);
+      gl.failUpload = false;
+      assertEquals(64, palette.bindPage(0, 1));
+      assertEquals(1, gl.swapBytes);
+      assertEquals(2, gl.swapQueries);
+      assertEquals(4, gl.swapSets);
+      palette.dispose();
+    }
+  }
+
   @Test
   public void copiesColumnMajorMatricesWithoutGl() {
     BonePalette palette = new BonePalette(2, 3);
@@ -288,6 +309,7 @@ public class BonePaletteTest {
     int unpackBuffer = 19, alignment = 8, rowLength = 7, skipRows = 2, skipPixels = 3;
     int vertexUnits = 4, textureSize = 4096;
     boolean gles;
+    int swapBytes, swapQueries, swapSets;
     boolean failUpload;
     final List<Integer> deleted = new ArrayList<>();
 
@@ -313,6 +335,11 @@ public class BonePaletteTest {
                               case GL30.GL_UNPACK_ROW_LENGTH -> rowLength;
                               case GL30.GL_UNPACK_SKIP_ROWS -> skipRows;
                               case GL30.GL_UNPACK_SKIP_PIXELS -> skipPixels;
+                              case GL_UNPACK_SWAP_BYTES -> {
+                                assertFalse("GLES must not query desktop byte-swap state", gles);
+                                swapQueries++;
+                                yield swapBytes;
+                              }
                               default -> throw new AssertionError("Unexpected query: " + name);
                             };
                         ((IntBuffer) args[1]).put(0, value);
@@ -333,6 +360,11 @@ public class BonePaletteTest {
                           case GL30.GL_UNPACK_ROW_LENGTH -> rowLength = (int) args[1];
                           case GL30.GL_UNPACK_SKIP_ROWS -> skipRows = (int) args[1];
                           case GL30.GL_UNPACK_SKIP_PIXELS -> skipPixels = (int) args[1];
+                          case GL_UNPACK_SWAP_BYTES -> {
+                            assertFalse("GLES must not set desktop byte-swap state", gles);
+                            swapSets++;
+                            swapBytes = (int) args[1];
+                          }
                           default -> throw new AssertionError("Unexpected pixel store");
                         }
                       }
@@ -382,6 +414,7 @@ public class BonePaletteTest {
       assertEquals(0, rowLength);
       assertEquals(0, skipRows);
       assertEquals(0, skipPixels);
+      if (!gles) assertEquals("Float upload must disable desktop byte swapping", 0, swapBytes);
     }
 
     void assertUnpackRestored() {
