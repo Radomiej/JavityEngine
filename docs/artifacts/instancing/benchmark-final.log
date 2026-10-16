@@ -1,0 +1,83 @@
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-desktop:compileJava UP-TO-DATE
+> Task :javity-desktop:classes UP-TO-DATE
+
+> Task :javity-desktop:instancingBenchmark
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+benchmark 64 synchronous ordinary cache=false step=0.73497803 render=11.348737893333332 draws=19200 compositions=19200 palette=0
+benchmark 64 synchronous instanced cache=false step=0.8835298466666667 render=8.905215916666666 draws=300 compositions=19200 palette=460800
+benchmark 64 independent ordinary cache=false step=0.5621089733333333 render=10.21821239 draws=19200 compositions=19200 palette=0
+benchmark 64 independent instanced cache=false step=0.81484734 render=8.817238936666667 draws=300 compositions=19200 palette=29491200
+benchmark 256 synchronous ordinary cache=false step=4.00516154 render=45.04123555666666 draws=76800 compositions=76800 palette=0
+benchmark 256 synchronous instanced cache=false step=4.07346821 render=34.25402309333333 draws=300 compositions=76800 palette=460800
+benchmark 256 independent ordinary cache=false step=2.825802936666667 render=42.74307627666666 draws=76800 compositions=76800 palette=0
+benchmark 256 independent instanced cache=false step=3.964797653333333 render=33.179747936666665 draws=300 compositions=76800 palette=117964800
+benchmark 1024 synchronous ordinary cache=false step=16.535413866666666 render=173.79802704666668 draws=307200 compositions=307200 palette=0
+benchmark 1024 synchronous instanced cache=false step=16.05572808333333 render=129.95041436666668 draws=1200 compositions=307200 palette=460800
+benchmark 1024 independent ordinary cache=false step=15.893589276666667 render=169.20708010333334 draws=307200 compositions=307200 palette=0
+benchmark 1024 independent instanced cache=false step=16.742227093333334 render=138.78732629 draws=1200 compositions=307200 palette=471859200
+benchmark 256 synchronous instanced cache=true step=5.20077132 render=33.44357299666667 draws=300 compositions=300 palette=460800
+instancingBenchmark: PASS assertions=2968
+
+BUILD SUCCESSFUL in 6m 48s
+37 actionable tasks: 1 executed, 36 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html
+instancing evidence: PASS,13 variants, actual native draws/compositions/uploads/events verified

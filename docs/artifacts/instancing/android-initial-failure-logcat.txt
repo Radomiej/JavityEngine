@@ -1,0 +1,52 @@
+10-16 14:31:19.378  6552  6568 I TestRunner: started: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)
+10-16 14:31:19.861  6552  6568 I TestRunner: failed: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)
+10-16 14:31:19.862  6552  6568 I TestRunner: ----- begin exception -----
+10-16 14:31:19.958  6552  6568 I TestRunner: java.lang.ClassNotFoundException: org.javity.android.AndroidInstancingContextProbe
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.Class.classForName(Native Method)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.Class.forName(Class.java:607)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.Class.forName(Class.java:512)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at org.javity.android.AndroidManagedContextLossInstrumentationTest.testManagedOwnersRecoverAfterActualSurfaceContextLoss(AndroidManagedContextLossInstrumentationTest.java:27)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.reflect.Method.invoke(Native Method)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at junit.framework.TestCase.runBare(TestCase.java:134)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at junit.framework.TestResult$1.protect(TestResult.java:115)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at junit.framework.TestResult.runProtected(TestResult.java:133)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at junit.framework.TestResult.run(TestResult.java:118)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at junit.framework.TestCase.run(TestCase.java:124)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)
+10-16 14:31:19.958  6552  6568 I TestRunner: Caused by: java.lang.ClassNotFoundException: Didn't find class "org.javity.android.AndroidInstancingContextProbe" on path: DexPathList[[zip file "/system/framework/android.test.runner.jar", zip file "/system/framework/android.test.base.jar", zip file "/system/framework/android.test.mock.jar", zip file "/data/app/~~oWuwe1dddbrq9_CGgMLAEg==/org.javity.android.fixture.test-pgtCkyHByWxUvz68X5ORxA==/base.apk", zip file "/data/app/~~7FIpLevhGojNpPoou-icfw==/org.javity.android.fixture-6phxmFGRm3ClKyVBiMW00w==/base.apk"],nativeLibraryDirectories=[/data/app/~~oWuwe1dddbrq9_CGgMLAEg==/org.javity.android.fixture.test-pgtCkyHByWxUvz68X5ORxA==/lib/x86_64, /data/app/~~7FIpLevhGojNpPoou-icfw==/org.javity.android.fixture-6phxmFGRm3ClKyVBiMW00w==/lib/x86_64, /data/app/~~oWuwe1dddbrq9_CGgMLAEg==/org.javity.android.fixture.test-pgtCkyHByWxUvz68X5ORxA==/base.apk!/lib/x86_64, /data/app/~~7FIpLevhGojNpPoou-icfw==/org.javity.android.fixture-6phxmFGRm3ClKyVBiMW00w==/base.apk!/lib/x86_64, /system/lib64, /system_ext/lib64]]
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:259)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:637)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:573)
+10-16 14:31:19.958  6552  6568 I TestRunner: 	... 17 more
+10-16 14:31:19.965  6552  6568 I TestRunner: ----- end exception -----
+10-16 14:31:20.373  6552  6568 I TestRunner: finished: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)
+10-16 14:33:36.312  6734  6749 I TestRunner: started: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)
+10-16 14:34:54.126  6734  6749 I ManagedContextTest: pre-loss pixels and owners: Snapshot[eglContextNativeHandle=137758160942960, helperIdentity=1, shapeRendererIdentity=2, themeIdentity=3, controlTextureIdentity=4, managedUploadCount=1, expectedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=600], observedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=848], expectedDashedBounds=Bounds[minX=58, minY=54, maxX=119, maxY=60, pixels=60], observedDashedBounds=Bounds[minX=58, minY=55, maxX=117, maxY=58, pixels=160], expectedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=500], observedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=960], nonEmptyGlyphPixels=39, instancing=Snapshot[ownerIdentity=1, recoveries=0, glVersion=OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1), glRenderer=Android Emulator OpenGL ES Translator (Google SwiftShader), maxVertexTextureUnits=16, maxTextureSize=8192, skinDraws=1, staticDraws=1, paletteUploadBytes=256, instanceUploadBytes=288, uniquePalettes=2, redPixels=0, greenPixels=432, bluePixels=216, wrongRowChangedPixels=258, maxRgbDelta=255, noGlError=true]]
+10-16 14:34:55.654  6734  6749 I TestRunner: failed: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)
+10-16 14:34:55.655  6734  6749 I TestRunner: ----- begin exception -----
+10-16 14:34:55.802  6734  6749 I TestRunner: junit.framework.AssertionFailedError: two red poses visible before context loss
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.Assert.fail(Assert.java:50)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.Assert.assertTrue(Assert.java:20)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at org.javity.android.AndroidManagedContextLossInstrumentationTest.assertHealthyPixels(AndroidManagedContextLossInstrumentationTest.java:129)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at org.javity.android.AndroidManagedContextLossInstrumentationTest.testManagedOwnersRecoverAfterActualSurfaceContextLoss(AndroidManagedContextLossInstrumentationTest.java:36)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at java.lang.reflect.Method.invoke(Native Method)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.TestCase.runBare(TestCase.java:134)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.TestResult$1.protect(TestResult.java:115)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.TestResult.runProtected(TestResult.java:133)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.TestResult.run(TestResult.java:118)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at junit.framework.TestCase.run(TestCase.java:124)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+10-16 14:34:55.802  6734  6749 I TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)
+10-16 14:34:55.810  6734  6749 I TestRunner: ----- end exception -----
+10-16 14:34:56.594  6734  6749 I TestRunner: finished: testManagedOwnersRecoverAfterActualSurfaceContextLoss(org.javity.android.AndroidManagedContextLossInstrumentationTest)

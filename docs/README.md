@@ -45,4 +45,4 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 
 - [Darmowy Fox: animacje na prawdziwym rigu](artifacts/imported-animation/README.md) — GIF, wyniki GL20/GL30 i interaktywny test naszego ModelPoseAnimator.
 
-- [GPU instancing i animation batching](gpu-instancing-design.md) — etap A na desktopie, plany B/C, ograniczenia i dowody porównawcze.
+- [GPU instancing i animation batching](gpu-instancing-design.md) — implementacja A/B/C, benchmark i ograniczenia platform; [guide włączania](gpu-instancing-guide.md).

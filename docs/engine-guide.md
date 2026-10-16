@@ -133,3 +133,8 @@ UI jest opcjonalne: Scene2D/Yoga bez JS albo React/TSX na wspólnym hoście. Zwy
 ## 8. Darmowy model z prawdziwymi animacjami
 
 `python3 tools/animation-validation/run.py --interactive` otwiera Fox z trzema importowanymi klipami: 1 Survey, 2 Walk, 3 Run, 4 crossfade, 5 mikser50%, 6 maska ogona, Space pauza. [GIF i wyniki](artifacts/imported-animation/README.md), [instrukcja i licencja](../tools/animation-validation/README.md). `run.py` bez `--interactive` wykonuje asercje i zamyka aplikację; `--gl30` wybiera drugi testowany profil. Model jest lokalnym fixture G3DJ przekonwertowanym z glTF, więc nie oznacza to nowego loadera GLB w runtime.
+
+
+## 9. Instancing modeli i animowanych tłumów
+
+[Jak włączyć InstancedModel, skonfigurować Fox24/4 i zarządzać lifecycle](gpu-instancing-guide.md). GPU palette skinning działa z niezależnymi pozami; cache CPU jest osobnym opt-in ze zmierzonym narzutem. [Benchmark, porównania i granice Androida](artifacts/instancing/README.md).

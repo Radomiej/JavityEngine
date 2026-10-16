@@ -244,3 +244,12 @@ tasks.register('skinnedInstancingGl20Smoke', JavaExec) {
     workingDir = rootProject.projectDir
     args '--gl20'
 }
+
+tasks.register('instancingBenchmark', JavaExec) {
+    group = 'verification'
+    description = 'Seed42 crowd benchmark:64/256/1024,120 warmup and300 measured frames.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.InstancingBenchmarkLauncher'
+    systemProperty 'javity.benchmark.environment', providers.gradleProperty('benchmarkEnvironment').getOrElse('unspecified co-resident workloads')
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}

@@ -1,6 +1,6 @@
 # GPU instancing i batching animacji — zaakceptowany projekt
 
-2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etap B również ma sprawdzoną implementację; C pozostaje planem.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
+2026-10-16. Użytkownik zaakceptował wariant A→B→C. Nowe wymaganie użytkownika: instancing modeli i batching animowanych postaci, z wykorzystaniem jego projektu referencyjnego. **Etap A ma implementację desktopową i dowody GL3.3/GL20; poprawki przeszły niezależny przegląd. Etap B również ma sprawdzoną implementację; C ma implementację i dowody desktopowe oraz zaliczony osobny test GLES3/EGL na emulatorze API35 x86_64. Fizyczny ARM64 i wydajność urządzenia pozostają niezweryfikowane.** Kod wskazanego projektu referencyjnego nie jest jeszcze dostępny do porównania; nie deklarujemy portu ani równoważności jego algorytmu.
 
 ## Punkt wyjścia — przed etapami A/B
 
@@ -69,7 +69,7 @@ Demo powinno pokazywać zwykłą/instanced ścieżkę i stats side-by-side, zach
 
 ## Plany wykonania
 
-Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania zaakceptowane. Etap A wdrożony i sprawdzony na desktopie; B jest sprawdzony, C oczekuje wykonania:
+Wariant A→B→C zaakceptowany przez użytkownika 2026-10-16. Plany wykonania zaakceptowane. Etap A wdrożony i sprawdzony na desktopie; B i C mają implementację; zakres weryfikacji platform jest w dowodach:
 
 1. [A — statyczny instancing](superpowers/plans/2026-10-16-static-gpu-instancing.md).
 2. [B — dokładny cache póz](superpowers/plans/2026-10-16-exact-pose-batching.md).
@@ -79,4 +79,9 @@ Kod projektu referencyjnego pozostaje dodatkowym źródłem do porównania, gdy 
 
 ## Bieżące dowody etapu A
 
-[Statyczny instancing — API, porównania i logi](artifacts/instancing/README.md). 256 zgodnych obiektów: 256 zwykłych draw calls kontra jeden instanced draw. Główny test ma identyczny obraz; odrębny test przesuniętej hierarchii ma jawny wyjątek jednego piksela na styku ścian, opisany w dowodach. Android i prawdziwe odtworzenie kontekstu nowej ścieżki pozostają bramką C.
+[Statyczny instancing — API, porównania i logi](artifacts/instancing/README.md). 256 zgodnych obiektów: 256 zwykłych draw calls kontra jeden instanced draw. Główny test ma identyczny obraz; odrębny test przesuniętej hierarchii ma jawny wyjątek jednego piksela na styku ścian, opisany w dowodach. Wyniki etapu C, benchmarku i osobnej bramki Android/EGL są w aktualnych dowodach.
+
+
+## Etap C — użycie i dowody
+
+[Guide włączania](gpu-instancing-guide.md), [powtarzalny benchmark64/256/1024 i zakres Androida](artifacts/instancing/README.md), [niezależne pozy i importowany24-bone oracle](artifacts/skinned-instancing/README.md), [decyzje architektoniczne](gpu-instancing-decisions.md). GPU instancing nie wymaga cache CPU. Mierzymy rzeczywiste pełne kompozycje i uploady, a czas CPU cache raportujemy oddzielnie; mniejsza liczba kompozycji nie dowodzi niższego kosztu całkowitego. Fizyczny ARM64 i wydajność urządzenia pozostają niezweryfikowane.

@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "benchmark": "benchmark.json",
+  "benchmarkSha256": "b2875bde74e81a7f620ffab568d2a7b58023aa5fccc8c738a19c83542edc77d7",
+  "sourceCommitAtRun": "7e8832bb2f4bcb44d106cb1a49deee256eabb8c8",
+  "sourceWorktreeDirtyAtRun": true,
+  "provenanceScope": "Checkout commit plus listed source hashes, including uncommitted source changes; actual loaded class/JAR hashes identify the executed bytecode",
+  "sourceSha256": {
+    "javity-desktop/src/main/java/org/javity/demo/InstancingBenchmark.java": "685382ba8ac92716615b283fd0bb5c8a47342f81d909cf4f4fc6f3bbc6561c33",
+    "javity-desktop/src/main/java/org/javity/demo/InstancingBenchmarkLauncher.java": "ba50a5896104b3f606415687eef20ed72300d2a666725955396c9ec09b77d968",
+    "javity-core/src/main/java/org/javity/render/InstanceShader.java": "4f4752f3eed7d3542a9f23e2af396e23a3ec73769fcddd1136925ce5d71539a4",
+    "tools/animation-validation/benchmark_instancing.py": "4b676458115ba56185a2a38282db7ee52cd7fdc1d9ff23732ce12a8cd7bc77eb"
+  },
+  "fixtureSha256": {
+    "NOTICE.md": "541dfb56106f3a3e20fc0903999f6254fa210a3acb963ea5849bffd84bfb0a1d",
+    "oracle.json": "6602586400ffb5fd67786b3dc5ac85ecc05d6b0dfd4025c46f373575fdbb5732",
+    "hashes.json": "192ddcb9cf91dfa2220236c78373a1a010a860d3ef1be599b0cead4dd919853c",
+    "Fox.bin": "c7d0d8de28a84d5b25623037f88e063e1502495a2ee6c55f182c61161ad12f80",
+    "revision.txt": "e8c0d405861ba72e1837b64ca1e2c15c6cedf0f55e53cd569c206c412b5493df",
+    "SOURCE.md": "cf767a7943b12f3af0ea14a1b18947a45ed7a03c3e722678df33854d97df0f88",
+    "Fox.g3dj": "be50d4b5283fe91d7fe8acc4a579b931fd392b0ad4f6f1c4cedc8d840c2b878c",
+    "Fox.gltf": "6ddcabf511c0257b87dedf6ac51f1bdb6f21e570eee5fa7c4fa6162d055cb002",
+    "Texture.png": "61c8b109ee7f8bf262791933380fafb1465f7b51cbe6472c2d21eff0b31f83a1"
+  },
+  "workloadClassSha256": "02334b8438eeb60fb1e968537030119e278f0054c768eac945522ad07fe8246f",
+  "loadedJarSha256": {
+    "/workspace/JavityEngine/javity-core/build/libs/javity-core-0.7.0-SNAPSHOT.jar": "d6625418570afa86ba338998bafd074228cef3f965dfb92ed3a86ad571d2248d",
+    "/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.14.2/919153aed4ce12001e86c38ac3dc5cdfe1954898/gdx-1.14.2.jar": "a835710bb135c2c687723b9474d5620f8158af90a96e07ce492f6169d7eee8cc",
+    "/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.14.2/b92aa68b24236fcd63d2158439ce8362ef45c05e/gdx-backend-lwjgl3-1.14.2.jar": "86a046655217882372381b285728e14b17e2020abbc63bf019847b6eb21cf56a"
+  },
+  "sourceNotice": "../../../tools/animation-validation/fox/NOTICE.md",
+  "poseAndImageOracle": "../skinned-instancing/README.md",
+  "tolerances": {
+    "poseSourceUnits": 0.01,
+    "interiorRgb8": 2,
+    "silhouetteBandPixels": 1
+  },
+  "limits": [
+    "Mesa llvmpipe timings describe this run only",
+    "CPU full composition count excludes scalar channel interpolation and callback contribution costs",
+    "Physical ARM64 and Android device performance remain unverified"
+  ]
+}

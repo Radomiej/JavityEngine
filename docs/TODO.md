@@ -169,10 +169,10 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 ## GPU instancing i animation batching — nowe wymaganie
 
 - [ ] Porównać źródłowy projekt użytkownika, gdy będzie dostępny kod; nie deklarować portu na podstawie nazwy/pustego repo.
-- [x] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i fallback GL20 — desktop oraz niezależny przegląd; [dowody](artifacts/instancing/README.md). Android/EGL nowej ścieżki pozostają bramką C.
+- [x] Statyczny instancing zgodnych MeshPart/material/pass, culling, limity, stats i fallback GL20 — desktop oraz niezależny przegląd; [dowody](artifacts/instancing/README.md). Android GLES3/EGL nowej ścieżki zaliczony osobno na emulatorze API35 x86_64; fizyczny ARM64 i wydajność urządzenia pozostają niezweryfikowane.
 - [x] Frame-local cache dokładnie zgodnych póz; osobne zegary/zdarzenia i własne kości — [Fox, dowody i koszt CPU](artifacts/imported-animation/README.md). Opcjonalny cache zmniejsza kompozycje256→1, ale w tym fixture zwiększa całkowity czas CPU.
 - [ ] Dalsza optymalizacja CPU cache po pomiarach: jawny kontrakt niemutowalnych assetów/rewizji, jeśli będzie potrzebny; obecna ścieżka zachowuje widoczne bezpośrednie edycje kanałów. Nie utożsamiać mniejszej liczby kompozycji z niższym całkowitym kosztem CPU.
-- [ ] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
-- [ ] Rzeczywiste porównanie pikseli/poz, liczby draw calls i sampler calls, benchmark64/256/1024 oraz osobny Android/context-loss gate.
+- [x] GPU palette texture i instanced skinning dla zgodnego rigu z niezależnymi pozami; zachować maski/avatar views/sockety.
+- [x] Rzeczywiste porównanie pikseli/poz, liczby draw calls i pełnych kompozycji, benchmark64/256/1024 oraz osobny Android/context-loss gate na emulatorze API35 x86_64. [Wyniki, koszty i ograniczenia](artifacts/instancing/README.md).
 
-[Zaakceptowany projekt i plany wykonania](gpu-instancing-design.md). A/B są sprawdzone w opisanym zakresie; C i bramka Android/EGL nowego pipeline pozostają otwarte.
+[Zaakceptowany projekt i plany wykonania](gpu-instancing-design.md). A/B/C są sprawdzone w opisanym zakresie desktopu i emulatora GLES3/EGL. Fizyczny ARM64 oraz wydajność urządzenia pozostają osobnymi bramkami.

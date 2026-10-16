@@ -60,7 +60,8 @@ public final class AndroidManagedContextProbe implements Disposable {
       Bounds observedDashedBounds,
       Bounds expectedRoundedBounds,
       Bounds observedRoundedBounds,
-      int nonEmptyGlyphPixels) {}
+      int nonEmptyGlyphPixels,
+      AndroidInstancingContextProbe.Snapshot instancing) {}
 
   private final Pixmap retainedControlPixmap;
   private final CountingManagedPixmapData controlData;
@@ -85,6 +86,7 @@ public final class AndroidManagedContextProbe implements Disposable {
   private final long themeIdentity;
   private final long controlTextureIdentity;
   private boolean closed;
+  private final AndroidInstancingContextProbe instancing;
 
   public AndroidManagedContextProbe() {
     Pixmap pixmap = null;
@@ -94,6 +96,7 @@ public final class AndroidManagedContextProbe implements Disposable {
     UiTheme uiTheme = null;
     Stage uiStage = null;
     CountingManagedPixmapData data = null;
+    AndroidInstancingContextProbe instanceProbe = null;
     try {
       if (Gdx.app == null || Gdx.gl20 == null)
         throw new IllegalStateException("Probe must be constructed on a current libGDX GL thread");
@@ -126,6 +129,8 @@ public final class AndroidManagedContextProbe implements Disposable {
       dashed.setDashes(new DashPattern2D(8, 5), 0);
       dashed.lineCap = ShapeRenderer2D.LineCap.BUTT;
       dashed.color.set(Color.YELLOW);
+      instanceProbe = new AndroidInstancingContextProbe();
+      instancing = instanceProbe;
       pixmap = null; // retained by the managed control texture and disposed after it.
       retainedControlPixmap = data.pixmap;
       controlData = data;
@@ -140,6 +145,7 @@ public final class AndroidManagedContextProbe implements Disposable {
       materialShape = material;
       dashedShape = dashed;
     } catch (RuntimeException | Error failure) {
+      cleanupFailure(instanceProbe, failure);
       cleanupFailure(uiStage, failure);
       cleanupFailure(uiTheme, failure);
       cleanupFailure(renderer, failure);
@@ -172,6 +178,7 @@ public final class AndroidManagedContextProbe implements Disposable {
     gl.glDisable(GL20.GL_DEPTH_TEST);
     gl.glDepthMask(true);
     boolean framebufferBegun = false;
+    AndroidInstancingContextProbe.Snapshot instanceProof;
     try {
       framebuffer.begin();
       framebufferBegun = true;
@@ -191,6 +198,7 @@ public final class AndroidManagedContextProbe implements Disposable {
       gl.glReadPixels(0, 0, WIDTH, HEIGHT, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
       pixels.position(0);
       pixels.limit(WIDTH * HEIGHT * 4);
+      instanceProof = instancing.snapshot();
     } finally {
       try {
         if (framebufferBegun) framebuffer.end();
@@ -225,7 +233,18 @@ public final class AndroidManagedContextProbe implements Disposable {
         dashed,
         new Bounds(8, 8, 49, 31, 500),
         rounded,
-        glyphs);
+        glyphs,
+        instanceProof);
+  }
+
+  public void contextRestored() {
+    requireOpen();
+    instancing.contextRestored();
+  }
+
+  public AndroidInstancingContextProbe.Cleanup closeInstancingAndVerify() {
+    requireOpen();
+    return instancing.closeAndVerify();
   }
 
   /** Managed TextureData upload count, readable only from the owner GL thread. */
@@ -282,6 +301,7 @@ public final class AndroidManagedContextProbe implements Disposable {
     if (closed) return;
     closed = true;
     Throwable failure = null;
+    failure = dispose(instancing, failure);
     failure = dispose(stage, failure);
     failure = dispose(theme, failure);
     failure = dispose(shapeRenderer, failure);

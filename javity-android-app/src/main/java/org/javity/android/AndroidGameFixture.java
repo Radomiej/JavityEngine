@@ -848,12 +848,19 @@ public final class AndroidGameFixture extends ApplicationAdapter {
   public void onGraphicsContextRestored() {
     requireOwnerThread();
     if (renderer != null) renderer.restoreContextShaderBindings();
+    if (contextProbe != null) contextProbe.contextRestored();
   }
 
   public AndroidManagedContextProbe.Snapshot contextProbeSnapshotForInstrumentation() {
     requireOwnerThread();
     if (contextProbe == null) throw new IllegalStateException("Context probe is not ready");
     return contextProbe.renderAndSnapshot();
+  }
+
+  public AndroidInstancingContextProbe.Cleanup closeInstancingProbeForInstrumentation() {
+    requireOwnerThread();
+    if (contextProbe == null) throw new IllegalStateException("Context probe is not ready");
+    return contextProbe.closeInstancingAndVerify();
   }
 
   public long managedUploadCountForInstrumentation() {

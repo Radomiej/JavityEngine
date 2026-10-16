@@ -1,0 +1,90 @@
+{
+  "status": "PASS",
+  "test": "AndroidManagedContextLossInstrumentationTest.testManagedOwnersRecoverAfterActualSurfaceContextLoss",
+  "seconds": 60.779,
+  "device": "emulator-5554 API35 Android15 x86_64 TCG; density320",
+  "contextProof": "Same retained GLSurfaceView, preserveEGLContextOnPause=false, forced onPause/onResume, retained helper/batch identity, managed reconsume and raw reuploads; native handle inequality is not required (ABA)",
+  "before": {
+    "record": "pre-loss pixels and owners: Snapshot[eglContextNativeHandle=137758160961248, helperIdentity=1, shapeRendererIdentity=2, themeIdentity=3, controlTextureIdentity=4, managedUploadCount=1, expectedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=600], observedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=848], expectedDashedBounds=Bounds[minX=58, minY=54, maxX=119, maxY=60, pixels=60], observedDashedBounds=Bounds[minX=58, minY=55, maxX=117, maxY=58, pixels=160], expectedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=500], observedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=960], nonEmptyGlyphPixels=39, instancing=Snapshot[ownerIdentity=1, recoveries=0, glVersion=OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1), glRenderer=Android Emulator OpenGL ES Translator (Google SwiftShader), maxVertexTextureUnits=16, maxTextureSize=8192, skinDraws=1, staticDraws=1, paletteUploadBytes=256, instanceUploadBytes=264, uniquePalettes=2, redPixels=528, greenPixels=432, bluePixels=216, wrongRowChangedPixels=258, maxRgbDelta=0, noGlError=true]]",
+    "observed": {
+      "eglContextNativeHandle": 137758160961248,
+      "helperIdentity": 1,
+      "shapeRendererIdentity": 2,
+      "themeIdentity": 3,
+      "controlTextureIdentity": 4,
+      "managedUploadCount": 1,
+      "minX": 8,
+      "minY": 8,
+      "maxX": 49,
+      "maxY": 31,
+      "pixels": 960,
+      "nonEmptyGlyphPixels": 39,
+      "ownerIdentity": 1,
+      "recoveries": 0,
+      "maxVertexTextureUnits": 16,
+      "maxTextureSize": 8192,
+      "skinDraws": 1,
+      "staticDraws": 1,
+      "paletteUploadBytes": 256,
+      "instanceUploadBytes": 264,
+      "uniquePalettes": 2,
+      "redPixels": 528,
+      "greenPixels": 432,
+      "bluePixels": 216,
+      "wrongRowChangedPixels": 258,
+      "maxRgbDelta": 0,
+      "noGlError": true
+    }
+  },
+  "after": {
+    "record": "post-loss pixels and owners: Snapshot[eglContextNativeHandle=137758160961248, helperIdentity=1, shapeRendererIdentity=2, themeIdentity=3, controlTextureIdentity=4, managedUploadCount=2, expectedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=600], observedMaterialBounds=Bounds[minX=8, minY=48, maxX=47, maxY=69, pixels=848], expectedDashedBounds=Bounds[minX=58, minY=54, maxX=119, maxY=60, pixels=60], observedDashedBounds=Bounds[minX=58, minY=55, maxX=117, maxY=58, pixels=160], expectedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=500], observedRoundedBounds=Bounds[minX=8, minY=8, maxX=49, maxY=31, pixels=960], nonEmptyGlyphPixels=39, instancing=Snapshot[ownerIdentity=1, recoveries=1, glVersion=OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1), glRenderer=Android Emulator OpenGL ES Translator (Google SwiftShader), maxVertexTextureUnits=16, maxTextureSize=8192, skinDraws=1, staticDraws=1, paletteUploadBytes=256, instanceUploadBytes=264, uniquePalettes=2, redPixels=528, greenPixels=432, bluePixels=216, wrongRowChangedPixels=258, maxRgbDelta=0, noGlError=true]]",
+    "observed": {
+      "eglContextNativeHandle": 137758160961248,
+      "helperIdentity": 1,
+      "shapeRendererIdentity": 2,
+      "themeIdentity": 3,
+      "controlTextureIdentity": 4,
+      "managedUploadCount": 2,
+      "minX": 8,
+      "minY": 8,
+      "maxX": 49,
+      "maxY": 31,
+      "pixels": 960,
+      "nonEmptyGlyphPixels": 39,
+      "ownerIdentity": 1,
+      "recoveries": 1,
+      "maxVertexTextureUnits": 16,
+      "maxTextureSize": 8192,
+      "skinDraws": 1,
+      "staticDraws": 1,
+      "paletteUploadBytes": 256,
+      "instanceUploadBytes": 264,
+      "uniquePalettes": 2,
+      "redPixels": 528,
+      "greenPixels": 432,
+      "bluePixels": 216,
+      "wrongRowChangedPixels": 258,
+      "maxRgbDelta": 0,
+      "noGlError": true
+    }
+  },
+  "cleanup": "instancing cleanup: Cleanup[ownedNamesDeleted=true, borrowedSourceRenders=true, trackedNames=13, redPixels=528, greenPixels=432, bluePixels=216, noGlError=true]",
+  "apkSha256": {
+    "javity-android-app/build/outputs/apk/debug/javity-android-app-debug.apk": "f03df730f1bd3cc538606f10565069dde5fe905e40389c93bdb9a79eb4811d50",
+    "javity-android-app/build/outputs/apk/androidTest/debug/javity-android-app-debug-androidTest.apk": "5e1282d58b580fc740ad75f30dafae4920fe97f74de8a7f991abbdce2d5a210a",
+    "javity-android-app/build/outputs/apk/release/javity-android-app-release-unsigned.apk": "9e736c374b7b62e3d9557c93c5414b38d4cbbf0ab090797b81669d9df3fda2ba"
+  },
+  "sourceSha256": {
+    "javity-core/src/main/java/org/javity/render/InstanceShader.java": "4f4752f3eed7d3542a9f23e2af396e23a3ec73769fcddd1136925ce5d71539a4",
+    "javity-android-app/src/main/java/org/javity/android/AndroidManagedContextProbe.java": "00aeff3c931d4e60d554aa893b74c8e2535e37ddd7ab07eaf4dd98b73eb43a7d",
+    "javity-android-app/src/main/java/org/javity/android/AndroidInstancingContextProbe.java": "f47a24d468d985e25e1d74e292bdee85396dce5c27efc710b795c0698dd1300e",
+    "javity-android-app/src/main/java/org/javity/android/AndroidGameFixture.java": "337575d42dc8d5f29234ed53cfb583bf736780e7270817a00b7df089c31281cd",
+    "javity-android-app/src/androidTest/java/org/javity/android/AndroidManagedContextLossInstrumentationTest.java": "e05a671a6c939266c702328852c6ee7cb7617287ad8ecdf209c2cf94a6f2f027"
+  },
+  "releaseScope": "R8 assembleRelease passed; this task executed the debug APK only",
+  "limits": [
+    "No physical ARM64 certification",
+    "No Android device-performance claim",
+    "Authored2bone GLES fixture; imported24bone Fox oracle remains desktop evidence"
+  ]
+}

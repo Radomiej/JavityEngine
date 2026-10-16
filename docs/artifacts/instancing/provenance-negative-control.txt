@@ -1,0 +1,14 @@
+Negative control: replace a recorded source digest with64zeros, execute --verify-only.
+Exit=1; rejected altered source provenance; manifest bytes unchanged=True.
+Traceback (most recent call last):
+  File "/workspace/JavityEngine/tools/animation-validation/benchmark_instancing.py", line 113, in <module>
+    main()
+  File "/workspace/JavityEngine/tools/animation-validation/benchmark_instancing.py", line 93, in main
+    verify()  # read-only: never relabel old evidence with current sources
+    ^^^^^^^^
+  File "/workspace/JavityEngine/tools/animation-validation/benchmark_instancing.py", line 64, in verify
+    assert digest(ROOT / name) == expected, f'source changed since captured run: {name}'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: source changed since captured run: javity-desktop/src/main/java/org/javity/demo/InstancingBenchmark.java
+
+Restored original manifest; instancing evidence: PASS,13 variants, actual native draws/compositions/uploads/events verified

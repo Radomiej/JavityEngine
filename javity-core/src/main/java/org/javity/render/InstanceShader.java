@@ -64,6 +64,7 @@ final class InstanceShader extends DefaultShader {
             ? "precision mediump float;\nout vec4 instanceFragColor;\n"
             : "out vec4 instanceFragColor;\n";
     if (skinned) {
+      String columnPrecision = es ? "highp " : "";
       vertex =
           vertex.replace(
               "uniform mat4 u_bones[numBones];",
@@ -71,9 +72,18 @@ final class InstanceShader extends DefaultShader {
                   + "#else\nuniform sampler2D u_palette;\n#endif\n"
                   + "in float a_paletteRow;\n"
                   + "mat4 paletteBone(int bone) { int x = bone * 4; int y = int(a_paletteRow); "
-                  + "return mat4(texelFetch(u_palette,ivec2(x,y),0),"
-                  + "texelFetch(u_palette,ivec2(x+1,y),0),texelFetch(u_palette,ivec2(x+2,y),0),"
-                  + "texelFetch(u_palette,ivec2(x+3,y),0)); }\n");
+                  // The tested GLES emulator translator loses columns in an inline four-fetch
+                  // constructor, despite correct texture contents. Named highp values preserve
+                  // the same matrix formula and pass the independent-pose pixel oracle.
+                  + columnPrecision
+                  + "vec4 c0=texelFetch(u_palette,ivec2(x,y),0);"
+                  + columnPrecision
+                  + "vec4 c1=texelFetch(u_palette,ivec2(x+1,y),0);"
+                  + columnPrecision
+                  + "vec4 c2=texelFetch(u_palette,ivec2(x+2,y),0);"
+                  + columnPrecision
+                  + "vec4 c3=texelFetch(u_palette,ivec2(x+3,y),0);"
+                  + "return mat4(c0,c1,c2,c3); }\n");
       vertex =
           vertex.replaceAll(
               "u_bones\\[int\\((a_boneWeight[0-7]\\.x)\\)\\]", "paletteBone(int($1))");

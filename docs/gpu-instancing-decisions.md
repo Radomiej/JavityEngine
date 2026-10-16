@@ -42,6 +42,12 @@ Zapis decyzji z nadzorowanej implementacji i przeglądów. Dowody pomiarowe są 
 
 - Android actual-context proof accepts native EGL handle ABA, as existing test explicitly documents; require forced non-preserved GLSurfaceView destruction/recreation, retained owners, managed reconsume and raw reupload/pixel evidence, record handle values but do not assert unequal numbers — avoids false failures from native handle reuse.
 
+- The tested Android GLES3 emulator translator returned no skinned pixels for an inline `mat4(texelFetch(...), ...)` constructor, despite valid GPU palette texels and correct scalar fetches. Equivalent named highp column fetches restore the ordinary two-pose image. Retain those named locals and the actual GLES pixel regression; desktop GLSL330 uses ordinary local qualifiers. This is observed compatibility evidence for that translator, not a claim about all GLES drivers. Cost: a few explicit shader temporaries, unchanged matrix/weight math.
+
+- Benchmark verification is read-only and rejects stale source, fixture or benchmark hashes. Only a fresh-run wrapper captures provenance before execution and validates unchanged sources afterward; loaded core/backend JAR and workload class bytes are recorded. Cost: strict historical verification requires matching source files; it cannot silently re-label an old run with current source hashes.
+
+- The fixed numerical crowd/oracle view stays separate from the larger perspective showcase. Showcase PNG capture explicitly flips framebuffer Y; historical raw numerical captures retain their orientation. Cost: two documented camera/capture configurations, no tolerance change.
+
 ## Zakres pozostałych prac
 
 Optymalizacja kosztu walidacji mutable źródeł pozy wymaga osobnego jawnego kontraktu assetów. Cache CPU pozostaje opcjonalny; ograniczenie liczby pełnych kompozycji nie oznacza poprawy całkowitego czasu CPU. Fizyczny Android ARM i pomiary na urządzeniu pozostają oddzielnymi bramkami. Bieżące dowody GLES/EGL i benchmarków należy sprawdzać w artefaktach, nie wnioskować z kompilacji.

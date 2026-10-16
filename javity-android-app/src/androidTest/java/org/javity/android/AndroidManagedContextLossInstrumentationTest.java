@@ -79,10 +79,34 @@ public final class AndroidManagedContextLossInstrumentationTest
     assertTrue(
         "ordinary fixture rendering resumed",
         fixtureAfter.completedFrames > fixtureBefore.completedFrames);
+    assertEquals(
+        "same retained skeletal batch owner",
+        before.instancing().ownerIdentity(),
+        after.instancing().ownerIdentity());
+    assertTrue(
+        "retained batch received replacement hook",
+        after.instancing().recoveries() > before.instancing().recoveries());
+    assertTrue(
+        "raw palette reuploaded after replacement", after.instancing().paletteUploadBytes() >= 256);
+    assertTrue(
+        "raw instance buffers reuploaded after replacement",
+        after.instancing().instanceUploadBytes() > 0);
     assertHealthyPixels(after, "after context loss");
     assertWorldModel(fixture, "after context loss");
     // Diagnostic only: EGL native handles may be reused after context destruction (ABA).
     assertTrue("snapshot exposes the current EGL handle", after.eglContextNativeHandle() != 0);
+    AndroidInstancingContextProbe.Cleanup cleanup =
+        onGdxThread(fixture::closeInstancingProbeForInstrumentation);
+    Log.i(TAG, "instancing cleanup: " + cleanup);
+    assertTrue("all tracked owned GL names deleted", cleanup.ownedNamesDeleted());
+    assertTrue(
+        "borrowed source remains drawable after batch dispose", cleanup.borrowedSourceRenders());
+    assertTrue("borrowed skinned source remains drawable", cleanup.redPixels() > 400);
+    assertTrue(
+        "borrowed static source remains drawable",
+        cleanup.greenPixels() > 300 && cleanup.bluePixels() > 150);
+    assertTrue("ordinary borrowed sources render without GL error", cleanup.noGlError());
+    assertWorldModel(fixture, "after instancing disposal");
   }
 
   private void assertWorldModel(AndroidGameFixture fixture, String phase) throws Exception {
@@ -113,6 +137,16 @@ public final class AndroidManagedContextLossInstrumentationTest
     assertObserved(
         "rounded UI " + phase, snapshot.expectedRoundedBounds(), snapshot.observedRoundedBounds());
     assertTrue("font glyphs should render " + phase, snapshot.nonEmptyGlyphPixels() > 0);
+    var skin = snapshot.instancing();
+    assertEquals("two independent skin palettes " + phase, 2, skin.uniquePalettes());
+    assertEquals("one real skin group " + phase, 1, skin.skinDraws());
+    assertEquals("one real static group " + phase, 1, skin.staticDraws());
+    assertTrue("two red poses visible " + phase, skin.redPixels() > 400);
+    assertTrue("static green instances visible " + phase, skin.greenPixels() > 300);
+    assertTrue("subsequent ordinary blue visible " + phase, skin.bluePixels() > 150);
+    assertTrue("wrong row negative control " + phase, skin.wrongRowChangedPixels() > 50);
+    assertTrue("ordinary/instanced RGB within2 " + phase, skin.maxRgbDelta() <= 2);
+    assertTrue("no GL errors " + phase, skin.noGlError());
   }
 
   private void assertObserved(
