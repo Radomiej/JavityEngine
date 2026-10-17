@@ -19,4 +19,3 @@ freely, subject to the following restrictions:
 ---
 
 See AUTHORS for list of contributors.
-

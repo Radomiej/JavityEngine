@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-17",
+  "sourceCommit": "def331f8beade66b02d5368c1ed27b8035bdb0ed",
+  "sourceFileHashes": {
+    "build.gradle": "c5967223129344def6ff606eae602461da6a8e6268fdf34415ee2a67f953ac81",
+    "javity-rooms/build.gradle": "ac212ffa52343900328e42577c390bf531a83e75110fcd58a5942e6358c03f92",
+    "javity-rooms/src/main/java/org/javity/rooms/LocalDevServer.java": "2e03d1b376b2de662f29b7b7ddc7dcc80b06e671c8c81dc048c05ec07fcb3901",
+    "javity-rooms/src/main/java/org/javity/rooms/LocalDevServerMain.java": "b5c5f1c0b010877e2da5c4c3348097c21c1f59543976fab153da0cc82963cd17",
+    "web/local-multiplayer/src/cli.js": "c31fbb2ee84e95996ad0b6f417c77c107f73839a13b55d99956cbba04943364d",
+    "web/local-multiplayer/src/gateway.js": "24abae4397e12ec31cbd6f7febb35492023be37e4be3bba916de6be2caaa4aff",
+    "web/local-multiplayer/public/preview.js": "636d679fbe3c46c403e68b3c9d2e3a87875f34cdc8375e45164529e297496bf4",
+    "web/local-multiplayer/public/index.html": "870ea0d0c9711eba8d1895610d1fb719ae20f0890c7ad339130fd9a46de7002e",
+    "web/local-multiplayer/test/development-workflow.test.js": "40fe4ebab148b220ba7243cbddbded3978240e6ab2d1cc630b818ac8bf6a744c"
+  },
+  "rootBuild": {
+    "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon",
+    "exitCode": 0,
+    "seconds": 16,
+    "executedTasks": 10,
+    "upToDateTasks": 103,
+    "resultInventory": {
+      "tests": 869,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "cacheDisclosure": "Incremental reactor; unchanged tests retained from previous verified source. New process/browser behavior is covered by the real Node and Chromium runs below."
+  },
+  "node": {
+    "command": "npm --prefix web/local-multiplayer test",
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 15075.696907,
+    "scope": [
+      "Real Colyseus and official SDK clients with Java worker authority.",
+      "Read-only server snapshot inspection without joining.",
+      "Java supervisor SIGTERM and abrupt SIGKILL/EOF; no active owned services remain.",
+      "Lost stdout reader does not interrupt authority cleanup."
+    ],
+    "hostInitNote": "SIGKILL cannot reap its orphaned supervisor child; an exited zombie is host-init responsibility and is distinguished from a running service in the Linux liveness check."
+  },
+  "chromium": {
+    "command": "./gradlew dev -PdevPort=0 --no-daemon",
+    "oneCommandBootstrap": true,
+    "javaOwnsColyseus": true,
+    "browser": "Chromium154",
+    "observerDoesNotJoin": true,
+    "serverSnapshotMatchesClient": true,
+    "serverViewDisablesMovement": true,
+    "viewSwitchPreservesClientSession": true,
+    "ctrlCReapsNodeAndRoomWorker": true,
+    "pageErrors": []
+  },
+  "review": {
+    "result": "No remaining substantive findings",
+    "falsePositive": "Potential console EPIPE ruled out by Node Console ignoreErrors behavior and an actual active-room lost-stdout-reader regression.",
+    "fixed": "Switching to Client view resets membership label/status; verified RED then GREEN in Chromium."
+  },
+  "limits": [
+    "No external deployment performed; container entry point only, no built/published container image.",
+    "Snapshot inspector is for the current example-room schema; generic GameObject replication remains separate.",
+    "Wasm experiment has its own compile/runtime proof and is outside the default reactor."
+  ]
+}
