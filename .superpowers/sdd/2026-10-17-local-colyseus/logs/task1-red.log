@@ -1,0 +1,31 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :javity-rooms:processResources NO-SOURCE
+> Task :javity-rooms:processTestResources NO-SOURCE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-core:processResources UP-TO-DATE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-rooms:compileJava
+> Task :javity-rooms:classes
+> Task :javity-rooms:compileTestJava
+> Task :javity-rooms:testClasses
+
+> Task :javity-rooms:test FAILED
+
+LocalRoomSimulationTest > fixedMovementSequenceExpiryAndRoomLimit FAILED
+    java.lang.AssertionError at LocalRoomSimulationTest.java:15
+
+1 test completed, 1 failed
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':javity-rooms:test'.
+> There were failing tests. See the report at: file:///workspace/JavityEngine/javity-rooms/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 7s
+6 actionable tasks: 3 executed, 3 up-to-date
