@@ -18,6 +18,11 @@
       <button id="leave" type="button" disabled>Leave room</button>
     </section>
     <p id="status" role="status" aria-live="polite">Connecting to local gateway…</p>
+    <section class="controls" aria-label="Development views">
+      <button id="view-client" type="button" aria-pressed="true">Client view</button>
+      <button id="view-server" type="button" aria-pressed="false" hidden>Server view</button>
+      <span id="view-description">Client replica — input is sent to Java authority.</span>
+    </section>
     <section aria-label="Authoritative room state">
       <p>Room: <code id="current-room">—</code> · Tick: <code id="tick">—</code></p>
       <div id="arena" aria-label="Player positions"></div>

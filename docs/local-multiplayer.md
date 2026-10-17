@@ -4,7 +4,36 @@
 
 To ograniczony proof integracji Room → oficjalny JS SDK → JSONL → Java → Schema. Podgląd pokazuje punkty, nie uruchamia renderera Javity. Nie jest to target TeaVM/Wasm, pełny netcode, fizyka Bullet ani gotowy deployment.
 
-## Uruchomienie
+## Jedna komenda: workspace development
+
+Z katalogu repozytorium uruchom:
+
+```sh
+./gradlew dev
+# inny port, także port efemeryczny:
+./gradlew dev -PdevPort=0
+```
+
+Gradle buduje worker i wykonuje `npm ci` dla lokalnej paczki Colyseus (ponownie po zmianie lockfile). Następnie proces Java `LocalDevServerMain` uruchamia i nadzoruje Node. Wypisuje URL dopiero po readiness Colyseus. Ctrl+C zamyka gateway i jego workery; odłączenie kontrolnego stdin po nagłym zakończeniu rodzica też zamyka Node. Nie trzeba ręcznie uruchamiać kilku terminali. Wymagane pozostają JDK 25, Node 24 i npm; pierwsze uruchomienie pobiera zależności.
+
+Podgląd **Client view** pokazuje replikę klienta i wysyła intencje ruchu. **Server view** pokazuje bezpośrednie snapshoty Java, wyłącza sterowanie i nie tworzy kolejnego gracza. Można też wpisać ID pokoju i oglądać jego serwer bez dołączania klientem. To podgląd danych przykładowego pokoju; nie jest zdalnym inspektorem całego drzewa GameObject ani przekazaniem authority klientowi. Przełączanie widoku zachowuje istniejącą sesję klienta.
+
+Development endpoints `GET /dev/rooms` i `GET /dev/rooms/:roomId` są włączane przez lokalny supervisor, działają tylko przy loopback i zwracają ostatni snapshot oraz PID workera. Zwykłe `npm start` nadal ma je wyłączone. Platforma może używać `LocalDevServer.start(workspace, port, false)` i `close()`; nie potrzebuje sterowania procesem przez shell. `JAVITY_NODE_BINARY` wybiera executable Node, a istniejące `JAVITY_ROOMS_WORKER` wybiera zgodny launcher authority.
+
+### Hostowanie i przyszła platforma
+
+**Liczba JVM nie jest kontraktem silnika.** Aktualny domyślny host nadal izoluje każdy pokój w workerze JVM. Nie wymaga to od twórcy gry samodzielnego zarządzania procesami. Przyszła platforma może wymienić hostowanie na pule procesów lub wiele pokoi w jednej JVM, zachowując osobne `Game`, owner-thread i lifetimes. Nie przebudowujemy teraz transportu JSONL na nieprzetestowany multiplekser.
+
+Colyseus jest lokalną paczką workspace `web/local-multiplayer`, używającą oficjalnych zależności npm. Nie potrzeba kopiować upstream repo ani implementować serwera Colyseus od nowa. Ta sama paczka i Java authority mogą później trafić do kontenera. Zbudowane workspace uruchomi supervisor:
+
+```sh
+java -cp 'javity-rooms/build/install/javity-rooms/lib/*' \
+  org.javity.rooms.LocalDevServerMain --workspace=. --port=2567 --container
+```
+
+`--container` jawnie wybiera `0.0.0.0`, wyłącza development endpoints i pozwala wystawić port przez host/container. To entry point hostowania; nie wykonuje wdrożenia. Zewnętrzna platforma odpowiada za HTTPS/WSS, auth, limity, routing i health checks (`/health`). Przed publicznym udostępnieniem wymagane są ich osobne testy. Sam preview i przykładowy ruch nadal nie stanowią gotowej gry ani pełnej replikacji dowolnych komponentów/fizyki.
+
+## Ręczne uruchomienie składników
 
 Wymagane są JDK 25, Node.js 24 (Node 22+ jest wymagany przez serwer Colyseus) i npm. Z katalogu repozytorium:
 

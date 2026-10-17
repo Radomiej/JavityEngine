@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'org.teavm' version '0.15.0'
+}
+
+group = 'org.javity.experimental'
+version = '0.1.0'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
+}
+
+dependencies {
+    implementation files('../../javity-core/build/libs/javity-core-0.7.0-SNAPSHOT.jar')
+    implementation 'com.badlogicgames.gdx:gdx:1.14.2'
+    implementation 'org.teavm:teavm-jso:0.15.0'
+}
+
+teavm {
+    js {
+        mainClass = 'org.javity.teavm.BrowserGame'
+        outputDir = file('build/web')
+        targetFileName = 'app.js'
+    }
+    wasmGC {
+        mainClass = 'org.javity.teavm.BrowserGame'
+        outputDir = file('build/web')
+        targetFileName = 'app.wasm'
+    }
+}

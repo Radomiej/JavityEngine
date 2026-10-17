@@ -112,3 +112,8 @@ The Apache-2.0 notice and existing bundled libGDX LICENSE/AUTHORS apply.
 Local changes move scene lights to fragment evaluation, add finite point/spot
 ranges and linear distance fog, retaining upstream skinning/material paths.
 Legacy environments continue using the unmodified libGDX default sources.
+
+
+## Experimental TeaVM Wasm GC spike
+
+`experiments/teavm-wasm` uses TeaVM plugin/JSO 0.15.0 (Apache-2.0, https://github.com/konsoletyper/teavm), libGDX 1.14.2 (Apache-2.0), and `yoga-layout@3.2.1` (MIT, Meta/Facebook). Yoga is pinned in its own npm lockfile. The vendored Ammo.js Wasm/glue pair is from https://github.com/kripken/ammo.js at commit `c8779e60159d428f11ff1eb553dc9b6b6e2d317a` (zlib/Bullet). Preserve the experiment's `AMMO-LICENSE.txt`, `YOGA-LICENSE.txt`, `TEAVM-LICENSE.txt`, pinned upstream files and provenance hashes when distributing it. Generated TeaVM output is experimental; it is isolated from the default reactor and is not a supported browser backend. [Evidence and exact hashes](docs/teavm-wasm-spike.md).

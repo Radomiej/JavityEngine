@@ -51,3 +51,5 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 
 - [Opcjonalny Artemis ECS](artemis-ecs.md) — natywny adapter, przykłady użycia, CPU smoke/benchmark i granice zależności; [projekt](superpowers/specs/2026-10-17-optional-artemis-design.md) oraz [plan](superpowers/plans/2026-10-17-optional-artemis.md).
 - [Colyseus Rooms i targety JS/Wasm](rooms-and-browser-roadmap.md) — audyt i rekomendacja, bez wdrożonej replikacji/builda browser.
+
+- [Eksperyment TeaVM Wasm GC, Yoga i Bullet/Ammo](teavm-wasm-spike.md).

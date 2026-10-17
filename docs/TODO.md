@@ -215,3 +215,12 @@ Pełne wycofanie Artemisa nie jest aktualnym celem. Cleanup starego Galaxy nie m
 Kierunek dalszego portu przeglądarkowego pozostaje TeaVM/Wasm z osobnymi adapterami Yoga i Bullet Wasm, MapLibre GL JS oraz browser JavaScript zamiast GraalJS. To projektowana kolejność, nie obecna gotowość: [udokumentowany audyt i brakujące proofy](audits/2026-10-17-consolidation/browser-wasm-ports.md).
 
 Podgląd nie jest drugim właścicielem autorytatywnego Game, Colyseus nie uruchamia automatycznie naszej fizyki JVM, a Wasm nie jest warunkiem multiplayer.
+
+
+## Workspace multiplayer i eksperyment TeaVM — doprecyzowanie użytkownika
+
+- [x] Jedna komenda `./gradlew dev`: bootstrap lokalnej paczki Colyseus i worker distribution, supervisor po stronie Java, readiness i kontrolowane zamykanie.
+- [x] Lokalne przełączanie client/server view; server view czyta snapshoty Java bez dodawania gracza i bez przejmowania authority.
+- [x] Liczba JVM/pokoi jest polityką hostowania, nie wymaganiem API; aktualny worker pozostaje domyślnym izolatorem.
+- [ ] Integracja przyszłej platformy: konfiguracja gier/scen i replikacji, host/pule pokoi, obrazy kontenerów oraz realne auth/WSS/deploy; obecny `--container` jest jawnym entry pointem bez devtools.
+- [x] Eksperyment TeaVM/Wasm GC z realnym core i mostami Yoga/Ammo: kompilacja i Chromium proof; [wynik i ograniczenia](teavm-wasm-spike.md). To nie jest wspierany browser backend.
