@@ -1,0 +1,15 @@
+Native components in the Android Javity fixture
+
+libGDX 1.14.2, including Android backend and Java/JNI FreeType wrapper: Apache-2.0. Copyright 2011 See AUTHORS file. The accompanying exact upstream AUTHORS and LICENSE files are retained. gdx-jnigen-loader 2.5.2 is an Apache-2.0 Java dependency.
+libgdx.so includes stb_image, MIT alternative selected, Copyright (c) 2017 Sean Barrett; and ETC1 utilities, Copyright 2009 Google Inc., Apache-2.0.
+
+FreeType 2.13.3, source commit 42608f77f20749dd6ddc9e0536788eaad70ea4b5 pinned by libGDX 1.14.2: the FreeType License (FTL) alternative is selected, not GPLv2. Unmodified upstream license/README texts and the compiled BDF/PCF/hash/zlib notices accompany this index.
+Portions of this software are copyright © 2024 The FreeType Project (www.freetype.org). All rights reserved.
+FreeType project source copyright spans 1996–2024 in this release. Binary credit above uses the release's latest copyright year.
+
+Android native runtime provenance:
+Yoga libyoga.so: ELF identifies NDK r27b (12297006), Android LLVM revision d8003a456d14a3deb8054cdaa529ffbf02d9b262. The actual APK binary contains libc++abi and libunwind implementation diagnostics and no dependency on libc++_shared.so. Corresponding exact upstream libc++, libc++abi and libunwind license texts are retained in full, including their LLVM exceptions and legacy sections.
+QuickJS libquickjs.so: ELF identifies NDK r28c (13676358), Android LLVM revision 97a699bf4812a18fb657c2779f5296a4ab2694d2. The AAR contains a local __udivti3 compiler-runtime helper; compiler-rt license is retained with the LLVM exception. This notice does not remove or narrow that exception.
+libgdx.so and libgdx-freetype.so identify NDK r25c (9519653) and depend on the Android system libstdc++.so. The inspected APK does not ship a separate libstdc++.so or libc++_shared.so. A compiler marker alone is not a claim that the entire compiler distribution is included.
+
+License preservation and ELF inspection do not establish execution on ARM or reproduce every object-file link decision of an upstream build.

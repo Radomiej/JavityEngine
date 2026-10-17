@@ -1,0 +1,51 @@
+{
+  "viewport": { "width": 1100, "height": 720, "dpr": 1 },
+  "asset": "k4-image-fixture.png",
+  "font": "Open Sans",
+  "tree": {
+    "type": "View",
+    "key": "k4-screen",
+    "classes": "flex flex-col gap-4 p-5 w-[1100px] h-[720px] bg-white",
+    "props": {},
+    "children": [
+      {
+        "type": "View",
+        "key": "k4-row-fit",
+        "classes": "flex flex-row items-start gap-4",
+        "props": {},
+        "children": [
+          { "type": "Image", "key": "contain-padded", "classes": "w-[200px] h-[136px] rounded-lg p-[8px] pt-[4px] pr-[12px] pb-[8px] pl-[20px] border-2 border-[#263247] bg-[#dde4ed]", "props": { "source": "k4-pattern", "fit": "contain" }, "children": [] },
+          { "type": "Image", "key": "cover-wide", "classes": "w-[200px] h-[112px] rounded-lg border border-[#263247]", "props": { "source": "k4-pattern", "fit": "cover" }, "children": [] },
+          { "type": "Image", "key": "stretch-tall", "classes": "w-[120px] h-[160px] border border-[#263247]", "props": { "source": "k4-pattern", "fit": "stretch" }, "children": [] },
+          { "type": "Image", "key": "cover-tall", "classes": "w-[120px] h-[160px] rounded-md", "props": { "source": "k4-pattern", "fit": "cover" }, "children": [] }
+        ]
+      },
+      {
+        "type": "View",
+        "key": "k4-row-mask",
+        "classes": "flex flex-row items-start gap-4",
+        "props": {},
+        "children": [
+          { "type": "Image", "key": "contain-rounded", "classes": "w-[144px] h-[144px] rounded-full bg-[#e5e7eb]", "props": { "source": "k4-pattern", "fit": "contain" }, "children": [] },
+          { "type": "Image", "key": "alpha-avatar", "classes": "w-[96px] h-[96px] rounded-full bg-[#263247]", "alpha": 0.5, "props": { "source": "k4-pattern", "fit": "cover" }, "children": [] },
+          { "type": "Image", "key": "stretch-pattern-alt", "classes": "w-[128px] h-[72px] border border-[#263247]", "props": { "source": "k4-pattern", "fit": "stretch" }, "children": [] },
+          { "type": "Image", "key": "cover-pattern-alt", "classes": "w-[128px] h-[72px] rounded-lg", "props": { "source": "k4-pattern", "fit": "cover" }, "children": [] },
+          { "type": "Image", "key": "empty-content", "classes": "w-[32px] h-[32px] p-[20px] border-2 border-[#263247] bg-[#dde4ed]", "props": { "source": "k4-pattern", "fit": "contain" }, "children": [] }
+        ]
+      }
+    ]
+  },
+  "resize": {
+    "key": "cover-wide",
+    "classes": "w-[120px] h-[176px] rounded-lg border border-[#263247]",
+    "fit": "contain",
+    "source": "k4-pattern"
+  },
+  "probes": {
+    "contain-padded": { "background": [221, 228, 237], "border": [38, 50, 71], "padding": { "top": 4, "right": 12, "bottom": 8, "left": 20 } },
+    "cover-wide": { "cornersMustBeTransparent": true, "centerMustHaveAlpha": 255 },
+    "alpha-avatar": { "alpha": 0.5, "sourceAlpha": 255 },
+    "empty-content": { "contentBox": [0, 0], "background": [221, 228, 237] },
+    "nativeAtlasUv": { "region": [32, 24, 128, 80], "directionChecks": ["horizontal-flip", "vertical-flip"] }
+  }
+}

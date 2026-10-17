@@ -1,0 +1,17 @@
+# PCM spectrum analysis
+
+`org.javity.audio.analysis.PcmSpectrumAnalyzer` analyzes caller-supplied mono float PCM on the CPU. It does not read `Sound`, `Music`, OpenAL state, or compressed audio. The caller owns PCM acquisition, resampling, playback, and synchronization with any audio thread. The analyzer is single-threaded: serialize `push`, `reset`, `configure`, and smoothing changes on one thread.
+
+Construct it with a positive sample rate, FFT size from 256 through 4096 (power of two), and `RECTANGULAR` or periodic `HANN` window. Hop size is always `N/2`. PCM must be finite and in `[-1, 1]`; `push(samples, offset, count)` copies accepted samples into fixed-size internal storage and never retains the caller array. Each push accepts at most `4N` samples and may produce at most eight windows. It validates the entire range and work bound before changing buffered samples or frame state. Invalid calls throw `IllegalArgumentException` or `IndexOutOfBoundsException` and leave the analyzer state intact.
+
+The first result is published after N samples, then once per H samples. `SpectrumFrame.startSampleIndex()` is the absolute index of the first sample in the frame; `endSampleIndex()` is the exclusive index after its last sample. `sequence()` starts at 1 and increases for each frame until reset or reconfiguration. `push` returns an immutable list of immutable frame snapshots. Bin arrays returned by accessors are copies. A frame records the sample rate, size, hop, and window that produced it.
+
+Bin `k` is centered at `k * sampleRate / N`, including DC at bin 0 and Nyquist at bin N/2. `amplitude(k)` is a one-sided, coherent-gain-corrected peak amplitude: `factor * abs(DFT(windowedPCM)[k]) / sum(window)`, where the factor is 1 for DC and Nyquist and 2 for interior bins. This is exact for a coherent sinusoid and is not an exact peak estimator for arbitrary off-bin tones. `rawRms()` and `peak()` describe the unwindowed PCM frame. They do not represent dB SPL. `amplitudeDbfs` references amplitude 1 and floors at -120 dBFS.
+
+`bandRms(lowHz, highHz)` integrates a one-sided periodogram PSD over bins whose center lies inclusively within the requested band. The density is `abs(X[k])^2 / (sampleRate * sum(window^2))`, doubled for interior bins; each selected bin contributes `PSD * sampleRate/N` to energy. DC and Nyquist use factor 1. Band boundaries are finite, ordered, and inside `[0, Nyquist]`. A band containing no bin centers returns zero.
+
+Optional amplitude smoothing is configured with `configureSmoothing(attackSeconds, releaseSeconds)`. For each newly generated window, each bin moves toward the current peak amplitude with `alpha = 1 - exp(-hopSeconds/tau)`, using attack when rising and release when falling. A zero time constant means immediate response. Smoothing advances only when a new PCM window is analyzed; reading a frame does not advance it. `reset` clears history and smoother state while preserving the smoothing configuration. Reconfiguration clears history, sequence, and smoother values.
+
+`PcmStereoDownmixer.average` is an explicit adapter for interleaved stereo float samples, using `(left + right) / 2` per frame and returning a new mono array. It validates the complete stereo range before returning. Other channel-selection or downmix policies are the caller's responsibility.
+
+This module provides no resampling, audio-thread queue, compressed-audio integration, beat inference, or generated/demo PCM source. No playback device is owned by the analyzer.

@@ -1,0 +1,28 @@
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'org.javity.ui.yoga.android'
+    compileSdk 36
+    defaultConfig {
+        minSdk 35
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
+    }
+}
+
+dependencies {
+    api project(':javity-ui')
+    implementation 'com.facebook.yoga:yoga:3.2.1'
+    implementation 'com.facebook.soloader:soloader:0.10.5'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    androidTestImplementation 'junit:junit:4.13.2'
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.base.jar')
+    })
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.runner.jar')
+    })
+}

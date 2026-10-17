@@ -1,0 +1,216 @@
+{
+  "artifacts": {
+    "comparison_json": "docs/gorzow-render-comparison.json",
+    "side_by_side_png": "docs/gorzow-comparison.png"
+  },
+  "comparison": "MapLibre Native raw map captures vs MapLibre GL JS raw map captures",
+  "method": {
+    "alpha": "ignored; inputs converted to RGB",
+    "comparison_space": "8-bit sRGB RGB screenshot values",
+    "foreground": "each image compared with its own upper-left background pixel; max RGB distance > 3",
+    "interpretation": "Descriptive renderer comparison; metrics are not pass/fail thresholds.",
+    "limitations": "Native and GL JS use different rasterizers, antialiasing, and GPU paths; small edge and text differences are expected.",
+    "significant_mismatch": "a pixel with any RGB channel difference > 3",
+    "tolerance": "all three RGB channel absolute differences <= 3"
+  },
+  "renderers": {
+    "gljs": "MapLibre GL JS 6.14.0 / Chromium WebGL (SwiftShader)",
+    "native": "MapLibre Native FFI 0.202610.0 / OpenGL EGL"
+  },
+  "styles": {
+    "day": {
+      "dimensions": {
+        "height": 720,
+        "pixels": 792000,
+        "width": 1100
+      },
+      "foreground_relative_to_each_image_background": {
+        "background_rgb": {
+          "gljs": [
+            240,
+            240,
+            234
+          ],
+          "native": [
+            240,
+            240,
+            234
+          ]
+        },
+        "gljs_bbox_xyxy": [
+          0,
+          0,
+          1099,
+          719
+        ],
+        "gljs_foreground_pixels": 669778,
+        "intersection_over_union": 0.96850599,
+        "intersection_pixels": 662707,
+        "mask_rule": "max RGB channel distance from own top-left background > 3",
+        "native_bbox_xyxy": [
+          0,
+          0,
+          1099,
+          719
+        ],
+        "native_foreground_pixels": 677186,
+        "union_pixels": 684257
+      },
+      "inputs": {
+        "gljs": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-gorzow-reference.png",
+          "sha256": "0080b3f97a0e992f537920aa83477bff4cbfc6dda9147935e6452f9ce3bba00a",
+          "width": 1100
+        },
+        "native": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-gorzow-map.png",
+          "sha256": "086896e24f5bafecdd15db3c7c98a82df2296c841d2343731cf283b83a5b6959",
+          "width": 1100
+        }
+      },
+      "pixel_comparison": {
+        "channel_mae_rgb": [
+          3.443837,
+          3.403157,
+          3.319703
+        ],
+        "channel_rmse_rgb": [
+          14.325022,
+          13.448051,
+          12.546426
+        ],
+        "exact_channel_fraction": 0.54540825,
+        "exact_pixel_fraction": 0.35309975,
+        "overall_channel_mae": 3.388899,
+        "overall_channel_rmse": 13.459435,
+        "pixel_fraction_with_all_rgb_channels_within_tolerance": 0.88293308,
+        "significant_mismatch_pixel_count": 92717,
+        "tolerance_rgb_per_channel": 3
+      },
+      "probes": {
+        "northwest_lake": {
+          "absolute_channel_difference": [
+            0,
+            1,
+            0
+          ],
+          "gljs_rgb": [
+            213,
+            228,
+            206
+          ],
+          "native_rgb": [
+            213,
+            227,
+            206
+          ],
+          "pixel_xy": [
+            325,
+            280
+          ]
+        }
+      }
+    },
+    "night": {
+      "dimensions": {
+        "height": 720,
+        "pixels": 792000,
+        "width": 1100
+      },
+      "foreground_relative_to_each_image_background": {
+        "background_rgb": {
+          "gljs": [
+            145,
+            151,
+            149
+          ],
+          "native": [
+            145,
+            150,
+            149
+          ]
+        },
+        "gljs_bbox_xyxy": [
+          0,
+          0,
+          1099,
+          719
+        ],
+        "gljs_foreground_pixels": 704623,
+        "intersection_over_union": 0.98323215,
+        "intersection_pixels": 702541,
+        "mask_rule": "max RGB channel distance from own top-left background > 3",
+        "native_bbox_xyxy": [
+          0,
+          0,
+          1099,
+          719
+        ],
+        "native_foreground_pixels": 712440,
+        "union_pixels": 714522
+      },
+      "inputs": {
+        "gljs": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-gorzow-night-reference.png",
+          "sha256": "fcf3c9aa4a9d51b3152901c1e632f910c215cb0db3fc04d0fb6e28f6e82ce362",
+          "width": 1100
+        },
+        "native": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-gorzow-night-map.png",
+          "sha256": "60182611c1aabc016e93867615724d448186228c580e32e77e1d9bb9636050e4",
+          "width": 1100
+        }
+      },
+      "pixel_comparison": {
+        "channel_mae_rgb": [
+          4.394206,
+          4.155593,
+          3.871169
+        ],
+        "channel_rmse_rgb": [
+          16.551868,
+          14.966284,
+          14.36409
+        ],
+        "exact_channel_fraction": 0.56996928,
+        "exact_pixel_fraction": 0.34071212,
+        "overall_channel_mae": 4.140323,
+        "overall_channel_rmse": 15.321891,
+        "pixel_fraction_with_all_rgb_channels_within_tolerance": 0.85831187,
+        "significant_mismatch_pixel_count": 112217,
+        "tolerance_rgb_per_channel": 3
+      },
+      "probes": {
+        "northwest_lake": {
+          "absolute_channel_difference": [
+            1,
+            0,
+            0
+          ],
+          "gljs_rgb": [
+            39,
+            65,
+            56
+          ],
+          "native_rgb": [
+            38,
+            65,
+            56
+          ],
+          "pixel_xy": [
+            325,
+            280
+          ]
+        }
+      }
+    }
+  }
+}

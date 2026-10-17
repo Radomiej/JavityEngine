@@ -1,0 +1,15 @@
+{
+  "kind": "pre-ECS baseline; not implementation verification",
+  "sourceCommit": "39c1373",
+  "command": "./gradlew :javity-core:test --rerun-tasks --console=plain",
+  "java": "Temurin JDK25; official archive SHA256 checked",
+  "result": "PASS",
+  "elapsedSeconds": 6,
+  "executedTasks": 4,
+  "suites": 48,
+  "tests": 467,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "newEcsModuleImplemented": false
+}

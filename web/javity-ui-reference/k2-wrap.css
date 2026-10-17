@@ -1,0 +1,14 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; }
+body { font-family: "Open Sans", sans-serif; color: #111827; }
+.fixture { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 10px; }
+.paragraph {
+  margin: 0;
+  width: var(--paragraph-width);
+  padding: 8px;
+  border: 1px solid #9ca3af;
+  background: #f9fafb;
+  white-space: pre-line;
+  overflow-wrap: normal;
+  word-break: normal;
+}

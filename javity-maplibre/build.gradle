@@ -1,0 +1,39 @@
+plugins { id 'org.jetbrains.kotlin.jvm' version '2.4.20' }
+
+// libGDX's GLES implementation is public only in the ANGLE distribution. Keep the
+// unmodified official adapter, but omit ANGLELoader and its bundled driver: both
+// GLFW and MapLibre must use the same system EGL implementation.
+configurations { glesAdapterArtifact { transitive = false } }
+def glesAdapter = tasks.register('glesAdapterJar', Jar) {
+    archiveBaseName = 'javity-libgdx-system-gles-adapter'
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    from({ configurations.glesAdapterArtifact.collect { zipTree(it) } }) {
+        include 'com/badlogic/gdx/backends/lwjgl3/angle/Lwjgl3GLES20.class'
+    }
+    from('src/main/resources/META-INF/licenses/libgdx-adapter') {
+        into 'META-INF/licenses/libgdx-adapter'
+    }
+}
+
+def maplibreVersion = '0.202610.0'
+def os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+def arch = System.getProperty('os.arch')
+// This initial integration is verified on Linux x64; fail explicitly elsewhere.
+def linuxX64 = os.contains('linux') && arch in ['amd64', 'x86_64']
+dependencies {
+    api "com.badlogicgames.gdx:gdx:${rootProject.gdxVersion}"
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:${rootProject.gdxVersion}"
+    implementation "org.maplibre.nativeffi:maplibre-native-ffi-jvm:$maplibreVersion"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.4.20'
+    implementation "org.lwjgl:lwjgl-egl:${rootProject.lwjglVersion}"
+    implementation "org.lwjgl:lwjgl-opengles:${rootProject.lwjglVersion}"
+    glesAdapterArtifact "com.badlogicgames.gdx:gdx-lwjgl3-angle:${rootProject.gdxVersion}"
+    runtimeOnly files(glesAdapter)
+    if (linuxX64) {
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${rootProject.lwjglVersion}:natives-linux"
+        runtimeOnly "org.maplibre.nativeffi:maplibre-native-ffi-runtime-opengl-jvm:$maplibreVersion:natives-linux-x64"
+    }
+}
+kotlin { jvmToolchain(25) }
+tasks.withType(Test).configureEach { jvmArgs '--enable-native-access=ALL-UNNAMED' }

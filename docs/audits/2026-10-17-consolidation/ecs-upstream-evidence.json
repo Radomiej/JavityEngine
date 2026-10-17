@@ -1,0 +1,114 @@
+{
+  "artemis_repo": {
+    "url": "https://api.github.com/repos/junkdog/artemis-odb",
+    "data": {
+      "full_name": "junkdog/artemis-odb",
+      "archived": false,
+      "default_branch": "develop",
+      "pushed_at": "2023-04-14T23:11:51Z",
+      "html_url": "https://github.com/junkdog/artemis-odb"
+    }
+  },
+  "artemis_release": {
+    "url": "https://api.github.com/repos/junkdog/artemis-odb/releases/latest",
+    "data": {
+      "tag_name": "artemis-odb-2.3.0",
+      "published_at": "2019-11-10T10:33:11Z",
+      "html_url": "https://github.com/junkdog/artemis-odb/releases/tag/artemis-odb-2.3.0"
+    }
+  },
+  "artemis_commit": {
+    "url": "https://api.github.com/repos/junkdog/artemis-odb/commits?per_page=1",
+    "data": {
+      "sha": "51628b3d316a2db1c1a7218572d03c56f2c98b0c",
+      "date": "2021-07-20T10:29:27Z",
+      "message": "Fix typo."
+    }
+  },
+  "dominion_repo": {
+    "url": "https://api.github.com/repos/dominion-dev/dominion-ecs-java",
+    "data": {
+      "full_name": "dominion-dev/dominion-ecs-java",
+      "archived": false,
+      "default_branch": "main",
+      "pushed_at": "2024-03-12T05:33:29Z",
+      "html_url": "https://github.com/dominion-dev/dominion-ecs-java"
+    }
+  },
+  "dominion_release": {
+    "url": "https://api.github.com/repos/dominion-dev/dominion-ecs-java/releases/latest",
+    "data": {
+      "tag_name": "0.9.0",
+      "published_at": "2023-07-17T06:57:20Z",
+      "html_url": "https://github.com/dominion-dev/dominion-ecs-java/releases/tag/0.9.0"
+    }
+  },
+  "dominion_commit": {
+    "url": "https://api.github.com/repos/dominion-dev/dominion-ecs-java/commits?per_page=1",
+    "data": {
+      "sha": "e3c99d10ffccec1e13ae3df373366fc1323757c4",
+      "date": "2023-11-28T06:23:09Z",
+      "message": "Update README.md"
+    }
+  },
+  "ashley_repo": {
+    "url": "https://api.github.com/repos/libgdx/ashley",
+    "data": {
+      "full_name": "libgdx/ashley",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2023-06-26T12:37:20Z",
+      "html_url": "https://github.com/libgdx/ashley"
+    }
+  },
+  "ashley_release": {
+    "url": "https://api.github.com/repos/libgdx/ashley/releases/latest",
+    "data": {
+      "tag_name": "1.7.4",
+      "published_at": "2021-02-05T13:09:07Z",
+      "html_url": "https://github.com/libgdx/ashley/releases/tag/1.7.4"
+    }
+  },
+  "ashley_commit": {
+    "url": "https://api.github.com/repos/libgdx/ashley/commits?per_page=1",
+    "data": {
+      "sha": "d63d542228cd8c62cc2f7adf20055b0ac59a547e",
+      "date": "2023-04-18T12:31:29Z",
+      "message": "Merge pull request #308 from DaveH355/patch-1"
+    }
+  },
+  "fleks_repo": {
+    "url": "https://api.github.com/repos/Quillraven/Fleks",
+    "data": {
+      "full_name": "Quillraven/Fleks",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2026-10-17T05:44:16Z",
+      "html_url": "https://github.com/Quillraven/Fleks"
+    }
+  },
+  "fleks_release": {
+    "url": "https://api.github.com/repos/Quillraven/Fleks/releases/latest",
+    "data": {
+      "tag_name": "2.15",
+      "published_at": "2026-08-29T19:00:00Z",
+      "html_url": "https://github.com/Quillraven/Fleks/releases/tag/2.15"
+    }
+  },
+  "fleks_commit": {
+    "url": "https://api.github.com/repos/Quillraven/Fleks/commits?per_page=1",
+    "data": {
+      "sha": "a649ece95098b47814868b0b960427247126f0f4",
+      "date": "2026-10-17T05:44:16Z",
+      "message": "Retirement Part 2 (#188)"
+    }
+  },
+  "artemis_maven": {
+    "url": "https://repo.maven.apache.org/maven2/net/onedaybeard/artemis/artemis-odb/maven-metadata.xml",
+    "data": {
+      "latest": "2.3.0",
+      "release": "2.3.0",
+      "lastUpdated": "20191109101434"
+    }
+  }
+}

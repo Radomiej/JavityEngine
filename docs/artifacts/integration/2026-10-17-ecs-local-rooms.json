@@ -1,0 +1,195 @@
+{
+  "artifact": "Root integration verification: optional Artemis + bounded local Colyseus",
+  "date": "2026-10-17",
+  "productionAndTestSourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+  "reviewedArtifactHead": "7ce3742e7e83cca9558f27b9d11aeaee9d79caac",
+  "environment": {
+    "java": "OpenJDK 25.0.4.1+1",
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "os": "Linux amd64"
+  },
+  "baselineFreshReactor": {
+    "sourceCommit": "a487e69685c599115f3e002fdec897b98c2be5dc",
+    "command": "./gradlew build :javity-ecs-artemis:usageSmoke --rerun-tasks --no-daemon",
+    "exitCode": 0,
+    "seconds": 34,
+    "executedTasks": 113,
+    "suites": 97,
+    "totals": {
+      "tests": 858,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "finalReactor": {
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+    "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon",
+    "exitCode": 0,
+    "suites": 98,
+    "totals": {
+      "tests": 869,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "seconds": 7,
+    "actionableTasks": 113,
+    "executedTasks": 7,
+    "upToDateTasks": 106,
+    "cacheExplanation": "Incremental final reactor. All unchanged suites were freshly executed in the baseline rerun; changed ECS suite was freshly rerun on committed final source by the fix implementer. The 869 total is the final result inventory, not 869 newly executed tests in this incremental command."
+  },
+  "finalModuleInventory": {
+    "javity-assets": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-backend": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-core": {
+      "tests": 467,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-desktop": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-ecs-artemis": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-engine": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-map": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-map-core": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-maplibre": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-net": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-physics2d": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-physics3d": {
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-rooms": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-script": {
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-ui": {
+      "tests": 87,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-voxel": {
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javity-voxel-physics3d": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "changedEcsVerification": {
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+    "command": "./gradlew --no-daemon :javity-ecs-artemis:test :javity-ecs-artemis:usageSmoke :javity-ecs-artemis:verifyEcsBoundary :javity-ecs-artemis:bridgeBenchmark --rerun-tasks",
+    "tests": 53,
+    "retainedTests": 42,
+    "newRegressionTests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "detail": "../artemis-ecs/verification.json"
+  },
+  "rootLocalMultiplayer": {
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+    "command": "npm --prefix web/local-multiplayer test",
+    "exitCode": 0,
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 14768.59747,
+    "usesRealJavaAndOfficialColyseusSdk": true
+  },
+  "browserProof": {
+    "runtimeSourceCommit": "c94e6115469ad60cd5a9671195b7d8ca38e1a061",
+    "artifact": "../local-multiplayer/browser-verification.json",
+    "note": "Actual two-tab Chromium proof; browser/room runtime unchanged by final ECS and test-cleanup fixes."
+  },
+  "newRegressionSourceSha256": {
+    "javity-ecs-artemis/src/test/java/org/javity/ecs/artemis/FinalIntegrationRegressionTest.java": "2dd7fbda83bc0ae91b9b41c85a4fe9d1ade94fdff8f3a77380712cc412ea59d4",
+    "web/local-multiplayer/test/java-worker-supervisor.test.js": "9df53c2e17c05e58f07c859d3021b1fcb9d73f1a58f83fe8c73b1802b7843236"
+  },
+  "scope": [
+    "Full default Gradle reactor build; optional Artemis CPU/native tests and dependency/JAR guard; bounded local room Java process and official Colyseus SDK clients.",
+    "No new OpenGL demo, Android/ART, TeaVM/browser-engine, Bullet room simulation or remote deployment validation."
+  ],
+  "independentFinalReview": {
+    "range": "a487e69..7ce3742",
+    "verdict": "PASS / APPROVE",
+    "findingsAddressed": 7,
+    "newOrResidualFindings": 0,
+    "focusedNativeProbes": [
+      "Failed prefab bind leaves zero factory entities and zero factory GameObjects after an ordinary step.",
+      "Reserved projection rejected; activity marker follows active/inactive state and is removed on unlink.",
+      "Nested adapter hooks rejected in BEFORE_WORLD, AFTER_WORLD and UI."
+    ],
+    "note": "Read-only scoped re-review; no duplicate full-suite or platform runs."
+  }
+}

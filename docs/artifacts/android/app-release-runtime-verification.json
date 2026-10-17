@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-16",
+  "result": "PASS",
+  "verification": "manual launch, visual screenshot inspection, actual input tap and background/resume; not instrumentation",
+  "platform": "AOSP API35 x86_64, SwiftShader, TCG, density320",
+  "unsigned_apk_sha256": "60af92e4b397c52b323302b9e378d23f7b57bbb1baabea5c34f867576f87c47c",
+  "locally_signed_copy_sha256": "0575820794424b68b069d66c727ae3a3be79fb15f78cb419bfa1ec0d5a986757",
+  "signing": "Local test copy signed with debug key; release output remains unsigned; no key or APK committed",
+  "observations": [
+    "R8 minified release cold launch succeeded",
+    "Model3D, voxel terrain, font, rounded React HUD, SDF gradient/circle/dashed line visually present",
+    "Actual tap changed Java signal: 0 to Java signal: 1",
+    "Home and foreground retained Java signal: 1; same process5774 logged second onSurfaceCreated recovery callback",
+    "No AndroidRuntime error in retained filtered runtime log"
+  ],
+  "artifacts": [
+    "app-release-initial.png",
+    "app-release-click.png",
+    "app-release-resume.png",
+    "app-release-launch.txt",
+    "app-release-resume.txt",
+    "app-release-runtime-logcat.txt"
+  ],
+  "not_covered": [
+    "physical ARM64 hardware",
+    "performance",
+    "full feature parity with desktop",
+    "retained-owner EGL instrumentation on minified release"
+  ]
+}

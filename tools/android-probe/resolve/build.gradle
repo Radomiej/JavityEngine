@@ -1,0 +1,5 @@
+plugins { id 'base' }
+repositories { maven { url='https://dl.google.com/dl/android/maven2/' }; mavenCentral() }
+configurations { probe { attributes { attribute(Attribute.of('org.gradle.usage',String), 'java-runtime') } } }
+dependencies { probe 'androidx.core:core:1.17.0' }
+tasks.register('copyDeps',Copy) { from configurations.probe; into 'deps' }

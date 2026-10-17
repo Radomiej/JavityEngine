@@ -1,0 +1,32 @@
+name: Engine showcase checks
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'site/**'
+      - 'index.html'
+      - '.nojekyll'
+      - 'tools/verify-site.py'
+      - '.github/workflows/pages.yml'
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'tools/verify-site.py'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate self-contained static site
+        run: python3 tools/verify-site.py site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: engine-showcase-static
+          path: site
+# GitHub Pages already publishes master:/ through its built-in deployment.
+# Root index.html redirects to site/; root .nojekyll disables Jekyll processing.
+# This check deliberately does not claim a second Actions Pages deployment.

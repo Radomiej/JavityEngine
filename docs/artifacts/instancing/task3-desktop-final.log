@@ -1,0 +1,368 @@
+> Task :assemble UP-TO-DATE
+> Task :check UP-TO-DATE
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-backend:sourcesJar UP-TO-DATE
+> Task :javity-backend:assemble UP-TO-DATE
+> Task :javity-backend:compileTestJava UP-TO-DATE
+> Task :javity-backend:processTestResources NO-SOURCE
+> Task :javity-backend:testClasses UP-TO-DATE
+> Task :javity-core:sourcesJar
+> Task :javity-backend:test UP-TO-DATE
+> Task :javity-backend:check UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-core:assemble
+> Task :javity-backend:build UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-core:compileTestJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-core:processTestResources NO-SOURCE
+> Task :javity-core:testClasses UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-engine:sourcesJar UP-TO-DATE
+> Task :javity-engine:assemble UP-TO-DATE
+> Task :javity-engine:compileTestJava UP-TO-DATE
+> Task :javity-net:compileJava UP-TO-DATE
+> Task :javity-engine:processTestResources NO-SOURCE
+> Task :javity-engine:testClasses UP-TO-DATE
+> Task :javity-engine:test UP-TO-DATE
+> Task :javity-engine:check UP-TO-DATE
+> Task :javity-engine:build UP-TO-DATE
+> Task :javity-net:processResources NO-SOURCE
+> Task :javity-net:classes UP-TO-DATE
+> Task :javity-net:jar UP-TO-DATE
+> Task :javity-map:compileJava UP-TO-DATE
+> Task :javity-map-core:sourcesJar UP-TO-DATE
+> Task :javity-map-core:assemble UP-TO-DATE
+> Task :javity-map:processResources NO-SOURCE
+> Task :javity-map:classes UP-TO-DATE
+> Task :javity-map-core:compileTestJava UP-TO-DATE
+> Task :javity-map-core:processTestResources NO-SOURCE
+> Task :javity-map-core:testClasses UP-TO-DATE
+> Task :javity-map:jar UP-TO-DATE
+> Task :javity-map:sourcesJar UP-TO-DATE
+> Task :javity-map:assemble UP-TO-DATE
+> Task :javity-map:compileTestJava UP-TO-DATE
+> Task :javity-map:processTestResources NO-SOURCE
+> Task :javity-map:testClasses UP-TO-DATE
+> Task :javity-map:test UP-TO-DATE
+> Task :javity-map:check UP-TO-DATE
+> Task :javity-map:build UP-TO-DATE
+> Task :javity-maplibre:sourcesJar UP-TO-DATE
+> Task :javity-maplibre:assemble UP-TO-DATE
+> Task :javity-maplibre:compileTestKotlin NO-SOURCE
+> Task :javity-maplibre:compileTestJava UP-TO-DATE
+> Task :javity-maplibre:processTestResources NO-SOURCE
+> Task :javity-maplibre:testClasses UP-TO-DATE
+> Task :javity-maplibre:test UP-TO-DATE
+> Task :javity-maplibre:check UP-TO-DATE
+> Task :javity-maplibre:build UP-TO-DATE
+> Task :javity-net:sourcesJar UP-TO-DATE
+> Task :javity-net:assemble UP-TO-DATE
+> Task :javity-net:compileTestJava UP-TO-DATE
+> Task :javity-net:processTestResources NO-SOURCE
+> Task :javity-net:testClasses UP-TO-DATE
+> Task :javity-net:test UP-TO-DATE
+> Task :javity-net:check UP-TO-DATE
+> Task :javity-net:build UP-TO-DATE
+> Task :javity-physics2d:sourcesJar UP-TO-DATE
+> Task :javity-physics2d:assemble UP-TO-DATE
+> Task :javity-physics2d:compileTestJava UP-TO-DATE
+> Task :javity-physics2d:processTestResources NO-SOURCE
+> Task :javity-physics2d:testClasses UP-TO-DATE
+> Task :javity-desktop:compileJava
+> Task :javity-desktop:classes
+> Task :javity-desktop:jar
+> Task :javity-physics2d:test
+> Task :javity-physics2d:check
+> Task :javity-physics2d:build
+> Task :javity-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-physics3d:assemble UP-TO-DATE
+> Task :javity-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-physics3d:processTestResources NO-SOURCE
+> Task :javity-physics3d:testClasses UP-TO-DATE
+> Task :javity-desktop:startScripts
+> Task :javity-map-core:test
+> Task :javity-map-core:check
+> Task :javity-map-core:build
+> Task :javity-script:sourcesJar UP-TO-DATE
+> Task :javity-script:assemble UP-TO-DATE
+> Task :javity-script:compileTestJava UP-TO-DATE
+> Task :javity-script:processTestResources NO-SOURCE
+> Task :javity-script:testClasses UP-TO-DATE
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :javity-desktop:distTar
+> Task :javity-core:test
+> Task :javity-core:check
+> Task :javity-core:build
+> Task :javity-script-graal:sourcesJar UP-TO-DATE
+> Task :javity-script-graal:assemble UP-TO-DATE
+> Task :javity-script-graal:compileTestJava NO-SOURCE
+> Task :javity-script-graal:processTestResources NO-SOURCE
+> Task :javity-script-graal:testClasses UP-TO-DATE
+> Task :javity-script-graal:test NO-SOURCE
+> Task :javity-script-graal:check UP-TO-DATE
+> Task :javity-script-graal:build UP-TO-DATE
+> Task :javity-ui:sourcesJar UP-TO-DATE
+> Task :javity-ui:assemble UP-TO-DATE
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :javity-ui:compileTestJava UP-TO-DATE
+> Task :javity-ui:processTestResources NO-SOURCE
+> Task :javity-ui:testClasses UP-TO-DATE
+> Task :javity-physics3d:test
+> Task :javity-physics3d:check
+> Task :javity-physics3d:build
+> Task :javity-ui-yoga-lwjgl:sourcesJar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:assemble UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileTestJava NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:processTestResources NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:testClasses UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:test NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:check UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:build UP-TO-DATE
+> Task :javity-voxel:sourcesJar UP-TO-DATE
+> Task :javity-voxel:assemble UP-TO-DATE
+> Task :javity-voxel:compileTestJava UP-TO-DATE
+> Task :javity-voxel:processTestResources NO-SOURCE
+> Task :javity-voxel:testClasses UP-TO-DATE
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :javity-voxel:test
+> Task :javity-voxel:check
+> Task :javity-voxel:build
+> Task :javity-voxel-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-voxel-physics3d:assemble UP-TO-DATE
+> Task :javity-voxel-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-voxel-physics3d:processTestResources NO-SOURCE
+> Task :javity-voxel-physics3d:testClasses UP-TO-DATE
+> Task :javity-voxel-physics3d:test
+> Task :javity-voxel-physics3d:check
+> Task :javity-voxel-physics3d:build
+> Task :javity-desktop:distZip
+> Task :javity-desktop:sourcesJar
+> Task :javity-desktop:assemble
+> Task :javity-desktop:compileTestJava UP-TO-DATE
+> Task :javity-desktop:processTestResources NO-SOURCE
+> Task :javity-desktop:testClasses UP-TO-DATE
+> Task :javity-desktop:test
+> Task :javity-desktop:check
+> Task :javity-desktop:build
+> Task :javity-ui:test
+> Task :javity-ui:check
+> Task :javity-ui:build
+
+> Task :javity-desktop:skinnedInstancingSmoke
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+actual GL: 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+six independent Walk/Run/Survey poses: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+independent poses actual draws 6 -> 1, paletteBytes=9216, instanceBytes=408
+production GPU transform-feedback source vertex error=1.068115234375E-4 vertices=10368
+ordinary-after-instance: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+shared-pose: foreground=5510 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+crossfade-mid: foreground=5453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+tail-mask: foreground=6733 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+mixer: foreground=7019 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+wrong-row negative control changed pixels=1114
+alpha-test: foreground=5892 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+fallback-restored: foreground=7004 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+budget-fallback: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected instance allocation failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:896)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glBufferData(Unknown Source)
+	at org.javity.render.InstanceGpuTransport$Chunk.update(InstanceGpuTransport.java:33)
+	at org.javity.render.SkinnedInstanceBatch$Group.prepare(SkinnedInstanceBatch.java:337)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:171)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:506)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:184)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected palette upload failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:900)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glTexSubImage2D(Unknown Source)
+	at org.javity.render.BonePalette.bindPage(BonePalette.java:228)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:172)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:516)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:184)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+after-upload-failure: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+original glTF oracle max vertex error source units=0.006999969482421875
+prepared-world-FULL_BODY-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+
+> Task :javity-script:test
+> Task :javity-script:check
+> Task :javity-script:build
+> Task :build
+
+> Task :javity-desktop:skinnedInstancingSmoke
+prepared-world-ARMS_ONLY-cache-false: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-FULL_BODY-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-ARMS_ONLY-cache-true: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+skinnedInstancingSmoke GL33: PASS assertions=126
+
+> Task :javity-desktop:skinnedInstancingGl20Smoke
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+actual GL: 4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+six independent Walk/Run/Survey poses: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+skinnedInstancingSmoke GL20: PASS assertions=7
+
+> Task :javity-desktop:instancingSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+measured: ordinaryDraws=256 instancedDraws=1 dynamicUploadBytes=16384 stats=InstanceStats[submitted=256, visible=256, culled=0, instanced=256, fallback=0, groups=1, draws=1, uploadBytes=16384]
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13888/13888 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13830/13830 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=10423/10423 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=12584/12584 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+[StaticInstanceBatch] GPU preparation failed; using ordinary rendering
+java.lang.IllegalStateException: injected instance buffer allocation failure
+	at org.javity.demo.InstancingDemo$NativeCalls.invoke(InstancingDemo.java:477)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glBufferData(Unknown Source)
+	at org.javity.render.InstanceGpuTransport$Chunk.update(InstanceGpuTransport.java:33)
+	at org.javity.render.StaticInstanceBatch$Group.prepare(StaticInstanceBatch.java:291)
+	at org.javity.render.StaticInstanceBatch.render(StaticInstanceBatch.java:114)
+	at org.javity.render.StaticInstanceBatch.render(StaticInstanceBatch.java:52)
+	at org.javity.demo.InstancingDemo.allocationFailure(InstancingDemo.java:247)
+	at org.javity.demo.InstancingDemo.run(InstancingDemo.java:228)
+	at org.javity.demo.InstancingDemo.create(InstancingDemo.java:52)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.InstancingSmokeLauncher.main(InstancingSmokeLauncher.java:20)
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=7696/7696 coverage=0 maxRGB=0 creasePixels=0
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=7587/7587 coverage=0 maxRGB=24 creasePixels=1
+integration crease exception: x=166 y=71 maxRGB=16
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL33: PASS assertions=71
+
+> Task :javity-desktop:instancingGl20Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL20: PASS assertions=7
+
+> Task :javity-desktop:avatarGl30Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+avatarGpuSmoke: PASS (requested=GL30, actual=GL30, VAOs=1, authored skin parity, region color/depth, leases, source resources)
+
+> Task :javity-desktop:presentation3dSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+presentation3dGpuSmoke voxel FOV wall: baseRadius=0.11978672, wideRadius=0.13819999, constrainedFov=50.0, admittedFov=68.0
+presentation3dGpuSmoke pixels: model=95->139, world-camera=95->110, viewmodel=66->95, presentedFov=50.0, wallRadius=0.11978672
+presentation3dGpuSmoke: PASS (model/viewmodel pixels, presented camera ray, framebuffer)
+
+BUILD SUCCESSFUL in 30s
+94 actionable tasks: 22 executed, 72 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html

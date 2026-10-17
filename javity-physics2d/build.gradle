@@ -1,0 +1,9 @@
+dependencies {
+    api project(':javity-core')
+    implementation "com.badlogicgames.gdx:gdx-box2d:${rootProject.gdxVersion}"
+    testRuntimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:${rootProject.gdxVersion}:natives-desktop"
+    testRuntimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
+}
+tasks.withType(Test).configureEach {
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}

@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-16",
+  "scope": "Actual QuickJS JNI / React portable host / Android Yoga; no full game rendering claim",
+  "result": "PASS",
+  "tests": 7,
+  "emulator": {
+    "api": 35,
+    "abi": "x86_64",
+    "acceleration": "TCG; no performance claim"
+  },
+  "build": {
+    "agp": "9.4.1",
+    "jdk": "25.0.4.1",
+    "kotlin": "2.4.20",
+    "compileSdk": 36,
+    "minSdk": 35,
+    "providerClassMajorVersion": 69
+  },
+  "apkSha256": "efcf1d5bc40e05017d77a067f8374a422e9b12d7d9ced4597124c2fcaf2c63af",
+  "instrumentation": "org.javity.script.quickjs.QuickJsScriptUiInstrumentationTest",
+  "elapsedSeconds": 11.194,
+  "cases": [
+    "strict primitive bridge and persistent top-level declarations",
+    "Java action / signal / React commit",
+    "owner-thread timers / microtasks / cancellation",
+    "syntax failure preserves existing UI and reload clears stale callbacks",
+    "reentrant reload rejected by host contract",
+    "close from Java action deferred until guest unwinds",
+    "native execution deadline interrupts infinite JavaScript and permits cleanup"
+  ],
+  "regression": "Native QuickJsException extends checked Exception; all engine boundaries now normalize Exception to ScriptEngineException. Initial failing run retained privately; this artifact records the rebuilt rerun.",
+  "remaining": [
+    "actual full app GLES / model / voxels / touch / density",
+    "Activity and real retained-resource EGL context recreation",
+    "release R8 and APK ABI / 16KiB audit",
+    "physical ARM64 execution"
+  ]
+}

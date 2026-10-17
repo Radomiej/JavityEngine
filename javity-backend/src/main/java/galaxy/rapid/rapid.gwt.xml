@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit trunk//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
+<module rename-to="galaxy.rapid.Rapid">
+    <extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.eventbus.RapidBus" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.event" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.common" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.render" />
+	<extend-configuration-property name="artemis.reflect.include" value="com.badlogic.gdx.InputMultiplexer" />
+	<extend-configuration-property name="artemis.reflect.include" value="com.badlogic.gdx.graphics.OrthographicCamera" />
+	<extend-configuration-property name="artemis.reflect.include" value="com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch" />
+	<extend-configuration-property name="artemis.reflect.include" value="net.mostlyoriginal.api.event.common.EventSystem" />
+	
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.components" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.systems" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.managers" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.screen.ScreenNavigator" />
+	<extend-configuration-property name="artemis.reflect.include" value="galaxy.rapid.screen.ChangeScreenEvent" />
+	
+	<extend-configuration-property name="gdx.reflect.include" value="galaxy.rapid.configuration.RapidConfig" />
+	<extend-configuration-property name="gdx.reflect.include" value="galaxy.rapid.components" />
+	<extend-configuration-property name="gdx.reflect.include" value="galaxy.rapid.systems" />
+	<extend-configuration-property name="gdx.reflect.include" value="galaxy.rapid.managers" />
+	<extend-configuration-property name="gdx.reflect.include" value="galaxy.rapid.common" />
+	
+	<source path='' >
+    <exclude name="**/multiplayer/**" />
+    <exclude name="**/downloader/**" />
+</source>
+</module>

@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'com.github.xpenatan.gdx-teavm' version '1.6.1'
+}
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+dependencies {
+    implementation files('../../javity-core/build/libs/javity-core-0.7.0-SNAPSHOT.jar')
+    implementation 'com.badlogicgames.gdx:gdx:1.14.2'
+}
+gdxTeaVM {
+    assets.from(file('../../javity-core/src/main/resources'))
+    // GdxRenderer validates/rebinds the pinned libGDX shader cache through these fields.
+    reflection.add('com.badlogic.gdx.Version')
+    reflection.add('com.badlogic.gdx.graphics.g3d.shaders.BaseShader')
+    reflection.add('com.badlogic.gdx.graphics.g3d.shaders.DefaultShader')
+    wasm {
+        mainClass.set('org.javity.wasm.WebLauncher')
+        obfuscated.set(false)
+        htmlTitle.set('JavityEngine — WebAssembly / libGDX')
+    }
+}
+
+// Keep the backend-generated loader/canvas intact; only decorate the experimental landing page.
+tasks.matching { it.name == 'gdx_teavm_web_wasm_build' }.configureEach {
+    doLast {
+        def html = layout.buildDirectory.file('dist/wasm/webapp/index.html').get().asFile
+        def content = html.getText('UTF-8')
+        def label = file('web/label.html').getText('UTF-8').trim()
+        if (!content.contains('rel="icon"')) {
+            content = content.replace('<head>', '<head><link rel="icon" href="data:,">')
+        }
+        if (content.contains('id="spike-label"')) {
+            content = content.replaceAll('(?s)<aside id="spike-label".*?</aside>', java.util.regex.Matcher.quoteReplacement(label))
+        } else {
+            content = content.replace('<body oncontextmenu="return false">', '<body oncontextmenu="return false">' + label)
+        }
+        html.setText(content, 'UTF-8')
+    }
+}
+
+// The experiment is a standalone build, so establish the real core artifact first.
+// This root build does not include the experiment, therefore no recursive task cycle exists.
+tasks.register('buildCore', Exec) {
+    def engineRoot = file('../..')
+    workingDir engineRoot
+    commandLine new File(engineRoot, 'gradlew').absolutePath, ':javity-core:jar', '--no-daemon'
+}
+tasks.named('compileJava') { dependsOn tasks.named('buildCore') }
+
+dependencies { testImplementation 'junit:junit:4.13.2' }
+tasks.named('test') { useJUnit() }

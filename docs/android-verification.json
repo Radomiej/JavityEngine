@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-15",
+  "engineCommit": "c5f57150dc4e7ecbcd309905b01c2fe5ef5a208c",
+  "device": "AOSP Android15 API35 x86_64 emulator37.3.4",
+  "acceleration": "TCG, no /dev/kvm; SwiftShader GLES3.0",
+  "engineSourcesChanged": false,
+  "apk": {
+    "build": "PASS",
+    "signatureVerification": "PASS",
+    "install": "PASS",
+    "minSdk": 35,
+    "abi": "x86_64",
+    "sha256": "27ada96e6f1207ed0d60fcc6f47eae49e6e515d5726db393d88847813e6273a0"
+  },
+  "dex": {
+    "sdkD8_8_10_9": "FAIL unsupported class major69",
+    "r8D8_9_5_26": "PASS"
+  },
+  "runtime": {
+    "gameObjectController2D": "PASS",
+    "basic2D3DRenderLoop": "PASS 60 frames, GL0",
+    "visiblePixelComparison": "UNCONFIRMED: screenshot obscured by immersive-mode/SystemUI ANR dialogs",
+    "pauseResumeCallbacks": "PASS; full EGL context recreation not tested",
+    "shapes": "FAIL: desktop GLSL120, missing float precision and derivative extension",
+    "voxelFps": "UNCONFIRMED: paused launch while screen slept; retry did not yield a reliable completed test",
+    "fullStackAndroidSupport": "NOT READY"
+  },
+  "limitations": [
+    "No ARM64 physical device test",
+    "No Yoga/GraalJS/MapLibre Android adapters",
+    "No Box2D/audio/FreeType/animation fixture in probe",
+    "TCG timings not representative of mobile performance"
+  ],
+  "coreJarSha256": "215dab74b9ad55d2355ebbe16bd1e266e719fc3cf37ea52ed437fa757bcd7732",
+  "voxelJarSha256": "e2cf9145a60b6595615aab546dd1f831acf0000cdb0aa309cd2461f91a4e66bb"
+}

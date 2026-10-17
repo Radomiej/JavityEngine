@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "viewport": {"width": 1280, "height": 720, "dpr": 1},
+  "font": "Open Sans",
+  "actions": {"fire": 3, "heal": 1, "volume": 7, "mute": 1},
+  "signals": {"healthEvents": 3, "sceneGeneration": 2, "health": 0.6500, "renderedHealth": "Health: 0.6499999761581421", "renderedGeneration": "Scene: 2"},
+  "transactions": {"cancel": true, "success": true, "failure": true},
+  "animation": {"impactMarkers": 2, "sequenceCues": 4, "sequenceCompletions": 2},
+  "progressBar": {"stableForeground": "#00d3f3", "gainTrail": false, "lossTrail": false},
+  "devReload": {"reloads": 3, "errors": 1},
+  "shutdown": {"liveResourcesBeforeClose": true, "ownedResourcesReleasedOnce": true, "liveResourceCount": 8, "releasedResourceCount": 8, "loadingSceneCancelled": true, "candidateTextureDisposed": true, "currentTextureDisposed": true},
+  "glError": 0
+}

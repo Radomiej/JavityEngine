@@ -1,0 +1,102 @@
+apply plugin: 'com.android.application'
+
+def androidNativeConfiguration = configurations.create('androidNatives') {
+    canBeConsumed = false
+    canBeResolved = true
+}
+
+dependencies {
+    implementation project(':javity-core')
+    implementation project(':javity-voxel')
+    implementation project(':javity-ui')
+    implementation project(':javity-ui-yoga-android')
+    implementation project(':javity-script')
+    implementation project(':javity-script-quickjs-android')
+    implementation "com.badlogicgames.gdx:gdx-backend-android:${rootProject.gdxVersion}"
+    implementation "com.badlogicgames.gdx:gdx-freetype:${rootProject.gdxVersion}"
+
+    add('androidNatives', "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-arm64-v8a")
+    add('androidNatives', "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-x86_64")
+    add('androidNatives', "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-arm64-v8a")
+    add('androidNatives', "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-x86_64")
+
+    androidTestImplementation 'junit:junit:4.13.2'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.base.jar')
+    })
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.runner.jar')
+    })
+}
+
+android {
+    namespace 'org.javity.android'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'org.javity.android.fixture'
+        minSdk 35
+        targetSdk 35
+        ndk {
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
+        versionCode 1
+        versionName '1.0'
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
+    }
+
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+abstract class ExtractAndroidNatives extends Sync {
+    @OutputDirectory
+    abstract DirectoryProperty getJniLibsDirectory()
+}
+
+def extractAndroidNatives = tasks.register('extractAndroidNatives', ExtractAndroidNatives) {
+    jniLibsDirectory.set(layout.buildDirectory.dir('generated/android-jni-libs'))
+    into(jniLibsDirectory)
+    def classifierAbis = [
+        'natives-arm64-v8a': 'arm64-v8a',
+        'natives-x86_64': 'x86_64'
+    ]
+    classifierAbis.each { classifier, abi ->
+        from({
+            androidNativeConfiguration.resolvedConfiguration.resolvedArtifacts
+                .findAll { it.classifier == classifier }
+                .collect { zipTree(it.file) }
+        }) {
+            include '**/*.so'
+            eachFile { details -> details.path = "${abi}/${details.name}" }
+            includeEmptyDirs = false
+        }
+    }
+}
+
+androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    variant.sources.jniLibs.addGeneratedSourceDirectory(extractAndroidNatives) {
+        it.jniLibsDirectory
+    }
+}

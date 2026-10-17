@@ -1,0 +1,68 @@
+{
+  "viewport": {
+    "width": 1100,
+    "height": 720,
+    "dpr": 1
+  },
+  "panel": {
+    "id": "k1-panel",
+    "type": "View",
+    "classes": "flex flex-col gap-[8px] p-[12px] w-[260px] h-[224px] bg-slate-800 rounded-lg",
+    "rect": {
+      "x": 24,
+      "y": 24,
+      "width": 260,
+      "height": 224
+    },
+    "children": [
+      {
+        "id": "k1-title",
+        "type": "Text",
+        "classes": "text-base text-white",
+        "text": "Audio settings"
+      },
+      {
+        "id": "k1-toggle",
+        "type": "Toggle",
+        "classes": "w-[52px] h-[32px] rounded-full border border-slate-700 focus:border-cyan-400 hover:bg-blue-600 disabled:opacity-50",
+        "checked": true,
+        "disabled": false
+      },
+      {
+        "id": "k1-volume-label",
+        "type": "Text",
+        "classes": "text-sm text-white",
+        "text": "Volume: 0.6"
+      },
+      {
+        "id": "k1-slider",
+        "type": "Slider",
+        "classes": "w-[220px] h-[32px] rounded-md border border-slate-700 focus:border-cyan-400 hover:bg-blue-600 disabled:opacity-50",
+        "min": 0,
+        "max": 1,
+        "value": 0.6,
+        "step": 0.1,
+        "disabled": false
+      },
+      {
+        "id": "k1-disabled-toggle",
+        "type": "Toggle",
+        "classes": "w-[52px] h-[32px] rounded-full border border-slate-700 focus:border-cyan-400 hover:bg-blue-600 disabled:opacity-50",
+        "checked": false,
+        "disabled": true
+      },
+      {
+        "id": "k1-hint",
+        "type": "Text",
+        "classes": "text-sm text-white",
+        "text": "Tab: focus · arrows: volume"
+      }
+    ]
+  },
+  "states": [
+    "idle",
+    "slider-focus",
+    "toggle-hover",
+    "disabled"
+  ]
+}

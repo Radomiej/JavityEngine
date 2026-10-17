@@ -1,0 +1,110 @@
+{
+  "status": "PASS",
+  "workingDirectory": "/tmp/javity-packaged-dev-_u5os9c7",
+  "outsideCheckout": true,
+  "events": [
+    {
+      "poll": "RELOADED",
+      "reloads": 1,
+      "errors": 0,
+      "rootBefore": "506aabf6",
+      "rootAfter": "25a94b55",
+      "retainedRoot": false,
+      "health": 0.0,
+      "generation": 0,
+      "renderedHealth": "Health: 1",
+      "renderedGeneration": "Scene: 0",
+      "error": ""
+    },
+    {
+      "poll": "RELOADED",
+      "reloads": 2,
+      "errors": 0,
+      "rootBefore": "25a94b55",
+      "rootAfter": "12e3f4ae",
+      "retainedRoot": false,
+      "health": 1.0,
+      "generation": 1,
+      "renderedHealth": "Reloaded health: 1",
+      "renderedGeneration": "Scene: 1",
+      "error": ""
+    },
+    {
+      "poll": "ERROR",
+      "reloads": 2,
+      "errors": 1,
+      "rootBefore": "12e3f4ae",
+      "rootAfter": "12e3f4ae",
+      "retainedRoot": true,
+      "health": 1.0,
+      "generation": 1,
+      "renderedHealth": "Reloaded health: 1",
+      "renderedGeneration": "Scene: 1",
+      "error": "Reload rejected; active runtime and UI were retained: JavaScript syntax check failed: SyntaxError: javity-reload.js:64:9 Expected ident but found {\nfunction {\n         ^\n"
+    },
+    {
+      "poll": "RELOADED",
+      "reloads": 3,
+      "errors": 1,
+      "rootBefore": "12e3f4ae",
+      "rootAfter": "1d82d35c",
+      "retainedRoot": false,
+      "health": 1.0,
+      "generation": 1,
+      "renderedHealth": "Health: 1",
+      "renderedGeneration": "Scene: 1",
+      "error": ""
+    }
+  ],
+  "nativeSmoke": {
+    "status": "PASS",
+    "viewport": {
+      "width": 1280,
+      "height": 720,
+      "dpr": 1
+    },
+    "font": "Open Sans",
+    "actions": {
+      "fire": 3,
+      "heal": 1,
+      "volume": 7,
+      "mute": 1
+    },
+    "signals": {
+      "healthEvents": 3,
+      "sceneGeneration": 2,
+      "health": 0.65,
+      "renderedHealth": "Health: 0.6499999761581421",
+      "renderedGeneration": "Scene: 2"
+    },
+    "transactions": {
+      "cancel": true,
+      "success": true,
+      "failure": true
+    },
+    "animation": {
+      "impactMarkers": 2,
+      "sequenceCues": 4,
+      "sequenceCompletions": 2
+    },
+    "progressBar": {
+      "stableForeground": "#00d3f3",
+      "gainTrail": false,
+      "lossTrail": false
+    },
+    "devReload": {
+      "reloads": 3,
+      "errors": 1
+    },
+    "shutdown": {
+      "liveResourcesBeforeClose": true,
+      "ownedResourcesReleasedOnce": true,
+      "liveResourceCount": 8,
+      "releasedResourceCount": 8,
+      "loadingSceneCancelled": true,
+      "candidateTextureDisposed": true,
+      "currentTextureDisposed": true
+    },
+    "glError": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "gl30": true,
+  "worldModelPixels": 3721,
+  "movedWorldModelPixels": 3449,
+  "modelCenterX": [127, 186],
+  "viewmodelPixels": 1809,
+  "viewmodelCenter": {"base": [183, 90], "recoilBob": [182, 71]},
+  "particleOrangePixels": 1713,
+  "worldGreenPixelsAfterPostprocess": 0,
+  "worldGreenPixelsAfterRestore": 3136,
+  "presentedWorldFovDeltaDegrees": 4.79102,
+  "viewmodelPixelDistanceAcrossWorldPostprocess": 0,
+  "postprocessIds": {"fbo": 2, "colorTexture": 2, "shader": 12},
+  "checks": ["canonicalTransform", "liveBaseFov", "worldViewmodelSplit", "actualModelPixels", "actualParticlePixels", "worldPostprocessPixels", "ownedResourceCleanup", "borrowedTextureSurvival"]
+}

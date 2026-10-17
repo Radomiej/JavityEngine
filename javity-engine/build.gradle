@@ -1,0 +1,4 @@
+dependencies {
+    api project(':javity-backend')
+    implementation 'com.esotericsoftware:kryo:3.0.3'
+}

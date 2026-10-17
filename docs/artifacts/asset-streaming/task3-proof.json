@@ -1,0 +1,9 @@
+{
+  "desktop": "PASS", "android": "UNVERIFIED",
+  "checks": 183, "loadingFrames": 12,
+  "defaultModelLoads": 1, "textureDependencyLoads": 1,
+  "sentinelPixelDisplacement": 34.65332,
+  "modelPixels": 40159, "oneLeasePixels": 40132, "detachedPixels": 0,
+  "buffersCreatedDeleted": 12, "texturesCreatedDeleted": 8,
+  "cachePressureDisposal": true, "explicitRetry": true, "ownerThreadNativeOperations": true, "closeDuringLoad": true, "pausedLoading": true
+}

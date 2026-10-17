@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@source "./mm-fixture.json";
+@source "./fixture.json";
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("../../javity-ui/src/main/resources/org/javity/ui/fonts/OpenSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+html, body { width: 1100px; height: 720px; margin: 0; font-family: "Open Sans", sans-serif; }
+#fixture { width: 1100px; height: 720px; }
+#classic-progress { appearance: none; }
+#classic-progress::-webkit-progress-bar { background-color: inherit; border-radius: 9999px; }
+#classic-progress::-webkit-progress-value { background-color: currentColor; border-radius: 9999px; }
+#classic-input:focus { outline: none; }
+#scroll-sample { scrollbar-width: thin; scrollbar-color: #90a1b9 #e2e8f0; }
+#scroll-sample { scrollbar-width: none; }
+#scroll-track, #scroll-thumb { position: fixed; pointer-events: none; z-index: 100; }
+#scroll-track { background: #e2e8f0; border-radius: 9999px; }
+#scroll-thumb { background: #90a1b9; border-radius: 9999px; }
+#scroll-sample::-webkit-scrollbar { width: 6px; }
+#scroll-sample::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 9999px; }
+#scroll-sample::-webkit-scrollbar-thumb { background: #90a1b9; border-radius: 9999px; }
+@source "./k1-controls-fixture.json";
+@source "./k4-image-fixture.json";

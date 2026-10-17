@@ -1,0 +1,5 @@
+Unmodified Lwjgl3GLES20.class from com.badlogicgames.gdx:gdx-lwjgl3-angle:1.14.2.
+Copyright libGDX contributors. Apache License 2.0.
+Only the GLES20 adapter is included; ANGLELoader and ANGLE native libraries are omitted
+to use system EGL/GLES consistently with MapLibre Native.
+Source: https://github.com/libgdx/libgdx/tree/1.14.2/backends/gdx-backend-lwjgl3-angle

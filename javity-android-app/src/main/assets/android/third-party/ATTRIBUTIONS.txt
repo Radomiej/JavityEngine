@@ -1,0 +1,13 @@
+Android scripting and Yoga attribution index (Javity-generated index, not an upstream NOTICE file)
+
+Yoga 3.2.1: MIT. Copyright (c) Facebook, Inc. and its affiliates (upstream LICENSE); source headers also credit Meta Platforms, Inc. and affiliates.
+SoLoader, annotation, nativeloader 0.10.5: Apache-2.0. Copyright (c) Meta Platforms, Inc. and affiliates. The tagged repository has no separate NOTICE file.
+QuickJS-KT 1.0.15: Apache-2.0. Copyright 2024 dokar3 (upstream README).
+QuickJS engine 2026-06-04, commit 04be246001599f5995fa2f2d8c91a0f198d3f34c: MIT; Fabrice Bellard and Charlie Gordon. Exact copyrights and full terms are preserved in the engine LICENSE and source-NOTICES files.
+c-vector, commit 774773d4cb1e66dd736e90e7f482d4f22af464c6: MIT. Copyright (c) 2015 Evan Teran.
+Kotlin stdlib 2.4.20: Apache-2.0, JetBrains and contributors. Kotlin compiler is a build tool, not an APK dependency; its compiler-specific NOTICE is not represented as a stdlib NOTICE.
+kotlinx.coroutines 1.11.0: Apache-2.0. Copyright 2016-2025 JetBrains s.r.o and contributors. Exact upstream library NOTICE is included.
+JetBrains annotations 23.0.0: Apache-2.0.
+JSR-305 annotations 3.0.2 (com.google.code.findbugs:jsr305): Apache-2.0 per the exact Maven POM; the four javax.annotation.concurrent classes separately carry CC-BY-2.5, copyright (c) 2005 Brian Goetz (exact sources JAR). Their attribution and license are included. This is the annotation artifact, not the full FindBugs analyzer.
+
+These files supplement the existing libGDX, FreeType/font, React/Reconciler/Scheduler and OneJS notices. This subset does not certify the complete eventual APK dependency inventory.

@@ -1,0 +1,123 @@
+{
+  "artifact": "JavityEngine local Colyseus multiplayer verification",
+  "verifiedAt": "2026-10-17",
+  "sourceBaseCommit": "a4b066145394f28ca664ccf62c34e385e352b71c",
+  "sourceFilesSha256": "d70e7c0693d47cac8ff7113f7959ab4a1344b48d3274010b0dd1391d4b7ce9ca",
+  "sourceFileHashes": {
+    "web/local-multiplayer/package.json": "111efe5b143bbe61984362b3a6bf445bf1b76544ddd21ee1aca3b479ab417005",
+    "web/local-multiplayer/package-lock.json": "2e2c0314fbc2203a86f85f3c8a313aee57f1e14a0221bb94702195deb6114443",
+    "web/local-multiplayer/src/cli.js": "4c56c9c4276223deefacbfed9a192debf753082d6fd3e351e5d8bbff6595c7c9",
+    "web/local-multiplayer/src/gateway.js": "5226703f58b46a3b0b0eb9accdd92626b695963d61e6055a4900b90ed1efb591",
+    "web/local-multiplayer/src/java-worker.js": "90f2be076bef85d353255ca065360157f371fed77d9dfec2c22715621ea352b7",
+    "web/local-multiplayer/src/room.js": "724e804204a28dc4945472b66c30de1957b63aff955a94182ea4d2c4d978bb58",
+    "web/local-multiplayer/src/state.js": "f5a44685a72c7f865e4e99351493080a61de32241618f87703b841b0ff84f472",
+    "web/local-multiplayer/public/index.html": "253b522536738d4d132aad0d60c1765c7bf6b3ce9fe26c64490d62f73435478d",
+    "web/local-multiplayer/public/preview.js": "f6e65f5175ba9d6e80fd72cd77b2e970915a98dddc0086e0970d5d301e8ca3ad",
+    "web/local-multiplayer/public/styles.css": "dd74e7b27fcac000dc1c20923d4ed5e35b9fd15ccfaf8d77be2df3f6fc210ac5",
+    "web/local-multiplayer/test/java-worker-supervisor.test.js": "9df53c2e17c05e58f07c859d3021b1fcb9d73f1a58f83fe8c73b1802b7843236",
+    "web/local-multiplayer/test/local-multiplayer.integration.test.js": "9a85e69d4ce5b52cfd68c189531179abc799d3ddad4a259a6b6a7da3f0dd2127",
+    "javity-rooms/src/main/java/org/javity/rooms/LocalRoomWorker.java": "c0093fbcf457df9049b69474c9f884343e746396f8812f0fc706713366413d6a",
+    "javity-rooms/src/main/java/org/javity/rooms/LocalRoomSimulation.java": "5d65aa522e5958ad08b6c37d35c261d287d15654b9018b2e164fbeddeaf6bf20",
+    "javity-rooms/src/test/java/org/javity/rooms/LocalRoomWorkerProcessTest.java": "e2216a882d2b4bcf5d67fd45f02972da738a3dd1d2df02f6e12c8c71c115dfd4"
+  },
+  "runtime": {
+    "java": "25.0.4.1+1",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "protocol": "JSONL v1",
+    "colyseus": {
+      "@colyseus/core": "0.18.19",
+      "@colyseus/ws-transport": "0.18.4",
+      "@colyseus/schema": "5.0.40",
+      "@colyseus/sdk": "0.18.5",
+      "express": "5.2.1"
+    },
+    "npmPackageCount": 98,
+    "packageLockSha256": "2e2c0314fbc2203a86f85f3c8a313aee57f1e14a0221bb94702195deb6114443"
+  },
+  "commands": [
+    {
+      "command": "JAVA_HOME=<JDK25> PATH=<JDK25>/bin:$PATH GRADLE_USER_HOME=/workspace/.gradle-cache ./gradlew :javity-rooms:test :javity-rooms:installDist --no-daemon",
+      "result": "PASS",
+      "output": "BUILD SUCCESSFUL in 12s; 9 actionable tasks: 2 executed, 7 up-to-date. Java tests: 11 total (2 simulation + 9 worker/process), 0 failures/errors/skipped.",
+      "evidenceAnnotation": "Historical prior verification, retained without rerun in the final fix wave; corresponding Java runtime sources and package lock are unchanged."
+    },
+    {
+      "command": "npm ci --no-audit --no-fund --cache /tmp/javity-local-multiplayer-npm-cache",
+      "result": "PASS",
+      "output": "added 93 packages in 840ms; lockfile was honored.",
+      "evidenceAnnotation": "Historical prior verification, retained without rerun in the final fix wave; corresponding Java runtime sources and package lock are unchanged."
+    },
+    {
+      "command": "JAVA_HOME=<JDK25> PATH=<JDK25>/bin:$PATH GRADLE_USER_HOME=/workspace/.gradle-cache npm --prefix web/local-multiplayer test",
+      "result": "PASS",
+      "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+      "output": "4 Node tests pass (3 child-supervisor lifecycle tests and 1 real Colyseus+Java multi-client integration); 0 failed/cancelled/skipped. Duration 14.873335s; integration 11.660153s. Expected missing-launcher and paused-join diagnostics observed.",
+      "log": "/tmp/local-final-node.log",
+      "needsLoopbackTcp": true
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "redGreen": {
+    "red": "Temporarily weakened gateway validInput() to accept every payload; real integration test failed at the malformed/teleport-shaped client input position-authority assertion (AssertionError: malformed and teleport-shaped client messages cannot change position). The mutation was reverted.",
+    "green": "Restored strict exact-field/range/safe-integer validation; npm test passes with the complete real process integration.",
+    "evidenceAnnotation": "Historical strict-input validation mutation witness, retained without rerun; gateway validation runtime is unchanged by the final fix."
+  },
+  "proofScope": [
+    "Real Colyseus room and two official JavaScript SDK clients over localhost WebSocket.",
+    "Real Java installDist child per room; Java Game/GameObject is the sole source of published x/z/tick snapshots.",
+    "Create/join, authoritative movement, late-join full baseline, invalid and teleport-shaped messages, safe sequence validation, stale sequence handling, leave/rejoin and independent room state.",
+    "Missing launcher fails bounded; no-ready process is terminated and reaped; stdin failure settles pending commands; concurrent stop is bounded.",
+    "Abrupt worker death after >5 seconds does not reconnect/restart; final leave and gateway shutdown with an active client close owned workers.",
+    "Real paused-Java-worker join acknowledgement timeout tears down that room authority and disconnects its existing SDK client; no uncertain joined session remains in a live room.",
+    "Stalled stdin backpressure times out the final input write and owns bounded child termination; concurrent gateway stop callers share a promise and await active worker cleanup.",
+    "Chromium 154 two-tab QA: first baseline renders without page errors, duplicate create owns one Java worker, SDK join/mirrored movement/leave pass, editable keyboard input is not intercepted, and CLI SIGTERM exits 0 with worker gone.",
+    "No TeaVM/Wasm engine, remote deployment, reconnect preservation, prediction/interpolation, auth, native Java SDK or room physics is claimed."
+  ],
+  "fixRound": {
+    "reviewBase": "d53c29c9dfa8adbc4db8c670267d1258d5f01551",
+    "findings": [
+      "Initial preview render before schema baseline; acquired connection teardown on setup error.",
+      "Acknowledged join timeout now fails and stops the uncertain Java authority, causing room disposal.",
+      "Each queued stdin write has a deadline; failure settles active/queued writes and starts owned child cleanup.",
+      "Gateway stop stores and returns one shared shutdown promise."
+    ],
+    "regressions": "Real Java installDist/Colyseus SDK integration pauses a live Java authority during join acknowledgement and during concurrent gateway stop; supervisor child test pauses stdin consumption until a final write stalls and verifies bounded worker exit.",
+    "browserQa": {
+      "browser": "Chromium 154.0.8037.57",
+      "result": "PASS",
+      "twoClients": true,
+      "mirroredX": [
+        6.4,
+        6.4
+      ],
+      "rapidCreateSingleWorker": true,
+      "editableKeysDoNotMove": true,
+      "leaveReplicated": true,
+      "activeServerShutdown": true,
+      "ownedChildrenGone": true,
+      "serverExitCode": 0,
+      "pageErrors": [],
+      "artifactDirectory": "/tmp/javity-preview-qa",
+      "sourceCommit": "c94e6115469ad60cd5a9671195b7d8ca38e1a061"
+    },
+    "sourceCommit": "c94e6115469ad60cd5a9671195b7d8ca38e1a061",
+    "evidenceAnnotation": "Historical runtime/browser fix evidence; final fix changes only test teardown, so this browser proof was not rerun."
+  },
+  "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+  "finalFix": {
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+    "finding": "M3 stalled-stdin fixture unconditional child cleanup",
+    "change": "Register t.after(() => worker.stop()) immediately after worker acquisition.",
+    "verification": "Fresh complete npm test: 4 passed, 0 failed; bounded real Java/Colyseus and supervisor cleanup.",
+    "browserProof": {
+      "sourceCommit": "c94e6115469ad60cd5a9671195b7d8ca38e1a061",
+      "artifact": "browser-verification.json",
+      "status": "Historical proof retained; runtime/browser sources unchanged."
+    },
+    "sourceHashAggregation": "SHA-256 of sorted path:sha256 entries, each ending in LF."
+  }
+}

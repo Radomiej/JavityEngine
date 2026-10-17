@@ -1,0 +1,176 @@
+Configuration 'androidNatives' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-android-app:preBuild UP-TO-DATE
+> Task :javity-android-app:preDebugBuild UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script-quickjs-android:preBuild UP-TO-DATE
+> Task :javity-script-quickjs-android:preDebugBuild UP-TO-DATE
+> Task :javity-script-quickjs-android:processDebugNavigationResources UP-TO-DATE
+> Task :javity-ui-yoga-android:preBuild UP-TO-DATE
+> Task :javity-ui-yoga-android:preDebugBuild UP-TO-DATE
+> Task :javity-ui-yoga-android:processDebugNavigationResources UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-script-quickjs-android:generateDebugResources UP-TO-DATE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-ui-yoga-android:generateDebugResources UP-TO-DATE
+> Task :javity-script-quickjs-android:packageDebugResources UP-TO-DATE
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-android-app:generateDebugResources UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-android-app:packageDebugResources UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-ui-yoga-android:packageDebugResources UP-TO-DATE
+> Task :javity-script-quickjs-android:parseDebugLocalResources UP-TO-DATE
+> Task :javity-ui-yoga-android:parseDebugLocalResources UP-TO-DATE
+> Task :javity-ui-yoga-android:generateDebugRFile UP-TO-DATE
+> Task :javity-script-quickjs-android:generateDebugRFile UP-TO-DATE
+> Task :javity-ui-yoga-android:compileDebugKotlin NO-SOURCE
+> Task :javity-ui-yoga-android:javaPreCompileDebug UP-TO-DATE
+> Task :javity-android-app:processDebugNavigationResources UP-TO-DATE
+> Task :javity-android-app:parseDebugLocalResources UP-TO-DATE
+> Task :javity-android-app:generateDebugRFile UP-TO-DATE
+> Task :javity-android-app:javaPreCompileDebug UP-TO-DATE
+> Task :javity-android-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :javity-android-app:compileDebugNavigationResources UP-TO-DATE
+> Task :javity-android-app:mergeDebugResources UP-TO-DATE
+> Task :javity-android-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :javity-android-app:extractDeepLinksDebug UP-TO-DATE
+> Task :javity-android-app:preDebugAndroidTestBuild SKIPPED
+> Task :javity-android-app:generateDebugAndroidTestResources UP-TO-DATE
+> Task :javity-android-app:packageDebugAndroidTestResources UP-TO-DATE
+> Task :javity-android-app:processDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :javity-android-app:parseDebugAndroidTestLocalResources UP-TO-DATE
+> Task :javity-android-app:generateDebugAndroidTestRFile UP-TO-DATE
+> Task :javity-android-app:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :javity-android-app:generateDebugAssets UP-TO-DATE
+> Task :javity-android-app:generateDebugGlobalSynthetics UP-TO-DATE
+> Task :javity-android-app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :javity-android-app:desugarDebugFileDependencies UP-TO-DATE
+> Task :javity-android-app:mergeExtDexDebug UP-TO-DATE
+> Task :javity-ui-yoga-android:compileDebugJavaWithJavac UP-TO-DATE
+> Task :javity-ui-yoga-android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :javity-ui-yoga-android:writeDebugAarMetadata UP-TO-DATE
+> Task :javity-ui-yoga-android:extractDeepLinksDebug UP-TO-DATE
+> Task :javity-android-app:extractAndroidNatives UP-TO-DATE
+> Task :javity-ui-yoga-android:processDebugManifest UP-TO-DATE
+> Task :javity-android-app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :javity-ui-yoga-android:mapDebugSourceSetPaths UP-TO-DATE
+> Task :javity-ui-yoga-android:compileDebugLibraryResources UP-TO-DATE
+> Task :javity-android-app:validateSigningDebug UP-TO-DATE
+> Task :javity-ui-yoga-android:generateDebugAssets UP-TO-DATE
+> Task :javity-android-app:writeDebugAppMetadata UP-TO-DATE
+> Task :javity-ui-yoga-android:mergeDebugAssets UP-TO-DATE
+> Task :javity-android-app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :javity-android-app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :javity-android-app:generateDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :javity-ui-yoga-android:processDebugJavaRes UP-TO-DATE
+> Task :javity-ui-yoga-android:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :javity-ui-yoga-android:mergeDebugJniLibFolders UP-TO-DATE
+> Task :javity-ui-yoga-android:mergeDebugNativeLibs NO-SOURCE
+> Task :javity-android-app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :javity-ui-yoga-android:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :javity-android-app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :javity-android-app:mergeExtDexDebugAndroidTest UP-TO-DATE
+> Task :javity-android-app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :javity-android-app:compileDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :javity-android-app:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :javity-android-app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :javity-android-app:validateSigningDebugAndroidTest UP-TO-DATE
+> Task :javity-android-app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :javity-script-quickjs-android:javaPreCompileDebug UP-TO-DATE
+> Task :javity-script-quickjs-android:writeDebugAarMetadata UP-TO-DATE
+> Task :javity-script-quickjs-android:extractDeepLinksDebug UP-TO-DATE
+> Task :javity-script-quickjs-android:processDebugManifest UP-TO-DATE
+> Task :javity-script-quickjs-android:mapDebugSourceSetPaths UP-TO-DATE
+> Task :javity-script-quickjs-android:compileDebugLibraryResources UP-TO-DATE
+> Task :javity-script-quickjs-android:generateDebugAssets UP-TO-DATE
+> Task :javity-android-app:checkDebugAarMetadata UP-TO-DATE
+> Task :javity-script-quickjs-android:mergeDebugAssets UP-TO-DATE
+> Task :javity-script-quickjs-android:mergeDebugJniLibFolders UP-TO-DATE
+> Task :javity-script-quickjs-android:mergeDebugNativeLibs NO-SOURCE
+> Task :javity-script-quickjs-android:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :javity-android-app:processDebugMainManifest UP-TO-DATE
+> Task :javity-android-app:processDebugManifest UP-TO-DATE
+> Task :javity-android-app:processDebugManifestForPackage UP-TO-DATE
+> Task :javity-android-app:processDebugResources UP-TO-DATE
+> Task :javity-android-app:mergeDebugAssets UP-TO-DATE
+> Task :javity-android-app:compressDebugAssets UP-TO-DATE
+> Task :javity-android-app:mergeDebugNativeLibs UP-TO-DATE
+> Task :javity-android-app:stripDebugDebugSymbols UP-TO-DATE
+> Task :javity-android-app:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :javity-android-app:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :javity-android-app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :javity-android-app:mergeDebugAndroidTestManifest UP-TO-DATE
+> Task :javity-android-app:processDebugAndroidTestManifest UP-TO-DATE
+> Task :javity-android-app:processDebugAndroidTestResources UP-TO-DATE
+> Task :javity-android-app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :javity-android-app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :javity-script-quickjs-android:compileDebugKotlin
+> Task :javity-script-quickjs-android:compileDebugJavaWithJavac NO-SOURCE
+> Task :javity-script-quickjs-android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :javity-script-quickjs-android:processDebugJavaRes UP-TO-DATE
+> Task :javity-android-app:compileDebugKotlin NO-SOURCE
+> Task :javity-script-quickjs-android:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :javity-android-app:compileDebugJavaWithJavac
+> Task :javity-android-app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :javity-android-app:compileDebugAndroidTestKotlin NO-SOURCE
+> Task :javity-android-app:compileDebugAndroidTestJavaWithJavac
+> Task :javity-android-app:processDebugJavaRes UP-TO-DATE
+> Task :javity-android-app:dexBuilderDebug UP-TO-DATE
+> Task :javity-android-app:mergeProjectDexDebug UP-TO-DATE
+> Task :javity-android-app:processDebugAndroidTestJavaRes NO-SOURCE
+> Task :javity-android-app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+> Task :javity-android-app:mergeDebugJavaResource
+> Task :javity-android-app:dexBuilderDebugAndroidTest
+> Task :javity-android-app:mergeProjectDexDebugAndroidTest
+> Task :javity-android-app:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :javity-android-app:mergeLibDexDebug
+> Task :javity-android-app:packageDebugAndroidTest
+> Task :javity-android-app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :javity-android-app:packageDebug
+> Task :javity-android-app:createDebugApkListingFileRedirect UP-TO-DATE
+
+> Task :javity-android-app:connectedDebugAndroidTest
+Running tests on devices: Javity_API35(AVD) - 15
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil$MemoryAccessor (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.25.5/5ae5c9ec39930ae9b5a61b32b93288818ec05ec1/protobuf-java-3.25.5.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.protobuf.UnsafeUtil$MemoryAccessor
+WARNING: sun.misc.Unsafe::arrayBaseOffset will be removed in a future release
+
+> Task :javity-android-app:connectedDebugAndroidTest FAILED
+
+[Incubating] Problems report is available at: file:///workspace/JavityEngine/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':javity-android-app:connectedDebugAndroidTest' (registered by plugin 'com.android.internal.application').
+> There were failing tests. See the report at: file:///workspace/JavityEngine/javity-android-app/build/reports/androidTests/connected/debug/index.html
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 15s
+114 actionable tasks: 10 executed, 104 up-to-date

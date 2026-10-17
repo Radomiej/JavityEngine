@@ -11,7 +11,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.sun.jmx.snmp.tasks.ThreadService;
+
 
 import pl.radomiej.web.exceptions.CanNotStartDownload;
 

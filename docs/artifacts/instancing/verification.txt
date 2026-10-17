@@ -1,0 +1,41 @@
+Full command: ./gradlew build :javity-desktop:instancingSmoke :javity-desktop:instancingGl20Smoke
+JUnit XML: tests=657 suites=76 failures=0 errors=0
+
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+measured: ordinaryDraws=256 instancedDraws=1 dynamicUploadBytes=16384 stats=InstanceStats[submitted=256, visible=256, culled=0, instanced=256, fallback=0, groups=1, draws=1, uploadBytes=16384]
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13888/13888 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13830/13830 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=10423/10423 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=12584/12584 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=7696/7696 coverage=0 maxRGB=0 creasePixels=0
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=7587/7587 coverage=0 maxRGB=24 creasePixels=1
+integration crease exception: x=166 y=71 maxRGB=16
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL33: PASS assertions=71
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL20: PASS assertions=7
+BUILD SUCCESSFUL in 19s
+
+The second crease trace at (166,71) is an intentionally rejected negative image control.
+The injected instance-buffer allocation exception in build.log is expected.
+Actual new-context recovery / Android GLES runtime: UNVERIFIED; stage-C gate.
+
+Additional unchanged-path regressions: avatarGl30Smoke PASS; presentation3dSmoke PASS.
+
+fix1 review follow-up:
+- RED: 3/3 lifecycle regressions fail before fixes (repeat recovery NPE, skipped raw reset, detached-part growth).
+- Core suite: 374 tests across 41 suites, 0 failures/errors.
+- Native GL33: PASS assertions=71; GL20: PASS assertions=7.
+- Repeated part/node replacement: retained map bounded to 3 attached parts across 100 replacements, disabled survivor ID stable.
+- Recovery CPU proxy tests cover two notifications without prepare and shader-cleanup failure; no actual new-context claim.

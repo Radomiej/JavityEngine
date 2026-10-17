@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'org.javity.script.quickjs'
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 35
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
+    }
+}
+
+// AGP's built-in Kotlin uses the root's shared 2.4.20 compiler.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
+    }
+}
+
+dependencies {
+    api project(':javity-script')
+    implementation 'io.github.dokar3:quickjs-kt-android:1.0.15'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
+    androidTestImplementation project(':javity-ui-yoga-android')
+    androidTestImplementation 'junit:junit:4.13.2'
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.base.jar')
+    })
+    androidTestCompileOnly files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file('platforms/android-36/optional/android.test.runner.jar')
+    })
+}

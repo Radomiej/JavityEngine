@@ -1,0 +1,216 @@
+{
+  "artifacts": {
+    "comparison_json": "docs/maplibre-render-comparison.json",
+    "side_by_side_png": "docs/maplibre-comparison.png"
+  },
+  "comparison": "MapLibre Native raw map captures vs MapLibre GL JS raw map captures",
+  "method": {
+    "alpha": "ignored; inputs converted to RGB",
+    "comparison_space": "8-bit sRGB RGB screenshot values",
+    "foreground": "each image compared with its own upper-left background pixel; max RGB distance > 3",
+    "interpretation": "Descriptive renderer comparison; metrics are not pass/fail thresholds.",
+    "limitations": "Native and GL JS use different rasterizers, antialiasing, and GPU paths; small edge and text differences are expected.",
+    "significant_mismatch": "a pixel with any RGB channel difference > 3",
+    "tolerance": "all three RGB channel absolute differences <= 3"
+  },
+  "renderers": {
+    "gljs": "MapLibre GL JS 6.14.0 / Chromium WebGL (SwiftShader)",
+    "native": "MapLibre Native FFI 0.202610.0 / OpenGL EGL"
+  },
+  "styles": {
+    "day": {
+      "dimensions": {
+        "height": 720,
+        "pixels": 792000,
+        "width": 1100
+      },
+      "foreground_relative_to_each_image_background": {
+        "background_rgb": {
+          "gljs": [
+            232,
+            238,
+            230
+          ],
+          "native": [
+            232,
+            238,
+            230
+          ]
+        },
+        "gljs_bbox_xyxy": [
+          122,
+          147,
+          937,
+          582
+        ],
+        "gljs_foreground_pixels": 66891,
+        "intersection_over_union": 0.98943537,
+        "intersection_pixels": 66870,
+        "mask_rule": "max RGB channel distance from own top-left background > 3",
+        "native_bbox_xyxy": [
+          122,
+          147,
+          937,
+          582
+        ],
+        "native_foreground_pixels": 67563,
+        "union_pixels": 67584
+      },
+      "inputs": {
+        "gljs": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-maplibre-reference.png",
+          "sha256": "98876585f1d80c6b65d8b84b458ca3c299e14f4d06e2a2c3eaab261f189ebfae",
+          "width": 1100
+        },
+        "native": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-maplibre-map.png",
+          "sha256": "11a16de277d357c938397c3aa3d77e9b1e0d4b468a2eb7f590a57cabda9dd6a6",
+          "width": 1100
+        }
+      },
+      "pixel_comparison": {
+        "channel_mae_rgb": [
+          0.053198,
+          0.072249,
+          0.045554
+        ],
+        "channel_rmse_rgb": [
+          0.923834,
+          0.740656,
+          0.785608
+        ],
+        "exact_channel_fraction": 0.98071801,
+        "exact_pixel_fraction": 0.96042424,
+        "overall_channel_mae": 0.057,
+        "overall_channel_rmse": 0.820411,
+        "pixel_fraction_with_all_rgb_channels_within_tolerance": 0.99634975,
+        "significant_mismatch_pixel_count": 2891,
+        "tolerance_rgb_per_channel": 3
+      },
+      "probes": {
+        "northwest_lake": {
+          "absolute_channel_difference": [
+            0,
+            0,
+            0
+          ],
+          "gljs_rgb": [
+            115,
+            185,
+            207
+          ],
+          "native_rgb": [
+            115,
+            185,
+            207
+          ],
+          "pixel_xy": [
+            325,
+            280
+          ]
+        }
+      }
+    },
+    "night": {
+      "dimensions": {
+        "height": 720,
+        "pixels": 792000,
+        "width": 1100
+      },
+      "foreground_relative_to_each_image_background": {
+        "background_rgb": {
+          "gljs": [
+            16,
+            26,
+            36
+          ],
+          "native": [
+            16,
+            26,
+            36
+          ]
+        },
+        "gljs_bbox_xyxy": [
+          123,
+          148,
+          937,
+          582
+        ],
+        "gljs_foreground_pixels": 66217,
+        "intersection_over_union": 0.99013945,
+        "intersection_pixels": 66173,
+        "mask_rule": "max RGB channel distance from own top-left background > 3",
+        "native_bbox_xyxy": [
+          123,
+          148,
+          937,
+          582
+        ],
+        "native_foreground_pixels": 66788,
+        "union_pixels": 66832
+      },
+      "inputs": {
+        "gljs": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-maplibre-reference-night.png",
+          "sha256": "e2f8614d2269e5948bb892c106a76eba93b6b9f068cdf9b5d30b153d325b3a25",
+          "width": 1100
+        },
+        "native": {
+          "channels_compared": "RGB (alpha ignored)",
+          "height": 720,
+          "path": "docs/demo-maplibre-night-map.png",
+          "sha256": "426459dc981667adb632ad8e43da10ab5dc003096e17fb582c39799f3dfa153e",
+          "width": 1100
+        }
+      },
+      "pixel_comparison": {
+        "channel_mae_rgb": [
+          0.060864,
+          0.05554,
+          0.027433
+        ],
+        "channel_rmse_rgb": [
+          0.543943,
+          0.504312,
+          0.443148
+        ],
+        "exact_channel_fraction": 0.97032281,
+        "exact_pixel_fraction": 0.95551515,
+        "overall_channel_mae": 0.047946,
+        "overall_channel_rmse": 0.49886,
+        "pixel_fraction_with_all_rgb_channels_within_tolerance": 0.99613889,
+        "significant_mismatch_pixel_count": 3058,
+        "tolerance_rgb_per_channel": 3
+      },
+      "probes": {
+        "northwest_lake": {
+          "absolute_channel_difference": [
+            0,
+            0,
+            0
+          ],
+          "gljs_rgb": [
+            24,
+            61,
+            90
+          ],
+          "native_rgb": [
+            24,
+            61,
+            90
+          ],
+          "pixel_xy": [
+            325,
+            280
+          ]
+        }
+      }
+    }
+  }
+}

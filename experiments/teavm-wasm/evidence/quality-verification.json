@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-17",
+  "sourceCommit": "d210e0f196e2c889453313fc3db809d066270a0e",
+  "sourceFileHashes": {
+    "experiments/teavm-wasm/web/browser-host.js": "59e782298a12ed24259e5dd854a425c3fa5f2a3a57aef2bc481ef439d3d22fc4",
+    "experiments/teavm-wasm/web/main.js": "f30f0df9c79223913af45302c6576a591b4370e2bd78f3967266bb8fb9dd83d3",
+    "experiments/teavm-wasm/web/bridge-lifecycle-tests.js": "e01cb6918b748f569e34ccadd3a8a561f88f7193c1bb194d669c55d1b4a65a82",
+    "experiments/teavm-wasm/web/bridge-lifecycle-tests.html": "3fcdfab89cf2fb0e4ab66bbdf934f07db310466ae2455fdd0a200e30da63b543",
+    "experiments/teavm-wasm/tools/bridge-lifecycle-proof.py": "4d85c0a87c8dfe4146a704ce3293805dbb7439e5072bd9b39f087a679f5ec44e",
+    "experiments/teavm-wasm/tools/chromium-proof.py": "73ee10bf84e50571c88accaf6b5449f66e8ffbf10a4077ddb72197296b49da90"
+  },
+  "lifecycle": {
+    "command": "python experiments/teavm-wasm/tools/bridge-lifecycle-proof.py",
+    "result": "PASS",
+    "scenarios": 7,
+    "artifact": "lifecycle.json"
+  },
+  "happyPath": {
+    "command": "python experiments/teavm-wasm/tools/chromium-proof.py",
+    "result": "PASS",
+    "artifact": "runtime.json"
+  },
+  "limits": "Real Yoga/Ammo wrapper identity and ownership checks; not Wasm linear-memory reclamation or native pointer state after throwing destroy. Java/Wasm binary unchanged; original compilation provenance retained. Proofs executed before commit on matching source bytes."
+}

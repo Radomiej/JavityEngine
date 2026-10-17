@@ -1,0 +1,1 @@
+{"version":1,"styles":{"day":"style-day.json","night":"style-night.json"},"defaultStyle":"day","sources":{"gorzow":"gorzow.mbtiles"},"initialCamera":{"longitude":15.2385,"latitude":52.7319,"zoom":15,"bearing":0,"pitch":0},"attribution":"© OpenStreetMap contributors · OpenMapTiles · OpenFreeMap","offline":true}

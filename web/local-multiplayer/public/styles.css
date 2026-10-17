@@ -1,0 +1,12 @@
+:root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; background: #10151f; color: #eaf0fa; }
+body { margin: 0; padding: 2rem; }
+main { max-width: 52rem; margin: auto; }
+button, input { padding: .55rem .8rem; font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+.controls { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+#status { min-height: 1.5em; color: #9fd7ba; }
+#arena { height: 18rem; border: 1px solid #506078; border-radius: .6rem; position: relative; overflow: hidden; background: radial-gradient(#26354b, #121b29); }
+.player-dot { position: absolute; width: .9rem; height: .9rem; border-radius: 50%; background: #77d6a4; transform: translate(-50%, -50%); outline: 2px solid #10151f; }
+.player-dot.self { background: #ffc76e; }
+code { color: #ffc76e; }

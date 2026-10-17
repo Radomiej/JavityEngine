@@ -1,0 +1,74 @@
+{
+  "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+  "seed": 5359695226845349187,
+  "deltaSeconds": 0.016666666666666666,
+  "runtime": {
+    "javaVersion": "25.0.4.1+1-LTS",
+    "vm": "OpenJDK 64-Bit Server VM",
+    "os": "Linux",
+    "architecture": "amd64",
+    "availableProcessors": 4
+  },
+  "entities": 10000,
+  "warmupSteps": 100,
+  "measuredSteps": 300,
+  "repetitions": 3,
+  "cases": [
+    {
+      "case": "native-ecs",
+      "updates": 4000000,
+      "linkedEntities": 0,
+      "medianWallNanos": 7110849,
+      "medianOwnerThreadAllocatedBytes": 638400,
+      "checksum": 4932.0728862381075
+    },
+    {
+      "case": "game-object",
+      "updates": 4000000,
+      "linkedEntities": 0,
+      "medianWallNanos": 247895883,
+      "medianOwnerThreadAllocatedBytes": 498513600,
+      "checksum": 4932.0728862381075
+    },
+    {
+      "case": "mixed-sync-on",
+      "updates": 4000000,
+      "linkedEntities": 1000,
+      "medianWallNanos": 455550152,
+      "medianOwnerThreadAllocatedBytes": 707692800,
+      "checksum": 4932.0728862381075
+    },
+    {
+      "case": "mixed-sync-off",
+      "updates": 4000000,
+      "linkedEntities": 1000,
+      "medianWallNanos": 289525486,
+      "medianOwnerThreadAllocatedBytes": 510892800,
+      "checksum": 4932.0728862381075
+    }
+  ],
+  "interpretation": "Workload-specific measurements; bridge mirroring adds code and allocation overhead. No universal speed ranking or target improvement is implied.",
+  "sourceInputSha256": {
+    "javity-ecs-artemis/build.gradle": "49a13dcb4023aed7ec206f38ab26e6d4da6cfa542ebf575768848d4ea7098993",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "2f5fe9f098952bd85ca51b26caa669c9efd1336865a6fecf62b940a6605db493",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ComponentProjection.java": "094009b8d592773713e193c7ac421b83cff7770ca48e71adfc3f1fc5eb179e62",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EcsPhase.java": "0e5d4b1e44819822ad048a6f5280d19beb2af4be5d0adf761da8e71edf6a7835",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "27320aa487340a01a703e77d39a38ed45f2b05c688f7ca5260364cdd79ecf2bd",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/GameObjectRef.java": "3e9232ec33fb4b21c6dd51236487d2f06542ced0674c7cdcf1d340a18f9e47d5",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/InactiveGameObject.java": "cbb851f6895921231114e60823d0cd6242b3f238649ac2ec96604cf637f8ac38",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "114125262b486996cc6d0810cf9ef1187d60490af07932133317189a5dbf1007",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkRegistry.java": "f7f4b56c97b62c85466b8f1c49d1ee8e2e9f69ca2903ff31e270484cee4b4e45",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "2c8e798e8a4c8dd6743eaed369f29aa2f730690eeec0bbbb04c8c7870d11fcb3",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionDirection.java": "af840867e21baad324a93f410e6925c4eaf5c73d4a3b06c20494aa7184b96899",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionOwnership.java": "0ef525b60bf036e32fb3b19cea78897043c0bccc4f73b3b8d62443d7f15616b3",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionSession.java": "5b81ac2cf5ff8fa4a8512ac4ca1b6d0ac1f93776407a30fe8061a6a7c92165a4",
+    "javity-ecs-artemis/src/test/java/org/javity/ecs/artemis/EcsUsageSmoke.java": "d05f5f4e2e3887ebb08ef2c80fb7a43701db3bb27dab3591127908aab75960b2",
+    "javity-ecs-artemis/src/test/java/org/javity/ecs/artemis/ArtemisBridgeBenchmark.java": "edf0a7aa3695526954bf69f6350ad0811444c8fe33e47fe7637f441c73f8e138",
+    "javity-core/src/main/java/org/javity/core/Game.java": "dfc3b76931f9be191e55643e3e9cb15a84615bb75055ee26b2f733acbc39bb66",
+    "javity-core/src/main/java/org/javity/core/GameSystem.java": "4c76b90c3303238ba89545aac357467bbff54b75741550b322fd0ca39d331a6b",
+    "javity-core/src/main/java/org/javity/core/GameObject.java": "222740885e901641cf6ed3b957b95d55f81e28f7e130dbc3e2bd145935e9462e",
+    "javity-core/src/main/java/org/javity/core/Component.java": "f5578c0d3f1a882cc3de84155d60883d0d3712cd5036761aa42d5fc0577676e8",
+    "javity-core/src/main/java/org/javity/serialization/Prefab.java": "49a7bd443f578e56b57cd0ef0fa6ef8b9efb43c13ae0114e8b95a9f8cc6fce2f",
+    "javity-core/src/main/java/org/javity/serialization/SceneJson.java": "b15e20c8a3ed625b79b305b17d797325a2034edfc69c96ad58ca648bb990b2b0"
+  }
+}

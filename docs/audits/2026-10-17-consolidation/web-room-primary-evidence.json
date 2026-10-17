@@ -1,0 +1,48 @@
+{
+  "gdx_teavm": {
+    "url": "https://raw.githubusercontent.com/xpenatan/gdx-teavm/master/README.md",
+    "sha256": "b478dc2786f6d809a34d03ce83f662d8167bcc230fb85b0ca49ea173a91d22b3",
+    "evidence": [
+      "`gdx-teavm` is a TeaVM backend set for running [libGDX](https://libgdx.com/) applications outside the JVM. It can generate browser builds with JavaScript or Wasm, native C projects for GLFW, experimental iOS native payloads, and Android native app builds through an Android application module.",
+      "| -SNAPSHOT | 1.14.2 | 0.16.0 |",
+      "|   1.6.1   | 1.14.2 | 0.15.0 |",
+      "| `backend-web` | libGDX web runtime plus JavaScript and Wasm build support |",
+      "| `gdx-freetype-web` | FreeType support for TeaVM web builds |",
+      "| `gdx-freetype-c` | FreeType support for TeaVM C native builds |",
+      "    implementation(\"com.badlogicgames.gdx:gdx:1.14.2\")",
+      "    wasm {}",
+      "./gradlew gdx_teavm_web_wasm_run",
+      "The optional `webDefaults {}` block supplies conventions shared by JavaScript and Wasm. It does not declare a target: `js {}` and `wasm {}` still do that, and either block can set all of its own properties instead. Unnamed blocks keep the task names shown above; named blocks such as `js(\"release\") { ... }` create isolated variants and tasks such as `gdx_teavm_web_js_release_build` and `gdx_teavm_web_js_release_run`."
+    ]
+  },
+  "TeaVM_013": {
+    "url": "https://teavm.org/docs/release-notes/0.13.0.html",
+    "sha256": "f4fae8bca252bcf2cc0ac3847c68b5c6c799d8cb1e01419a376e8cb3a1c6484d",
+    "evidence": [
+      "iver by three major features in mind. Refactor to run in the browser Coroutines Java 25 First is the (successful) attempt to create Java-to-WebAssembly compiler right in the browser. The work was done mostly outside TeaVM, but also required some refactorings in TeaVM core. You can see the result her",
+      " browser Coroutines Java 25 First is the (successful) attempt to create Java-to-WebAssembly compiler right in the browser. The work was done mostly outside TeaVM, but also required some refactorings in TeaVM core. You can see the result here: https://teavm.org/playground.html Second is closing final",
+      "erview Getting started Troubleshooting Preview builds Release notes Runtime API Wasm GC backend C backend Tooling Contributing Release 0.13.0 This release was driver by three major features in mind. Refactor to run in the browser Coroutines Java 25 First is the (successful) attempt to create Java-to",
+      "n a worker and exchange data with it without the need to copy anything. Support Node.js out-of-the-box Special thanks for helping to test the new release to: libGDX TeaVM project and personally to @xpenatan . WebFX project and personally to @salmonb . This project allows to port JavaFX apps to the b"
+    ]
+  },
+  "colyseus_server": {
+    "url": "https://docs.colyseus.io/getting-started/server",
+    "sha256": "53a79273f9a6e3359efa5b3d9395dda9cc78f20cf3ef8b161d01780558338a4c",
+    "evidence": [
+      " page creates the server, and the client SDK pages connect to it. Prerequisites Node.js LTS version (or Bun ) Git A code editor ( VS Code recommended) Setting up your server Create your Colyseus server npm pnpm yarn Bun Terminal: npm # Create a new Colyseus project npm create colyseus-app@latest ./m",
+      "gration Discord Activity Decentraland Building Your Game Server Setup Transport WebSocket (Default) uWebSockets.js WebTransport Bun WebSockets Driver Presence HTTP Routes Development Development Mode Vite Plugin Debugging Logging Production Graceful Shutdown Rooms Lifecycle Events Message Composabil"
+    ]
+  },
+  "colyseus_clients": {
+    "url": "https://docs.colyseus.io/client",
+    "error": "HTTP Error 404: Not Found"
+  },
+  "colyseus_java_repo": {
+    "url": "https://api.github.com/repos/colyseus/colyseus-java",
+    "error": "HTTP Error 404: Not Found"
+  },
+  "colyseus_java_release": {
+    "url": "https://api.github.com/repos/colyseus/colyseus-java/releases/latest",
+    "error": "HTTP Error 404: Not Found"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "description": "Fix1 PNG files produced by cache and uncached runs compare byte-for-byte; original screenshots remain in gl20/gl30. Duplicated task screenshots are omitted.",
+  "profiles": {
+    "gl20": {
+      "crossfade-mid.png": {
+        "cachedAndUncachedSha256": "d23e810abc5b1dc5510507f8ce23a435d8b6dc9e7b461650cb27ae98d4626001",
+        "originalBaselineSha256": "d23e810abc5b1dc5510507f8ce23a435d8b6dc9e7b461650cb27ae98d4626001"
+      },
+      "mixer-50.png": {
+        "cachedAndUncachedSha256": "2d930972382fc13c7fb2d1e8640163724c7ae310588e5132d9d9ec7c28147726",
+        "originalBaselineSha256": "2d930972382fc13c7fb2d1e8640163724c7ae310588e5132d9d9ec7c28147726"
+      },
+      "run-025.png": {
+        "cachedAndUncachedSha256": "1a38a3625de3e72ca83b772033f8e1e0563f2603f0e70cf300d05b093509f5b7",
+        "originalBaselineSha256": "1a38a3625de3e72ca83b772033f8e1e0563f2603f0e70cf300d05b093509f5b7"
+      },
+      "survey-025.png": {
+        "cachedAndUncachedSha256": "db85ef336080a38bc073c353b353e8e5e31b46039625bd5b26e750a6b34835e8",
+        "originalBaselineSha256": "db85ef336080a38bc073c353b353e8e5e31b46039625bd5b26e750a6b34835e8"
+      },
+      "tail-mask.png": {
+        "cachedAndUncachedSha256": "286be8ca189a89c41242e726638057b076967b571227f5f89f9f1665ac099107",
+        "originalBaselineSha256": "286be8ca189a89c41242e726638057b076967b571227f5f89f9f1665ac099107"
+      },
+      "walk-025.png": {
+        "cachedAndUncachedSha256": "8924c9581b810fdb29d91fe1a8494d1c2325354d3f25d4aea8596b08c0c90035",
+        "originalBaselineSha256": "8924c9581b810fdb29d91fe1a8494d1c2325354d3f25d4aea8596b08c0c90035"
+      }
+    },
+    "gl30": {
+      "crossfade-mid.png": {
+        "cachedAndUncachedSha256": "d23e810abc5b1dc5510507f8ce23a435d8b6dc9e7b461650cb27ae98d4626001",
+        "originalBaselineSha256": "d23e810abc5b1dc5510507f8ce23a435d8b6dc9e7b461650cb27ae98d4626001"
+      },
+      "mixer-50.png": {
+        "cachedAndUncachedSha256": "2d930972382fc13c7fb2d1e8640163724c7ae310588e5132d9d9ec7c28147726",
+        "originalBaselineSha256": "2d930972382fc13c7fb2d1e8640163724c7ae310588e5132d9d9ec7c28147726"
+      },
+      "run-025.png": {
+        "cachedAndUncachedSha256": "1a38a3625de3e72ca83b772033f8e1e0563f2603f0e70cf300d05b093509f5b7",
+        "originalBaselineSha256": "1a38a3625de3e72ca83b772033f8e1e0563f2603f0e70cf300d05b093509f5b7"
+      },
+      "survey-025.png": {
+        "cachedAndUncachedSha256": "db85ef336080a38bc073c353b353e8e5e31b46039625bd5b26e750a6b34835e8",
+        "originalBaselineSha256": "db85ef336080a38bc073c353b353e8e5e31b46039625bd5b26e750a6b34835e8"
+      },
+      "tail-mask.png": {
+        "cachedAndUncachedSha256": "286be8ca189a89c41242e726638057b076967b571227f5f89f9f1665ac099107",
+        "originalBaselineSha256": "286be8ca189a89c41242e726638057b076967b571227f5f89f9f1665ac099107"
+      },
+      "walk-025.png": {
+        "cachedAndUncachedSha256": "8924c9581b810fdb29d91fe1a8494d1c2325354d3f25d4aea8596b08c0c90035",
+        "originalBaselineSha256": "8924c9581b810fdb29d91fe1a8494d1c2325354d3f25d4aea8596b08c0c90035"
+      }
+    }
+  }
+}

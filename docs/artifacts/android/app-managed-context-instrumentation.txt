@@ -1,0 +1,23 @@
+INSTRUMENTATION_STATUS: class=org.javity.android.AndroidManagedContextLossInstrumentationTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+org.javity.android.AndroidManagedContextLossInstrumentationTest:
+INSTRUMENTATION_STATUS: test=testManagedOwnersRecoverAfterActualSurfaceContextLoss
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=org.javity.android.AndroidManagedContextLossInstrumentationTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=testManagedOwnersRecoverAfterActualSurfaceContextLoss
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+Test results for InstrumentationTestRunner=.
+Time: 55.856
+
+OK (1 test)
+
+
+INSTRUMENTATION_CODE: -1

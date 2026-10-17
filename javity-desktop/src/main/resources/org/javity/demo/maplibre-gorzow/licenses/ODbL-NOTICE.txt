@@ -1,0 +1,3 @@
+OpenStreetMap data is licensed under ODbL 1.0.
+Full license source: https://opendatacommons.org/licenses/odbl/odbl-10.txt
+OpenStreetMap attribution: https://www.openstreetmap.org/copyright

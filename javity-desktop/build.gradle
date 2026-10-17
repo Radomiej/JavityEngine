@@ -1,0 +1,300 @@
+apply plugin: 'application'
+
+application {
+    mainClass = 'org.javity.demo.DesktopLauncher'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+tasks.withType(JavaExec).configureEach {
+    workingDir rootProject.projectDir
+}
+// The native comparison demo also runs from installDist outside the checkout.
+tasks.named('processResources') {
+    from(rootProject.file('web/javity-ui-reference')) {
+        include 'fixture.json', 'reference-metrics.json', 'k1-controls-fixture.json', 'k2-wrap-fixture.json',
+                'k4-image-fixture.json', 'k4-image-fixture.png', 'mm-fixture.json'
+        into 'org/javity/demo/ui-reference'
+    }
+}
+dependencies {
+    implementation project(':javity-engine')
+    implementation project(':javity-ui')
+    implementation project(':javity-ui-yoga-lwjgl')
+    implementation project(':javity-script')
+    implementation project(':javity-script-graal')
+    implementation project(':javity-core')
+    implementation project(':javity-assets')
+    implementation project(':javity-map-core')
+    implementation project(':javity-maplibre')
+    implementation project(':javity-voxel')
+    implementation project(':javity-physics2d')
+    implementation project(':javity-physics3d')
+    implementation project(':javity-voxel-physics3d')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:${rootProject.gdxVersion}"
+    runtimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-bullet-platform:${rootProject.gdxVersion}:natives-desktop"
+}
+tasks.register('physics3d', JavaExec) {
+    group = 'application'
+    description = 'Run the opt-in Bullet 3D, editable voxel, and capsule avatar demo.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--physics3d'
+}
+tasks.register('physics3dSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Run the real OpenGL and Bullet integration proof for the opt-in Physics3D demo.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--physics3d', '--smoke'
+}
+tasks.register('smoke', JavaExec) {
+    group = 'verification'
+    description = 'Run the actual Javity desktop scene for 120 frames.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke'
+}
+
+tasks.register('mapSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Run offline geographic map and font smoke with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--map', '--smoke'
+}
+
+tasks.register('runtimeSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native audio and migrated runtime features with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--runtime', '--smoke'
+}
+
+tasks.register('shapesSmoke', JavaExec) {
+    group = 'verification'
+    description = 'SDF AA shapes, caps/joins, alpha and zoom pixel smoke with OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--shapes', '--smoke'
+}
+
+tasks.register('pluginsSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native React/Yoga, feedback and skeletal animation with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--plugins', '--smoke'
+}
+
+tasks.register('uiParitySmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native UI geometry/pixels against real HTML/Tailwind reference.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--ui-parity', '--smoke'
+}
+
+
+tasks.register('mmSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Playable Feel/animation/React integration with native GPU, audio and loading proofs.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--mm', '--smoke'
+}
+
+tasks.register('materialsSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Custom shape GLSL, typed uniforms, GPU resource ownership and WORLD/UI animation.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--materials', '--smoke'
+}
+
+tasks.register('voxelSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Chunked voxel meshes, atlas pixels, edits, picking and GPU cleanup with OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--voxels', '--smoke'
+}
+
+
+tasks.register('maplibreSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual MapLibre Native, offline vector MBTiles, style switch and libGDX composition.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--maplibre', '--smoke'
+}
+
+
+tasks.register('gorzowSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Real Gorzow Wielkopolski MVT city data, native pixels, picking and offline cleanup.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--gorzow', '--smoke'
+}
+
+tasks.register('inspectorSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Runtime scene inspector with real Stage selection, lifecycle and F1 focus checks.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--inspector', '--smoke'
+}
+
+tasks.register('avatarSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Authored skinned avatar region partition, framebuffer, depth, and resource lease proof with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.AvatarGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+tasks.register('avatarGl30Smoke', JavaExec) {
+    group = 'verification'
+    description = 'Run the authored avatar sidecar smoke with an explicit OpenGL 3.2 context.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.AvatarGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--gl30'
+}
+
+tasks.register('particleSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual additive particle pixels, occlusion, leases, GL state and GPU cleanup.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.ParticleGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('presentation3dSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual model and camera presentation without changing canonical gameplay transforms.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.Presentation3DGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('postprocessSmoke', JavaExec) {
+    group = 'verification'
+    description = 'World-only tint, desaturation and vignette framebuffer and resource proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.WorldPostProcessGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('feel3dSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Integrated 3D presentation presets, particles and world-only effects with real OpenGL.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.Feel3DGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('feel3d', JavaExec) {
+    group = 'application'
+    description = 'Run the interactive 3D presentation and effects gallery.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.Feel3DDemoLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+['instancingSmoke', 'instancingGl20Smoke'].each { taskName ->
+    tasks.register(taskName, JavaExec) {
+        group = 'verification'
+        description = 'Native static instancing pixels, draw counts, ownership and fallback proof.'
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = 'org.javity.demo.InstancingSmokeLauncher'
+        jvmArgs '--enable-native-access=ALL-UNNAMED'
+        if (taskName == 'instancingGl20Smoke') args '--gl20'
+    }
+}
+
+tasks.register('skinnedInstancingSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Native independent-pose skin palette, pixels and measured draw/upload proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkinnedInstancingSmokeLauncher'
+    workingDir = rootProject.projectDir
+}
+
+tasks.register('skinnedInstancingGl20Smoke', JavaExec) {
+    group = 'verification'
+    description = 'Animated instancing explicit ordinary GL20 fallback proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkinnedInstancingSmokeLauncher'
+    workingDir = rootProject.projectDir
+    args '--gl20'
+}
+
+tasks.register('instancingBenchmark', JavaExec) {
+    group = 'verification'
+    description = 'Seed42 crowd benchmark:64/256/1024,120 warmup and300 measured frames.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.InstancingBenchmarkLauncher'
+    systemProperty 'javity.benchmark.environment', providers.gradleProperty('benchmarkEnvironment').getOrElse('unspecified co-resident workloads')
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('assetStreamingSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Local default-loader model/texture streaming, lease/cache pressure and native resource proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--asset-streaming', '--smoke'
+}
+
+tasks.register('sceneLightingShaderSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Compile and draw scene lighting through ordinary renderer constructors on GL20 and GL30.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SceneLightingGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('skySmoke', JavaExec) {
+    group = 'verification'
+    description = 'Real GL20/GL30 sky pixels, state, ownership and recovery contract.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.SkyGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('environmentSmoke', JavaExec) {
+    dependsOn 'skySmoke', 'environmentDemoSmoke'
+    group = 'verification'
+    description = 'Integrated environment pixel controls, authoring, day/night and GL20/GL30 regression proof.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.EnvironmentGpuSmokeProbe'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+
+tasks.register('environmentDemoSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Actual courtyard presets, light authoring captures and repeated owner cleanup.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--environment', '--smoke'
+}

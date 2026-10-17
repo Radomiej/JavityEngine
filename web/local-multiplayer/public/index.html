@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Javity local multiplayer preview</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main>
+    <h1>Javity local multiplayer</h1>
+    <p>Two SDK clients can join a Colyseus room. The Java worker owns player positions.</p>
+    <section class="controls" aria-label="Room controls">
+      <button id="create" type="button">Create room</button>
+      <label for="room-id">Room ID</label>
+      <input id="room-id" autocomplete="off" spellcheck="false">
+      <button id="join" type="button">Join room</button>
+      <button id="leave" type="button" disabled>Leave room</button>
+    </section>
+    <p id="status" role="status" aria-live="polite">Connecting to local gateway…</p>
+    <section class="controls" aria-label="Development views">
+      <button id="view-client" type="button" aria-pressed="true">Client view</button>
+      <button id="view-server" type="button" aria-pressed="false" hidden>Server view</button>
+      <span id="view-description">Client replica — input is sent to Java authority.</span>
+    </section>
+    <section aria-label="Authoritative room state">
+      <p>Room: <code id="current-room">—</code> · Tick: <code id="tick">—</code></p>
+      <div id="arena" aria-label="Player positions"></div>
+      <ul id="players" aria-live="polite"></ul>
+    </section>
+    <p>Move with WASD or arrow keys after joining. Input is an intent; coordinates shown here come from Java snapshots.</p>
+  </main>
+  <script src="/sdk/colyseus.js"></script>
+  <script type="module" src="/preview.js"></script>
+</body>
+</html>

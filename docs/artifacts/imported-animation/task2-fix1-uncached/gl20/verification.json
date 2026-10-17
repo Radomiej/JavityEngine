@@ -1,0 +1,33 @@
+{
+  "asset": "Fox / PixelMannen, tomkranis, AsoboStudio, scurest",
+  "joints": 24,
+  "vertices": 1728,
+  "profile": "GL20",
+  "poseCacheEnabled": false,
+  "loadedCoreJarSha256": "4be5d7f3ca7f0ee1bf165414cfe6426f295d90b030ebd7c2092b39702682c70c",
+  "loadedCoreJar": "javity-core-0.7.0-SNAPSHOT.jar",
+  "glVersion": "4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1",
+  "oracleMaxErrorAssetUnits": 0.006999969482421875,
+  "oracleToleranceAssetUnits": 0.01,
+  "worldModelScale": 0.02,
+  "SurveyChangedChannels": 45339,
+  "WalkChangedChannels": 110249,
+  "RunChangedChannels": 124841,
+  "checks": [
+    "12 original glTF oracle samples x 1728 skinned vertices",
+    "all three clips change actual geometry pixels, HUD excluded",
+    "crossfade continuity, independently calculated midpoint and endpoint",
+    "tail subtree mask matches source clip and leaves all other local node poses unchanged",
+    "phase-synchronous mixer matches independent original glTF clip samples",
+    "WORLD pause, playback pause/resume and 2x speed",
+    "independent instances and single update per frame",
+    "named marker and ONCE completion fire once"
+  ],
+  "result": "PASS",
+  "resourcesClosed": true,
+  "fixtureRevision": "4995a638c96dbc94376d3d6164e70fee3ac7f7a2",
+  "harnessSha256": "7fe2a4455a7b8b0e6c92355710b2ab636c7a41159d14a6d065aa97d915b65ed3",
+  "animatorSourceSha256": "333657fe009a52e3b66540588dd3ede30c6faf4899a2b26d954e4bda88667d08",
+  "g3djSha256": "be50d4b5283fe91d7fe8acc4a579b931fd392b0ad4f6f1c4cedc8d840c2b878c",
+  "productionCheckoutCommit": "900466fecba6961cc20dba4bc0f0e7b019239997"
+}

@@ -1,0 +1,281 @@
+> Task :assemble UP-TO-DATE
+> Task :check UP-TO-DATE
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-backend:sourcesJar UP-TO-DATE
+> Task :javity-backend:assemble UP-TO-DATE
+> Task :javity-backend:compileTestJava UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-backend:processTestResources NO-SOURCE
+> Task :javity-backend:testClasses UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-desktop:sourcesJar
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-backend:test UP-TO-DATE
+> Task :javity-backend:check UP-TO-DATE
+> Task :javity-backend:build UP-TO-DATE
+> Task :javity-desktop:processTestResources NO-SOURCE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-engine:sourcesJar UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-engine:assemble UP-TO-DATE
+> Task :javity-map:processResources NO-SOURCE
+> Task :javity-map:sourcesJar UP-TO-DATE
+> Task :javity-engine:compileTestJava UP-TO-DATE
+> Task :javity-map:processTestResources NO-SOURCE
+> Task :javity-engine:processTestResources NO-SOURCE
+> Task :javity-engine:testClasses UP-TO-DATE
+> Task :javity-net:compileJava UP-TO-DATE
+> Task :javity-map-core:sourcesJar UP-TO-DATE
+> Task :javity-map-core:processTestResources NO-SOURCE
+> Task :javity-net:processResources NO-SOURCE
+> Task :javity-net:classes UP-TO-DATE
+> Task :javity-net:jar UP-TO-DATE
+> Task :javity-engine:test UP-TO-DATE
+> Task :javity-engine:check UP-TO-DATE
+> Task :javity-engine:build UP-TO-DATE
+> Task :javity-maplibre:sourcesJar UP-TO-DATE
+> Task :javity-maplibre:assemble UP-TO-DATE
+> Task :javity-maplibre:compileTestKotlin NO-SOURCE
+> Task :javity-net:sourcesJar UP-TO-DATE
+> Task :javity-net:assemble UP-TO-DATE
+> Task :javity-map:compileJava UP-TO-DATE
+> Task :javity-map:classes UP-TO-DATE
+> Task :javity-net:compileTestJava UP-TO-DATE
+> Task :javity-map:jar UP-TO-DATE
+> Task :javity-map:assemble UP-TO-DATE
+> Task :javity-net:processTestResources NO-SOURCE
+> Task :javity-net:testClasses UP-TO-DATE
+> Task :javity-maplibre:compileTestJava UP-TO-DATE
+> Task :javity-map:compileTestJava UP-TO-DATE
+> Task :javity-map:testClasses UP-TO-DATE
+> Task :javity-maplibre:processTestResources NO-SOURCE
+> Task :javity-maplibre:testClasses UP-TO-DATE
+> Task :javity-net:test UP-TO-DATE
+> Task :javity-net:check UP-TO-DATE
+> Task :javity-net:build UP-TO-DATE
+> Task :javity-map:test UP-TO-DATE
+> Task :javity-physics2d:sourcesJar UP-TO-DATE
+> Task :javity-map:check UP-TO-DATE
+> Task :javity-map:build UP-TO-DATE
+> Task :javity-physics2d:processTestResources NO-SOURCE
+> Task :javity-script:sourcesJar UP-TO-DATE
+> Task :javity-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-script:processTestResources NO-SOURCE
+> Task :javity-physics3d:processTestResources NO-SOURCE
+> Task :javity-script-graal:sourcesJar UP-TO-DATE
+> Task :javity-ui:sourcesJar UP-TO-DATE
+> Task :javity-ui:processTestResources NO-SOURCE
+> Task :javity-maplibre:test UP-TO-DATE
+> Task :javity-script-graal:processTestResources NO-SOURCE
+> Task :javity-maplibre:check UP-TO-DATE
+> Task :javity-maplibre:build UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:sourcesJar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processTestResources NO-SOURCE
+> Task :javity-voxel-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-voxel:sourcesJar UP-TO-DATE
+> Task :javity-voxel-physics3d:processTestResources NO-SOURCE
+> Task :javity-voxel:processTestResources NO-SOURCE
+> Task :javity-core:compileJava
+> Task :javity-core:processResources NO-SOURCE
+> Task :javity-core:classes
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-map-core:assemble UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-physics2d:assemble UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileTestJava UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-physics2d:testClasses UP-TO-DATE
+> Task :javity-physics3d:assemble UP-TO-DATE
+> Task :javity-map-core:compileTestJava UP-TO-DATE
+> Task :javity-map-core:testClasses UP-TO-DATE
+> Task :javity-script:assemble UP-TO-DATE
+> Task :javity-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-physics3d:testClasses UP-TO-DATE
+> Task :javity-script-graal:assemble UP-TO-DATE
+> Task :javity-core:jar
+> Task :javity-script-graal:compileTestJava NO-SOURCE
+> Task :javity-script:compileTestJava UP-TO-DATE
+> Task :javity-core:sourcesJar
+> Task :javity-core:assemble
+> Task :javity-core:compileTestJava
+> Task :javity-core:processTestResources NO-SOURCE
+> Task :javity-core:testClasses
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :javity-physics2d:test
+> Task :javity-physics2d:check
+> Task :javity-physics2d:build
+
+> Task :javity-desktop:compileJava
+Note: /workspace/JavityEngine/javity-desktop/src/main/java/org/javity/demo/AvatarGpuSmokeProbe.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :javity-desktop:classes
+> Task :javity-map-core:test
+> Task :javity-map-core:check
+> Task :javity-map-core:build
+> Task :javity-script:testClasses UP-TO-DATE
+> Task :javity-desktop:jar
+> Task :javity-desktop:startScripts
+> Task :javity-core:test
+> Task :javity-core:check
+> Task :javity-core:build
+> Task :javity-script-graal:testClasses UP-TO-DATE
+> Task :javity-script-graal:test NO-SOURCE
+> Task :javity-script-graal:check UP-TO-DATE
+> Task :javity-script-graal:build UP-TO-DATE
+> Task :javity-ui:assemble UP-TO-DATE
+> Task :javity-ui:compileTestJava UP-TO-DATE
+> Task :javity-ui:testClasses UP-TO-DATE
+> Task :javity-desktop:distTar
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :javity-physics3d:test
+> Task :javity-physics3d:check
+> Task :javity-physics3d:build
+> Task :javity-ui-yoga-lwjgl:assemble UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileTestJava NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:testClasses UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:test NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:check UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:build UP-TO-DATE
+> Task :javity-voxel:assemble UP-TO-DATE
+> Task :javity-voxel:compileTestJava UP-TO-DATE
+> Task :javity-voxel:testClasses UP-TO-DATE
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :javity-voxel:test
+> Task :javity-voxel:check
+> Task :javity-voxel:build
+> Task :javity-voxel-physics3d:assemble UP-TO-DATE
+> Task :javity-voxel-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-voxel-physics3d:testClasses UP-TO-DATE
+> Task :javity-voxel-physics3d:test
+> Task :javity-voxel-physics3d:check
+> Task :javity-voxel-physics3d:build
+> Task :javity-desktop:distZip
+> Task :javity-desktop:assemble
+> Task :javity-desktop:compileTestJava UP-TO-DATE
+> Task :javity-desktop:testClasses UP-TO-DATE
+> Task :javity-desktop:test
+> Task :javity-desktop:check
+> Task :javity-desktop:build
+
+> Task :javity-desktop:instancingSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+measured: ordinaryDraws=256 instancedDraws=1 dynamicUploadBytes=16384 stats=InstanceStats[submitted=256, visible=256, culled=0, instanced=256, fallback=0, groups=1, draws=1, uploadBytes=16384]
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+
+> Task :javity-ui:test
+> Task :javity-ui:check
+> Task :javity-ui:build
+
+> Task :javity-desktop:instancingSmoke
+pixels: foreground=13888/13888 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13830/13830 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=10423/10423 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=12584/12584 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+[StaticInstanceBatch] GPU preparation failed; using ordinary rendering
+java.lang.IllegalStateException: injected instance buffer allocation failure
+	at org.javity.demo.InstancingDemo$NativeCalls.invoke(InstancingDemo.java:477)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glBufferData(Unknown Source)
+	at org.javity.render.StaticInstanceBatch$Chunk.update(StaticInstanceBatch.java:307)
+	at org.javity.render.StaticInstanceBatch$Group.prepare(StaticInstanceBatch.java:280)
+	at org.javity.render.StaticInstanceBatch.render(StaticInstanceBatch.java:115)
+	at org.javity.render.StaticInstanceBatch.render(StaticInstanceBatch.java:53)
+	at org.javity.demo.InstancingDemo.allocationFailure(InstancingDemo.java:247)
+	at org.javity.demo.InstancingDemo.run(InstancingDemo.java:228)
+	at org.javity.demo.InstancingDemo.create(InstancingDemo.java:52)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.InstancingSmokeLauncher.main(InstancingSmokeLauncher.java:20)
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+pixels: foreground=7696/7696 coverage=0 maxRGB=0 creasePixels=0
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=7587/7587 coverage=0 maxRGB=24 creasePixels=1
+integration crease exception: x=166 y=71 maxRGB=16
+integration crease exception: x=105 y=91 maxRGB=24
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL33: PASS assertions=71
+
+> Task :javity-desktop:instancingGl20Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+pixels: foreground=13887/13887 coverage=0 maxRGB=0 creasePixels=0
+instancingSmoke GL20: PASS assertions=7
+
+> Task :javity-script:test
+> Task :javity-script:check
+> Task :javity-script:build
+> Task :build
+
+[Incubating] Problems report is available at: file:///workspace/JavityEngine/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 19s
+90 actionable tasks: 21 executed, 69 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html

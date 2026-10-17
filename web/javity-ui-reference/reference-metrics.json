@@ -1,0 +1,830 @@
+{
+  "viewport": {
+    "width": 1100,
+    "height": 720,
+    "dpr": 1
+  },
+  "els": {
+    "screen": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1100,
+        "height": 720
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "16px",
+        "right": "16px",
+        "bottom": "16px",
+        "left": "16px"
+      },
+      "gap": "16px",
+      "flexDirection": "column",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "nested": {
+      "rect": {
+        "x": 16,
+        "y": 16,
+        "width": 600,
+        "height": 180
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "oklch(0.929 0.013 255.508)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "8px",
+        "right": "8px",
+        "bottom": "8px",
+        "left": "8px"
+      },
+      "gap": "8px",
+      "flexDirection": "column",
+      "pixelCenter": [
+        226,
+        232,
+        240
+      ]
+    },
+    "nested-header": {
+      "rect": {
+        "x": 24,
+        "y": 24,
+        "width": 584,
+        "height": 32
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "8px",
+        "bottom": "0px",
+        "left": "8px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "header-left": {
+      "rect": {
+        "x": 32,
+        "y": 28,
+        "width": 103.88,
+        "height": 24
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "8px",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "header-right": {
+      "rect": {
+        "x": 534.94,
+        "y": 26,
+        "width": 65.06,
+        "height": 28
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "4px",
+      "flexDirection": "row",
+      "pixelCenter": [
+        21,
+        93,
+        252
+      ]
+    },
+    "header-label": {
+      "rect": {
+        "x": 56,
+        "y": 28,
+        "width": 79.88,
+        "height": 24
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        191,
+        194,
+        199
+      ],
+      "glyphPixels": {
+        "x": 57,
+        "y": 34,
+        "width": 78,
+        "height": 16
+      }
+    },
+    "nested-action": {
+      "rect": {
+        "x": 534.94,
+        "y": 26,
+        "width": 65.06,
+        "height": 28
+      },
+      "fontSize": "14px",
+      "lineHeight": "20px",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "oklch(0.546 0.245 262.881)",
+      "borderColor": "rgb(255, 255, 255)",
+      "borderWidth": "0px",
+      "borderRadius": "6px",
+      "padding": {
+        "top": "4px",
+        "right": "12px",
+        "bottom": "4px",
+        "left": "12px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        21,
+        93,
+        252
+      ]
+    },
+    "nested-content": {
+      "rect": {
+        "x": 24,
+        "y": 64,
+        "width": 584,
+        "height": 124
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "8px",
+      "flexDirection": "row",
+      "pixelCenter": [
+        226,
+        232,
+        240
+      ]
+    },
+    "flex-left": {
+      "rect": {
+        "x": 24,
+        "y": 64,
+        "width": 288,
+        "height": 124
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "oklch(0.789 0.154 211.53)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "8px",
+        "right": "8px",
+        "bottom": "8px",
+        "left": "8px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        0,
+        211,
+        243
+      ]
+    },
+    "left-text": {
+      "rect": {
+        "x": 32,
+        "y": 72,
+        "width": 272,
+        "height": 24
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        0,
+        211,
+        243
+      ],
+      "glyphPixels": {
+        "x": 33,
+        "y": 78,
+        "width": 23,
+        "height": 12
+      }
+    },
+    "flex-right": {
+      "rect": {
+        "x": 320,
+        "y": 64,
+        "width": 288,
+        "height": 124
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "oklch(0.696 0.17 162.48)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "8px",
+        "right": "8px",
+        "bottom": "8px",
+        "left": "8px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        0,
+        188,
+        125
+      ]
+    },
+    "right-text": {
+      "rect": {
+        "x": 328,
+        "y": 72,
+        "width": 272,
+        "height": 24
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        0,
+        188,
+        125
+      ],
+      "glyphPixels": {
+        "x": 329,
+        "y": 78,
+        "width": 34,
+        "height": 16
+      }
+    },
+    "controls": {
+      "rect": {
+        "x": 16,
+        "y": 212,
+        "width": 420,
+        "height": 252
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "16px",
+        "right": "16px",
+        "bottom": "16px",
+        "left": "16px"
+      },
+      "gap": "16px",
+      "flexDirection": "column",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "classic-button": {
+      "rect": {
+        "x": 32,
+        "y": 228,
+        "width": 388,
+        "height": 42
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "oklch(0.546 0.245 262.881)",
+      "borderColor": "oklch(0.929 0.013 255.508)",
+      "borderWidth": "1px",
+      "borderRadius": "6px",
+      "padding": {
+        "top": "8px",
+        "right": "16px",
+        "bottom": "8px",
+        "left": "16px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        21,
+        93,
+        252
+      ]
+    },
+    "classic-input": {
+      "rect": {
+        "x": 32,
+        "y": 286,
+        "width": 388,
+        "height": 40
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.929 0.013 255.508)",
+      "borderWidth": "1px",
+      "borderRadius": "6px",
+      "padding": {
+        "top": "0px",
+        "right": "12px",
+        "bottom": "0px",
+        "left": "12px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "classic-progress": {
+      "rect": {
+        "x": 32,
+        "y": 342,
+        "width": 388,
+        "height": 8
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.789 0.154 211.53)",
+      "backgroundColor": "oklch(0.929 0.013 255.508)",
+      "borderColor": "oklch(0.789 0.154 211.53)",
+      "borderWidth": "0px",
+      "borderRadius": "3.35544e+07px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        0,
+        211,
+        243
+      ]
+    },
+    "classic-card": {
+      "rect": {
+        "x": 32,
+        "y": 366,
+        "width": 388,
+        "height": 82
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "oklch(0.929 0.013 255.508)",
+      "borderWidth": "1px",
+      "borderRadius": "8px",
+      "padding": {
+        "top": "16px",
+        "right": "16px",
+        "bottom": "16px",
+        "left": "16px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "card-title": {
+      "rect": {
+        "x": 49,
+        "y": 383,
+        "width": 354,
+        "height": 28
+      },
+      "fontSize": "18px",
+      "lineHeight": "28px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ],
+      "glyphPixels": {
+        "x": 50,
+        "y": 390,
+        "width": 75,
+        "height": 14
+      }
+    },
+    "card-body": {
+      "rect": {
+        "x": 49,
+        "y": 411,
+        "width": 354,
+        "height": 20
+      },
+      "fontSize": "14px",
+      "lineHeight": "20px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ],
+      "glyphPixels": {
+        "x": 50,
+        "y": 415,
+        "width": 103,
+        "height": 15
+      }
+    },
+    "typography": {
+      "rect": {
+        "x": 16,
+        "y": 480,
+        "width": 1068,
+        "height": 92
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "4px",
+      "flexDirection": "column",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ]
+    },
+    "type-inherited": {
+      "rect": {
+        "x": 16,
+        "y": 480,
+        "width": 90.13,
+        "height": 24
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        15,
+        23,
+        43
+      ],
+      "glyphPixels": {
+        "x": 17,
+        "y": 486,
+        "width": 88,
+        "height": 12
+      }
+    },
+    "type-xl": {
+      "rect": {
+        "x": 16,
+        "y": 508,
+        "width": 116.08,
+        "height": 28
+      },
+      "fontSize": "20px",
+      "lineHeight": "28px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ],
+      "glyphPixels": {
+        "x": 16,
+        "y": 514,
+        "width": 115,
+        "height": 15
+      }
+    },
+    "type-2xl": {
+      "rect": {
+        "x": 16,
+        "y": 540,
+        "width": 153.02,
+        "height": 32
+      },
+      "fontSize": "24px",
+      "lineHeight": "32px",
+      "color": "oklch(0.208 0.042 265.755)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.208 0.042 265.755)",
+      "borderWidth": "0px",
+      "borderRadius": "0px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        255,
+        255,
+        255
+      ],
+      "glyphPixels": {
+        "x": 16,
+        "y": 547,
+        "width": 152,
+        "height": 18
+      }
+    },
+    "scroll-sample": {
+      "rect": {
+        "x": 16,
+        "y": 588,
+        "width": 420,
+        "height": 72
+      },
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "color": "oklch(0.704 0.04 256.788)",
+      "backgroundColor": "oklch(0.929 0.013 255.508)",
+      "borderColor": "oklch(0.929 0.013 255.508)",
+      "borderWidth": "1px",
+      "borderRadius": "6px",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "gap": "normal",
+      "flexDirection": "row",
+      "pixelCenter": [
+        226,
+        232,
+        240
+      ]
+    }
+  },
+  "scrollbar": {
+    "clientWidth": 418,
+    "offsetWidth": 420,
+    "scrollWidth": 418,
+    "scrollHeight": 204,
+    "scrollTop": 0,
+    "rect": {
+      "x": 16,
+      "y": 588,
+      "width": 420,
+      "height": 72
+    },
+    "thumb": {
+      "x": 428,
+      "y": 590,
+      "width": 6,
+      "height": 22.64
+    },
+    "scrollTopMoved": 40,
+    "thumbMoved": {
+      "x": 428,
+      "y": 602.9375,
+      "width": 6,
+      "height": 22.640625
+    },
+    "thumbPixels": 118,
+    "thumbPixelBounds": {
+      "x": 428,
+      "y": 591,
+      "width": 6,
+      "height": 21
+    },
+    "thumbMovedPixels": 118,
+    "thumbMovedPixelBounds": {
+      "x": 428,
+      "y": 604,
+      "width": 6,
+      "height": 21
+    }
+  },
+  "states": {
+    "inputBorderPoint": [
+      32,
+      306
+    ],
+    "buttonHover": "oklch(0.488 0.243 264.376)",
+    "buttonHoverPoint": [
+      40,
+      236
+    ],
+    "inputHoverBorder": "oklch(0.704 0.04 256.788)",
+    "inputHoverPoint": [
+      32,
+      306
+    ],
+    "inputFocusBorder": "oklch(0.546 0.245 262.881)",
+    "inputFocusPoint": [
+      32,
+      306
+    ],
+    "inputDisabledPoint": [
+      32,
+      306
+    ],
+    "buttonDisabled": "oklch(0.546 0.245 262.881)",
+    "buttonDisabledOpacity": "0.5",
+    "buttonDisabledPoint": [
+      40,
+      236
+    ],
+    "inputBorderPixel": [
+      226,
+      232,
+      240
+    ],
+    "hoverPixel": [
+      20,
+      71,
+      230
+    ],
+    "input-hoverPixel": [
+      144,
+      161,
+      185
+    ],
+    "focusPixel": [
+      21,
+      93,
+      252
+    ],
+    "disabledPixel": [
+      137,
+      173,
+      253
+    ],
+    "input-disabledPixel": [
+      240,
+      243,
+      247
+    ]
+  }
+}

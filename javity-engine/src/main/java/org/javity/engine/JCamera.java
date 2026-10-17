@@ -53,12 +53,12 @@ public class JCamera {
 
 	
 	public void setZoom(float zoom) {
-		main.nativeCamera.setZoom(zoom);
-		main.nativeCamera.update();
+		nativeCamera.setZoom(zoom);
+		nativeCamera.update();
 	}
 
 	public float getZoom() {
-		return main.nativeCamera.getZoom();
+		return nativeCamera.getZoom();
 	}
 	
 	public RapidCamera getNative(){

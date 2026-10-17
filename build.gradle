@@ -1,0 +1,62 @@
+buildscript {
+    if (gradle.startParameter.projectProperties['javityAndroid']?.toBoolean()) {
+        repositories { google(); mavenCentral() }
+        dependencies { classpath 'com.android.tools.build:gradle:9.4.1' }
+    }
+}
+
+plugins {
+    id 'base'
+    // AGP's built-in Kotlin shares this compiler; Java 25 requires a target-aware version.
+    id 'org.jetbrains.kotlin.jvm' version '2.4.20' apply false
+}
+
+ext {
+    gdxVersion = '1.14.2'
+    artemisVersion = '2.3.0'
+    lwjglVersion = '3.4.3'
+}
+
+subprojects {
+    group = 'pl.javity'
+    version = '0.7.0-SNAPSHOT'
+
+    def androidProject = name in ['javity-ui-yoga-android', 'javity-script-quickjs-android', 'javity-android-app']
+    if (!androidProject) {
+        apply plugin: 'java-library'
+        java {
+            toolchain { languageVersion = JavaLanguageVersion.of(25) }
+            withSourcesJar()
+        }
+        tasks.withType(JavaCompile).configureEach {
+            options.encoding = 'UTF-8'
+            options.release = 25
+        }
+        tasks.withType(Test).configureEach { useJUnit() }
+        dependencies { testImplementation 'junit:junit:4.13.2' }
+    }
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.badlogicgames.gdx' &&
+                details.requested.name in ['gdx', 'gdx-box2d', 'gdx-freetype',
+                    'gdx-backend-lwjgl3', 'gdx-backend-headless', 'gdx-platform',
+                    'gdx-box2d-platform', 'gdx-freetype-platform', 'gdx-bullet',
+                    'gdx-bullet-platform']) {
+                details.useVersion rootProject.gdxVersion
+            }
+            if (details.requested.group == 'org.lwjgl') {
+                details.useVersion rootProject.lwjglVersion
+            }
+        }
+    }
+}
+
+tasks.named('build') { dependsOn subprojects.collect { "${it.path}:build" } }
+tasks.named('clean') { dependsOn subprojects.collect { "${it.path}:clean" } }
+
+// One-command local authoritative multiplayer workflow.
+tasks.register('dev') {
+    group = 'application'
+    description = 'Starts the Java-supervised local Colyseus workspace.'
+    dependsOn ':javity-rooms:dev'
+}

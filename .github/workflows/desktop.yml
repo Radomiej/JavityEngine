@@ -1,0 +1,135 @@
+name: Desktop engine
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  local-multiplayer:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/local-multiplayer/package-lock.json
+      - name: Build Java authority and run its tests
+        run: ./gradlew --no-daemon :javity-rooms:test :javity-rooms:installDist
+      - name: Test real Colyseus and Java worker integration
+        run: |
+          npm --prefix web/local-multiplayer ci
+          npm --prefix web/local-multiplayer test
+  desktop:
+    runs-on: ubuntu-24.04
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Optional Artemis CPU integration and dependency boundary
+        run: ./gradlew --no-daemon :javity-ecs-artemis:test :javity-ecs-artemis:usageSmoke :javity-ecs-artemis:verifyEcsBoundary
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/javity-ui/package-lock.json
+      - name: React host build and tests
+        run: |
+          npm --prefix web/javity-ui ci
+          npm --prefix web/javity-ui run build
+          npm --prefix web/javity-ui test
+          git diff --exit-code -- javity-script/src/main/resources/org/javity/script/javity-ui.js javity-script/src/main/resources/org/javity/script/javity-sample.js javity-script/src/main/resources/org/javity/script/javity-mm.js
+      - name: Display dependencies
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libegl1 libgles2
+      - name: Real HTML reference
+        run: |
+          python3 -m pip install playwright==1.62.0 Pillow==12.3.0 numpy==2.3.5
+          sudo ln -sf "$(command -v google-chrome)" /usr/bin/chromium
+          npm --prefix web/javity-ui-reference ci
+          npm --prefix web/javity-ui-reference run css
+          python3 web/javity-ui-reference/compare.py
+      - name: Offline MapLibre fixture and browser reference
+        run: |
+          python3 -m pip install scipy==1.17.0
+          python3 -m unittest tools.test_generate_maplibre_town tools.test_generate_maplibre_glyphs tools.test_import_gorzow_map
+          npm --prefix web/maplibre-reference ci --ignore-scripts --no-audit --no-fund
+          python3 tools/maplibre-browser-reference.py --capture
+          python3 tools/maplibre-browser-reference.py --capture --style night --screenshot docs/demo-maplibre-reference-night.png
+      - name: Build and test
+        run: ./gradlew --no-daemon --warning-mode all clean build :javity-desktop:installDist :javity-desktop:distZip
+      - name: Native graphics and audio smoke
+        run: |
+          xvfb-run -a ./gradlew --no-daemon :javity-desktop:smoke :javity-desktop:inspectorSmoke :javity-desktop:mapSmoke :javity-desktop:maplibreSmoke :javity-desktop:gorzowSmoke :javity-desktop:runtimeSmoke :javity-desktop:shapesSmoke :javity-desktop:materialsSmoke :javity-desktop:voxelSmoke :javity-desktop:avatarSmoke :javity-desktop:avatarGl30Smoke :javity-desktop:physics3dSmoke :javity-desktop:presentation3dSmoke :javity-desktop:particleSmoke :javity-desktop:postprocessSmoke :javity-desktop:feel3dSmoke :javity-desktop:pluginsSmoke :javity-desktop:uiParitySmoke :javity-desktop:mmSmoke
+          mkdir -p build/smoke
+          cp smoke.png build/smoke/modern.png
+          cp map-smoke.png build/smoke/map.png
+          cp runtime-smoke.png build/smoke/runtime.png
+          cp shapes-smoke.png build/smoke/shapes.png
+          cp plugins-smoke.png build/smoke/plugins.png
+          xvfb-run -a ./gradlew --no-daemon :javity-desktop:run --args='--legacy --smoke'
+      - name: Browser and native screenshot gates
+        run: |
+          python3 web/javity-ui-reference/k1-controls-compare.py
+          python3 web/javity-ui-reference/k2-wrap-compare.py
+          python3 web/javity-ui-reference/k4-image-render.py
+          python3 web/javity-ui-reference/k4-image-compare.py
+          python3 web/javity-ui-reference/mm-compare.py
+          python3 tools/compare-maplibre-renders.py
+      - name: Installed distribution outside checkout
+        run: |
+          cd "$(mktemp -d)"
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --maplibre --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --gorzow --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --voxels --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --inspector --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --mm --smoke
+          xvfb-run -a "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --ui-parity --smoke
+      - name: Installed development UI reload
+        run: |
+          (cd web/javity-ui && ./node_modules/.bin/esbuild src/dev.tsx --bundle --format=iife --external:react --external:react-reconciler --outfile=dist/javity-ui-dev.js)
+          xvfb-run -a python3 web/javity-ui-reference/packaged-dev-proof.py --launcher "$GITHUB_WORKSPACE/javity-desktop/build/install/javity-desktop/bin/javity-desktop" --bundle "$GITHUB_WORKSPACE/web/javity-ui/dist/javity-ui-dev.js" --artifacts "$GITHUB_WORKSPACE/artifacts/mm-systems"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-verification
+          path: |
+            **/build/reports/tests/test/**
+            build/smoke/*.png
+            artifacts/ui-parity-*.png
+            artifacts/ui-parity-*.json
+            artifacts/k1-*.png
+            artifacts/k1-*.json
+            artifacts/k2-*.png
+            artifacts/k2-*.json
+            artifacts/k4-*.png
+            artifacts/k4-*.json
+            artifacts/j-model-*.png
+            artifacts/j-pose-*.png
+            artifacts/j-pose-*.json
+            artifacts/mm-systems/**
+            artifacts/shape-materials/**
+            artifacts/voxels/**
+            docs/demo-maplibre*.png
+            docs/artifacts/avatar/**
+            docs/artifacts/physics3d/**
+            docs/artifacts/presentation3d/**
+            docs/artifacts/particles3d/**
+            docs/artifacts/world-postprocess/**
+            docs/artifacts/shapes-dashes/**
+            docs/artifacts/feel3d/**
+            docs/demo-runtime-inspector.png
+            docs/runtime-inspector-verification.json
+            docs/demo-gorzow*.png
+            docs/gorzow-verification.json
+            docs/maplibre-comparison.png
+            docs/maplibre-*.json
+            javity-desktop/build/distributions/*.zip

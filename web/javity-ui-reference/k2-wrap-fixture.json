@@ -1,0 +1,13 @@
+{
+  "viewport": { "width": 1100, "height": 720, "dpr": 1 },
+  "font": "Open Sans",
+  "paragraphs": [
+    { "id": "wrap-14-pl", "fontClass": "text-sm", "fontSize": 14, "lineHeight": 20, "narrow": 245, "wide": 385, "opacity": true, "text": "Zażółć gęślą jaźń. Mały żółw płynie przez zieloną łąkę i wraca do domu." },
+    { "id": "wrap-16-pl", "fontClass": "text-base", "fontSize": 16, "lineHeight": 24, "narrow": 285, "wide": 440, "text": "Pchnąć w tę łódź jeża lub ośm skrzyń fig. ĄĆĘŁŃÓŚŹŻ oraz ąćęłńóśźż." },
+    { "id": "wrap-24-pl", "fontClass": "text-2xl", "fontSize": 24, "lineHeight": 32, "narrow": 500, "wide": 620, "text": "Źródło światła odbija się od białego żagla i płynie w stronę portu." },
+    { "id": "wrap-newline", "fontClass": "text-base", "fontSize": 16, "lineHeight": 24, "narrow": 250, "wide": 420, "text": "Pierwsza    linia zostaje tutaj.\nDruga linia zaczyna się jawnie." },
+    { "id": "wrap-trailing-newline", "fontClass": "text-base", "fontSize": 16, "lineHeight": 24, "narrow": 250, "wide": 420, "text": "Końcowy znak nowej linii nie dodaje pustej linii.\n" },
+    { "id": "wrap-longword", "fontClass": "text-base", "fontSize": 16, "lineHeight": 24, "narrow": 190, "wide": 360, "text": "Przed Supercalifragilisticexpialidocious pozostaje przerwa." },
+    { "id": "wrap-24-near-threshold", "fontClass": "text-2xl", "fontSize": 24, "lineHeight": 32, "narrow": 410, "wide": 620, "nearThreshold": true, "text": "Źródło światła odbija się od białego żagla i płynie w stronę portu." }
+  ]
+}

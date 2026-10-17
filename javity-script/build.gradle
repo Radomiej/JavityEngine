@@ -1,0 +1,9 @@
+dependencies {
+    api project(':javity-ui')
+    testRuntimeOnly project(':javity-ui-yoga-lwjgl')
+    testRuntimeOnly project(':javity-script-graal')
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}

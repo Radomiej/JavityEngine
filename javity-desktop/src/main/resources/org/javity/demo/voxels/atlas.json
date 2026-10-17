@@ -1,0 +1,213 @@
+{
+  "alpha": "all texels are fully opaque",
+  "cellStride": 20,
+  "columns": 4,
+  "filter": "nearest",
+  "format": "javity-voxel-atlas-v1",
+  "gutter": 2,
+  "height": 40,
+  "image": "atlas.png",
+  "license": "LICENSE.txt",
+  "mipmaps": false,
+  "origin": "top-left image pixels",
+  "pixelFormat": "RGBA8",
+  "rows": 2,
+  "seed": "0x4a415649",
+  "tileSize": 16,
+  "tiles": [
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 0,
+        "y": 0
+      },
+      "column": 0,
+      "id": 0,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 2,
+        "y": 2
+      },
+      "name": "grass_top",
+      "row": 0,
+      "uv": {
+        "u0": 0.03125,
+        "u1": 0.21875,
+        "v0": 0.0625,
+        "v1": 0.4375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 20,
+        "y": 0
+      },
+      "column": 1,
+      "id": 1,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 22,
+        "y": 2
+      },
+      "name": "grass_side",
+      "row": 0,
+      "uv": {
+        "u0": 0.28125,
+        "u1": 0.46875,
+        "v0": 0.0625,
+        "v1": 0.4375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 40,
+        "y": 0
+      },
+      "column": 2,
+      "id": 2,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 42,
+        "y": 2
+      },
+      "name": "dirt",
+      "row": 0,
+      "uv": {
+        "u0": 0.53125,
+        "u1": 0.71875,
+        "v0": 0.0625,
+        "v1": 0.4375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 60,
+        "y": 0
+      },
+      "column": 3,
+      "id": 3,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 62,
+        "y": 2
+      },
+      "name": "stone",
+      "row": 0,
+      "uv": {
+        "u0": 0.78125,
+        "u1": 0.96875,
+        "v0": 0.0625,
+        "v1": 0.4375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 0,
+        "y": 20
+      },
+      "column": 0,
+      "id": 4,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 2,
+        "y": 22
+      },
+      "name": "wood_side",
+      "row": 1,
+      "uv": {
+        "u0": 0.03125,
+        "u1": 0.21875,
+        "v0": 0.5625,
+        "v1": 0.9375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 20,
+        "y": 20
+      },
+      "column": 1,
+      "id": 5,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 22,
+        "y": 22
+      },
+      "name": "wood_top",
+      "row": 1,
+      "uv": {
+        "u0": 0.28125,
+        "u1": 0.46875,
+        "v0": 0.5625,
+        "v1": 0.9375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 40,
+        "y": 20
+      },
+      "column": 2,
+      "id": 6,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 42,
+        "y": 22
+      },
+      "name": "sand",
+      "row": 1,
+      "uv": {
+        "u0": 0.53125,
+        "u1": 0.71875,
+        "v0": 0.5625,
+        "v1": 0.9375
+      }
+    },
+    {
+      "cell": {
+        "height": 20,
+        "width": 20,
+        "x": 60,
+        "y": 20
+      },
+      "column": 3,
+      "id": 7,
+      "imageRect": {
+        "height": 16,
+        "width": 16,
+        "x": 62,
+        "y": 22
+      },
+      "name": "leaves",
+      "row": 1,
+      "uv": {
+        "u0": 0.78125,
+        "u1": 0.96875,
+        "v0": 0.5625,
+        "v1": 0.9375
+      }
+    }
+  ],
+  "uvConvention": "u increases right; image-top maps to low v; face top samples v0 and bottom v1; bounds inset half a texel into tile content",
+  "width": 80
+}

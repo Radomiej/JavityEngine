@@ -1,0 +1,329 @@
+{
+  "abi_directories": [
+    "arm64-v8a",
+    "x86_64"
+  ],
+  "apk": "/workspace/JavityEngine/javity-android-app/build/outputs/apk/debug/javity-android-app-debug.apk",
+  "apk_sha256": "7f9483937f5b38d1c1df3b29b1f27bd3020904ceb2ff6af9c2b4e1e0d0a9073d",
+  "errors": [],
+  "expected_abis": [
+    "arm64-v8a",
+    "x86_64"
+  ],
+  "forbidden_artifacts": [],
+  "native_libraries": [
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 10469376,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 183
+      },
+      "entry": "lib/arm64-v8a/libgdx-freetype.so",
+      "expected_architecture": "ELF64 AArch64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 783680,
+          "p_vaddr": 800064,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 810792,
+          "p_vaddr": 843560,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 11288576,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 183
+      },
+      "entry": "lib/arm64-v8a/libgdx.so",
+      "expected_architecture": "ELF64 AArch64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 161040,
+          "p_vaddr": 177424,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 161928,
+          "p_vaddr": 194696,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 11468800,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 183
+      },
+      "entry": "lib/arm64-v8a/libquickjs.so",
+      "expected_architecture": "ELF64 AArch64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 763344,
+          "p_vaddr": 779728,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 788360,
+          "p_vaddr": 821128,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 12402688,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 183
+      },
+      "entry": "lib/arm64-v8a/libyoga.so",
+      "expected_architecture": "ELF64 AArch64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 618752,
+          "p_vaddr": 635136,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 635640,
+          "p_vaddr": 668408,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 13058048,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 62
+      },
+      "entry": "lib/x86_64/libgdx-freetype.so",
+      "expected_architecture": "ELF64 x86-64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 881760,
+          "p_vaddr": 898144,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 909008,
+          "p_vaddr": 941776,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 13975552,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 62
+      },
+      "entry": "lib/x86_64/libgdx.so",
+      "expected_architecture": "ELF64 x86-64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 190160,
+          "p_vaddr": 206544,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 191048,
+          "p_vaddr": 223816,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 14172160,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 62
+      },
+      "entry": "lib/x86_64/libquickjs.so",
+      "expected_architecture": "ELF64 x86-64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 805856,
+          "p_vaddr": 822240,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 830840,
+          "p_vaddr": 863608,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    },
+    {
+      "compressed": false,
+      "compression_method": 0,
+      "data_offset": 15089664,
+      "data_offset_mod_16384": 0,
+      "elf": {
+        "byte_order": "little",
+        "class": 2,
+        "machine": 62
+      },
+      "entry": "lib/x86_64/libyoga.so",
+      "expected_architecture": "ELF64 x86-64",
+      "pt_load_segments": [
+        {
+          "index": 1,
+          "p_align": 16384,
+          "p_offset": 0,
+          "p_vaddr": 0,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 2,
+          "p_align": 16384,
+          "p_offset": 601744,
+          "p_vaddr": 618128,
+          "vaddr_offset_congruent": true
+        },
+        {
+          "index": 3,
+          "p_align": 16384,
+          "p_offset": 617776,
+          "p_vaddr": 650544,
+          "vaddr_offset_congruent": true
+        }
+      ]
+    }
+  ],
+  "notice_files_verified": 29,
+  "required_native_library_provenance": {
+    "libgdx-freetype.so": "libGDX 1.14.2 gdx-freetype-platform Android native classifier",
+    "libgdx.so": "libGDX 1.14.2 gdx-platform Android native classifier (local x86_64 classifier jar confirms basename)",
+    "libquickjs.so": "io.github.dokar3:quickjs-kt-android:1.0.15, jni/<abi>/libquickjs.so",
+    "libyoga.so": "com.facebook.yoga:yoga:3.2.1 (variant-aware Android AAR), jni/<abi>/libyoga.so"
+  },
+  "runtime_proof": false,
+  "scope": "APK ZIP/ELF/Dex structure only; no install, launch, ABI startup, rendering, or device behavior is proven.",
+  "structural_audit_passed": true,
+  "warnings": [],
+  "zipalign_check": {
+    "command": [
+      "/tmp/javity-android-check/sdk/build-tools/36.0.0/zipalign",
+      "-c",
+      "-P",
+      "16",
+      "4",
+      "javity-android-app/build/outputs/apk/debug/javity-android-app-debug.apk"
+    ],
+    "executable": "/tmp/javity-android-check/sdk/build-tools/36.0.0/zipalign",
+    "exit_code": 0,
+    "output": "",
+    "status": "exit_zero"
+  }
+}

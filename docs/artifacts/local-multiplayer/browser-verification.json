@@ -1,0 +1,20 @@
+{
+  "scope": "HTML preview + real Colyseus + Java Game, not TeaVM engine",
+  "sourceCommit": "c94e6115469ad60cd5a9671195b7d8ca38e1a061",
+  "url": "http://127.0.0.1:39889",
+  "roomId": "RNjgREVz6",
+  "sessionId": "KDSNZUUCE",
+  "twoClients": true,
+  "mirroredX": [
+    6.4,
+    6.4
+  ],
+  "rapidCreateSingleWorker": true,
+  "editableKeysDoNotMove": true,
+  "browser": "154.0.8037.57",
+  "pageErrors": [],
+  "leaveReplicated": true,
+  "activeServerShutdown": true,
+  "ownedChildrenGone": true,
+  "serverExitCode": 0
+}

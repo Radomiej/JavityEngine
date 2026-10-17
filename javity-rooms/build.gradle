@@ -1,0 +1,24 @@
+plugins { id 'application' }
+
+dependencies {
+    api project(':javity-core')
+    implementation "com.badlogicgames.gdx:gdx:${rootProject.gdxVersion}"
+}
+
+application { mainClass = 'org.javity.rooms.LocalRoomWorker' }
+
+// Workspace bootstrap stays in Gradle; Java owns the running Colyseus process.
+tasks.register('prepareLocalGateway', Exec) {
+    workingDir rootProject.file('web/local-multiplayer')
+    inputs.files(rootProject.file('web/local-multiplayer/package.json'), rootProject.file('web/local-multiplayer/package-lock.json'))
+    outputs.file(rootProject.file('web/local-multiplayer/node_modules/.package-lock.json'))
+    commandLine(System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm', 'ci', '--no-audit', '--no-fund')
+}
+tasks.register('dev', JavaExec) {
+    group = 'application'
+    description = 'Builds the Java worker, prepares the local Colyseus workspace and runs its Java supervisor.'
+    dependsOn tasks.named('installDist'), tasks.named('prepareLocalGateway')
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.rooms.LocalDevServerMain'
+    args "--workspace=${rootProject.projectDir}", "--port=${providers.gradleProperty('devPort').getOrElse('2567')}"
+}

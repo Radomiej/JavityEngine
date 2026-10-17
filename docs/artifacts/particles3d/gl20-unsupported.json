@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "configuredApi": "GL20",
+  "gl30InterfaceAvailable": false,
+  "profile": "4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1",
+  "rendererRejectedBeforeAllocation": true,
+  "queriedGlStateUnchanged": true,
+  "depthBlendAndMaskUnchanged": true
+}

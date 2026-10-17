@@ -1,0 +1,46 @@
+{
+  "type": "View", "key": "screen", "classes": "w-full h-full flex flex-col gap-4 p-4 bg-white text-slate-900",
+  "children": [
+    {"type":"View","key":"nested","classes":"w-[600px] h-[180px] flex flex-col gap-2 bg-slate-200 p-2","children":[
+      {"type":"View","key":"nested-header","classes":"h-8 flex flex-row items-center justify-between bg-white px-2","children":[
+        {"type":"View","key":"header-left","classes":"flex flex-row items-center gap-2","children":[
+          {"type":"View","key":"header-dot","classes":"w-4 h-4 rounded-full bg-blue-600"},
+          {"type":"Text","key":"header-label","classes":"text-base text-slate-900","props":{"text":"Navigation"}}
+        ]},
+        {"type":"View","key":"header-right","classes":"flex flex-row items-center gap-1","children":[
+          {"type":"Button","key":"nested-action","classes":"rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 active:bg-blue-700 focus:border-blue-700","props":{"text":"Action"}}
+        ]}
+      ]},
+      {"type":"View","key":"nested-content","classes":"flex flex-1 gap-2","children":[
+        {"type":"View","key":"flex-left","classes":"flex-1 bg-cyan-400 p-2","children":[{"type":"Text","key":"left-text","classes":"text-base text-slate-900","props":{"text":"left"}}]},
+        {"type":"View","key":"flex-right","classes":"flex-1 bg-emerald-500 p-2","children":[{"type":"Text","key":"right-text","classes":"text-base text-slate-900","props":{"text":"right"}}]}
+      ]}
+    ]},
+    {"type":"View","key":"controls","classes":"w-[420px] flex flex-col gap-4 p-4 bg-white","children":[
+      {"type":"Button","key":"classic-button","classes":"rounded-md border border-slate-200 bg-blue-600 px-4 py-2 text-base text-white hover:bg-blue-700 active:bg-blue-700 focus:border-blue-700 disabled:opacity-50","props":{"text":"Save changes"}},
+      {"type":"TextField","key":"classic-input","classes":"h-10 rounded-md border border-slate-200 px-3 text-base text-slate-900 hover:border-slate-400 focus:border-blue-600 focus:text-blue-600 focus:outline-none disabled:text-red-500 disabled:opacity-50","props":{"value":"Input text"}},
+      {"type":"Progress","key":"classic-progress","classes":"appearance-none w-full h-2 rounded-full bg-slate-200 text-cyan-400","props":{"value":60,"max":100}},
+      {"type":"View","key":"classic-card","classes":"w-full rounded-lg border border-slate-200 bg-white p-4 text-slate-900","children":[
+        {"type":"Text","key":"card-title","classes":"text-lg text-slate-900","props":{"text":"Card title"}},
+        {"type":"Text","key":"card-body","classes":"text-sm text-slate-900","props":{"text":"Card body copy."}}
+      ]}
+    ]},
+    {"type":"View","key":"typography","classes":"flex flex-col items-start gap-1 text-base text-slate-900","children":[
+      {"type":"Text","key":"type-inherited","classes":"","props":{"text":"inherited 16"}},
+      {"type":"Text","key":"type-xl","classes":"text-xl text-slate-900","props":{"text":"text-xl 20/28"}},
+      {"type":"Text","key":"type-2xl","classes":"text-2xl text-slate-900","props":{"text":"text-2xl 24/32"}}
+    ]},
+    {"type":"ScrollView","key":"scroll-sample","classes":"overflow-y-auto w-[420px] h-[72px] rounded-md border border-slate-200 bg-slate-200 text-slate-400","children":[
+      {"type":"View","key":"scroll-content","classes":"flex flex-col gap-1 p-2 text-sm text-slate-900","children":[
+        {"type":"Text","key":"scroll-item-1","classes":"text-sm","props":{"text":"Scrollable row one"}},
+        {"type":"Text","key":"scroll-item-2","classes":"text-sm","props":{"text":"Scrollable row two"}},
+        {"type":"Text","key":"scroll-item-3","classes":"text-sm","props":{"text":"Scrollable row three"}},
+        {"type":"Text","key":"scroll-item-4","classes":"text-sm","props":{"text":"Scrollable row four"}},
+        {"type":"Text","key":"scroll-item-5","classes":"text-sm","props":{"text":"Scrollable row five"}},
+        {"type":"Text","key":"scroll-item-6","classes":"text-sm","props":{"text":"Scrollable row six"}},
+        {"type":"Text","key":"scroll-item-7","classes":"text-sm","props":{"text":"Scrollable row seven"}},
+        {"type":"Text","key":"scroll-item-8","classes":"text-sm","props":{"text":"Scrollable row eight"}}
+      ]}
+    ]}
+  ]
+}

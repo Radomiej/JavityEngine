@@ -1,0 +1,6 @@
+/resolve/deps/
+/resolve/.gradle/
+/resolve/build/
+*.keystore
+*.apk
+*.idsig
