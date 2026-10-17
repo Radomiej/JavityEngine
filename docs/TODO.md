@@ -247,3 +247,9 @@ Wyniki i uruchomienie: [Javity Wasm rendering](javity-wasm-rendering-spike.md).
 - [ ] Osobna bramka platformowa: pełny Android runner ANR, browser context loss, DPR, inne przeglądarki i pomiary sprzętowego GPU.
 
 Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpointami. Nie oznaczają aktualnego PASS dla modułów zmienionych później.
+
+## ORBIT WebAssembly — 2026-10-17
+
+- [x] Oddzielny branch, pakowanie pełnego runtime do .nekko, SDK/Java JSO, publikacja CLI/Actions bez sekretów w grze.
+- [x] Profil i cloud save/load/reopen zweryfikowane w rzeczywistym launcherze; [instrukcja i dowody](orbit-wasm.md).
+- [ ] Osobna certyfikacja Safari i WebView Tauri/Capacitor; rozszerzanie zgodności pozostałych modułów silnika z web.

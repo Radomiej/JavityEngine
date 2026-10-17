@@ -1,0 +1,12 @@
+{
+  "id": "javity-wasm-demo",
+  "version": "1.0.0",
+  "name": "JavityEngine · WebAssembly",
+  "description": "Javity/libGDX WebGL2 demo with ORBIT profile and cloud saves",
+  "genre": "Demo",
+  "entrypoint": "index.html",
+  "thumbnail": "cover.svg",
+  "orientations": ["landscape"],
+  "achievements": [],
+  "scriptPolicy": "teavm-jso"
+}
