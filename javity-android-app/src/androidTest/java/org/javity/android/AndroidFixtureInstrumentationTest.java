@@ -1,6 +1,7 @@
 package org.javity.android;
 
 import android.content.pm.ActivityInfo;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.InputDevice;
@@ -9,6 +10,10 @@ import android.view.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,7 +30,7 @@ public final class AndroidFixtureInstrumentationTest
     JavityGameActivity activity = getActivity();
     AndroidGameFixture fixture = activity.fixture();
     assertNotNull(fixture);
-    waitUntilReady(fixture);
+    waitUntilReady(fixture, activity);
 
     AndroidGameFixture.FixtureSnapshot before = snapshot(fixture);
     assertTrue("fixture should be ready", before.ready);
@@ -223,7 +228,7 @@ public final class AndroidFixtureInstrumentationTest
     long previousGeneration = snapshot(fixture).resourceGeneration;
     // Full resource recreation includes cold shader compilation on the TCG emulator.
     runOnOwnerThread(fixture::recreateResourcesForInstrumentation, 60);
-    waitUntilReady(fixture);
+    waitUntilReady(fixture, activity);
     AndroidGameFixture.FixtureSnapshot recreated = snapshot(fixture);
     assertTrue(
         "Render/UI resources should be rebuilt", recreated.resourceGeneration > previousGeneration);
@@ -243,7 +248,7 @@ public final class AndroidFixtureInstrumentationTest
     JavityGameActivity activity = getActivity();
     AndroidGameFixture fixture = activity.fixture();
     assertNotNull(fixture);
-    waitUntilReady(fixture);
+    waitUntilReady(fixture, activity);
 
     int originalOrientation = activity.getRequestedOrientation();
     AndroidGameFixture.FixtureSnapshot portrait = snapshot(fixture);
@@ -578,7 +583,8 @@ public final class AndroidFixtureInstrumentationTest
     return snapshot(fixture);
   }
 
-  private static void waitUntilReady(AndroidGameFixture fixture) throws InterruptedException {
+  private void waitUntilReady(AndroidGameFixture fixture, JavityGameActivity activity)
+      throws InterruptedException {
     long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
     while ((!fixture.isReady()
             || fixture.renderedVoxelChunks() == 0
@@ -586,6 +592,58 @@ public final class AndroidFixtureInstrumentationTest
         && System.nanoTime() < deadline) Thread.sleep(30);
     if (!fixture.isReady() || fixture.renderedVoxelChunks() == 0 || fixture.framebufferWidth() == 0)
       throw new AssertionError("fixture did not render within the bounded startup window");
+    while (!hasFocusedVisibleActivityWindow(activity) && System.nanoTime() < deadline)
+      Thread.sleep(30);
+    if (!hasFocusedVisibleActivityWindow(activity))
+      fail(
+          "Activity window did not become focused and visible within the existing startup window. "
+              + focusedWindowDiagnostics());
+  }
+
+  private boolean hasFocusedVisibleActivityWindow(JavityGameActivity activity) {
+    boolean[] state = new boolean[1];
+    getInstrumentation()
+        .runOnMainSync(
+            () -> {
+              View decor = activity.getWindow().getDecorView();
+              state[0] =
+                  activity.hasWindowFocus()
+                      && decor.hasWindowFocus()
+                      && decor.isAttachedToWindow()
+                      && decor.isShown()
+                      && !activity.isFinishing()
+                      && !activity.isDestroyed();
+            });
+    return state[0];
+  }
+
+  private String focusedWindowDiagnostics() {
+    StringBuilder details = new StringBuilder("Focused-window diagnostics:");
+    try (BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(
+                new ParcelFileDescriptor.AutoCloseInputStream(
+                    getInstrumentation().getUiAutomation().executeShellCommand("dumpsys window")),
+                StandardCharsets.UTF_8))) {
+      String line;
+      int scannedCharacters = 0;
+      int matchedLines = 0;
+      while ((line = reader.readLine()) != null && scannedCharacters < 32_000 && matchedLines < 8) {
+        scannedCharacters += line.length() + 1;
+        if (line.contains("mCurrentFocus")
+            || line.contains("mFocusedApp")
+            || line.contains("focusedWindow")
+            || line.contains("focusedApp")
+            || line.contains("ImmersiveModeConfirmation")) {
+          details.append("\n").append(line, 0, Math.min(line.length(), 280));
+          matchedLines++;
+        }
+      }
+      if (matchedLines == 0) details.append("\n(no focused-window fields found in bounded scan)");
+    } catch (IOException | RuntimeException failure) {
+      details.append("\n(unavailable: ").append(failure.getClass().getSimpleName()).append(")");
+    }
+    return details.toString();
   }
 
   private AndroidGameFixture.FixtureSnapshot waitForScore(

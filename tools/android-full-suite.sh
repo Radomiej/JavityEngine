@@ -104,6 +104,12 @@ collect_diagnostics() {
 trap collect_diagnostics EXIT
 
 adb logcat -c
+adb shell settings put secure immersive_mode_confirmations confirmed
+adb shell settings get secure immersive_mode_confirmations | tee "$artifact_dir/immersive-mode-confirmations.txt"
+if ! grep -Fqx 'confirmed' "$artifact_dir/immersive-mode-confirmations.txt"; then
+  echo "Expected Android immersive-mode confirmation setting to be confirmed; see $artifact_dir/immersive-mode-confirmations.txt" >&2
+  exit 1
+fi
 adb shell wm size 640x1120
 adb shell wm density 320
 adb shell svc power stayon true
