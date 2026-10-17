@@ -41,3 +41,6 @@ SHA-256 values for checked browser artifacts:
 ## Limits shown by this proof
 
 This proves WasmGC compilation, TeaVM runtime loading in one Chromium build, calls across the Java-to-JS boundary, and narrow Yoga/Ammo lifecycle operations. The Java facade reaches real core objects, but this is not a compilation or runtime test of the full `javity-core` API surface. It does not provide a `YogaBackend` implementation, Javity physics provider, GL renderer, input device adapter, real frame rendering, contacts, query variants, or the rest of `javity-physics3d` semantics. The host-side Yoga and Bullet code is throwaway browser proof code. The Ammo step/query use the upstream binding directly and do not establish equivalence with the engine's Bullet module. No JS-only mode, full engine build, mobile browser, Safari, Firefox, performance, or production dependency graph was validated. The `app.wasm-runtime.js` and HTML/JS host remain necessary browser assets; the Wasm binary alone is not an application.
+
+
+The next experiment now exercises the actual Javity/libGDX renderer on Wasm GC: [rendering spike](javity-wasm-rendering-spike.md). The original Yoga/Ammo lifecycle proof remains separate.

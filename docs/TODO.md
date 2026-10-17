@@ -224,3 +224,13 @@ Podgląd nie jest drugim właścicielem autorytatywnego Game, Colyseus nie uruch
 - [x] Liczba JVM/pokoi jest polityką hostowania, nie wymaganiem API; aktualny worker pozostaje domyślnym izolatorem.
 - [ ] Integracja przyszłej platformy: konfiguracja gier/scen i replikacji, host/pule pokoi, obrazy kontenerów oraz realne auth/WSS/deploy; obecny `--container` jest jawnym entry pointem bez devtools.
 - [x] Eksperyment TeaVM/Wasm GC z realnym core i mostami Yoga/Ammo: kompilacja i Chromium proof; [wynik i ograniczenia](teavm-wasm-spike.md). To nie jest wspierany browser backend.
+
+
+## Rzeczywiste renderowanie Javity w WebAssembly
+
+- [x] Oddzielny build `experiments/javity-wasm`: prawdziwe Game/Component/ModelRenderer/Camera3D/GdxRenderer przez gdx-teavm, bez zastępczego renderera JS.
+- [x] Usunięcie blokera TeaVM `Arrays.compare(float[])` z zachowaniem kolejności JDK i testami.
+- [ ] Kolejne browser integracje: Yoga/UI i Ammo jako providery silnika, scene asset loading, MapLibre GL JS, multiplayer, context loss i macierz przeglądarek; obecny spike nie potwierdza ich działania.
+- [ ] Sprzętowy GPU i pomiary; Chromium/SwiftShader potwierdza uruchomienie i obraz, nie wydajność.
+
+Wyniki i uruchomienie: [Javity Wasm rendering](javity-wasm-rendering-spike.md).

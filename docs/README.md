@@ -53,3 +53,5 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 - [Colyseus Rooms i targety JS/Wasm](rooms-and-browser-roadmap.md) — audyt i rekomendacja, bez wdrożonej replikacji/builda browser.
 
 - [Eksperyment TeaVM Wasm GC, Yoga i Bullet/Ammo](teavm-wasm-spike.md).
+
+- [Javity/libGDX: rzeczywisty renderer 3D w WebAssembly](javity-wasm-rendering-spike.md).

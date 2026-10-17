@@ -95,3 +95,6 @@ Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus 
 `./gradlew dev` uruchamia Java-supervised Colyseus workspace, bootstrapuje zależności i zapewnia local client/server view. Liczba JVM pozostaje wymienną polityką hostowania, a nie założeniem, które ma obsługiwać twórca gry. Wspólne entry pointy opisuje [przewodnik](local-multiplayer.md). Następne kroki platformy: rzeczywista konfiguracja scen/replication, hosting/pule oraz przetestowany kontener i zdalny deployment. TeaVM/Wasm pozostaje odizolowanym eksperymentem; nie zmienia domyślnych targetów silnika.
 
 [Spike TeaVM/Wasm GC](teavm-wasm-spike.md) potwierdził osiągalne Game/GameObject oraz wywołania Yoga/Ammo z Javy w Chromium. Wdrożenie pełnych browser providerów i renderera wymaga osobnego zadania.
+
+
+Rzeczywisty browser renderer ma osobny [spike Javity/libGDX Wasm](javity-wasm-rendering-spike.md), ze sceną komponowaną w Javie i GdxRenderer. Następne platformowe providery pozostają osobnymi bramkami.

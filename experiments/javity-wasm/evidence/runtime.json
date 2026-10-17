@@ -1,0 +1,68 @@
+{
+  "scope": "Javity GdxRenderer + Game/Component/ModelRenderer on gdx-teavm Wasm GC",
+  "success": true,
+  "browser": "154.0.8037.57",
+  "rendering": "ANGLE/SwiftShader software WebGL2 in headless Chromium",
+  "httpStatus": 200,
+  "initial": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 11,
+    "frame": 11,
+    "x": 0,
+    "z": 0,
+    "width": 1100,
+    "height": 800,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "afterInput": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 47,
+    "frame": 47,
+    "x": 1.064000129699707,
+    "z": 0,
+    "width": 1100,
+    "height": 800,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "resized": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 54,
+    "frame": 54,
+    "x": 1.064000129699707,
+    "z": 0,
+    "width": 760,
+    "height": 620,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "disposed": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 64,
+    "frame": -1,
+    "x": 0,
+    "z": 0,
+    "width": 0,
+    "height": 0,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": true
+  },
+  "gl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "WebKit WebGL",
+    "shadingLanguage": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)"
+  },
+  "framebufferColorCount": 536,
+  "pageErrors": [],
+  "console": [],
+  "failedRequests": []
+}
