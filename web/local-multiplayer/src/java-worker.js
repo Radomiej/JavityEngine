@@ -6,6 +6,7 @@ const MAX_LINE_BYTES = 8192;
 const MAX_PENDING = 64;
 const READY_TIMEOUT_MS = 5000;
 const COMMAND_TIMEOUT_MS = 2000;
+const WRITE_TIMEOUT_MS = 2000;
 const KILL_TIMEOUT_MS = 1000;
 
 export class JavaWorkerError extends Error {
@@ -165,9 +166,14 @@ export class JavaRoomWorker extends EventEmitter {
       pending.reject(error);
     }
     this.#pending.clear();
-    for (const queued of this.#writeQueue.splice(0)) queued.reject(error);
+    for (const queued of this.#writeQueue.splice(0)) {
+      clearTimeout(queued.timer);
+      queued.reject(error);
+    }
+    if (this.#activeWrite) clearTimeout(this.#activeWrite.timer);
     this.#activeWrite?.reject(error);
     this.emit('failure', error);
+    void this.stop().catch(() => {});
   }
 
   send(type, fields = {}, timeoutMs = COMMAND_TIMEOUT_MS) {
@@ -188,8 +194,7 @@ export class JavaRoomWorker extends EventEmitter {
     if (bytes > MAX_LINE_BYTES + 1) return Promise.reject(new JavaWorkerError('Command exceeds Java worker line limit', 'WORKER_FRAME'));
     const acknowledgement = new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
-        this.#pending.delete(requestId);
-        reject(new JavaWorkerError(`Timed out waiting for Java worker ${type} acknowledgement`, 'WORKER_COMMAND_TIMEOUT'));
+        this.#fail(new JavaWorkerError(`Timed out waiting for Java worker ${type} acknowledgement`, 'WORKER_COMMAND_TIMEOUT'));
       }, timeoutMs);
       timer.unref?.();
       this.#pending.set(requestId, { resolve, reject, timer, type });
@@ -217,7 +222,12 @@ export class JavaRoomWorker extends EventEmitter {
   #enqueue(line) {
     if (this.#writeQueue.length + Number(this.#writing) >= MAX_PENDING) return Promise.reject(new JavaWorkerError('Java worker write queue is full', 'WORKER_OVERLOAD'));
     return new Promise((resolve, reject) => {
-      this.#writeQueue.push({ line, resolve, reject });
+      const queued = { line, resolve, reject, timer: undefined };
+      queued.timer = setTimeout(() => {
+        this.#fail(new JavaWorkerError('Timed out writing to Java worker stdin', 'WORKER_WRITE_TIMEOUT'));
+      }, WRITE_TIMEOUT_MS);
+      queued.timer.unref?.();
+      this.#writeQueue.push(queued);
       this.#pumpWrites();
     });
   }
@@ -229,6 +239,7 @@ export class JavaRoomWorker extends EventEmitter {
     this.#writing = true;
     this.#activeWrite = queued;
     this.#child.stdin.write(queued.line, (error) => {
+      clearTimeout(queued.timer);
       this.#writing = false;
       this.#activeWrite = undefined;
       if (error) {
@@ -264,7 +275,11 @@ export class JavaRoomWorker extends EventEmitter {
       pending.reject(stopped);
     }
     this.#pending.clear();
-    for (const queued of this.#writeQueue.splice(0)) queued.reject(stopped);
+    for (const queued of this.#writeQueue.splice(0)) {
+      clearTimeout(queued.timer);
+      queued.reject(stopped);
+    }
+    if (this.#activeWrite) clearTimeout(this.#activeWrite.timer);
     this.#activeWrite?.reject(stopped);
     this.#child.stdin.end();
     let exit = await Promise.race([

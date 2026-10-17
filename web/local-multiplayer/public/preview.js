@@ -38,8 +38,11 @@ async function connect(action, roomId) {
     });
     render(room.state);
   } catch (error) {
-    status.textContent = `Could not ${action}: ${error.message}`;
+    const acquired = room;
     room = undefined;
+    if (acquired) await acquired.leave().catch(() => {});
+    clearRoom();
+    status.textContent = `Could not ${action}: ${error.message}`;
     connecting = false;
     createButton.disabled = joinButton.disabled = false;
   }
@@ -58,7 +61,12 @@ function clearRoom() {
 }
 
 function render(state) {
-  if (!state) return;
+  if (!state || !state.players || typeof state.players[Symbol.iterator] !== 'function') {
+    tickLabel.textContent = state?.tick ?? '—';
+    playerList.replaceChildren();
+    arena.replaceChildren();
+    return;
+  }
   tickLabel.textContent = state.tick;
   const rows = [];
   const dots = [];

@@ -43,3 +43,21 @@ test('startup timeout terminates and reaps a child that never sends ready', { ti
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('a child that stops draining stdin times out its final write and is reaped', { timeout: 9000 }, async () => {
+  const childProgram = [
+    "process.stdout.write(JSON.stringify({v:1,roomId:process.argv[1],type:'ready'})+'\\n');",
+    'process.stdin.pause();',
+    'setInterval(()=>{},1000);',
+  ].join('');
+  const worker = await JavaRoomWorker.start({ command: process.execPath, args: ['-e', childProgram], roomId: 'stalled-stdin' });
+  let completedWrites = 0;
+  await assert.rejects((async () => {
+    for (; completedWrites < 10000; completedWrites++) {
+      await worker.sendInput('owned-session', completedWrites, 1, 0);
+    }
+  })(), /Timed out writing to Java worker stdin/);
+  assert.ok(completedWrites < 10000, 'a paused child must eventually apply backpressure');
+  assert.equal(worker.closed, true, 'a stalled write initiates worker cleanup');
+  assert.ok(await Promise.race([worker.exitPromise, delay(3000).then(() => null)]), 'stalled worker exits within the cleanup bound');
+});

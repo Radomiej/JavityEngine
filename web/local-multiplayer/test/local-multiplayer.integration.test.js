@@ -96,6 +96,7 @@ test('real Colyseus SDK clients are replicated from isolated Java room workers',
 
   const otherClient = new Client(gateway.url);
   const other = noReconnect(await otherClient.create(ROOM_NAME));
+  const isolatedWorker = workers.at(-1);
   const isolatedSession = other.sessionId;
   await waitFor(() => other.state.players?.has(isolatedSession), 'independent room baseline');
   assert.notEqual(other.roomId, first.roomId);
@@ -130,8 +131,41 @@ test('real Colyseus SDK clients are replicated from isolated Java room workers',
   assert.equal(workers.filter((worker) => worker.pid === crashingWorker.pid).length, 1,
     'a failed worker is never restarted implicitly');
 
-  const otherWorker = workers.find((worker) => worker !== firstWorker && worker !== crashingWorker);
-  await gateway.stop();
+  const uncertainOwnerClient = new Client(gateway.url);
+  const uncertainOwnerRoom = noReconnect(await uncertainOwnerClient.create(ROOM_NAME));
+  const uncertainWorker = workers.at(-1);
+  await waitFor(() => uncertainOwnerRoom.state.players?.has(uncertainOwnerRoom.sessionId), 'uncertain-join test owner baseline');
+  const ownerLeftAfterUncertainJoin = new Promise((resolve) => uncertainOwnerRoom.onLeave((code) => resolve(code)));
+  process.kill(uncertainWorker.pid, 'SIGSTOP');
+  const uncertainJoinClient = new Client(gateway.url);
+  const uncertainJoin = uncertainJoinClient.joinById(uncertainOwnerRoom.roomId).then(
+    (room) => ({ room: noReconnect(room) }),
+    (error) => ({ error }),
+  );
+  const uncertainResult = await Promise.race([uncertainJoin, delay(6000).then(() => null)]);
+  assert.ok(uncertainResult?.error, 'a join with an uncertain Java acknowledgement must be rejected');
+  assert.ok(uncertainResult.error.message || uncertainResult.error.name, 'the SDK reports the rejected join');
+  const uncertainExit = await Promise.race([uncertainWorker.exitPromise, delay(4000).then(() => null)]);
+  assert.ok(uncertainExit, 'uncertain join failure must terminate its Java authority');
+  assert.equal(uncertainWorker.closed, true);
+  const ownerLeaveCode = await Promise.race([ownerLeftAfterUncertainJoin, delay(3000).then(() => null)]);
+  assert.notEqual(ownerLeaveCode, null, 'the room disconnects existing members when join authority becomes uncertain');
+
+  const otherWorker = isolatedWorker;
+  process.kill(otherWorker.pid, 'SIGSTOP');
+  const firstStop = gateway.stop();
+  const secondStop = gateway.stop();
+  assert.strictEqual(secondStop, firstStop, 'concurrent stop callers share one completion promise');
+  let secondResolved = false;
+  void secondStop.then(() => { secondResolved = true; });
+  try {
+    await delay(150);
+    assert.equal(secondResolved, false, 'the second stop cannot resolve while active worker cleanup is paused');
+    assert.equal(otherWorker.closed, false, 'the active worker still proves stop has not completed');
+  } finally {
+    process.kill(otherWorker.pid, 'SIGCONT');
+  }
+  await Promise.all([firstStop, secondStop]);
   assert.ok(await Promise.race([otherWorker.exitPromise, delay(3000).then(() => null)]),
     'gateway shutdown closes workers that still have active clients');
 });

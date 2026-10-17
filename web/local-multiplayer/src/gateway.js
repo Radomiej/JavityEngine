@@ -35,18 +35,21 @@ export async function createGateway({ host = '127.0.0.1', port = 2567, workerFac
   await colyseus.listen(port, host);
   const address = httpServer.address();
   const actualPort = typeof address === 'object' && address ? address.port : port;
-  let stopped = false;
+  let stopPromise;
   return {
     host,
     port: actualPort,
     url: `http://${host.includes(':') ? `[${host}]` : host}:${actualPort}`,
     server: colyseus,
     httpServer,
-    async stop() {
-      if (stopped) return;
-      stopped = true;
-      await colyseus.gracefullyShutdown(false);
-      if (httpServer.listening) await new Promise((resolve, reject) => httpServer.close((error) => error ? reject(error) : resolve()));
+    stop() {
+      if (!stopPromise) {
+        stopPromise = (async () => {
+          await colyseus.gracefullyShutdown(false);
+          if (httpServer.listening) await new Promise((resolve, reject) => httpServer.close((error) => error ? reject(error) : resolve()));
+        })();
+      }
+      return stopPromise;
     },
   };
 }
