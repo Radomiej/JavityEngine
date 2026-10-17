@@ -203,7 +203,7 @@ Powyższy moduł obsługuje raster. Dla wektorów jest osobny **`javity-maplibre
 
 ## Dokumentacja i dalsza migracja
 
-[Indeks docs](docs/README.md), [TODO](docs/TODO.md), [inwentaryzacja API](docs/migration-api.md), [plan multiplayer](docs/multiplayer-design-notes.md) oraz [Shapes/shadery](docs/shapes-and-shaders.md). Bieżącą kolejność prac wyznacza [work-queue](docs/work-queue.md); migracja konkretnych gier pozostaje osobnym zakresem; plan multiplayer nie oznacza gotowej replikacji; zakres zgodności MapLibre opisuje osobny adapter.
+[Indeks docs](docs/README.md), [TODO](docs/TODO.md), [inwentaryzacja API](docs/migration-api.md), [lokalne pokoje Colyseus](docs/local-multiplayer.md), [roadmap multiplayer/browser](docs/rooms-and-browser-roadmap.md) oraz [Shapes/shadery](docs/shapes-and-shaders.md). Bieżącą kolejność prac wyznacza [work-queue](docs/work-queue.md); bounded local rooms są wdrożone, migracja konkretnych gier i szerszy netcode pozostają osobnym zakresem.
 
 ## Uzupełnione funkcje runtime
 

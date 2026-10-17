@@ -99,6 +99,10 @@ repository LICENSE. No external model/texture was copied.
 [Source and license notice](javity-desktop/src/main/resources/org/javity/demo/asset-streaming/NOTICE.md).
 The standard libGDX model/texture loaders retain their existing attribution above.
 
+## Local Colyseus multiplayer gateway
+
+`web/local-multiplayer` depends on the official Colyseus npm packages `@colyseus/core@0.18.19`, `@colyseus/ws-transport@0.18.4`, `@colyseus/schema@5.0.40`, and `@colyseus/sdk@0.18.5`. Their published metadata and upstream Colyseus package notices identify MIT licensing. Express `5.2.1` is MIT. The SDK browser bundle is served from the installed package; no Colyseus source or compiled SDK copy is vendored into this repository. The exact dependency tree and registry integrity values are pinned by `web/local-multiplayer/package-lock.json`; license identifiers for all 98 lockfile packages are recorded in [the local multiplayer license inventory](docs/artifacts/local-multiplayer/npm-license-inventory.json). Preserve upstream notices when distributing npm dependencies.
+
 ## Scene lighting shader variant (libGDX 1.14.2)
 
 `javity-core/src/main/resources/org/javity/render/scene-lighting.vertex.glsl`

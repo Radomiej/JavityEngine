@@ -20,6 +20,7 @@
 - [Demo MapLibre](demo-maplibre.png), [referencja GL JS](demo-maplibre-reference.png) i [porównanie](maplibre-comparison.png).
 - [Kamery](camera-api.md) — 2D, śledzenie, kierunek celowania i istniejące 3D.
 - [Multiplayer](multiplayer-design-notes.md) — wstępny model serwer/klient, bez wdrożonej replikacji.
+- [Lokalne pokoje Colyseus](local-multiplayer.md) — ograniczony realny bridge Java worker + Node/Colyseus + SDK preview, komendy i zakres dowodów.
 - [Galeria materiałów Shapes](demo-shape-materials.png) — gradient, UI pulse, WORLD stripes i własne GLSL.
 - [Shapes i shadery](shapes-and-shaders.md) — działające figury SDF/AA i zakres dalszych rozszerzeń.
 - [Demo modern](demo-modern.png), [demo map offline](demo-map.png), [demo runtime](demo-runtime.png), [demo Shapes AA](demo-shapes.png), [demo pluginów](demo-plugins.png).

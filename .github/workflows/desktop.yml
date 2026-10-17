@@ -3,6 +3,26 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  local-multiplayer:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/local-multiplayer/package-lock.json
+      - name: Build Java authority and run its tests
+        run: ./gradlew --no-daemon :javity-rooms:test :javity-rooms:installDist
+      - name: Test real Colyseus and Java worker integration
+        run: |
+          npm --prefix web/local-multiplayer ci
+          npm --prefix web/local-multiplayer test
   desktop:
     runs-on: ubuntu-24.04
     env:

@@ -208,7 +208,10 @@ Pełne wycofanie Artemisa nie jest aktualnym celem. Cleanup starego Galaxy nie m
 
 - [x] Audyt Luna i weryfikacja dokumentacji: Java authority + Colyseus gateway, headless symulacja, lokalny create/join/preview, alternatywy i koszty. [Rekomendacja](rooms-and-browser-roadmap.md).
 - [x] Sprawdzenie gdx-teavm1.6.1/libGDX1.14.2/TeaVM0.15.0 i JS/Wasm GC; lista brakujących browser adapterów. To nie jest proof kompilacji Javity.
-- [ ] Oddzielny projekt/plan pokoju headless i Colyseus↔Java command/snapshot proof, SDK native Java do weryfikacji.
-- [ ] Późniejszy minimalny target browser JS/Wasm i realny WSS multiplayer z serwerem Java; platformy/UI/physics/mapy osobnymi bramkami.
+- [x] Opcjonalny `javity-rooms` headless, bounded JSONL worker oraz lokalny Colyseus gateway z dwoma oficjalnymi SDK clients. Rzeczywisty worker/process proof, room isolation, late baseline i cleanup: [przewodnik](local-multiplayer.md), [artefakt](artifacts/local-multiplayer/verification.json).
+- [ ] Native SDK Java i deployment pozostają do osobnej weryfikacji.
+- [ ] Późniejszy target browser JS/Wasm, szerszy netcode i realny WSS z hostem zdalnym; platformy/UI/physics/mapy osobnymi bramkami.
+
+Kierunek dalszego portu przeglądarkowego pozostaje TeaVM/Wasm z osobnymi adapterami Yoga i Bullet Wasm, MapLibre GL JS oraz browser JavaScript zamiast GraalJS. To projektowana kolejność, nie obecna gotowość: [udokumentowany audyt i brakujące proofy](audits/2026-10-17-consolidation/browser-wasm-ports.md).
 
 Podgląd nie jest drugim właścicielem autorytatywnego Game, Colyseus nie uruchamia automatycznie naszej fizyki JVM, a Wasm nie jest warunkiem multiplayer.

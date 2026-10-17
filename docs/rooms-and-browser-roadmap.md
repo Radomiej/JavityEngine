@@ -1,6 +1,6 @@
 # Pokoje Colyseus, autorytatywna Java i klient przeglądarkowy
 
-**Status: rekomendacja po audycie, nie wdrożone multiplayer ani target Wasm.** Użytkownik potwierdził, że „LeagueSu” oznacza Colyseus. Opcjonalny Artemis ma własny zaakceptowany projekt i osobny plan wykonania; ten dokument nie rozszerza jego implementacji o cały netcode.
+**Status: bounded lokalny Colyseus Room + Java worker jest wdrożony; dalszy netcode i browser/Wasm target nie są wdrożone.** Użytkownik potwierdził, że „LeagueSu” oznacza Colyseus. Opcjonalny Artemis ma własny zaakceptowany projekt i osobny plan wykonania; ten dokument nie rozszerza jego implementacji o cały netcode. [Lokalny przewodnik i dowody](local-multiplayer.md).
 
 ## Rekomendacja
 
@@ -57,6 +57,8 @@ Najbezpieczniejszym założeniem jest własny host/kontenery uruchamiające Node
 
 **Technicznie możemy przygotować oba targety przez TeaVM/gdx-teavm. Repo obecnie nie zawiera działającego targetu przeglądarkowego.**
 
+Kierunek użytkownika dla przyszłego portu to TeaVM/Wasm z osobnymi Yoga i Bullet Wasm adapterami, MapLibre GL JS i browser JavaScript hostem zamiast GraalJS. To pozostaje planem wymagającym osobnych implementacji oraz prawdziwych testów przeglądarkowych.
+
 - Standardowy backend libGDX GWT/HTML generuje JavaScript. Historyczny generator tego repo ma przestarzały szablon Java1.6/GWT2.8/libGDX1.9.6, nie aktualny build silnika.
 - Oficjalna tabela gdx-teavm podaje released pairing **gdx-teavm1.6.1 + libGDX1.14.2 + TeaVM0.15.0** i osobne `js {}` / `wasm {}`. TeaVM0.13 ogłasza obsługę Java25; nie oznacza to zgodności wszystkich użytych JDK APIs/bibliotek/refleksji.
 - Wasm GC generuje prawdziwy moduł WebAssembly oraz JS loader/runtime/interop. Nie kompiluje automatycznie JNI/LWJGL/Graal do przeglądarki.
@@ -84,7 +86,7 @@ Najbezpieczniejszym założeniem jest własny host/kontenery uruchamiające Node
 4. Mały browser target JS i Wasm GC: compile, assets, rzeczywiste piksele/input/WebGL w ustalonej macierzy przeglądarek. Bez claimu pełnej zgodności desktopu.
 5. Ten sam klient dołącza do autorytatywnego pokoju z obu targetów. Następnie native Java/Android adapter i preview oraz kolejne opcjonalne renderery/UI/fizyka.
 
-Nie wykonano tu prototypu, instalacji nowych zależności produktu, builda browsera ani uruchomienia pokoju. Jest to wynik audytu źródeł i dokumentacji.
+Powyższe sekcje zapisują pierwotny audyt i kolejność przyszłych proofów. Bounded lokalny Colyseus/Java slice jest już wdrożony; jego obecny zakres i wyniki są w [lokalnym przewodniku](local-multiplayer.md).
 
 ## Źródła
 

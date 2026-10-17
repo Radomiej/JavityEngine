@@ -84,4 +84,9 @@ Kolejność: przegląd projektu → szczegółowy plan nowego adaptera → nativ
 
 Projekt mostu Artemis został zaakceptowany; [konkretny plan](superpowers/plans/2026-10-17-optional-artemis.md) jest gotowy do wymaganego przeglądu. Odtworzono JDK25 i uruchomiono core bez cache: 467 testów/48 suite PASS (baseline, bez nowego ECS).
 
-Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus i browser JS/Wasm](rooms-and-browser-roadmap.md). To następny obszar projektu, nie istniejący transport/build web. Zlecenie wdrożenia opcjonalnego ECS pozostaje pierwsze; multiplayer i web nie zastępują wcześniejszego celu konsolidacji.
+Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus i browser JS/Wasm](rooms-and-browser-roadmap.md). Bounded room slice ma teraz implementację i własny [proof](local-multiplayer.md); szerszy netcode i browser target nie wchodzą do tego etapu. Zlecenie wdrożenia opcjonalnego ECS pozostaje odrębne.
+
+## Multiplayer — lokalny vertical slice, 2026-10-17
+
+- [x] Opcjonalny worker `javity-rooms` i Java-owned GameObject snapshoty za realnym Colyseus Room; dwa oficjalne JS SDK clients, preview, room isolation oraz bounded start/crash/stop. [Instrukcja](local-multiplayer.md), [weryfikacja](artifacts/local-multiplayer/verification.json).
+- [ ] Native Java SDK, reconnect, prediction/interpolacja, auth/remote deployment oraz browser JS/Wasm silnika są osobnymi etapami; ten preview ich nie potwierdza.

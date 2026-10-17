@@ -156,3 +156,7 @@ Mgła obejmuje zwykłe modele świata także bez normals; nie obejmuje Shapes, w
 ## 9. Instancing modeli i animowanych tłumów
 
 [Jak włączyć InstancedModel, skonfigurować Fox24/4 i zarządzać lifecycle](gpu-instancing-guide.md). GPU palette skinning działa z niezależnymi pozami; cache CPU jest osobnym opt-in ze zmierzonym narzutem. [Benchmark, porównania i granice Androida](artifacts/instancing/README.md).
+
+## 10. Lokalny multiplayer
+
+`javity-rooms` wykonuje headless symulację Java, a `web/local-multiplayer` wystawia Colyseus Room i preview z dwoma oficjalnymi klientami SDK. Uruchomienie, JDK/Node wymagania, authority, cleanup oraz precyzyjny zakres proofu są opisane w [lokalnych pokojach Colyseus](local-multiplayer.md). Preview jest klientem DTO i nie oznacza browser/Wasm builda silnika.

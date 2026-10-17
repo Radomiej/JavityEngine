@@ -31,6 +31,18 @@ public class LocalRoomWorkerProcessTest {
     return command(room, "shutdown", request, "");
   }
   private static JsonValue parse(String line) { return new JsonReader().parse(line); }
+  private static String readLineWithin(BufferedReader reader, String purpose) throws Exception {
+    FutureTask<String> read = new FutureTask<>(reader::readLine);
+    Thread thread = new Thread(read, "bounded-worker-startup-read");
+    thread.setDaemon(true);
+    thread.start();
+    try {
+      return read.get(1, TimeUnit.SECONDS);
+    } catch (TimeoutException timeout) {
+      thread.interrupt();
+      throw new AssertionError("Timed out waiting for worker " + purpose, timeout);
+    }
+  }
   private static final class RunningWorker implements AutoCloseable {
     final Process process;
     final BufferedWriter stdin;
@@ -179,7 +191,7 @@ public class LocalRoomWorkerProcessTest {
     Process p = launch("room-D");
     try {
       BufferedReader out = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-      assertTrue(parse(out.readLine()).getString("type").equals("ready"));
+      assertTrue(parse(readLineWithin(out, "ready frame")).getString("type").equals("ready"));
       byte[] oversized = new byte[8193]; Arrays.fill(oversized, (byte)'x');
       p.getOutputStream().write(oversized); p.getOutputStream().flush(); p.getOutputStream().close();
       assertTrue("oversized frame did not stop worker", p.waitFor(3, TimeUnit.SECONDS));
@@ -192,7 +204,7 @@ public class LocalRoomWorkerProcessTest {
     Process p = launch("room-E");
     try {
       BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-      assertEquals("ready", parse(stdout.readLine()).getString("type"));
+      assertEquals("ready", parse(readLineWithin(stdout, "ready frame")).getString("type"));
       Thread sender = new Thread(() -> {
         try {
           BufferedWriter input = new BufferedWriter(new OutputStreamWriter(p.getOutputStream(), StandardCharsets.UTF_8));
@@ -219,7 +231,7 @@ public class LocalRoomWorkerProcessTest {
     Process p = launch("room-G");
     try {
       BufferedReader out = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-      assertTrue(parse(out.readLine()).getString("type").equals("ready"));
+      assertTrue(parse(readLineWithin(out, "ready frame")).getString("type").equals("ready"));
       Thread sender = new Thread(() -> {
         try { OutputStream stdin = p.getOutputStream(); byte[] bad = "not-json\n".getBytes(StandardCharsets.UTF_8);
           for (int i=0;i<20_000 && p.isAlive();i++) { stdin.write(bad); if (i % 32 == 0) stdin.flush(); }
