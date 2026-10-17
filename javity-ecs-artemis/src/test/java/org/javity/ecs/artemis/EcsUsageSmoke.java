@@ -90,8 +90,10 @@ public final class EcsUsageSmoke {
     game.step(1f / 60f);
     require(world.getMapper(Motion.class).get(prefabId).dx == 7, "sync resume did not reconcile current data");
     require(stats.processCalls == 3 && stats.queried == 9, "World process/query totals differ");
-    int linksCreated = 2;
+    int linksCreated = 1 + prefabLinks.size();
     linked.close(); prefabLinks.get(0).close();
+    int linksClosed = (linked.isValid() ? 0 : 1) + (prefabLinks.get(0).isValid() ? 0 : 1);
+    require(linksClosed == linksCreated, "explicit link close did not invalidate every handle");
     game.close();
 
     String json = "{\n" +
@@ -100,7 +102,7 @@ public final class EcsUsageSmoke {
         "  \"nativeProcessCalls\": " + stats.processCalls + ",\n" +
         "  \"aspectQueryEntities\": " + stats.queried + ",\n" +
         "  \"linksCreated\": " + linksCreated + ",\n" +
-        "  \"linksClosed\": " + linksCreated + ",\n" +
+        "  \"linksClosed\": " + linksClosed + ",\n" +
         "  \"prefabInstances\": 1,\n" +
         "  \"syncTransitions\": 2,\n" +
         "  \"nativeOnlyEntities\": 1,\n" +
