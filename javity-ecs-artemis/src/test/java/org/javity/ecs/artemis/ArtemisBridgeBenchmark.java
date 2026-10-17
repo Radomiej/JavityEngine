@@ -67,6 +67,11 @@ public final class ArtemisBridgeBenchmark {
     }
     StringBuilder json = new StringBuilder("{\n  \"sourceCommit\": \"").append(escape(args[0])).append("\",\n")
         .append("  \"seed\": ").append(SEED).append(",\n  \"deltaSeconds\": ").append(1.0 / 60.0)
+        .append(",\n  \"runtime\": {\"javaVersion\": \"").append(escape(System.getProperty("java.runtime.version")))
+        .append("\", \"vm\": \"").append(escape(System.getProperty("java.vm.name")))
+        .append("\", \"os\": \"").append(escape(System.getProperty("os.name")))
+        .append("\", \"architecture\": \"").append(escape(System.getProperty("os.arch")))
+        .append("\", \"availableProcessors\": ").append(Runtime.getRuntime().availableProcessors()).append("}")
         .append(",\n  \"entities\": ").append(ENTITIES).append(",\n  \"warmupSteps\": ").append(WARMUP)
         .append(",\n  \"measuredSteps\": ").append(MEASURED).append(",\n  \"repetitions\": ").append(REPS)
         .append(",\n  \"cases\": [\n");
