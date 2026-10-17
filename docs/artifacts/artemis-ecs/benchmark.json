@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "14ea1b7e98932e1cb13b4828cf78b927aca89744",
+  "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
   "seed": 5359695226845349187,
   "deltaSeconds": 0.016666666666666666,
   "runtime": {
@@ -18,7 +18,7 @@
       "case": "native-ecs",
       "updates": 4000000,
       "linkedEntities": 0,
-      "medianWallNanos": 9168084,
+      "medianWallNanos": 7110849,
       "medianOwnerThreadAllocatedBytes": 638400,
       "checksum": 4932.0728862381075
     },
@@ -26,7 +26,7 @@
       "case": "game-object",
       "updates": 4000000,
       "linkedEntities": 0,
-      "medianWallNanos": 280491140,
+      "medianWallNanos": 247895883,
       "medianOwnerThreadAllocatedBytes": 498513600,
       "checksum": 4932.0728862381075
     },
@@ -34,7 +34,7 @@
       "case": "mixed-sync-on",
       "updates": 4000000,
       "linkedEntities": 1000,
-      "medianWallNanos": 447565442,
+      "medianWallNanos": 455550152,
       "medianOwnerThreadAllocatedBytes": 707692800,
       "checksum": 4932.0728862381075
     },
@@ -42,7 +42,7 @@
       "case": "mixed-sync-off",
       "updates": 4000000,
       "linkedEntities": 1000,
-      "medianWallNanos": 276289193,
+      "medianWallNanos": 289525486,
       "medianOwnerThreadAllocatedBytes": 510892800,
       "checksum": 4932.0728862381075
     }
@@ -50,15 +50,15 @@
   "interpretation": "Workload-specific measurements; bridge mirroring adds code and allocation overhead. No universal speed ranking or target improvement is implied.",
   "sourceInputSha256": {
     "javity-ecs-artemis/build.gradle": "49a13dcb4023aed7ec206f38ab26e6d4da6cfa542ebf575768848d4ea7098993",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "0840bb6beafa5436b7f616a39fc638bfbd31de8be6c2b6c4e77ca8192de8126a",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "2f5fe9f098952bd85ca51b26caa669c9efd1336865a6fecf62b940a6605db493",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ComponentProjection.java": "094009b8d592773713e193c7ac421b83cff7770ca48e71adfc3f1fc5eb179e62",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EcsPhase.java": "0e5d4b1e44819822ad048a6f5280d19beb2af4be5d0adf761da8e71edf6a7835",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "0ee3c561bf2d658e5f571eee64abf86dd66b9e88ed9a1f6ccfddd393fc76b135",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "27320aa487340a01a703e77d39a38ed45f2b05c688f7ca5260364cdd79ecf2bd",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/GameObjectRef.java": "3e9232ec33fb4b21c6dd51236487d2f06542ced0674c7cdcf1d340a18f9e47d5",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/InactiveGameObject.java": "cbb851f6895921231114e60823d0cd6242b3f238649ac2ec96604cf637f8ac38",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "d7e587e61660db81e91b4f936feef6231fb7b122685710368a000386b6c1b902",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "114125262b486996cc6d0810cf9ef1187d60490af07932133317189a5dbf1007",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkRegistry.java": "f7f4b56c97b62c85466b8f1c49d1ee8e2e9f69ca2903ff31e270484cee4b4e45",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "82e71a83cd0e0aae94651663e43104e8752f13dfa376cf6de8c833fa89e76d54",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "2c8e798e8a4c8dd6743eaed369f29aa2f730690eeec0bbbb04c8c7870d11fcb3",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionDirection.java": "af840867e21baad324a93f410e6925c4eaf5c73d4a3b06c20494aa7184b96899",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionOwnership.java": "0ef525b60bf036e32fb3b19cea78897043c0bccc4f73b3b8d62443d7f15616b3",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionSession.java": "5b81ac2cf5ff8fa4a8512ac4ca1b6d0ac1f93776407a30fe8061a6a7c92165a4",

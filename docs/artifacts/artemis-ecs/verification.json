@@ -1,16 +1,16 @@
 {
-  "sourceCommit": "14ea1b7e98932e1cb13b4828cf78b927aca89744",
+  "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
   "sourceInputSha256": {
     "javity-ecs-artemis/build.gradle": "49a13dcb4023aed7ec206f38ab26e6d4da6cfa542ebf575768848d4ea7098993",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "0840bb6beafa5436b7f616a39fc638bfbd31de8be6c2b6c4e77ca8192de8126a",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "2f5fe9f098952bd85ca51b26caa669c9efd1336865a6fecf62b940a6605db493",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ComponentProjection.java": "094009b8d592773713e193c7ac421b83cff7770ca48e71adfc3f1fc5eb179e62",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EcsPhase.java": "0e5d4b1e44819822ad048a6f5280d19beb2af4be5d0adf761da8e71edf6a7835",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "0ee3c561bf2d658e5f571eee64abf86dd66b9e88ed9a1f6ccfddd393fc76b135",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "27320aa487340a01a703e77d39a38ed45f2b05c688f7ca5260364cdd79ecf2bd",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/GameObjectRef.java": "3e9232ec33fb4b21c6dd51236487d2f06542ced0674c7cdcf1d340a18f9e47d5",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/InactiveGameObject.java": "cbb851f6895921231114e60823d0cd6242b3f238649ac2ec96604cf637f8ac38",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "d7e587e61660db81e91b4f936feef6231fb7b122685710368a000386b6c1b902",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "114125262b486996cc6d0810cf9ef1187d60490af07932133317189a5dbf1007",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkRegistry.java": "f7f4b56c97b62c85466b8f1c49d1ee8e2e9f69ca2903ff31e270484cee4b4e45",
-    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "82e71a83cd0e0aae94651663e43104e8752f13dfa376cf6de8c833fa89e76d54",
+    "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "2c8e798e8a4c8dd6743eaed369f29aa2f730690eeec0bbbb04c8c7870d11fcb3",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionDirection.java": "af840867e21baad324a93f410e6925c4eaf5c73d4a3b06c20494aa7184b96899",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionOwnership.java": "0ef525b60bf036e32fb3b19cea78897043c0bccc4f73b3b8d62443d7f15616b3",
     "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionSession.java": "5b81ac2cf5ff8fa4a8512ac4ca1b6d0ac1f93776407a30fe8061a6a7c92165a4",
@@ -31,29 +31,28 @@
   },
   "commands": [
     {
-      "command": "./gradlew --no-daemon :javity-ecs-artemis:test :javity-ecs-artemis:usageSmoke :javity-ecs-artemis:verifyEcsBoundary",
+      "command": "./gradlew --no-daemon :javity-ecs-artemis:test :javity-ecs-artemis:usageSmoke :javity-ecs-artemis:verifyEcsBoundary :javity-ecs-artemis:bridgeBenchmark --rerun-tasks",
       "result": "PASS",
-      "log": "/tmp/ecs-task3-positive.log"
-    },
-    {
-      "command": "./gradlew --no-daemon :javity-ecs-artemis:bridgeBenchmark",
-      "result": "PASS",
-      "log": "/tmp/ecs-task3-benchmark.log"
+      "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+      "output": "BUILD SUCCESSFUL in 16s; 14 actionable tasks: 14 executed; ECS tests 53 across 5 suites, 0 failures/errors/skips.",
+      "log": "/tmp/ecs-final-committed.log"
     },
     {
       "command": "./gradlew --no-daemon --init-script /tmp/ecs-boundary-negative.gradle :javity-ecs-artemis:verifyEcsBoundary",
       "result": "EXPECTED FAIL",
+      "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
       "reason": ":javity-desktop runtime has a dependency path to the optional adapter",
-      "log": "/tmp/ecs-task3-negative.log"
+      "log": "/tmp/ecs-final-negative.log"
     },
     {
       "command": "./gradlew --no-daemon :javity-ecs-artemis:verifyEcsBoundary",
       "result": "PASS after removing temporary init script",
-      "log": "/tmp/ecs-task3-restored.log"
+      "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+      "log": "/tmp/ecs-final-restored.log"
     }
   ],
   "usageSmoke": {
-    "sourceCommit": "14ea1b7e98932e1cb13b4828cf78b927aca89744",
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
     "deltaSeconds": 0.016666666666666666,
     "nativeProcessCalls": 3,
     "aspectQueryEntities": 9,
@@ -66,15 +65,15 @@
     "glScreenshotClaim": false,
     "sourceInputSha256": {
       "javity-ecs-artemis/build.gradle": "49a13dcb4023aed7ec206f38ab26e6d4da6cfa542ebf575768848d4ea7098993",
-      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "0840bb6beafa5436b7f616a39fc638bfbd31de8be6c2b6c4e77ca8192de8126a",
+      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ArtemisSystem.java": "2f5fe9f098952bd85ca51b26caa669c9efd1336865a6fecf62b940a6605db493",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ComponentProjection.java": "094009b8d592773713e193c7ac421b83cff7770ca48e71adfc3f1fc5eb179e62",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EcsPhase.java": "0e5d4b1e44819822ad048a6f5280d19beb2af4be5d0adf761da8e71edf6a7835",
-      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "0ee3c561bf2d658e5f571eee64abf86dd66b9e88ed9a1f6ccfddd393fc76b135",
+      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/EntityLink.java": "27320aa487340a01a703e77d39a38ed45f2b05c688f7ca5260364cdd79ecf2bd",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/GameObjectRef.java": "3e9232ec33fb4b21c6dd51236487d2f06542ced0674c7cdcf1d340a18f9e47d5",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/InactiveGameObject.java": "cbb851f6895921231114e60823d0cd6242b3f238649ac2ec96604cf637f8ac38",
-      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "d7e587e61660db81e91b4f936feef6231fb7b122685710368a000386b6c1b902",
+      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkLifetime.java": "114125262b486996cc6d0810cf9ef1187d60490af07932133317189a5dbf1007",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkRegistry.java": "f7f4b56c97b62c85466b8f1c49d1ee8e2e9f69ca2903ff31e270484cee4b4e45",
-      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "82e71a83cd0e0aae94651663e43104e8752f13dfa376cf6de8c833fa89e76d54",
+      "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/LinkedPrefabFactory.java": "2c8e798e8a4c8dd6743eaed369f29aa2f730690eeec0bbbb04c8c7870d11fcb3",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionDirection.java": "af840867e21baad324a93f410e6925c4eaf5c73d4a3b06c20494aa7184b96899",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionOwnership.java": "0ef525b60bf036e32fb3b19cea78897043c0bccc4f73b3b8d62443d7f15616b3",
       "javity-ecs-artemis/src/main/java/org/javity/ecs/artemis/ProjectionSession.java": "5b81ac2cf5ff8fa4a8512ac4ca1b6d0ac1f93776407a30fe8061a6a7c92165a4",
@@ -219,5 +218,23 @@
     ],
     "forbiddenManagementReferences": [],
     "violations": []
+  },
+  "finalFixRegressions": {
+    "sourceCommit": "6944735d3b12e32cd2af4f13a9446e49fb00a964",
+    "sourceInputSha256": {
+      "javity-ecs-artemis/src/test/java/org/javity/ecs/artemis/FinalIntegrationRegressionTest.java": "2dd7fbda83bc0ae91b9b41c85a4fe9d1ade94fdff8f3a77380712cc412ea59d4"
+    },
+    "tests": 11,
+    "retainedExistingTests": 42,
+    "totalTests": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "coverage": [
+      "Failed bind after earlier prefab configurator destroys a later GameObject: no native orphan, no rollback native tick, unrelated native entities and GameObjects retained.",
+      "Selectors cannot reenter any selected hook from UI housekeeping, including pause; exception unwinds guard and callback disposal stays deferred with failure suppression.",
+      "All reserved projection types rejected before selectors, registration, native mutation and invalid-link cleanup; app-supplied reserved slots rejected on bind.",
+      "Unlink and reference removal/replacement clear the owned inactive marker and restore a native exclusion query after ordinary processing. Recycled/rebound marker and lifetime survive stale close and old factory rollback."
+    ]
   }
 }
