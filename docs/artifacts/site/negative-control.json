@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "scope": "Static engine showcase",
+  "negativeControl": true,
+  "browser": "154.0.8037.57",
+  "error": "AssertionError('wrong example command: shapes')",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/JavityEngine/tools/site-browser-proof.py\", line 108, in main\n    result.update(check_page(page, url, args.output))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/JavityEngine/tools/site-browser-proof.py\", line 62, in check_page\n    assert command in page.locator(\"#example-command\").inner_text(), f\"wrong example command: {name}\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: wrong example command: shapes\n"
+}

@@ -1,0 +1,101 @@
+{
+  "sourceCommit": "5d2a206fcd26d0e9af342c19f9f3b2e334014ae8",
+  "sourceFileHashes": {
+    "site/index.html": "6eec7a1cf9fda5253d9a0ca2c9c5a20fe67eef5f5930046fafcb605f9dfa8df0",
+    "site/styles.css": "6599d587a51b3562bf4aa4f3afdc463f9579be6df61f6152366dafbd12aabf0b",
+    "site/script.js": "3751507dbdd6a750a938d70e058eb14e7f46efcc63e2849dbed890098f4c93a2",
+    "site/favicon.svg": "30b7c1f8ab5e7d500fe0f879ad9ad2c491f778703edb00f5f18b934923b400b0",
+    "index.html": "09b99e1a3ed6e56f74f8b885f3bea42ff289849e6bb32a11590acaf70390cc06",
+    ".github/workflows/pages.yml": "2d6b995a3b0ff557fabe0a0a11c10d077b816eab10c5f9eddadec4ef0f8bf424",
+    "tools/verify-site.py": "3a1075057beb9d6d3416f37f7794019aef9b18e3db64adbec8b5510365c98bb7",
+    "tools/site-browser-proof.py": "e8ccec1d0920951a3ce1ad3e83816c6ee18a986405b73d9eb509294e2be2afd2",
+    ".github/workflows/android.yml": "cbec37bdcdeeb210b926f2aa3a9966743f1169af175619d481002842f2458570",
+    ".github/workflows/android-runtime.yml": "f838867e92fe309ce9ffe3afe70fdea1a0a7f24de44cbbd6a171c9712b2a9f7c",
+    "tools/android-full-suite.sh": "c29c02cb963f57155e6630039601f02459a4ad9296845ea7063bcd8c699b83bc",
+    "tools/test_generate_maplibre_town.py": "6acbcb8f226a8a8f0a2fd4419cd8b0041ed456a6539704b974f4eb720cbf6df8",
+    "javity-rooms/src/test/java/org/javity/rooms/LocalRoomWorkerProcessTest.java": "dc51481641a4f99479a5a486834a3c6123ed03a04d4f6fcc2b9e3798d15ff619",
+    "javity-android-app/src/androidTest/java/org/javity/android/AndroidFixtureInstrumentationTest.java": "53b33499582bfd27887f0c9febca7d33695f4c62e6b0316907810f8b35fe57f1",
+    "web/javity-ui-reference/compare.py": "fcba0394968ad0546bb111a0e6a032e1fb456ecc7022eb2969da03c9aeb0b4b8",
+    ".github/workflows/desktop.yml": "e529cfad283cb07a3388dc6a74d9d549b48c1319e48642c9e22cfc0205290914"
+  },
+  "browser": {
+    "command": "python tools/site-browser-proof.py",
+    "result": "PASS",
+    "prefix": "/JavityEngine/",
+    "viewports": [
+      360,
+      390,
+      768,
+      1440
+    ],
+    "artifact": "result.json",
+    "limits": "Static showcase QA only; not an engine runtime or full accessibility audit.",
+    "negativeControl": {
+      "command": "python tools/site-browser-proof.py --disable-scripts --output /tmp/javity-site-final-negative",
+      "result": "EXPECTED_FAIL",
+      "artifact": "negative-control.json",
+      "note": "Seeded output with prior PASS first; disabled scripts produce wrong shapes command and overwrite success:false."
+    }
+  },
+  "reactor": {
+    "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon",
+    "result": "PASS",
+    "seconds": 9,
+    "tasksExecuted": 6,
+    "tasksUpToDate": 107,
+    "inventory": "reactor-inventory.json",
+    "cacheDisclosure": "871 cases/99 suites in current XML inventory; includes cached unchanged results, not 871 new executions."
+  },
+  "mapFixture": {
+    "command": "python -m unittest tools.test_generate_maplibre_town tools.test_generate_maplibre_glyphs tools.test_import_gorzow_map",
+    "result": "PASS",
+    "tests": 18,
+    "negativeControls": "Changed SQLite version header accepted with refreshed manifest; corrupted tile data and metadata rejected even with refreshed hashes."
+  },
+  "androidHarness": {
+    "result": "PASS with fakes only",
+    "exitCodes": [
+      37,
+      0
+    ],
+    "limits": "Exactly one unfiltered invocation and retained diagnostics; no Android runtime claim."
+  },
+  "pages": {
+    "configuration": "Existing master:/ legacy Pages; attempts to change build_type/enforce HTTPS via API returned403. Validation workflow uploads static artifact; built-in Pages owns actual deployment.",
+    "status": "LIVE_VERIFIED",
+    "url": "https://radomiej.github.io/JavityEngine/",
+    "showcaseUrl": "https://radomiej.github.io/JavityEngine/site/",
+    "deploymentRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39043513439",
+    "validationRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39043514592",
+    "liveContent": "live-pages.json"
+  },
+  "roomsRegression": {
+    "sourceCommit": "29e95e2",
+    "command": "./gradlew :javity-rooms:test --rerun-tasks --no-daemon",
+    "result": "PASS",
+    "seconds": 13,
+    "tasksExecuted": 6,
+    "tests": 11,
+    "limits": "Ack-saturation assertion is deterministic in-process; other process tests remain. Production source unchanged.",
+    "inputFairness": "Bounded49-command batches plus ordered join/leave ack barriers; no18ms timing assumption. All11 module tests passed after change."
+  },
+  "fontReference": {
+    "sourceCommit": "6b22eae",
+    "command": "python web/javity-ui-reference/compare.py",
+    "result": "PASS locally",
+    "browser": "154.0.8037.57",
+    "fontSha256": "e64e508b2aa2880f907e470c4550980ec4c0694d103a43f36150ac3f93189bee",
+    "cardTitleInkWidth": 75,
+    "negativeControl": "Forcing Arial at card-title rejected before screenshots. Original reference captures restored after verification.",
+    "limits": "Hosted native UI gate still fails79px versus74px. Local actual Mesa/Xvfb gate passes against75px reference. BUG-UI-001 remains OPEN; no tolerance change.",
+    "hostedRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39045027236"
+  },
+  "sourceScope": "Engine/test source at sourceCommit; pending documentation/site worktree is identified by the exact hashes above. Browser proof corresponds to those site hashes.",
+  "androidRuntime": {
+    "run": "https://github.com/Radomiej/JavityEngine/actions/runs/39046532187",
+    "sourceCommit": "5d2a206fcd26d0e9af342c19f9f3b2e334014ae8",
+    "status": "PENDING",
+    "priorRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39044986493",
+    "priorResult": "4/5 passed, one focus-guard failure, no ANR since boot"
+  }
+}

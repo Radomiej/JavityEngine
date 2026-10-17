@@ -16,8 +16,8 @@ Date: 2026-10-17. User authorized bug diagnosis/fixes, parallel agents, document
 - [x] README, CHANGELOG, instructions and ignore rules consistent with current modules/platform boundaries.
 - [x] Site works at a repository subpath, desktop/mobile and keyboard; local files/fragments resolve, no browser errors or horizontal overflow.
 - [x] Default reactor build and ECS usage pass on the integrated tree; test counts distinguish cached results.
-- [ ] Feature branch pushed, current remote master integrated without force push, merged tree verified and pushed.
-- [ ] Live Pages URL checked over HTTPS; deployment status and any access failures recorded.
+- [x] Feature branch pushed, current remote master integrated without force push, merged tree verified and pushed.
+- [x] Live Pages URL checked over HTTPS; deployment status and any access failures recorded.
 
 ## Publication design
 

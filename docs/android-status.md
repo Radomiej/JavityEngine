@@ -1,5 +1,9 @@
 # Android — bieżący status
 
+## Aktualizacja 2026-10-17 — pełny runner CI
+
+Najnowszy ukończony [pełny run39044986493](https://github.com/Radomiej/JavityEngine/actions/runs/39044986493) zaliczył **4/5 przypadków**, bez pominięć i bez ANR od startu emulatora. Kompaktowy widok przechodzi po poprawieniu rozmiaru testowego ekranu; ostatni test odmówił dotyku przy braku fokusu okna. [Run39046532187](https://github.com/Radomiej/JavityEngine/actions/runs/39046532187) sprawdza oczekiwanie na fokus i przygotowanie świeżego emulatora bez podpowiedzi immersive mode. Do jego zakończenia pełny zestaw pozostaje niezaliczony. [Diagnoza i historia prób](Bugs/2026-10-17-android-followup.md). Poniższe wyniki z2026-10-16 są historyczne, a nie nowym potwierdzeniem pełnego runnera.
+
 Aktualizacja 2026-10-16: przenośne UI i osobne backendy Yoga są zintegrowane. Pełny build desktopu po poprawkach odzyskiwania grafiki: 646 testów w 75 zestawach, bez błędów; natywne UI i porównania HTML przeszły. Android Yoga AAR i APK testów zbudowano rzeczywistym AGP 9.4.1 / Kotlin 2.4.20 przy Java 25 (class major 69), compileSdk 36 i minSdk 35. Na emulatorze API 35 x86_64 przeszły **4 rzeczywiste testy JNI/ART**, obejmujące layout, UiDocument, obsługę błędów oraz jawne zwalnianie node/config. [Wynik i zakres](artifacts/android/yoga-verification.json), [log instrumentacji](artifacts/android/yoga-instrumentation.txt).
 
 Adapter QuickJS i wspólny host React przeszły także **7 testów JNI/ART** na tym emulatorze: akcje/sygnały, timery, reload/close oraz natywny deadline nieskończonego skryptu. [Wynik i zakres](artifacts/android/quickjs-verification.json), [log](artifacts/android/quickjs-instrumentation.txt). Testy webowego hosta: 12/12, trzy bundle odtworzone bajtowo.

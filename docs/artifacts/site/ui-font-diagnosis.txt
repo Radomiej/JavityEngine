@@ -1,0 +1,59 @@
+Javity UI parity raster investigation (2026-10-17)
+
+Finding
+=======
+The hosted failure remains unexplained by the browser version or the bundled font identity. Hosted GitHub run 39045027236 logs Chrome for Testing 154.0.8037.57; browser reference diagnostics report Open Sans 400 loaded from the exact bundled file, HTTP 200, computed family "Open Sans", and TTF SHA-256 e64e508b2aa2880f907e470c4550980ec4c0694d103a43f36150ac3f93189bee. The failed browser glyph is card-title x50/y390/w74/h14; native is x49/y389/w79/h14.
+
+An isolated local run of that exact CfT build and the same font produced x50/y390/w75/h14 (the tracked reference width). Thus the version+font pin alone does not recreate the host's final ink column. This remains an open platform raster difference; no threshold or production code was changed.
+
+Artifacts and identities
+========================
+Official CfT URL:
+https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip
+
+Downloaded archive: /tmp/javity-chrome-for-testing-154.0.8037.57-linux64.zip
+Archive SHA-256: ceee2972074d441ea7c4ba8bcc0eaab77e7e87680f6653d73d3065851fe10302
+Extracted browser: /tmp/javity-cft-154/chrome-linux64/chrome
+Browser binary SHA-256: e528b77a8b250c48a5bbd7aeeabbc2813940c0a2fe39b1b11fbaf1f01fb04f18
+Browser reports: Google Chrome for Testing 154.0.8037.57
+Bundled font: javity-ui/src/main/resources/org/javity/ui/fonts/OpenSans-Regular.ttf
+Bundled font SHA-256: e64e508b2aa2880f907e470c4550980ec4c0694d103a43f36150ac3f93189bee
+Local font assertions: declaredBundledFace=true, faceLoaded=true, fontResponseOk=true, computedOpenSans=true.
+
+Local environment
+=================
+OS: Debian GNU/Linux 13 (trixie)
+Kernel/tool container timezone: UTC
+Node v24.19.0; temporary npm ci used @tailwindcss/cli 4.3.3 and tailwindcss 4.3.3 from the locked package-lock.
+Python Playwright 1.62.0; Pillow 12.3.0.
+System libs: libfreetype6 2.13.3+dfsg-1+deb13u1; libfontconfig1 2.15.0-2.3; libharfbuzz0b 10.2.0-1+deb13u1; libcairo2 1.18.4-1+b1; libpango-1.0-0 1.56.3-1.
+Local CfT glyph width after exact-lock CSS rebuild: 75. The downloaded browser was launched headless using --no-sandbox and --disable-features=OverlayScrollbar. Same result with DISPLAY unset or DISPLAY=:219, and with desktop job env LIBGL_ALWAYS_SOFTWARE=1 / ALSOFT_DRIVERS=null.
+
+Reproduction command outline (all outputs isolated under /tmp)
+===============================================================
+1. Extract official ZIP into /tmp/javity-cft-154/.
+2. Copy web/javity-ui-reference into /tmp/javity-cft-compare/web/javity-ui-reference/; symlink /tmp/javity-cft-compare/javity-ui to the checkout's javity-ui directory.
+3. In only the temp compare.py, set executable_path to /tmp/javity-cft-154/chrome-linux64/chrome.
+4. Run npm --prefix /tmp/javity-cft-compare/web/javity-ui-reference ci && npm --prefix /tmp/javity-cft-compare/web/javity-ui-reference run css.
+5. Run CHROME_DEVEL_SANDBOX= python3 /tmp/javity-cft-compare/web/javity-ui-reference/compare.py.
+Result: browserVersion 154.0.8037.57, bundled font SHA above, card-title glyph x50/y390/w75/h14.
+Temporary metrics and screenshots are in /tmp/javity-cft-compare/web/javity-ui-reference/.
+
+Probes (each ran in temporary copy; no repository reference screenshots/metrics were rewritten)
+===============================================================================================
+- Chrome flags --font-render-hinting=none, slight, medium, full: width 75 for all.
+- --disable-lcd-text: 75.
+- --disable-font-subpixel-positioning: 75 (height/vertical glyph start changed, not width).
+- --disable-skia-runtime-opts, --enable-font-antialiasing, --disable-font-antialiasing, --disable-gpu, --use-gl=swiftshader: each 75.
+- Extracted Ubuntu 24.04 libfreetype6 2.13.2+dfsg-1ubuntu0.2 and libfontconfig1 2.15.0-1.1ubuntu2 to /tmp and used LD_LIBRARY_PATH: 75.
+- Temporary FONTCONFIG_FILE setting hinting=false and rgba=none: 75.
+- Launching through a symlink (like /usr/bin/chromium) instead of the direct CfT path: 75.
+- Rebuilt Tailwind CSS from lock in /tmp: 75.
+
+Native smoke reference
+======================
+Root reported local `./gradlew :javity-desktop:uiParitySmoke` under its JDK25/Xvfb: PASS with checked-in/browser width75 and native width79. Hosted run 39045027236 reaches the native smoke but fails the unchanged pixel gate at card-title with native width79 vs browser width74. Host browser diagnostics match exact local binary version and exact TTF SHA/face checks, but the hosted final glyph pixel count differs by one column.
+
+Workspace hygiene
+=================
+No tracked browser reference images or reference-metrics.json changed. The local browser's generated screenshots/metrics and all downloaded browsers/libraries are under /tmp. No CfT or HTTP server is intentionally left running. I did not stop DISPLAY=:219/Xvfb because root owns it. My final `git status --short web/javity-ui-reference .github/workflows/desktop.yml` was clean; other worktree changes belong to root/other task owners.

@@ -26,3 +26,13 @@ Osobny test EGL wyłącza zachowanie kontekstu i wznawia ten sam GLSurfaceView, 
 Licencje i notices są pakowane w `assets/android/third-party/`; audyt APK weryfikuje hashe plików z manifestu. Font i host React zachowują również notices w zasobach odpowiednich modułów.
 
 Bieżące dowody: pięć przypadków aplikacji przeszło oddzielnie na emulatorze API35 x86_64 przy density320 (dotyk/przebudowa, obrót, dwa warianty Activity recreate, rzeczywista utrata EGL). Łączny runner na TCG bez KVM miał timeouty ANR; nie jest oznaczony jako zaliczony. [Release R8](../docs/artifacts/android/app-release-runtime-verification.json) ma osobny ręczny test startu, kliknięcia i powrotu z tła. Fizyczny ARM64 nadal wymaga testu urządzenia.
+
+## Full instrumentation diagnostics
+
+The manually triggered `Android full instrumentation` workflow runs the complete five-case app suite as one unfiltered `connectedDebugAndroidTest` invocation:
+
+```sh
+gh workflow run android-runtime.yml --ref master
+```
+
+It builds once on JDK25/SDK36, boots an API35 x86_64 emulator with KVM and pins its test display to640x1120 at density320. The compact-layout test requires portrait logical height>=360 and landscape<360; arbitrary Pixel2 defaults do not satisfy both. `tools/android-full-suite.sh` is the diagnostic entry point for this disposable emulator: it changes that emulator’s display settings, retains Gradle’s exit code and prints bounded failure details in addition to uploading reports/logcat/ANR artifacts. For the current outcome and limits see [Android follow-up](../docs/Bugs/2026-10-17-android-followup.md). A workflow file or APK build alone does not establish a passing runtime suite.

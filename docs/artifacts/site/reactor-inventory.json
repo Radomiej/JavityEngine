@@ -1,0 +1,827 @@
+{
+  "sourceCommit": "5d2a206fcd26d0e9af342c19f9f3b2e334014ae8",
+  "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon",
+  "exitCode": 0,
+  "suites": 99,
+  "totals": {
+    "tests": 871,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "modules": [
+    "javity-assets",
+    "javity-backend",
+    "javity-core",
+    "javity-desktop",
+    "javity-ecs-artemis",
+    "javity-engine",
+    "javity-map",
+    "javity-map-core",
+    "javity-maplibre",
+    "javity-net",
+    "javity-physics2d",
+    "javity-physics3d",
+    "javity-rooms",
+    "javity-script",
+    "javity-script-graal",
+    "javity-ui",
+    "javity-ui-yoga-lwjgl",
+    "javity-voxel",
+    "javity-voxel-physics3d"
+  ],
+  "results": [
+    {
+      "module": "javity-assets",
+      "suite": "org.javity.assets.AssetStreamsAsyncTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-assets",
+      "suite": "org.javity.assets.AssetStreamsOwnershipTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-assets",
+      "suite": "org.javity.assets.AssetStreamsSchedulingTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-backend",
+      "suite": "galaxy.rapid.scene.UuidTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.animation.AnimationTest",
+      "tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.animation.ExactPoseCacheTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.animation.ModelPoseAnimatorTest",
+      "tests": 74,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.animation.PoseBatchingTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.audio.SoundManagerTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.audio.analysis.PcmSpectrumAnalyzerTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.avatar.AvatarMeshPartitionTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.avatar.AvatarViewTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.core.ComponentControllerTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.core.GameSystemTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.core.GameTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.core.Transform3DTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.effects.EffectsTest",
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.haptics.HapticsTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.particles.ParticleBurstPool3DTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.postprocessing.WorldPostProcessControlsTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.presentation.FloatingTextPoolTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.presentation.Presentation3DTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.presentation.PresentationEffects3DTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.presentation.PresentationEffectsTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.presentation.ScreenEffectsTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.BonePaletteTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.Camera2DTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.CameraRig3DTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.GdxRendererConstructionTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.InstanceGroupingTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.RecoverableDefaultShaderProviderTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.RecoverableFrameBufferTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.RenderOrderTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.ShapeMaterial2DTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.ShapeShaderAnimatorTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.ShapeStylesTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.SkinnedBoundsTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.SmoothShapeMathTest",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.SmoothShapeShaderDialectTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.StaticInstanceLifecycleTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.lighting.DayNightCycle3DTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.lighting.LightSnapshotTest",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.lighting.SceneLightingOrderingTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.render.sky.SkySettingsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.sequence.SequencerTest",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.serialization.SceneJsonTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.services.AudioAndPickingTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.services.RuntimeServicesTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.services.SceneManagerTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.services.TimeManagerTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.signals.EventBusTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.signals.RadioTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-core",
+      "suite": "org.javity.state.StateMachineTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-desktop",
+      "suite": "org.javity.demo.BundledOfflineMapTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-desktop",
+      "suite": "org.javity.demo.VoxelTerrainTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-desktop",
+      "suite": "org.javity.demo.VoxelViewmodelPresentationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ecs-artemis",
+      "suite": "org.javity.ecs.artemis.ArtemisSystemTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ecs-artemis",
+      "suite": "org.javity.ecs.artemis.EntityLinkTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ecs-artemis",
+      "suite": "org.javity.ecs.artemis.FinalIntegrationRegressionTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ecs-artemis",
+      "suite": "org.javity.ecs.artemis.LinkedPrefabFactoryTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ecs-artemis",
+      "suite": "org.javity.ecs.artemis.ProjectionTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-engine",
+      "suite": "org.javity.components.SpineConfigurationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-engine",
+      "suite": "org.javity.components.reflection.GameObjectReferencesTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-map",
+      "suite": "pl.radomiej.map.CenterMapTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-map",
+      "suite": "pl.radomiej.map.ProjectionTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-map-core",
+      "suite": "org.javity.map.AsyncTilesTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-map-core",
+      "suite": "org.javity.map.MapViewTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-map-core",
+      "suite": "org.javity.map.ResourceCacheTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-maplibre",
+      "suite": "org.javity.maplibre.OfflineMapPackageTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-net",
+      "suite": "pl.radomiej.web.ImageDownloadTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-physics2d",
+      "suite": "org.javity.physics2d.Physics2DTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-physics2d",
+      "suite": "org.javity.physics2d.PhysicsQueriesTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-physics3d",
+      "suite": "org.javity.physics3d.Physics3DTest",
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-rooms",
+      "suite": "org.javity.rooms.LocalRoomSimulationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-rooms",
+      "suite": "org.javity.rooms.LocalRoomWorkerProcessTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-script",
+      "suite": "org.javity.script.ScriptUiDevSampleTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-script",
+      "suite": "org.javity.script.ScriptUiReloaderTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-script",
+      "suite": "org.javity.script.ScriptUiRuntimeTest",
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.controls.ProgressModelTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.declarative.UiDocumentTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.declarative.UiMarkupTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.declarative.UiTargetsTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.FlexTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.RectangleStylesTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.ScrollContentTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.UiDevelopmentSampleStyleTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.UiThemeTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.flex.YogaNativeGuardTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.inspector.FeelPreviewSessionTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.inspector.LightEditTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.inspector.SceneInspectionFilterTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-ui",
+      "suite": "org.javity.ui.inspector.SceneInspectionTest",
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.AtlasLayoutTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.VoxelMesherTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.VoxelRaycasterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.VoxelWorldTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.controller.VoxelCameraObstructionTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel",
+      "suite": "org.javity.voxel.controller.VoxelFpsControllerTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "javity-voxel-physics3d",
+      "suite": "org.javity.physics3d.VoxelCollisionAdapterTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 JavityEngine is a Java game engine in active modernization, built on libGDX. The new core uses a small `Game → GameObject → Component` model for 2D and 3D gameplay, with optional modules for physics, UI, maps, scripting, assets, and other features. The repository also retains the historical Javity/Galaxy Rapid API to support gradual migration.
 
-[Showcase](https://radomiej.github.io/JavityEngine/) (deployment status has not been verified) · [Showcase source](site/) · [Documentation index](docs/README.md) · [Changelog](CHANGELOG.md) · [License](LICENSE) · [Third-party credits](THIRD_PARTY.md)
+[Showcase](https://radomiej.github.io/JavityEngine/) · [Showcase source](site/) · [Documentation index](docs/README.md) · [Changelog](CHANGELOG.md) · [License](LICENSE) · [Third-party credits](THIRD_PARTY.md)
 
 ## What changed
 
@@ -88,7 +88,7 @@ See the [Android build instructions](javity-android-app/README.md) and [current 
 | Target | Current evidence and limits |
 | --- | --- |
 | Desktop JVM | Main development target. Build and desktop graphics demos use JDK 25; platform-specific optional modules have their own requirements. |
-| Android | Opt-in app builds and emulator API 35 x86_64 checks cover UI, scripting, input, rendering, context recovery, and selected lifecycle cases. The combined instrumentation runner still ends in an ANR; the individual passing cases are recorded separately. Physical ARM64 performance and Android MapLibre/Bullet are unverified. See [Android status](docs/android-status.md). |
+| Android | Opt-in app builds and emulator API 35 x86_64 checks cover UI, scripting, input, rendering, context recovery, and selected lifecycle cases. The latest completed unfiltered run passed4/5 cases without an ANR; the remaining input case failed its window-focus guard. A follow-up run is linked in the status report; the full suite is not yet confirmed. Physical ARM64 performance and Android MapLibre/Bullet are unverified. See [Android status](docs/android-status.md). |
 | Browser / WebAssembly | An isolated TeaVM/libGDX rendering spike has a real Wasm GC/WebGL2 scene and Chromium/SwiftShader proof. This is not a full engine port: production UI/Yoga, browser physics, networking integration, and broad browser support remain unverified. See the [Wasm rendering spike](docs/javity-wasm-rendering-spike.md). |
 
 Treat a module's build, tests, and runtime proof as separate evidence. A successful compile alone does not establish support for every platform or optional feature.

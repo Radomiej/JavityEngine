@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "scope": "Static engine showcase",
+  "negativeControl": false,
+  "browser": "154.0.8037.57",
+  "desktop": true,
+  "tabsAndKeyboard": true,
+  "viewports": [
+    {
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "viewport": 1440,
+      "scroll": 1440
+    }
+  ],
+  "errors": []
+}

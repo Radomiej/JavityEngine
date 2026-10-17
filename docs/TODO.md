@@ -2,7 +2,7 @@
 
 Aktualna kolejność nowych prac: [work-queue.md](work-queue.md). Audyt OneJS: [onejs-coverage-audit.md](onejs-coverage-audit.md).
 
-Priorytet użytkownika: zachować i migrować dotychczasowe funkcje, rozpakować lokalnie Galaxy Rapid i pluginy; nowe zaawansowane funkcje po stabilizacji bazy. Bieżące prace pozostają lokalne; użytkownik zlecił końcowy push po weryfikacji, w tym Androida.
+Priorytet użytkownika: zachować i migrować dotychczasowe funkcje, rozpakować lokalnie Galaxy Rapid i pluginy; nowe zaawansowane funkcje po stabilizacji bazy. Modernizacja jest zmergowana i wypchnięta na master; strona GitHub Pages działa. Otwarte bramki pozostają jawnie zapisane poniżej.
 
 ## Zrobione
 
@@ -124,7 +124,7 @@ Gradle/JDK/libGDX zaktualizowane, lokalne źródła Galaxy/pluginów w buildzie,
 - [x] Debug/test i R8 release build PASS (38 s, 235 zadań); świeże audyty debug/release APK PASS dla ABI arm64-v8a i x86_64, po 4 biblioteki native na ABI, ELF/ZIP 16 KiB i 29 notices ([debug](artifacts/android/app-debug-apk-audit.json), [release](artifacts/android/app-release-apk-audit.json)). Audyt potwierdza pakowanie ABI, nie uruchomienie na fizycznym ARM.
 - [x] Weryfikacja native/distribution PASS (54 s), cztery fazy packaged-dev PASS oraz HTML K1/K2/K4/MM PASS.
 - [x] Ograniczona weryfikacja runtime R8 release PASS na lokalnie podpisanej kopii APK: model, teren, zaokrąglony React UI, font i SDF widoczne; tap zmienił Java signal 0→1, HOME/foreground zachował wartość w tym samym PID 5774, a filtered logcat nie zawierał wyjątków runtime. [Weryfikacja](artifacts/android/app-release-runtime-verification.json), [ekran początkowy](artifacts/android/app-release-initial.png), [kliknięcie](artifacts/android/app-release-click.png), [wznowienie](artifacts/android/app-release-resume.png), [log uruchomienia](artifacts/android/app-release-launch.txt), [log wznowienia](artifacts/android/app-release-resume.txt), [logcat](artifacts/android/app-release-runtime-logcat.txt). Była to lokalna kopia do walidacji, nie publikacja release; unsigned output pozostał bez zmian i nie dodano APK ani klucza do repozytorium.
-- [ ] Łączny runner pięciu testów instrumentacyjnych density 320 nie jest zaliczony: uruchomienie całego zestawu zakończyło się ANR przy starcie, a osobna próba klasy dwóch testów — ANR przy focus, mimo że wszystkie pięć przypadków przeszło osobno. Fizyczny ARM64 pozostaje niezweryfikowany.
+- [ ] Łączny runner pięciu testów instrumentacyjnych density320: najnowsza ukończona próba39044986493 to4/5 bez ANR; pozostaje fokus okna w pierwszym teście dotyku. Poprawkę sprawdza pełny run39046532187; [bieżąca diagnoza](Bugs/2026-10-17-android-followup.md). Fizyczny ARM64 pozostaje niezweryfikowany.
 - [ ] Pełny zestaw GLES/Shapes/MapLibre Android, fizyczny ARM64, pomiary wydajności na urządzeniu oraz pozostałe sceny/zasoby; w szczególności Android MapLibre i Bullet nie są częścią potwierdzenia pierwszego APK. Status i zakres dowodów: [android-status.md](android-status.md).
 
 ## Fizyka 3D i widok postaci — wymagania użytkownika
@@ -244,7 +244,7 @@ Wyniki i uruchomienie: [Javity Wasm rendering](javity-wasm-rendering-spike.md).
 - [x] Refactoring sceny: nazwane komponenty, oddzielne tworzenie i cleanup, zwolnienie pozostałych zasobów po błędzie oraz zachowanie błędu inicjalizacji.
 - [x] Domknąć wyścigi i częściową konstrukcję mostu Ammo; niezależny przebieg siedmiu scenariuszy Chromium zaliczony.
 - [x] Ujednoznacznić minimum Node i wersję faktycznie sprawdzoną.
-- [ ] Osobna bramka platformowa: pełny Android runner ANR, browser context loss, DPR, inne przeglądarki i pomiary sprzętowego GPU.
+- [ ] Osobna bramka platformowa: pełny Android runner (obecnie4/5, brak fokusu), browser context loss, DPR, inne przeglądarki i pomiary sprzętowego GPU.
 
 Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpointami. Nie oznaczają aktualnego PASS dla modułów zmienionych później.
 
@@ -255,6 +255,8 @@ Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpoin
 - [x] Revisit Android runner evidence; no speculative app fix. [Diagnosis and full-suite workflow](Bugs/2026-10-17-android-followup.md).
 - [ ] Run the unfiltered hosted Android suite and review ANR/system traces before closing BUG-ANDROID-001.
 - [x] Update canonical AGENTS.md, local ignore rules, README and Unreleased CHANGELOG.
-- [ ] Validate and publish the static engine showcase, merge the reviewed branch into master, and record deployment evidence.
+- [x] Validate and publish the static engine showcase, merge the reviewed branch into master, and record deployment evidence. [Live site](https://radomiej.github.io/JavityEngine/) · [verification](artifacts/site/README.md).
 
 Feature gaps in browser providers, remote netcode and physical-device validation remain separate backlog items; this maintenance batch does not mark them implemented.
+
+- [ ] BUG-UI-001: capture font advances and ink-edge coverage on hosted CI; keep the failing glyph gate until a diagnosis-backed fix. [Specification](Spec/2026-10-17-ui-font-parity.md).

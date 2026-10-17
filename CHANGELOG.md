@@ -21,7 +21,8 @@ This file records user-facing changes. There are no published release entries he
 - Fixed the rendering proof to inspect canvas pixels without the HTML overlay, reject disabled draw calls and overwrite stale PASS evidence after failures.
 - Added a responsive GitHub Pages showcase with real demo captures, example commands and explicit platform limits; publication source is `site/`.
 - Fixed CI setup of Android SDK by avoiding the retired `tools` package, and made the MapLibre fixture check portable across SQLite versions while preserving data/hash checks.
-- Added a manually triggered full Android instrumentation workflow with logcat/ANR artifacts. The known combined-runner ANR remains open pending a genuine unfiltered run.
+- Made the multiplayer ack-backpressure regression deterministic instead of relying on process scheduling and microsecond sleeps; real-process protocol tests remain.
+- Added a manually triggered full Android instrumentation workflow with logcat/ANR artifacts. Corrected the compact-viewport emulator setup, input injection ownership, and fresh-emulator immersive onboarding; full-suite confirmation is tracked in the Android follow-up. Historical startup ANR cause remains unproven.
 - Added [Bugs](docs/Bugs/README.md), [Spec](docs/Spec/README.md) and contributor guidance updates.
 
 ### Compatibility notes

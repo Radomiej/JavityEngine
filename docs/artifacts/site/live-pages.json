@@ -1,0 +1,46 @@
+{
+  "url": "https://radomiej.github.io/JavityEngine/site/",
+  "checks": [
+    {
+      "path": "index.html",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "styles.css",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "script.js",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "favicon.svg",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "assets/voxel-fps.webp",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "assets/shapes-demo.webp",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "assets/physics3d-demo.webp",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    },
+    {
+      "path": "assets/relay-ward-demo.webp",
+      "httpStatus": 200,
+      "sha256MatchesSource": true
+    }
+  ],
+  "success": true
+}
