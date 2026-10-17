@@ -15,6 +15,8 @@ public final class EntityLink implements AutoCloseable {
   final List<ProjectionSession> projections = new ArrayList<>();
   boolean valid = true, synchronizationEnabled = true, dirty = true;
   GameObjectRef reference;
+  LinkLifetime lifetime;
+  boolean factoryOwned;
   Runnable removeObjectListener;
 
   EntityLink(ArtemisSystem owner, GameObject object, int id, World identity, long generation) {
@@ -25,7 +27,8 @@ public final class EntityLink implements AutoCloseable {
     if (!valid || owner.isWorldReleased()) return false;
     Entity entity = identity.getEntity(id);
     return entity != null && entity.isActive() && entity.getComponent(GameObjectRef.class) == reference
-        && reference != null && reference.matches(object, this);
+        && reference != null && reference.matches(object, this)
+        && entity.getComponent(LinkLifetime.class) == lifetime && lifetime != null && lifetime.matches(this);
   }
 
   public boolean isValid() {

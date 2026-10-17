@@ -53,6 +53,9 @@ public class ArtemisSystem extends GameSystem {
     GameObjectRef ref = world.edit(entity.getId()).create(GameObjectRef.class);
     ref.bind(object, link);
     link.reference = ref;
+    LinkLifetime lifetime = world.edit(entity.getId()).create(LinkLifetime.class);
+    lifetime.bind(link);
+    link.lifetime = lifetime;
     link.removeObjectListener = object.onComponentChange(change -> { if (link.valid) link.dirty = true; });
     registry.add(link);
     return link;
@@ -71,11 +74,13 @@ public class ArtemisSystem extends GameSystem {
       checkOwnerForMutation();
       entity = world.createEntity();
       link = bind(object, entity);
+      link.factoryOwned = true;
       if (configureEntity != null) configureEntity.accept(world.edit(entity.getId()));
       ensureValid(link);
+      link.factoryOwned = false;
       return link;
     } catch (RuntimeException | Error failure) {
-      if (link != null) invalidate(link, true);
+      if (link != null) rollbackCreatedLink(link);
       else if (entity != null && entity.isActive()) world.delete(entity.getId());
       object.destroy();
       throw failure;
@@ -117,8 +122,8 @@ public class ArtemisSystem extends GameSystem {
     if (!link.valid) return;
     Entity current = worldReleased ? null : world.getEntity(link.id);
     boolean ownsCurrentEntity = current != null && current.isActive()
-        && current.getComponent(GameObjectRef.class) == link.reference
-        && link.reference != null && link.reference.matches(link.object, link);
+        && current.getComponent(LinkLifetime.class) == link.lifetime
+        && link.lifetime != null && link.lifetime.matches(link);
     link.valid = false;
     registry.remove(link);
     if (link.removeObjectListener != null) { link.removeObjectListener.run(); link.removeObjectListener = null; }
@@ -126,11 +131,41 @@ public class ArtemisSystem extends GameSystem {
     if (ref != null) ref.clear();
     link.clearOwnedCoreReferences(ownsCurrentEntity);
     if (ownsCurrentEntity) {
-      if (deleteEntity) world.delete(link.id);
-      else current.edit().remove(GameObjectRef.class);
+      if (deleteEntity) {
+        world.delete(link.id);
+        link.lifetime.clear();
+        link.lifetime = null;
+      }
+      else {
+        current.edit().remove(GameObjectRef.class);
+        if (!link.factoryOwned) {
+          current.edit().remove(LinkLifetime.class);
+          link.lifetime.clear();
+          link.lifetime = null;
+        }
+      }
+    } else if (link.lifetime != null) {
+      link.lifetime.clear();
+      link.lifetime = null;
     }
   }
-  void rollbackCreatedLink(EntityLink link) { invalidate(link, true); }
+  void rollbackCreatedLink(EntityLink link) {
+    if (link.valid) {
+      link.factoryOwned = false;
+      invalidate(link, true);
+      return;
+    }
+    // A public-reference failure may already have invalidated the handle. The
+    // private witness still authorizes rollback of this factory's entity only.
+    Entity current = worldReleased ? null : world.getEntity(link.id);
+    boolean ownsCurrentEntity = current != null && current.isActive()
+        && current.getComponent(LinkLifetime.class) == link.lifetime
+        && link.lifetime != null && link.lifetime.matches(link);
+    link.factoryOwned = false;
+    if (ownsCurrentEntity) world.delete(link.id);
+    if (link.lifetime != null) link.lifetime.clear();
+    link.lifetime = null;
+  }
 
   private void housekeeping() {
     checkOwnerThread();

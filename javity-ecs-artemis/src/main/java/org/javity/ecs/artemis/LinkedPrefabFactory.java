@@ -23,9 +23,11 @@ public final class LinkedPrefabFactory {
       for (GameObject object : created) {
         var entity = system.world().createEntity();
         EntityLink link = system.bind(object, entity);
+        link.factoryOwned = true;
         links.add(link);
         if (configureEntity != null) configureEntity.accept(system.world().edit(link.entity()));
         if (!link.isValid()) throw new IllegalStateException("Factory configuration invalidated its link");
+        link.factoryOwned = false;
       }
       return List.copyOf(links);
     } catch (RuntimeException | Error failure) {

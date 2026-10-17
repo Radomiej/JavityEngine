@@ -120,4 +120,53 @@ public class LinkedPrefabFactoryTest {
     assertFalse(world.getMapper(GameObjectRef.class).has(id.get()));
     game.close();
   }
+
+  @Test public void failedPrefabConfigurationDeletesOwnedEntityWhenReservedRefWasRemovedOrReplaced() {
+    for (boolean replace : new boolean[] { false, true }) {
+      Game game = new Game(); World world = new World(new WorldConfigurationBuilder().build());
+      ArtemisSystem bridge = game.addSystem(new ArtemisSystem(world)); game.start();
+      Prefab prefab = new Prefab("{\"version\":1,\"objects\":[{\"name\":\"new\",\"components\":[]}]}");
+      AtomicInteger id = new AtomicInteger(-1);
+      assertThrows(IllegalStateException.class, () -> LinkedPrefabFactory.instantiate(bridge, prefab,
+          new SceneJson(), edit -> {
+            id.set(edit.getEntityId());
+            edit.remove(GameObjectRef.class);
+            if (replace) edit.create(GameObjectRef.class);
+            throw new IllegalStateException("fail after changing reserved ref");
+          }));
+      game.step(.01f);
+      assertFalse("failed prefab entity must be deleted without another World.process", world.getEntity(id.get()).isActive());
+      assertTrue(game.getObjects().isEmpty());
+      game.close();
+    }
+  }
+
+  @Test public void failedCreateLinkedConfigurationDeletesOwnedEntityWhenReservedRefWasRemoved() {
+    Game game = new Game(); World world = new World(new WorldConfigurationBuilder().build());
+    ArtemisSystem bridge = game.addSystem(new ArtemisSystem(world)); game.start();
+    AtomicInteger id = new AtomicInteger(-1);
+    assertThrows(IllegalStateException.class, () -> bridge.createLinked("failed", null, edit -> {
+      id.set(edit.getEntityId()); edit.remove(GameObjectRef.class);
+      throw new IllegalStateException("fail after removing reserved ref");
+    }));
+    game.step(.01f);
+    assertFalse("failed createLinked entity must be deleted without another World.process", world.getEntity(id.get()).isActive());
+    assertTrue(game.getObjects().isEmpty());
+    game.close();
+  }
+
+  @Test public void failedCreateLinkedDoesNotDeleteEntityRecycledDuringConfigurator() {
+    Game game = new Game(); World world = new World(new WorldConfigurationBuilder().build());
+    ArtemisSystem bridge = game.addSystem(new ArtemisSystem(world)); game.start();
+    AtomicInteger id = new AtomicInteger(-1); AtomicReference<Entity> replacement = new AtomicReference<>();
+    assertThrows(IllegalStateException.class, () -> bridge.createLinked("failed", null, edit -> {
+      id.set(edit.getEntityId());
+      world.delete(id.get()); world.process(); replacement.set(world.createEntity());
+      assertEquals(id.get(), replacement.get().getId());
+      throw new IllegalStateException("fail after recycling native ID");
+    }));
+    game.step(.01f);
+    assertTrue("unrelated entity reusing the ID must survive rollback", replacement.get().isActive());
+    game.close();
+  }
 }
