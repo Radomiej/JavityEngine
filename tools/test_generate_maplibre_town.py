@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """CPU-only acceptance tests for the authored MapLibre town fixture."""
 
-import gzip
 import binascii
+import gzip
 import hashlib
 import json
 import pathlib
 import sqlite3
+import shutil
 import struct
 import subprocess
 import tempfile
@@ -205,6 +206,57 @@ def package_files(root):
     return {path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file()}
 
 
+def mbtiles_snapshot(path):
+    """Read logical MBTiles content, independent of SQLite file-layout details."""
+    with sqlite3.connect(path) as db:
+        integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
+        if integrity != "ok":
+            raise AssertionError(f"{path} failed SQLite integrity_check: {integrity}")
+        schema = db.execute(
+            "SELECT type, name, tbl_name, sql FROM sqlite_master "
+            "WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name"
+        ).fetchall()
+        metadata = db.execute(
+            "SELECT name, value FROM metadata ORDER BY name, value"
+        ).fetchall()
+        tiles = db.execute(
+            "SELECT zoom_level, tile_column, tile_row, tile_data FROM tiles "
+            "ORDER BY zoom_level, tile_column, tile_row"
+        ).fetchall()
+    return schema, metadata, tiles
+
+
+def validated_package_manifest(test_case, package):
+    manifest = json.loads((package / "fixture-source.json").read_text(encoding="utf-8"))
+    hashes = manifest["sha256"]
+    expected_files = package_files(package) - {"fixture-source.json"}
+    test_case.assertEqual(set(hashes), expected_files, "manifest covers every package file")
+    for relative, digest in hashes.items():
+        actual = hashlib.sha256((package / relative).read_bytes()).hexdigest()
+        test_case.assertEqual(actual, digest, relative)
+    return manifest
+
+
+def assert_packages_match(test_case, generated, checked_in):
+    test_case.assertEqual(package_files(generated), package_files(checked_in))
+    generated_manifest = validated_package_manifest(test_case, generated)
+    checked_in_manifest = validated_package_manifest(test_case, checked_in)
+    for relative in package_files(generated) - {"town.mbtiles", "fixture-source.json"}:
+        test_case.assertEqual(
+            (generated / relative).read_bytes(),
+            (checked_in / relative).read_bytes(),
+            relative,
+        )
+    test_case.assertEqual(
+        mbtiles_snapshot(generated / "town.mbtiles"),
+        mbtiles_snapshot(checked_in / "town.mbtiles"),
+        "town.mbtiles",
+    )
+    generated_manifest["sha256"].pop("town.mbtiles")
+    checked_in_manifest["sha256"].pop("town.mbtiles")
+    test_case.assertEqual(generated_manifest, checked_in_manifest, "fixture-source.json")
+
+
 def verify_rgba_png(path, expected_size):
     data = path.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
@@ -263,12 +315,41 @@ class MapLibreTownFixtureTest(unittest.TestCase):
             generated = pathlib.Path(temp) / "maplibre-town"
             checked_in = ROOT / "javity-desktop/src/main/resources/org/javity/demo/maplibre-town"
             self.assertEqual((generated / "LICENSE.txt").read_bytes(), (ROOT / "LICENSE").read_bytes())
-            self.assertEqual(package_files(generated), package_files(checked_in))
-            for relative in package_files(generated):
-                self.assertEqual((generated / relative).read_bytes(), (checked_in / relative).read_bytes(), relative)
-            provenance = json.loads((generated / "fixture-source.json").read_text())
-            for relative, digest in provenance["sha256"].items():
-                self.assertEqual(hashlib.sha256((generated / relative).read_bytes()).hexdigest(), digest, relative)
+            assert_packages_match(self, generated, checked_in)
+
+    def test_package_comparison_ignores_sqlite_version_header_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            self.generate(pathlib.Path(temp))
+            generated = pathlib.Path(temp) / "maplibre-town"
+            alternate = pathlib.Path(temp) / "alternate-sqlite-build"
+            shutil.copytree(generated, alternate)
+            database = alternate / "town.mbtiles"
+            with database.open("r+b") as stream:
+                stream.seek(96)
+                stream.write(b"\x00\x00\x00\x00")
+            manifest_path = alternate / "fixture-source.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["sha256"]["town.mbtiles"] = hashlib.sha256(database.read_bytes()).hexdigest()
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False) + "\n", encoding="utf-8")
+
+            assert_packages_match(self, generated, alternate)
+
+            with sqlite3.connect(database) as db:
+                stored = db.execute("SELECT tile_data FROM tiles").fetchone()[0]
+                changed = stored[:-1] + bytes((stored[-1] ^ 1,))
+                db.execute("UPDATE tiles SET tile_data = ?", (changed,))
+            manifest["sha256"]["town.mbtiles"] = hashlib.sha256(database.read_bytes()).hexdigest()
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False) + "\n", encoding="utf-8")
+            with self.assertRaises(AssertionError):
+                assert_packages_match(self, generated, alternate)
+
+            shutil.copyfile(generated / "town.mbtiles", database)
+            with sqlite3.connect(database) as db:
+                db.execute("UPDATE metadata SET value = 'wrong' WHERE name = 'format'")
+            manifest["sha256"]["town.mbtiles"] = hashlib.sha256(database.read_bytes()).hexdigest()
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False) + "\n", encoding="utf-8")
+            with self.assertRaises(AssertionError):
+                assert_packages_match(self, generated, alternate)
 
     def test_mbtiles_has_tms_rows_gzip_mvt_and_courtyard(self):
         with tempfile.TemporaryDirectory() as temp:

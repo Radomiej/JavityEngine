@@ -13,6 +13,8 @@ jobs:
           java-version: '25'
           cache: gradle
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Android SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Build APKs and unit tests
