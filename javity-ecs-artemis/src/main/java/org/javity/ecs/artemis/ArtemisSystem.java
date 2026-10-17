@@ -18,7 +18,7 @@ public class ArtemisSystem extends GameSystem {
     @Override public void removed(com.artemis.utils.IntBag entities) {
       for (int i = 0; i < entities.size(); i++) {
         EntityLink link = registry.forEntity(entities.get(i));
-        if (link != null && !link.hasValidReference()) invalidate(link, false);
+        if (link != null) invalidate(link, false);
       }
     }
   };
@@ -59,20 +59,24 @@ public class ArtemisSystem extends GameSystem {
   }
 
   public EntityLink createLinked(String name, Consumer<GameObject> configureObject, Consumer<EntityEdit> configureEntity) {
-    checkOwnerThread();
+    checkOwnerForMutation();
     Game game = getGame();
     if (game == null || game.isDisposed()) throw new IllegalStateException("Adapter must be attached to a live Game");
     GameObject object = game.createObject(Objects.requireNonNull(name));
-    Entity entity = world.createEntity();
+    Entity entity = null;
     EntityLink link = null;
     try {
       if (configureObject != null) configureObject.accept(object);
+      if (object.isDestroyed()) throw new IllegalStateException("GameObject configurator destroyed its object");
+      checkOwnerForMutation();
+      entity = world.createEntity();
       link = bind(object, entity);
       if (configureEntity != null) configureEntity.accept(world.edit(entity.getId()));
-      if (!link.hasValidReference()) throw new IllegalStateException("Reserved GameObjectRef was removed");
+      ensureValid(link);
       return link;
     } catch (RuntimeException | Error failure) {
-      if (link != null) invalidate(link, true); else if (entity.isActive()) world.delete(entity.getId());
+      if (link != null) invalidate(link, true);
+      else if (entity != null && entity.isActive()) world.delete(entity.getId());
       object.destroy();
       throw failure;
     }
@@ -80,35 +84,50 @@ public class ArtemisSystem extends GameSystem {
 
   private void ensureDeletionListener() {
     if (allEntities == null) {
-      allEntities = world.getAspectSubscriptionManager().get(Aspect.all(GameObjectRef.class));
+      allEntities = world.getAspectSubscriptionManager().get(Aspect.all());
       allEntities.addSubscriptionListener(deletionListener);
     }
   }
 
   void ensureValid(EntityLink link) {
     checkOwnerThread();
-    if (!link.valid || link.owner != this || link.identity != world || worldReleased || isDisposed() || link.object.isDestroyed()) {
-      if (link.valid) invalidate(link, true);
+    if (!link.valid || link.owner != this || link.identity != world || worldReleased || isDisposed()) {
       throw new IllegalStateException("Entity link is no longer valid");
     }
     if (!link.hasValidReference()) { invalidate(link, false); throw new IllegalStateException("Native link reference is missing or replaced"); }
+    if (link.object.isDestroyed()) { invalidate(link, true); throw new IllegalStateException("GameObject is destroyed"); }
+  }
+
+  boolean isOperational(EntityLink link, ProjectionSession session) {
+    if (!link.valid || isDisposed() || worldReleased || !link.synchronizationEnabled
+        || (session != null && !link.projections.contains(session))) return false;
+    if (!link.hasValidReference()) { invalidate(link, false); return false; }
+    if (link.object.isDestroyed()) { invalidate(link, true); return false; }
+    return true;
+  }
+
+  void checkOwnerForMutation() {
+    checkOwnerThread();
+    if (isDisposed() || worldReleased) throw new IllegalStateException("ArtemisSystem is closed");
+    Game game = getGame();
+    if (game == null || game.isDisposed()) throw new IllegalStateException("Adapter must be attached to a live Game");
   }
 
   void invalidate(EntityLink link, boolean deleteEntity) {
     if (!link.valid) return;
+    Entity current = worldReleased ? null : world.getEntity(link.id);
+    boolean ownsCurrentEntity = current != null && current.isActive()
+        && current.getComponent(GameObjectRef.class) == link.reference
+        && link.reference != null && link.reference.matches(link.object, link);
     link.valid = false;
     registry.remove(link);
     if (link.removeObjectListener != null) { link.removeObjectListener.run(); link.removeObjectListener = null; }
-    link.clearOwnedCoreReferences();
     GameObjectRef ref = link.reference; link.reference = null;
-    if (!worldReleased) {
-      Entity current = world.getEntity(link.id);
-      if (current != null && current.isActive()) {
-        if (current.getComponent(GameObjectRef.class) == ref && ref != null) {
-          ref.clear();
-          if (deleteEntity) world.delete(link.id); else current.edit().remove(GameObjectRef.class);
-        } else if (deleteEntity) world.delete(link.id);
-      }
+    if (ref != null) ref.clear();
+    link.clearOwnedCoreReferences(ownsCurrentEntity);
+    if (ownsCurrentEntity) {
+      if (deleteEntity) world.delete(link.id);
+      else current.edit().remove(GameObjectRef.class);
     }
   }
   void rollbackCreatedLink(EntityLink link) { invalidate(link, true); }
@@ -117,8 +136,8 @@ public class ArtemisSystem extends GameSystem {
     checkOwnerThread();
     for (EntityLink link : registry.snapshot()) {
       if (!link.valid) continue;
-      if (link.object.isDestroyed()) { invalidate(link, true); continue; }
       if (!link.hasValidReference()) { invalidate(link, false); continue; }
+      if (link.object.isDestroyed()) { invalidate(link, true); continue; }
       if (link.synchronizationEnabled) link.reconcile();
     }
   }
@@ -138,10 +157,23 @@ public class ArtemisSystem extends GameSystem {
     Throwable failure = null;
     try {
       housekeeping();
-      for (EntityLink link : registry.snapshot()) if (link.valid && link.synchronizationEnabled) link.copyToEcs();
-      world.setDelta(delta); world.process();
-      housekeeping();
-      for (EntityLink link : registry.snapshot()) if (link.valid && link.synchronizationEnabled) link.copyToObject();
+      for (EntityLink link : registry.snapshot()) {
+        if (!link.valid || !link.synchronizationEnabled) continue;
+        link.copyToEcs();
+        if (isDisposed() || worldReleased || releasePending) break;
+      }
+      if (!isDisposed() && !worldReleased && !releasePending) {
+        world.setDelta(delta);
+        world.process();
+        if (!isDisposed() && !worldReleased && !releasePending) {
+          housekeeping();
+          for (EntityLink link : registry.snapshot()) {
+            if (!link.valid || !link.synchronizationEnabled) continue;
+            link.copyToObject();
+            if (isDisposed() || worldReleased || releasePending) break;
+          }
+        }
+      }
     } catch (RuntimeException | Error e) { failure = e; }
     finally {
       processing = false;

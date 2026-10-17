@@ -249,4 +249,50 @@ public class ArtemisSystemTest {
       second.dispose();
     }
   }
+
+  @Test
+  public void nativeArtemisMultiExceptionDuringDisposeStillContinuesAndClearsLinkedReference() {
+    boolean[] secondDisposed = {false};
+    BaseSystem first = new BaseSystem() {
+      @Override protected void processSystem() {}
+      @Override protected void dispose() { throw new IllegalStateException("first dispose"); }
+    };
+    BaseSystem second = new BaseSystem() {
+      @Override protected void processSystem() {}
+      @Override protected void dispose() { secondDisposed[0] = true; throw new IllegalArgumentException("second dispose"); }
+    };
+    World world = new World(new WorldConfigurationBuilder().with(first).with(second).build());
+    Game game = new Game(); ArtemisSystem adapter = game.addSystem(new ArtemisSystem(world));
+    EntityLink link = adapter.bind(game.createObject("dispose aggregate"), world.createEntity());
+    game.start(); game.step(.01f);
+    GameObjectRef ref = world.getMapper(GameObjectRef.class).get(link.entity());
+    RuntimeException failure = assertThrows(RuntimeException.class, game::close);
+    assertTrue("Expected Artemis to aggregate system cleanup failures", failure.getClass().getSimpleName().contains("MultiException"));
+    assertTrue(secondDisposed[0]);
+    assertNull(ref.objectOrNull());
+    assertFalse(link.isValid());
+  }
+
+  @Test
+  public void realArtemisMultiExceptionDuringWorldDisposeContinuesSystemCleanupAndLinkRelease() {
+    boolean[] secondCleanup = {false};
+    BaseSystem first = new BaseSystem() {
+      @Override protected void processSystem() {}
+      @Override protected void dispose() { throw new IllegalStateException("first native cleanup"); }
+    };
+    BaseSystem second = new BaseSystem() {
+      @Override protected void processSystem() {}
+      @Override protected void dispose() { secondCleanup[0] = true; throw new IllegalArgumentException("second native cleanup"); }
+    };
+    World world = new World(new WorldConfigurationBuilder().with(first).with(second).build());
+    Game game = new Game(); ArtemisSystem adapter = game.addSystem(new ArtemisSystem(world));
+    EntityLink link = adapter.bind(game.createObject("native cleanup"), world.createEntity());
+    game.start(); game.step(.01f);
+    GameObjectRef retained = world.getMapper(GameObjectRef.class).get(link.entity());
+    RuntimeException failure = assertThrows(RuntimeException.class, game::close);
+    assertTrue(failure.getClass().getName(), failure.getClass().getSimpleName().contains("MultiException"));
+    assertTrue(secondCleanup[0]);
+    assertNull(retained.objectOrNull());
+    assertFalse(link.isValid());
+  }
 }

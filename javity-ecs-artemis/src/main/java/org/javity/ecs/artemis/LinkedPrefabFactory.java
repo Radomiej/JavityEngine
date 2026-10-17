@@ -14,10 +14,8 @@ public final class LinkedPrefabFactory {
   public static List<EntityLink> instantiate(ArtemisSystem system, Prefab prefab, SceneJson schema,
       Consumer<EntityEdit> configureEntity) {
     Objects.requireNonNull(system); Objects.requireNonNull(prefab); Objects.requireNonNull(schema);
+    system.checkOwnerForMutation();
     var game = system.getGame();
-    if (game == null || game.isDisposed()) throw new IllegalStateException("Adapter must be attached to a live Game");
-    Set<GameObject> prior = Collections.newSetFromMap(new IdentityHashMap<>());
-    prior.addAll(game.getObjects());
     List<GameObject> created = new ArrayList<>();
     List<EntityLink> links = new ArrayList<>();
     try {
@@ -32,7 +30,7 @@ public final class LinkedPrefabFactory {
       return List.copyOf(links);
     } catch (RuntimeException | Error failure) {
       for (EntityLink link : List.copyOf(links)) try { system.rollbackCreatedLink(link); } catch (RuntimeException | Error e) { failure.addSuppressed(e); }
-      for (GameObject object : game.getObjects()) if (!prior.contains(object)) object.destroy();
+      for (GameObject object : created) object.destroy();
       throw failure;
     }
   }
