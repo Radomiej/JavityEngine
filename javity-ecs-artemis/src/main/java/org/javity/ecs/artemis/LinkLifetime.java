@@ -8,5 +8,9 @@ public final class LinkLifetime extends com.artemis.Component {
 
   void bind(EntityLink link) { this.link = link; }
   boolean matches(EntityLink link) { return this.link == link; }
+  // An invalid factory link retains only a rollback hold; a fresh bind may supersede it.
+  boolean isRetainedFactoryWitness(ArtemisSystem owner) {
+    return link != null && link.owner == owner && !link.valid && link.factoryOwned;
+  }
   void clear() { link = null; }
 }

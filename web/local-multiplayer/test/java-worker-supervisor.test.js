@@ -44,13 +44,14 @@ test('startup timeout terminates and reaps a child that never sends ready', { ti
   }
 });
 
-test('a child that stops draining stdin times out its final write and is reaped', { timeout: 9000 }, async () => {
+test('a child that stops draining stdin times out its final write and is reaped', { timeout: 9000 }, async (t) => {
   const childProgram = [
     "process.stdout.write(JSON.stringify({v:1,roomId:process.argv[1],type:'ready'})+'\\n');",
     'process.stdin.pause();',
     'setInterval(()=>{},1000);',
   ].join('');
   const worker = await JavaRoomWorker.start({ command: process.execPath, args: ['-e', childProgram], roomId: 'stalled-stdin' });
+  t.after(() => worker.stop());
   let completedWrites = 0;
   await assert.rejects((async () => {
     for (; completedWrites < 10000; completedWrites++) {

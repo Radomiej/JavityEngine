@@ -10,7 +10,7 @@ public class ArtemisSystem extends GameSystem {
   private final World world;
   private final EcsPhase phase;
   private final Thread ownerThread;
-  private boolean processing, releasePending, worldReleased;
+  private boolean hookActive, releasePending, worldReleased;
   private final LinkRegistry registry = new LinkRegistry();
   private EntitySubscription allEntities;
   private final EntitySubscription.SubscriptionListener deletionListener = new EntitySubscription.SubscriptionListener() {
@@ -39,6 +39,10 @@ public class ArtemisSystem extends GameSystem {
   public EcsPhase phase() { return phase; }
 
   public EntityLink bind(GameObject object, Entity entity) {
+    return bind(object, entity, null);
+  }
+
+  private EntityLink bind(GameObject object, Entity entity, LinkLifetime allocation) {
     checkOwnerThread(); Objects.requireNonNull(object); Objects.requireNonNull(entity);
     Game game = getGame();
     if (game == null || game.isDisposed() || isDisposed()) throw new IllegalStateException("Adapter must be attached to a live Game");
@@ -48,12 +52,16 @@ public class ArtemisSystem extends GameSystem {
     if (!entity.isActive()) throw new IllegalArgumentException("Entity is not active");
     if (registry.contains(object) || registry.contains(entity.getId())) throw new IllegalArgumentException("Object or entity already linked");
     if (entity.getComponent(GameObjectRef.class) != null) throw new IllegalArgumentException("Reserved GameObjectRef already present");
+    if (entity.getComponent(InactiveGameObject.class) != null) throw new IllegalArgumentException("Reserved InactiveGameObject already present");
+    LinkLifetime priorLifetime = entity.getComponent(LinkLifetime.class);
+    if (priorLifetime != null && priorLifetime != allocation && !priorLifetime.isRetainedFactoryWitness(this))
+      throw new IllegalArgumentException("Reserved LinkLifetime already present");
     ensureDeletionListener();
     EntityLink link = new EntityLink(this, object, entity.getId(), world, registry.nextGeneration());
     GameObjectRef ref = world.edit(entity.getId()).create(GameObjectRef.class);
     ref.bind(object, link);
     link.reference = ref;
-    LinkLifetime lifetime = new LinkLifetime();
+    LinkLifetime lifetime = allocation != null ? allocation : new LinkLifetime();
     lifetime.bind(link);
     world.edit(entity.getId()).add(lifetime);
     link.lifetime = lifetime;
@@ -67,23 +75,38 @@ public class ArtemisSystem extends GameSystem {
     Game game = getGame();
     if (game == null || game.isDisposed()) throw new IllegalStateException("Adapter must be attached to a live Game");
     GameObject object = game.createObject(Objects.requireNonNull(name));
-    Entity entity = null;
     EntityLink link = null;
     try {
       if (configureObject != null) configureObject.accept(object);
       if (object.isDestroyed()) throw new IllegalStateException("GameObject configurator destroyed its object");
       checkOwnerForMutation();
-      entity = world.createEntity();
-      link = bind(object, entity);
-      link.factoryOwned = true;
-      if (configureEntity != null) configureEntity.accept(world.edit(entity.getId()));
+      link = allocateFactoryLink(object);
+      if (configureEntity != null) configureEntity.accept(world.edit(link.entity()));
       ensureValid(link);
       link.factoryOwned = false;
       return link;
     } catch (RuntimeException | Error failure) {
       if (link != null) rollbackCreatedLink(link);
-      else if (entity != null && entity.isActive()) world.delete(entity.getId());
       object.destroy();
+      throw failure;
+    }
+  }
+
+  /** Establishes an allocation witness before bind can reject an object. No user callbacks run here. */
+  EntityLink allocateFactoryLink(GameObject object) {
+    checkOwnerForMutation();
+    Entity entity = world.createEntity();
+    LinkLifetime allocation = new LinkLifetime();
+    entity.edit().add(allocation);
+    try {
+      EntityLink link = bind(object, entity, allocation);
+      link.factoryOwned = true;
+      return link;
+    } catch (RuntimeException | Error failure) {
+      // Delete only the allocation still carrying this exact witness, never an ID alone.
+      if (!worldReleased && entity.isActive() && entity.getComponent(LinkLifetime.class) == allocation)
+        world.delete(entity.getId());
+      allocation.clear();
       throw failure;
     }
   }
@@ -139,6 +162,7 @@ public class ArtemisSystem extends GameSystem {
         link.lifetime = null;
       }
       else {
+        current.edit().remove(InactiveGameObject.class);
         current.edit().remove(GameObjectRef.class);
         if (!link.factoryOwned) {
           current.edit().remove(LinkLifetime.class);
@@ -188,45 +212,48 @@ public class ArtemisSystem extends GameSystem {
     }
   }
 
-  @Override public void onBeforeUpdate(float delta) { if (phase == EcsPhase.BEFORE_WORLD) process(delta); }
-  @Override public void onAfterUpdate(float delta) { if (phase == EcsPhase.AFTER_WORLD) process(delta); }
-  @Override public void onUiUpdate(float delta) {
-    housekeeping();
-    if (phase == EcsPhase.UI) process(delta);
-  }
+  @Override public void onBeforeUpdate(float delta) { hook(delta, phase == EcsPhase.BEFORE_WORLD, false); }
+  @Override public void onAfterUpdate(float delta) { hook(delta, phase == EcsPhase.AFTER_WORLD, false); }
+  @Override public void onUiUpdate(float delta) { hook(delta, phase == EcsPhase.UI, true); }
 
-  private void process(float delta) {
+  private void hook(float delta, boolean processNative, boolean reconcile) {
     checkOwnerThread();
+    if (hookActive) throw new IllegalStateException("Recursive Artemis adapter hook");
     if (isDisposed() || worldReleased) return;
-    if (processing) throw new IllegalStateException("Recursive Artemis world process");
-    processing = true;
+    hookActive = true;
     Throwable failure = null;
     try {
-      housekeeping();
-      for (EntityLink link : registry.snapshot()) {
-        if (!link.valid || !link.synchronizationEnabled) continue;
-        link.copyToEcs();
-        if (isDisposed() || worldReleased || releasePending) break;
-      }
-      if (!isDisposed() && !worldReleased && !releasePending) {
-        world.setDelta(delta);
-        world.process();
-        if (!isDisposed() && !worldReleased && !releasePending) {
-          housekeeping();
-          for (EntityLink link : registry.snapshot()) {
-            if (!link.valid || !link.synchronizationEnabled) continue;
-            link.copyToObject();
-            if (isDisposed() || worldReleased || releasePending) break;
-          }
-        }
-      }
+      // Selectors are application callbacks too: housekeeping belongs inside the guard.
+      if (reconcile || processNative) housekeeping();
+      if (processNative && !isDisposed() && !worldReleased && !releasePending) process(delta);
     } catch (RuntimeException | Error e) { failure = e; }
     finally {
-      processing = false;
+      hookActive = false;
       if (releasePending) try { releaseWorld(); } catch (RuntimeException | Error e) { if (failure == null) failure = e; else failure.addSuppressed(e); }
     }
     if (failure instanceof RuntimeException e) throw e;
     if (failure instanceof Error e) throw e;
+  }
+
+  /** Called only under the complete hook guard. */
+  private void process(float delta) {
+    for (EntityLink link : registry.snapshot()) {
+      if (!link.valid || !link.synchronizationEnabled) continue;
+      link.copyToEcs();
+      if (isDisposed() || worldReleased || releasePending) break;
+    }
+    if (!isDisposed() && !worldReleased && !releasePending) {
+      world.setDelta(delta);
+      world.process();
+      if (!isDisposed() && !worldReleased && !releasePending) {
+        housekeeping();
+        for (EntityLink link : registry.snapshot()) {
+          if (!link.valid || !link.synchronizationEnabled) continue;
+          link.copyToObject();
+          if (isDisposed() || worldReleased || releasePending) break;
+        }
+      }
+    }
   }
 
   @Override protected void validateDispose() { checkOwnerThread(); }
@@ -234,7 +261,7 @@ public class ArtemisSystem extends GameSystem {
     for (EntityLink link : registry.snapshot()) invalidate(link, false);
     if (allEntities != null) allEntities.removeSubscriptionListener(deletionListener);
     if (worldReleased) return;
-    if (processing) { releasePending = true; return; }
+    if (hookActive) { releasePending = true; return; }
     releaseWorld();
   }
   private void releaseWorld() { if (worldReleased) return; worldReleased = true; releasePending = false; world.dispose(); }

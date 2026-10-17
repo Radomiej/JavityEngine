@@ -44,7 +44,11 @@ public final class EntityLink implements AutoCloseable {
   public boolean isSynchronizationEnabled() { owner.checkOwnerThread(); return synchronizationEnabled && isValid(); }
 
   public void addProjection(ComponentProjection<?, ?> projection) {
-    owner.ensureValid(this); Objects.requireNonNull(projection);
+    owner.checkOwnerThread(); Objects.requireNonNull(projection);
+    if (projection.ecsType() == InactiveGameObject.class || projection.ecsType() == GameObjectRef.class
+        || projection.ecsType() == LinkLifetime.class)
+      throw new IllegalArgumentException("Projection target is reserved bridge state");
+    owner.ensureValid(this);
     // Selectors are user code. Revalidate after invocation before reserving a writer.
     projection.selected(object);
     owner.ensureValid(this);
