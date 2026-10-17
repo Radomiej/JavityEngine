@@ -2,9 +2,7 @@
 
 ## BUG-ANDROID-001 / P2 — combined instrumentation startup ANR
 
-**Status: open; this checkout could not reproduce the failure.** The available evidence is
-insufficient to attribute the recorded system startup timeout to app code or to make a safe
-source change. Do not count isolated method passes as a full runner pass.
+**Status: closed for the hosted API35 x86_64 KVM full-suite gate.** [Run39046532187](https://github.com/Radomiej/JavityEngine/actions/runs/39046532187), source `5d2a206`, passed all5 tests in one unfiltered invocation, with0 failures/skips. Test-task duration2m32s. The historical TCG system ANR cause remains unproven; this closure does not claim physical ARM64, performance, Android MapLibre or Bullet validation. Earlier attempts below remain historical evidence.
 
 ### Evidence inspected
 
@@ -81,3 +79,7 @@ A focus-readiness wait now shares the existing60-second startup deadline; it doe
 Source `5d2a206` retains the existing60-second startup deadline and all input assertions, but waits for the Activity/decor to actually own focus. The disposable-emulator runner sets and reads back `settings put secure immersive_mode_confirmations confirmed` before the app starts. AOSP's immersive confirmation loader recognizes the exact value `confirmed`; this removes first-use system onboarding as a test precondition, without changing app behavior. Failure diagnostics include only bounded focused/obscuring-window fields.
 
 Hosted [run39046532187](https://github.com/Radomiej/JavityEngine/actions/runs/39046532187) is the verification gate. Fake-adb success and failure checks passed, including the setting readback and original Gradle exit code37. These do not establish the hosted runtime result or prove the cause of the historical TCG ANR.
+
+## Fourth hosted result — closure
+
+The full workflow succeeded. Its job log reports `BUILD SUCCESSFUL in 2m 32s` and `cases=5 failures=0 skipped=0 passed=5`; emulator precondition readback is `confirmed`. One full invocation covers all three test classes, with gameplay, rendering, focus and lifecycle assertions retained. The preceding4/5 run and successful onboarding/focus-prepared run support a test-environment fix; they do not uniquely identify the cause of the historical TCG ANR.

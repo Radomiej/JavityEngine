@@ -88,7 +88,7 @@ See the [Android build instructions](javity-android-app/README.md) and [current 
 | Target | Current evidence and limits |
 | --- | --- |
 | Desktop JVM | Main development target. Build and desktop graphics demos use JDK 25; platform-specific optional modules have their own requirements. |
-| Android | Opt-in app builds and emulator API 35 x86_64 checks cover UI, scripting, input, rendering, context recovery, and selected lifecycle cases. The latest completed unfiltered run passed4/5 cases without an ANR; the remaining input case failed its window-focus guard. A follow-up run is linked in the status report; the full suite is not yet confirmed. Physical ARM64 performance and Android MapLibre/Bullet are unverified. See [Android status](docs/android-status.md). |
+| Android | Opt-in app builds and emulator API 35 x86_64 checks cover UI, scripting, input, rendering, context recovery, and selected lifecycle cases. The complete unfiltered five-test suite passes on the API35 x86_64 KVM emulator, covering input, resource/context recovery, rotation and Activity recreation. Physical ARM64 performance and Android MapLibre/Bullet are unverified. See [Android status](docs/android-status.md). |
 | Browser / WebAssembly | An isolated TeaVM/libGDX rendering spike has a real Wasm GC/WebGL2 scene and Chromium/SwiftShader proof. This is not a full engine port: production UI/Yoga, browser physics, networking integration, and broad browser support remain unverified. See the [Wasm rendering spike](docs/javity-wasm-rendering-spike.md). |
 
 Treat a module's build, tests, and runtime proof as separate evidence. A successful compile alone does not establish support for every platform or optional feature.

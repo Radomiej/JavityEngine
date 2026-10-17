@@ -43,7 +43,7 @@ Bazą przeglądu jest `650cfa6`. Zakres: oba spike’i Wasm, ich buildy/proofy, 
 
 ## Znane otwarte blokady spoza bieżącej naprawy
 
-- [ ] **BUG-ANDROID-001 / P2 — łączny runner instrumentacyjny APK kończy się ANR.** Historyczny, potwierdzony problem uruchomienia zestawu; pięć przypadków przeszło osobno. Nie ustalono, że przyczyna leży w silniku, zamiast w środowisku/runnerze. Bramka zamknięcia: stabilny pełny przebieg na odtworzonym środowisku oraz analiza ANR, bez zastępowania go sumą pojedynczych PASS. [Stan i logi](../android-status.md). Nie ponawiano Androida w pierwotnym przeglądzie. [Późniejsza diagnoza i workflow pełnego zestawu](2026-10-17-android-followup.md) zapisują aktualny stan; brak SDK/adb lokalnie uniemożliwił odtworzenie.
+- [x] **BUG-ANDROID-001 / P2 — łączny runner instrumentacyjny APK kończy się ANR.** Historyczny, potwierdzony problem uruchomienia zestawu; pięć przypadków przeszło osobno. Nie ustalono, że przyczyna leży w silniku, zamiast w środowisku/runnerze. Bramka zamknięcia: stabilny pełny przebieg na odtworzonym środowisku oraz analiza ANR, bez zastępowania go sumą pojedynczych PASS. [Stan i logi](../android-status.md). Nie ponawiano Androida w pierwotnym przeglądzie. [Późniejsza diagnoza i workflow pełnego zestawu](2026-10-17-android-followup.md) zapisują aktualny stan; brak SDK/adb lokalnie uniemożliwił odtworzenie.
 
 ## Braki i ograniczenia, które nie są potwierdzonymi błędami
 
@@ -68,3 +68,5 @@ Siedem scenariuszy przeglądarkowych sprawdza tożsamość i własność wrapper
 - [x] Oba happy-path proofy Chromium oraz siedem regresji bridge: PASS.
 - [x] Kontrola negatywna renderera: oczekiwany FAIL, 3 kolory, zapis `success: false`.
 - [x] Hashe źródeł i artefakty w `experiments/javity-wasm/evidence/verification.json` oraz `experiments/teavm-wasm/evidence/quality-verification.json`.
+
+Aktualizacja2026-10-17: BUG-ANDROID-001 zamknięty dla pełnego hosted API35 x86_64 KVM gate przez run39046532187/source5d2a206 (5/5, zero błędów/pominięć). Historyczna diagnoza powyżej pozostaje; przyczyna ANR TCG nadal nieudowodniona.

@@ -10,7 +10,7 @@ This file records user-facing changes. There are no published release entries he
 - Added the new `javity-core` GameObject and Component API, with optional modules for Box2D, Bullet, Yoga UI, scripting, maps, asset streaming, Artemis, and local Colyseus rooms.
 - Kept the historical `javity-engine` and Galaxy Rapid APIs in the repository for migration. The new core does not depend on Artemis; applications that use Artemis can add `javity-ecs-artemis` explicitly.
 - Added desktop demos for the new core and retained a legacy demo. See [the README](README.md) and [documentation index](docs/README.md) for setup and module guides.
-- Added an opt-in Android app and Yoga/QuickJS providers. Emulator API 35 x86_64 checks cover selected UI, scripting, rendering, input, and lifecycle paths. The combined instrumentation runner still ends in an ANR; individual successful cases and remaining limits are documented in [Android status](docs/android-status.md).
+- Added an opt-in Android app and Yoga/QuickJS providers. Emulator API 35 x86_64 checks cover selected UI, scripting, rendering, input, and lifecycle paths. The complete unfiltered five-test suite passes on the hosted KVM emulator; evidence and remaining limits are documented in [Android status](docs/android-status.md).
 - Added a separate TeaVM/WebAssembly rendering experiment with a verified Chromium/SwiftShader WebGL2 scene. It is a rendering spike, not a full engine or platform port; see [the spike notes](docs/javity-wasm-rendering-spike.md).
 - Documented deliberate compatibility limits: the UI utility classes are not full CSS/Tailwind, and Unity-inspired animation/feedback/React integrations are Javity implementations, not ports of Unity or proprietary plugins.
 
@@ -22,7 +22,7 @@ This file records user-facing changes. There are no published release entries he
 - Added a responsive GitHub Pages showcase with real demo captures, example commands and explicit platform limits; publication source is `site/`.
 - Fixed CI setup of Android SDK by avoiding the retired `tools` package, and made the MapLibre fixture check portable across SQLite versions while preserving data/hash checks.
 - Made the multiplayer ack-backpressure regression deterministic instead of relying on process scheduling and microsecond sleeps; real-process protocol tests remain.
-- Added a manually triggered full Android instrumentation workflow with logcat/ANR artifacts. Corrected the compact-viewport emulator setup, input injection ownership, and fresh-emulator immersive onboarding; full-suite confirmation is tracked in the Android follow-up. Historical startup ANR cause remains unproven.
+- Added a manually triggered full Android instrumentation workflow with logcat/ANR artifacts. Corrected the compact-viewport emulator setup, input injection ownership, and fresh-emulator immersive onboarding; the complete five-test suite now passes in one hosted KVM run. Historical startup ANR cause remains unproven.
 - Added [Bugs](docs/Bugs/README.md), [Spec](docs/Spec/README.md) and contributor guidance updates.
 
 ### Compatibility notes
