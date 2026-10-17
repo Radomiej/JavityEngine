@@ -1,5 +1,8 @@
 # Multiplayer — wstępny projekt
 
+> Aktualizacja: użytkownik wskazał Colyseus Rooms, Java server authority i lokalny podgląd. [Aktualna rekomendacja i roadmap browser/Wasm](rooms-and-browser-roadmap.md) rozwija te wcześniejsze notatki. Multiplayer pozostaje projektem; nie dodano jeszcze transportu ani replikacji.
+
+
 Cel użytkownika: model obiektów i komponentów wygodny jak w Roblox, z możliwością określenia części serwerowej/klienckiej i synchronizacji wybranych zmiennych. To plan; obecny rdzeń nie ma transportu, headless server ani replikacji.
 
 Roblox udostępnia drzewo Instance, mechanizm replikacji, skrypty serwera/klienta oraz komunikację RemoteEvent/RemoteFunction. Silnik zarządza też network ownership symulacji fizycznej. Inspirujemy się podziałem odpowiedzialności; samo skopiowanie GameObject/Component nie odtwarza platformy, edytora ani usług Roblox.

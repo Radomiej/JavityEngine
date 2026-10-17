@@ -1,0 +1,22 @@
+{
+  "sdk": {
+    "url": "https://docs.colyseus.io/sdk",
+    "evidence": [
+      "anvas Babylon.js Basics Hide and Seek Tech Demo Cocos Creator MMO Demo Examples JavaScript Phaser Examples PixiJS Babylon.js KAPLAY Three.js Engines Defold Engine Platforms & Integration Discord Activity Decentraland Building Your Game Server Setup Transport WebSocket (",
+      "ty MonoGame Godot Defold Construct 3 GameMaker Cocos Creator Haxe Flutter Swift Native SDK (C) Discord Activity WeChat Learn Tutorials Phaser Tutorial Part 1: Basic Player Movement Part 2: Linear Interpolation Part 3: Client Predicted Input Part 4: Fixed Tickrate Unity ",
+      "gration Discord Activity Decentraland Building Your Game Server Setup Transport WebSocket (Default) uWebSockets.js WebTransport Bun WebSockets Driver Presence HTTP Routes Development Development Mode Vite Plugin Debugging Logging Production Graceful Shutdown Rooms Lifec"
+    ]
+  },
+  "native_sdk": {
+    "url": "https://docs.colyseus.io/getting-started/native-sdk",
+    "evidence": [
+      "anvas Babylon.js Basics Hide and Seek Tech Demo Cocos Creator MMO Demo Examples JavaScript Phaser Examples PixiJS Babylon.js KAPLAY Three.js Engines Defold Engine Platforms & Integration Discord Activity Decentraland Building Your Game Server Setup Transport WebSocket (",
+      "-saturation:100%;--nextra-primary-lightness:55%;--nextra-bg:17,17,17;} Colyseus Native SDK (C) \u2013 Colyseus ((i,c,f,x,C,O,R,k)=>{let I=document.documentElement,N=[\"light\",\"dark\"];function p(c){(Array.isArray(i)?i:[i]).forEach(i=>{let f=\"class\"===i,x=f&&O?C.map(i=>O[i]||i)",
+      "gration Discord Activity Decentraland Building Your Game Server Setup Transport WebSocket (Default) uWebSockets.js WebTransport Bun WebSockets Driver Presence HTTP Routes Development Development Mode Vite Plugin Debugging Logging Production Graceful Shutdown Rooms Lifec"
+    ]
+  },
+  "java_search": {
+    "url": "https://api.github.com/search/repositories?q=colyseus%20java%20sdk&per_page=5",
+    "evidence": []
+  }
+}

@@ -47,3 +47,6 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 - [Darmowy Fox: animacje na prawdziwym rigu](artifacts/imported-animation/README.md) — GIF, wyniki GL20/GL30 i interaktywny test naszego ModelPoseAnimator.
 
 - [GPU instancing i animation batching](gpu-instancing-design.md) — implementacja A/B/C, benchmark i ograniczenia platform; [guide włączania](gpu-instancing-guide.md).
+
+- [Opcjonalny Artemis](superpowers/specs/2026-10-17-optional-artemis-design.md) — zaakceptowany projekt; [plan wdrożenia do przeglądu](superpowers/plans/2026-10-17-optional-artemis.md).
+- [Colyseus Rooms i targety JS/Wasm](rooms-and-browser-roadmap.md) — audyt i rekomendacja, bez wdrożonej replikacji/builda browser.

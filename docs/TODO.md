@@ -195,10 +195,20 @@ Nie deklarujemy nowych wyników RAM/FPS ani runtime Androida na podstawie audytu
 ## Opcjonalny Artemis ECS — korekta użytkownika
 
 - [x] Audyt istniejących hooków core i porównanie Artemis/Ashley/Dominion/Fleks na podstawie oficjalnych metadanych. [Projekt i źródła](superpowers/specs/2026-10-17-optional-artemis-design.md).
-- [ ] Pisany projekt opcjonalnego `javity-ecs-artemis` do przeglądu, potem plan wykonania z agentami Luna. Jeszcze bez implementacji.
+- [x] Projekt opcjonalnego `javity-ecs-artemis` zaakceptowany przez użytkownika.
+- [ ] [Szczegółowy plan ECS](superpowers/plans/2026-10-17-optional-artemis.md) gotowy do przeglądu; implementerzy Luna wybrani. Jeszcze bez kodu nowego modułu.
 - [ ] Native World/systemy/mappers/aspects/subscriptions/Bag, jeden właściciel i wybrana faza Game.
 - [ ] Powiązania/fabryka GameObject–Entity, bezpieczne recycled IDs, lifetime i cleanup także przy wyłączonej synchronizacji.
 - [ ] Typowane reference/data projekcje, single writer, struktura/enabled/active, duplikaty i sync on/off; bez automatycznego śledzenia dowolnych publicznych pól.
 - [ ] Benchmark pure ECS/GO/mixed i osobne bramki platform.
 
 Pełne wycofanie Artemisa nie jest aktualnym celem. Cleanup starego Galaxy nie może usuwać nowej opcjonalnej możliwości używania ECS. Wcześniejsze pozycje A1/legacy są historycznym kierunkiem zastąpionym tą korektą.
+
+## Colyseus Rooms i browser/Wasm — nowy zakres
+
+- [x] Audyt Luna i weryfikacja dokumentacji: Java authority + Colyseus gateway, headless symulacja, lokalny create/join/preview, alternatywy i koszty. [Rekomendacja](rooms-and-browser-roadmap.md).
+- [x] Sprawdzenie gdx-teavm1.6.1/libGDX1.14.2/TeaVM0.15.0 i JS/Wasm GC; lista brakujących browser adapterów. To nie jest proof kompilacji Javity.
+- [ ] Oddzielny projekt/plan pokoju headless i Colyseus↔Java command/snapshot proof, SDK native Java do weryfikacji.
+- [ ] Późniejszy minimalny target browser JS/Wasm i realny WSS multiplayer z serwerem Java; platformy/UI/physics/mapy osobnymi bramkami.
+
+Podgląd nie jest drugim właścicielem autorytatywnego Game, Colyseus nie uruchamia automatycznie naszej fizyki JVM, a Wasm nie jest warunkiem multiplayer.

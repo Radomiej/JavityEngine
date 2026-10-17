@@ -79,3 +79,9 @@ Potwierdzono oficjalnie najnowszy stabilny libGDX 1.14.2; zależności niezależ
 Użytkownik wybrał Artemis jako osobny podsystem obok GameObject, z natywnymi systemami/encjami, fabryką powiązań i dynamiczną, typowaną synchronizacją. [Aktualny projekt](superpowers/specs/2026-10-17-optional-artemis-design.md) zastępuje dotychczasowy plan A1. Nie usunięto kodu i nie dodano jeszcze nowego modułu; stary runtime Galaxy i nowy adapter ECS to odrębne zadania.
 
 Kolejność: przegląd projektu → szczegółowy plan nowego adaptera → native World/lifecycle → bezpieczne powiązania i projektory → odcięcie starego Galaxy bez globalnego zakazu Artemis → pamięć i shadery. Metoda nadal Luna pod nadzorem. Stan upstream porównano w oficjalnych metadanych; nie wykonano benchmarku dowodzącego wyższej wydajności alternatywy.
+
+## ECS zaakceptowany; studium Colyseus i Wasm
+
+Projekt mostu Artemis został zaakceptowany; [konkretny plan](superpowers/plans/2026-10-17-optional-artemis.md) jest gotowy do wymaganego przeglądu. Odtworzono JDK25 i uruchomiono core bez cache: 467 testów/48 suite PASS (baseline, bez nowego ECS).
+
+Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus i browser JS/Wasm](rooms-and-browser-roadmap.md). To następny obszar projektu, nie istniejący transport/build web. Zlecenie wdrożenia opcjonalnego ECS pozostaje pierwsze; multiplayer i web nie zastępują wcześniejszego celu konsolidacji.
