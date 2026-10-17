@@ -1,7 +1,7 @@
 {
-  "sourceCommit": "1463c10bdd1db3e3829672728d09da375bcec84e",
+  "sourceCommit": "35c7363149086ac87e78b487b708abc4384827fa",
   "sourceFileHashes": {
-    "site/index.html": "6eec7a1cf9fda5253d9a0ca2c9c5a20fe67eef5f5930046fafcb605f9dfa8df0",
+    "site/index.html": "d62d5c5717aa2c4b712d99292f2f6266f4c84348bead9b164f2e83a7cdc03b6c",
     "site/styles.css": "6599d587a51b3562bf4aa4f3afdc463f9579be6df61f6152366dafbd12aabf0b",
     "site/script.js": "3751507dbdd6a750a938d70e058eb14e7f46efcc63e2849dbed890098f4c93a2",
     "site/favicon.svg": "30b7c1f8ab5e7d500fe0f879ad9ad2c491f778703edb00f5f18b934923b400b0",
@@ -65,8 +65,8 @@
     "status": "LIVE_VERIFIED",
     "url": "https://radomiej.github.io/JavityEngine/",
     "showcaseUrl": "https://radomiej.github.io/JavityEngine/site/",
-    "deploymentRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39046700093",
-    "validationRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39046700412",
+    "deploymentRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39047079713",
+    "validationRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39047080219",
     "liveContent": "live-pages.json"
   },
   "roomsRegression": {
@@ -90,7 +90,7 @@
     "limits": "Hosted native UI gate still fails79px versus74px. Local actual Mesa/Xvfb gate passes against75px reference. BUG-UI-001 remains OPEN; no tolerance change.",
     "hostedRun": "https://github.com/Radomiej/JavityEngine/actions/runs/39045027236"
   },
-  "sourceScope": "Site and test source at sourceCommit, checked against the exact hashes below. Default reactor inventory independently records source5d2a206; subsequent changes are documentation/site only.",
+  "sourceScope": "Site and runtime/test source at sourceCommit, identified by exact hashes. Default reactor inventory independently records source5d2a206; subsequent source changes are documentation/site only.",
   "androidRuntime": {
     "run": "https://github.com/Radomiej/JavityEngine/actions/runs/39046532187",
     "sourceCommit": "5d2a206fcd26d0e9af342c19f9f3b2e334014ae8",
