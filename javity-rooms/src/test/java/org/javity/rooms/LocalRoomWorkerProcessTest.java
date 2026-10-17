@@ -200,31 +200,31 @@ public class LocalRoomWorkerProcessTest {
       if (p.isAlive()) { p.destroy(); if (!p.waitFor(1, TimeUnit.SECONDS)) p.destroyForcibly(); }
     }
   }
-  @Test public void pacedValidAckSaturationIsFatalWithoutInboundQueueOverflow() throws Exception {
-    Process p = launch("room-E");
-    try {
-      BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-      assertEquals("ready", parse(readLineWithin(stdout, "ready frame")).getString("type"));
-      Thread sender = new Thread(() -> {
-        try {
-          BufferedWriter input = new BufferedWriter(new OutputStreamWriter(p.getOutputStream(), StandardCharsets.UTF_8));
-          for (int pair = 0; pair < 2000 && p.isAlive(); pair++) {
-            input.write(join("room-E", "j" + pair, "s"));
-            input.write(leave("room-E", "l" + pair, "s"));
-            input.flush();
-            LockSupport.parkNanos(750_000L); // ~2667 commands/s, below the 64/tick service ceiling.
-          }
-        } catch (IOException ignored) { }
-      }, "paced-ack-saturation-sender");
-      sender.setDaemon(true); sender.start();
-      assertTrue("writer queue saturation did not stop worker", p.waitFor(5, TimeUnit.SECONDS));
-      sender.join(500);
-      assertEquals(1, p.exitValue());
-      String stderr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
-      assertTrue("worker did not report ack-queue overflow; stderr=" + stderr, stderr.contains("stdout queue full"));
-    } finally {
-      if (p.isAlive()) { p.destroy(); if (!p.waitFor(1, TimeUnit.SECONDS)) p.destroyForcibly(); }
-      try { p.getOutputStream().close(); } catch (IOException ignored) { }
+  @Test(timeout = 5000) public void boundedOutputSaturationMakesValidAckFatal() throws Exception {
+    final class CountingOutput implements LocalRoomWorker.OutputSink {
+      final LocalRoomWorker.BoundedOutput queue = new LocalRoomWorker.BoundedOutput(LocalRoomWorker.OUTPUT_QUEUE_CAPACITY);
+      int offerCalls;
+      @Override public boolean offer(String line) { offerCalls++; return queue.offer(line); }
+      @Override public String take() throws InterruptedException { return queue.take(); }
+      @Override public boolean offerStop() { return queue.offerStop(); }
+    }
+    LocalRoomWorker worker = new LocalRoomWorker();
+    CountingOutput output = new CountingOutput();
+    for (int i = 0; i < LocalRoomWorker.OUTPUT_QUEUE_CAPACITY; i++) {
+      assertTrue(output.queue.offer("queued-" + i));
+    }
+    assertFalse(output.queue.offer("overflow"));
+
+    try (LocalRoomSimulation room = new LocalRoomSimulation("room-E")) {
+      byte[] join = join("room-E", "join-1", "s").stripTrailing().getBytes(StandardCharsets.UTF_8);
+      assertFalse("a valid command whose ack cannot be queued must stop the worker", worker.handle(join, "room-E", room, output));
+      assertEquals("overflow is handled without a second error offer", 1, output.offerCalls);
+      assertEquals(1, room.snapshot().players().size()); // The join took effect before its required ack overflowed.
+      for (int i = 0; i < LocalRoomWorker.OUTPUT_QUEUE_CAPACITY; i++) {
+        assertEquals("queued-" + i, output.take());
+      }
+      assertTrue(output.queue.offer("sentinel"));
+      assertEquals("sentinel", output.take());
     }
   }
   @Test public void oversizedUnconsumedMalformedFloodTerminatesBoundedly() throws Exception {
