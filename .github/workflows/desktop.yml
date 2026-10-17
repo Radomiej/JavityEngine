@@ -35,6 +35,8 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: gradle
+      - name: Optional Artemis CPU integration and dependency boundary
+        run: ./gradlew --no-daemon :javity-ecs-artemis:test :javity-ecs-artemis:usageSmoke :javity-ecs-artemis:verifyEcsBoundary
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

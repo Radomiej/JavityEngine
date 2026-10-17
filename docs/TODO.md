@@ -196,11 +196,11 @@ Nie deklarujemy nowych wyników RAM/FPS ani runtime Androida na podstawie audytu
 
 - [x] Audyt istniejących hooków core i porównanie Artemis/Ashley/Dominion/Fleks na podstawie oficjalnych metadanych. [Projekt i źródła](superpowers/specs/2026-10-17-optional-artemis-design.md).
 - [x] Projekt opcjonalnego `javity-ecs-artemis` zaakceptowany przez użytkownika.
-- [ ] [Szczegółowy plan ECS](superpowers/plans/2026-10-17-optional-artemis.md) gotowy do przeglądu; implementerzy Luna wybrani. Jeszcze bez kodu nowego modułu.
-- [ ] Native World/systemy/mappers/aspects/subscriptions/Bag, jeden właściciel i wybrana faza Game.
-- [ ] Powiązania/fabryka GameObject–Entity, bezpieczne recycled IDs, lifetime i cleanup także przy wyłączonej synchronizacji.
-- [ ] Typowane reference/data projekcje, single writer, struktura/enabled/active, duplikaty i sync on/off; bez automatycznego śledzenia dowolnych publicznych pól.
-- [ ] Benchmark pure ECS/GO/mixed i osobne bramki platform.
+- [x] [Szczegółowy plan ECS](superpowers/plans/2026-10-17-optional-artemis.md) wdrożony w trzech krokach; moduł natywny, linki i projekcje mają testy CPU.
+- [x] Native World/systemy/mappers/aspects/subscriptions/Bag, jeden właściciel i wybrana faza Game.
+- [x] Powiązania/fabryka GameObject–Entity, bezpieczne recycled IDs, lifetime i cleanup także przy wyłączonej synchronizacji.
+- [x] Typowane reference/data projekcje, single writer, struktura/enabled/active, duplikaty i sync on/off; bez automatycznego śledzenia dowolnych publicznych pól.
+- [x] Benchmark pure ECS/GO/mixed oraz boundary guard i CPU usage gate; Android/ART, browser/Wasm i renderowanie pozostają niezweryfikowane. Wyniki i źródłowe hashe: [artyfakty ECS](artifacts/artemis-ecs/README.md).
 
 Pełne wycofanie Artemisa nie jest aktualnym celem. Cleanup starego Galaxy nie może usuwać nowej opcjonalnej możliwości używania ECS. Wcześniejsze pozycje A1/legacy są historycznym kierunkiem zastąpionym tą korektą.
 

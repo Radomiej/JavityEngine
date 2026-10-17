@@ -29,6 +29,8 @@ Android ma osobny launcher i demo dotykowe; te dowody dotyczą desktopu: [instru
 
 Nowy gameplay opiera się na `org.javity.core.Game`, `GameObject` i `Component`. Legacy Galaxy Rapid/Artemis pozostają adapterami migracyjnymi. Nie potrzebujesz encji Artemis do nowej gry.
 
+Gdy aplikacja potrzebuje natywnego Artemis obok GameObjectów, dodaje opcjonalne `javity-ecs-artemis` i przekazuje skonfigurowany `World` do `ArtemisSystem`. Core i zwykły desktop nie mają zależności na tym adapterze. Użycie, ownership projekcji, pauza/synchronizacja i zweryfikowane granice platform: [Opcjonalny Artemis ECS](artemis-ecs.md).
+
 ```java
 Game game = new Game();
 GameObject player = game.createObject("Player");

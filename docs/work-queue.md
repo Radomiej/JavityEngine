@@ -76,13 +76,11 @@ Potwierdzono oficjalnie najnowszy stabilny libGDX 1.14.2; zależności niezależ
 
 ## Korekta zakresu — opcjonalny Artemis ECS
 
-Użytkownik wybrał Artemis jako osobny podsystem obok GameObject, z natywnymi systemami/encjami, fabryką powiązań i dynamiczną, typowaną synchronizacją. [Aktualny projekt](superpowers/specs/2026-10-17-optional-artemis-design.md) zastępuje dotychczasowy plan A1. Nie usunięto kodu i nie dodano jeszcze nowego modułu; stary runtime Galaxy i nowy adapter ECS to odrębne zadania.
-
-Kolejność: przegląd projektu → szczegółowy plan nowego adaptera → native World/lifecycle → bezpieczne powiązania i projektory → odcięcie starego Galaxy bez globalnego zakazu Artemis → pamięć i shadery. Metoda nadal Luna pod nadzorem. Stan upstream porównano w oficjalnych metadanych; nie wykonano benchmarku dowodzącego wyższej wydajności alternatywy.
+Użytkownik wybrał Artemis jako osobny podsystem obok GameObject, z natywnymi systemami/encjami, fabryką powiązań i dynamiczną, typowaną synchronizacją. [Projekt](superpowers/specs/2026-10-17-optional-artemis-design.md) i [plan](superpowers/plans/2026-10-17-optional-artemis.md) są wdrożone w `javity-ecs-artemis`; zachowano legacy Galaxy. Moduł ma własność World, bezpieczne powiązania, kierunkowe projekcje, CPU usage smoke, benchmark oraz kontrolę grafu zależności. Mierzony koszt mostu pozostaje specyficzny dla tych danych i JVM; wyniki z hashami: [artyfakty ECS](artifacts/artemis-ecs/README.md).
 
 ## ECS zaakceptowany; studium Colyseus i Wasm
 
-Projekt mostu Artemis został zaakceptowany; [konkretny plan](superpowers/plans/2026-10-17-optional-artemis.md) jest gotowy do wymaganego przeglądu. Odtworzono JDK25 i uruchomiono core bez cache: 467 testów/48 suite PASS (baseline, bez nowego ECS).
+Projekt mostu Artemis został zaakceptowany i wdrożony; [plan](superpowers/plans/2026-10-17-optional-artemis.md), [usage i ograniczenia](artemis-ecs.md) oraz [artefakty pomiarów](artifacts/artemis-ecs/README.md) opisują aktualny zakres. Pełny reactor pozostaje końcową bramką integracyjną, uruchamianą po połączeniu tego modułu z ukończonym gateway.
 
 Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus i browser JS/Wasm](rooms-and-browser-roadmap.md). Bounded room slice ma teraz implementację i własny [proof](local-multiplayer.md); szerszy netcode i browser target nie wchodzą do tego etapu. Zlecenie wdrożenia opcjonalnego ECS pozostaje odrębne.
 

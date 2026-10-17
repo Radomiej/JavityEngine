@@ -8,12 +8,12 @@
 
 **Tech Stack:** Java25/Gradle9.8.1/libGDX1.14.2/Artemis-ODB2.3.0/JUnit4; JDK ThreadMXBean wyłącznie w desktopowym benchmarku testowym.
 
-**Spec:** [Zaakceptowany projekt](../specs/2026-10-17-optional-artemis-design.md). Użytkownik: „wygląda dobrze, dodaj ten system”. Metoda zachowana: implementerzy Luna, nadzór i niezależne przeglądy. Plan do przeglądu przed wykonaniem.
+**Spec:** [Zaakceptowany projekt](../specs/2026-10-17-optional-artemis-design.md). Użytkownik: „wygląda dobrze, dodaj ten system”. Implementacja native bridge, linków, projekcji, usage, benchmarku i boundary guard jest ukończona; końcowa pełna weryfikacja reactora należy do głównego agenta.
 
 ## Global Constraints
 
 - `javity-core` i normalne GameObjecty nie zależą od Artemis. Nowy moduł zależy od core i eksportuje `net.onedaybeard.artemis:artemis-odb:2.3.0` konsumentowi, który go wybiera.
-- Nie usuwamy teraz starych modułów ani nie dodajemy nowego ECS. Ich cleanup jest późniejszym zadaniem; obecność Artemisa przez historyczny backend nie dowodzi integracji nowego modułu.
+- Nie usuwamy teraz starych modułów ani nie dodajemy alternatywnego ECS backendu. Ich cleanup jest późniejszym zadaniem; obecność Artemisa przez historyczny backend nie dowodzi integracji nowego modułu.
 - Jedna konkretna instancja `ArtemisSystem` na Game zgodnie z istniejącym zakazem duplicate GameSystem class. Nie zmieniamy Game.addSystem dla wielu Worldów.
 - World procesowany najwyżej raz w kroku, wyłącznie wybrany hook; UI i WORLD zachowują aktualne reguły Game.
 - Przekazany World przechodzi na wyłączną własność adaptera. Konsument nie woła sam process/dispose i nie dzieli World między adapterami. To kontrakt native API, bez globalnego registry ani udawanej kontroli wszystkich bezpośrednich wywołań.
@@ -106,11 +106,11 @@ Każdy plik odpowiada za jedną rzecz; nie przenosimy logiki schedulera Game ani
 - `:javity-ecs-artemis:bridgeBenchmark` uses test-only ThreadMXBean; fixed same seed and dt1/60, 10000 entities, 100 warm-up steps, 300 measured steps, 3 repetitions. Cases: native ECS, GameObject data mover, mixed 10% linked with sync on/off. Report actual updates, linked count, wall time and owner-thread allocated bytes; explain remaining code overhead, no universal speed ranking or fabricated target improvement.
 - Task `:javity-ecs-artemis:verifyEcsBoundary` is wired into module check, depends on its jar, writes `build/reports/ecs-boundary.json` with production direct/transitive components and core/UI/desktop graph. It verifies API direct dependencies are only core+Artemis, core/UI/default desktop have no dependency path to adapter, and module JAR has no test examples/benchmark/JMX references. Existing legacy Artemis is separately identified, not forbidden globally. A temporary init script adds adapter to desktop runtimeOnly (no dependency cycle); this actual guard must reject it, then clean configuration passes. No nested Gradle execution inside a JUnit test.
 
-- [ ] **Step 1: Write failing usage/boundary checks.** Assert same intended movement updates and authority, native mappers/subscriptions/Bag, prefab per-instance state and sync resume. Boundary fixture rejects a deliberately introduced reverse dependency while restored final graph passes; tests aren't only README text searches.
-- [ ] **Step 2: Verify RED.** Missing usageSmoke/boundary/report task fails for missing feature, not unavailable JDK. Preserve bounded controls.
-- [ ] **Step 3: Implement examples/tasks/docs.** Show full native WorldConfiguration and native Archetype + bound-object factory, manual Aspect/InactiveGameObject filter and projection ownership. Explain one World per current wrapper class/Game, typed core duplicates, pause/disable scopes, borrowed resources and unsupported browser/Android claims. CI adds CPU ECS test/usage gate without GL requirements.
-- [ ] **Step 4: Verify GREEN.** Full reactor, usageSmoke and benchmark. Existing desktop smoke/voxel/inspector/environment/asset-streaming/avatar/instancing gates verify no shared-runtime regressions after dependency graph edit, only once per final source. Separate Android compile/runtime gate before claiming module support; no browser claim without TeaVM build. Root final whole-goal review covers full range and module boundaries; benchmark source/input hashes preserved.
-- [ ] **Step 5: Commit and handoff.** `test: demonstrate and measure optional Artemis integration`; all statuses reflect tested scope. Independent task review, final whole-goal review/fix wave, root commit/push on current branch. Memory/shader refactor and Colyseus/Wasm remain separate projects.
+- [x] **Step 1: Write failing usage/boundary checks.** Usage runner asserts movement, native mappers/subscriptions/Bag, prefab state and sync resume. Boundary guard rejects a temporary reverse runtime dependency.
+- [x] **Step 2: Verify RED.** Missing `usageSmoke` failed with the expected missing-task error on JDK 25.
+- [x] **Step 3: Implement examples/tasks/docs.** Native World/archetype usage, manual Aspect/InactiveGameObject filter and projection ownership are documented. CI runs CPU tests, usage and boundary gates without GL.
+- [x] **Step 4: Verify GREEN.** Module tests, usage, positive boundary graph, deliberately bad graph, and benchmark pass on the final module source. Android/ART and browser/Wasm remain unverified. Benchmark source/input hashes are recorded with the run.
+- [x] **Step 5: Commit and handoff.** Implementation and proof artifacts use scoped commits. Root performs the final full-reactor and whole-goal review. Memory/shader refactor and Colyseus/Wasm remain separate projects.
 
 ## Self-review and handoff
 

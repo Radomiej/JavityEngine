@@ -1,4 +1,130 @@
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
+
 dependencies {
     api project(':javity-core')
     api "net.onedaybeard.artemis:artemis-odb:${rootProject.artemisVersion}"
 }
+
+def ecsReportDir = layout.buildDirectory.dir('reports/ecs')
+def currentCommit = {
+    providers.exec { commandLine 'git', 'rev-parse', 'HEAD' }.standardOutput.asText.get().trim()
+}
+def ecsGraphFiles = [:]
+[':javity-ecs-artemis', ':javity-core', ':javity-ui', ':javity-desktop'].each { path ->
+    def target = rootProject.project(path)
+    def graphFile = rootProject.layout.buildDirectory.file("reports/ecs-boundary/${path.substring(1)}.json")
+    ecsGraphFiles[path] = graphFile
+    target.tasks.register('ecsBoundaryGraph') {
+        group = 'verification'
+        outputs.file(graphFile)
+        outputs.upToDateWhen { false }
+        doLast {
+            def components = target.configurations.getByName('runtimeClasspath').incoming.resolutionResult.allComponents.collect { component ->
+                def id = component.id
+                id instanceof ProjectComponentIdentifier ? "project:${id.projectPath}" : id.displayName
+            }.sort()
+            graphFile.get().asFile.parentFile.mkdirs()
+            graphFile.get().asFile.text = groovy.json.JsonOutput.toJson(components) + '\n'
+        }
+    }
+}
+
+tasks.register('usageSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Runs the CPU-only native Artemis and GameObject bridge usage proof.'
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.javity.ecs.artemis.EcsUsageSmoke'
+    def report = ecsReportDir.map { it.file('usage-smoke.json') }
+    doFirst { args currentCommit(), report.get().asFile.absolutePath }
+}
+
+tasks.register('bridgeBenchmark', JavaExec) {
+    group = 'verification'
+    description = 'Measures native, GameObject, and mixed Artemis bridge workloads.'
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.javity.ecs.artemis.ArtemisBridgeBenchmark'
+    def report = ecsReportDir.map { it.file('benchmark.json') }
+    doFirst { args currentCommit(), report.get().asFile.absolutePath }
+}
+
+tasks.register('verifyEcsBoundary') {
+    group = 'verification'
+    description = 'Checks the optional Artemis module dependency and JAR boundary.'
+    dependsOn tasks.named('jar')
+    dependsOn(':javity-ecs-artemis:ecsBoundaryGraph', ':javity-core:ecsBoundaryGraph',
+              ':javity-ui:ecsBoundaryGraph', ':javity-desktop:ecsBoundaryGraph')
+    def report = layout.buildDirectory.file('reports/ecs-boundary.json')
+    outputs.file(report)
+    outputs.upToDateWhen { false }
+    doLast {
+        def violations = []
+        def apiProjectPaths = configurations.api.dependencies.findAll { it instanceof ProjectDependency }
+            .collect { it.name }.sort()
+        def apiModules = configurations.api.dependencies.findAll { it instanceof ExternalModuleDependency }
+            .collect { "${it.group}:${it.name}:${it.version}" }.sort()
+        if (apiProjectPaths != ['javity-core']) violations << "API project dependencies were ${apiProjectPaths}"
+        if (apiModules.size() != 1 || !apiModules[0].startsWith('net.onedaybeard.artemis:artemis-odb:'))
+            violations << "API external dependencies were ${apiModules}"
+        def productionDeclarations = ['api', 'implementation', 'compileOnly', 'runtimeOnly'].collectMany { name ->
+            configurations.getByName(name).dependencies.collect { dependency ->
+                dependency instanceof ProjectDependency ? "project:${dependency.name}" :
+                    (dependency instanceof ExternalModuleDependency ? "${dependency.group}:${dependency.name}:${dependency.version}" : dependency.toString())
+            }
+        }.unique().sort()
+        def allowedProductionDeclarations = ['net.onedaybeard.artemis:artemis-odb:2.3.0', 'project:javity-core'].sort()
+        if (productionDeclarations != allowedProductionDeclarations)
+            violations << "Production direct dependency declarations were ${productionDeclarations}"
+
+        def graph = [:]
+        [':javity-ecs-artemis', ':javity-core', ':javity-ui', ':javity-desktop'].each { path ->
+            def components = new groovy.json.JsonSlurper().parse(ecsGraphFiles[path].get().asFile)
+            graph[path] = components
+            if (path != ':javity-ecs-artemis' && components.contains('project::javity-ecs-artemis'))
+                violations << "${path} runtime has a dependency path to the optional adapter"
+        }
+        def ecsGraph = graph[':javity-ecs-artemis']
+        if (!ecsGraph.contains('project::javity-core')) violations << 'Adapter runtime graph omits javity-core'
+        if (!ecsGraph.any { it.startsWith('net.onedaybeard.artemis:artemis-odb:') })
+            violations << 'Adapter runtime graph omits native Artemis ODB'
+        if (graph[':javity-core'].any { it.startsWith('net.onedaybeard.artemis:artemis-odb:') })
+            violations << 'Core runtime graph depends on Artemis'
+
+        def archive = tasks.named('jar').get().archiveFile.get().asFile
+        def jarEntries = new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            zip.entries().collect { it.name }.toList().sort()
+        }
+        def forbidden = jarEntries.findAll { name ->
+            name.contains('EcsUsageSmoke') || name.contains('ArtemisBridgeBenchmark') || name.contains('ThreadMXBean')
+        }
+        if (!forbidden.isEmpty()) violations << "Test/example/benchmark entries leaked into adapter JAR: ${forbidden}"
+        def managementSymbols = ['ThreadMXBean', 'com/sun/management', 'ManagementFactory', 'jdk/management', 'java/lang/management']
+        def managementReferences = new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            zip.entries().findAll { !it.directory && it.name.endsWith('.class') }.collectMany { entry ->
+                def bytes = zip.getInputStream(entry).withCloseable { it.bytes }
+                def bytecode = new String(bytes, 'ISO-8859-1')
+                managementSymbols.findAll { bytecode.contains(it) }.collect { "${entry.name}: ${it}" }
+            }
+        }
+        if (!managementReferences.isEmpty()) violations << "Production JAR references desktop/JMX management APIs: ${managementReferences}"
+
+        def legacyArtemis = graph[':javity-desktop'].findAll { it.startsWith('net.onedaybeard.artemis:artemis-odb:') }
+        def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([
+            apiProjectDependencies: apiProjectPaths,
+            apiExternalDependencies: apiModules,
+            productionDirectDependencies: productionDeclarations,
+            runtimeGraphs: graph,
+            legacyArtemisInDesktop: legacyArtemis,
+            adapterJarEntries: jarEntries,
+            forbiddenManagementReferences: managementReferences,
+            violations: violations
+        ])) + '\n'
+        report.get().asFile.parentFile.mkdirs()
+        report.get().asFile.text = json
+        if (!violations.isEmpty()) throw new GradleException("ECS boundary check failed: ${violations.join('; ')}")
+        logger.lifecycle(json)
+    }
+}
+
+tasks.named('check') { dependsOn tasks.named('verifyEcsBoundary') }

@@ -1,6 +1,6 @@
 # Opcjonalny Artemis i most GameObject–Entity
 
-**Status: konkretny projekt do przeglądu; jeszcze bez implementacji.** Baza kodu `95b951c`. Użytkownik zastąpił pełne wycofanie Artemisa wymaganiem osobnego podsystemu ECS, dostępnego obok GameObject, z opcjonalnymi powiązaniami i dynamiczną synchronizacją. Wcześniejszy kierunek „zakazać Artemis we wszystkich artefaktach” jest nieaktualny; nie zmieniono dotąd kodu ani nie usunięto legacy.
+**Status: wdrożone na bazie `d0b2ffb` w `javity-ecs-artemis`; desktop CPU usage, benchmark i zależności mają osobne artefakty.** Użytkownik zastąpił pełne wycofanie Artemisa wymaganiem osobnego podsystemu ECS, dostępnego obok GameObject, z opcjonalnymi powiązaniami i dynamiczną synchronizacją. Wcześniejszy kierunek „zakazać Artemis we wszystkich artefaktach” jest nieaktualny; zachowano legacy.
 
 ## Cel i decyzja biblioteki
 
@@ -32,7 +32,7 @@ Artemis README deklaruje utrzymanie; konkretne metadane są starsze, dlatego nie
 ## Architektura i użycie
 
 - `javity-core`: zachowuje obecne API, nie importuje `com.artemis`.
-- `javity-ecs-artemis`: zależy od core i Artemis; posiada World i most. Moduł może być kompilowany/testowany przez reactor, ale nie jest tranzytywną zależnością core, UI ani zwykłego desktop runtime.
+- `javity-ecs-artemis`: zależy od core i Artemis; posiada World i most. Moduł jest w reactorze, ale nie jest tranzytywną zależnością core, UI ani zwykłego desktop runtime.
 - Konsument dodaje moduł jawnie i rejestruje scene-local `ArtemisSystem extends GameSystem` przed `Game.start()`.
 - Native World/config/systems pozostają dostępne bez ograniczającego DSL. Konfiguracja i natywny stan nie są odtwarzane z refleksyjnych nazw klas w JSON.
 - Proponowane udogodnienia `createLinked(name)`, `bind(gameObject, entity)` i fabryka korzystają z tego samego mechanizmu powiązań; nie tworzą drugiej sceny ani drugiego animatora/renderera.
