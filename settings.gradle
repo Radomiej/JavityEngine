@@ -35,3 +35,4 @@ if (providers.gradleProperty('javityAndroid').map { it.toBoolean() }.getOrElse(f
 }
 
 include 'javity-assets'
+include 'javity-ecs-artemis'

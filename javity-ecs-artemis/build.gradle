@@ -1,0 +1,4 @@
+dependencies {
+    api project(':javity-core')
+    api "net.onedaybeard.artemis:artemis-odb:${rootProject.artemisVersion}"
+}
