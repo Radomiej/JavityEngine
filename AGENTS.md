@@ -182,3 +182,8 @@ SmoothShapeRenderer zachowuje desktop GLSL120 i wybiera lokalnie GLES300 dla GLE
 ## Workspace multiplayer development
 
 `./gradlew dev` bootstrapuje lokalną paczkę npm i installDist workera; Java LocalDevServer nadzoruje Node Colyseus z readiness/control pipe i bounded cleanup. `devPort` wybiera port. Development snapshot endpoints są opt-in i wyłącznie loopback; `--container` wybiera jawne 0.0.0.0 bez devtools. Liczba JVM na pokój nie jest kontraktem publicznego API — aktualny worker jest polityką izolacji hosta. Server view czyta authority, nie symuluje i nie dodaje sesji. Nie deklaruj pełnego netcode, dowolnej gry, zdalnego deploy ani Wasm backendu na podstawie tego przykładu. Zmiany procesów sprawdzaj realnym npm integration/process testem po zbudowaniu installDist.
+
+
+## Eksperymentalne Javity/libGDX Wasm
+
+`experiments/javity-wasm` jest osobnym buildem gdx-teavm1.6.1/libGDX1.14.2/TeaVM0.15.0. `gdx_teavm_web_wasm_build` najpierw odświeża core przez rootwrapper, potem generuje prawdziwy Wasm GC i webapp. Actual GdxRenderer/ModelRenderer/Game/Component mają Chromium/SwiftShader pixel/input/resize/dispose proof; nie oznacza to pełnego portu UI/Yoga/physics/MapLibre ani wydajności GPU. Zachowaj jawne reflection metadata cache shaderów. TeaVM0.15 nie ma Arrays.compare(float[]); przenośna pętla w SceneLightingAttribute zachowuje kolejność Float.compare. Instrukcja: docs/javity-wasm-rendering-spike.md.

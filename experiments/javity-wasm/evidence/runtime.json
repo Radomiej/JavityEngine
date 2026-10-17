@@ -7,8 +7,8 @@
   "initial": {
     "renderer": "org.javity.render.GdxRenderer",
     "backend": "gdx-teavm",
-    "rendered": 11,
-    "frame": 11,
+    "rendered": 12,
+    "frame": 12,
     "x": 0,
     "z": 0,
     "width": 1100,
@@ -20,9 +20,9 @@
   "afterInput": {
     "renderer": "org.javity.render.GdxRenderer",
     "backend": "gdx-teavm",
-    "rendered": 47,
-    "frame": 47,
-    "x": 1.064000129699707,
+    "rendered": 60,
+    "frame": 60,
+    "x": 1.0160000324249268,
     "z": 0,
     "width": 1100,
     "height": 800,
@@ -33,9 +33,9 @@
   "resized": {
     "renderer": "org.javity.render.GdxRenderer",
     "backend": "gdx-teavm",
-    "rendered": 54,
-    "frame": 54,
-    "x": 1.064000129699707,
+    "rendered": 77,
+    "frame": 77,
+    "x": 1.0160000324249268,
     "z": 0,
     "width": 760,
     "height": 620,
@@ -46,7 +46,7 @@
   "disposed": {
     "renderer": "org.javity.render.GdxRenderer",
     "backend": "gdx-teavm",
-    "rendered": 64,
+    "rendered": 87,
     "frame": -1,
     "x": 0,
     "z": 0,
@@ -61,7 +61,7 @@
     "renderer": "WebKit WebGL",
     "shadingLanguage": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)"
   },
-  "framebufferColorCount": 536,
+  "framebufferColorCount": 539,
   "pageErrors": [],
   "console": [],
   "failedRequests": []
