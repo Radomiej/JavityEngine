@@ -53,8 +53,9 @@ public class ArtemisSystem extends GameSystem {
     GameObjectRef ref = world.edit(entity.getId()).create(GameObjectRef.class);
     ref.bind(object, link);
     link.reference = ref;
-    LinkLifetime lifetime = world.edit(entity.getId()).create(LinkLifetime.class);
+    LinkLifetime lifetime = new LinkLifetime();
     lifetime.bind(link);
+    world.edit(entity.getId()).add(lifetime);
     link.lifetime = lifetime;
     link.removeObjectListener = object.onComponentChange(change -> { if (link.valid) link.dirty = true; });
     registry.add(link);
@@ -121,8 +122,9 @@ public class ArtemisSystem extends GameSystem {
   void invalidate(EntityLink link, boolean deleteEntity) {
     if (!link.valid) return;
     Entity current = worldReleased ? null : world.getEntity(link.id);
-    boolean ownsCurrentEntity = current != null && current.isActive()
-        && current.getComponent(LinkLifetime.class) == link.lifetime
+    boolean currentCarriesLifetime = current != null && current.isActive()
+        && current.getComponent(LinkLifetime.class) == link.lifetime;
+    boolean ownsCurrentEntity = currentCarriesLifetime
         && link.lifetime != null && link.lifetime.matches(link);
     link.valid = false;
     registry.remove(link);
@@ -144,8 +146,12 @@ public class ArtemisSystem extends GameSystem {
           link.lifetime = null;
         }
       }
-    } else if (link.lifetime != null) {
+    } else if (!currentCarriesLifetime && link.lifetime != null) {
       link.lifetime.clear();
+      link.lifetime = null;
+    } else {
+      // If the component is attached to a different current link, only drop
+      // this stale link's pointer; never clear the other link's witness.
       link.lifetime = null;
     }
   }
@@ -158,12 +164,17 @@ public class ArtemisSystem extends GameSystem {
     // A public-reference failure may already have invalidated the handle. The
     // private witness still authorizes rollback of this factory's entity only.
     Entity current = worldReleased ? null : world.getEntity(link.id);
-    boolean ownsCurrentEntity = current != null && current.isActive()
-        && current.getComponent(LinkLifetime.class) == link.lifetime
+    boolean currentCarriesLifetime = current != null && current.isActive()
+        && current.getComponent(LinkLifetime.class) == link.lifetime;
+    boolean ownsCurrentEntity = currentCarriesLifetime
         && link.lifetime != null && link.lifetime.matches(link);
     link.factoryOwned = false;
-    if (ownsCurrentEntity) world.delete(link.id);
-    if (link.lifetime != null) link.lifetime.clear();
+    if (ownsCurrentEntity) {
+      world.delete(link.id);
+      link.lifetime.clear();
+    } else if (!currentCarriesLifetime && link.lifetime != null) {
+      link.lifetime.clear();
+    }
     link.lifetime = null;
   }
 

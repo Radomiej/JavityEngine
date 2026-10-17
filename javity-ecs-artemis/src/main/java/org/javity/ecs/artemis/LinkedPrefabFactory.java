@@ -27,8 +27,11 @@ public final class LinkedPrefabFactory {
         links.add(link);
         if (configureEntity != null) configureEntity.accept(system.world().edit(link.entity()));
         if (!link.isValid()) throw new IllegalStateException("Factory configuration invalidated its link");
-        link.factoryOwned = false;
       }
+      for (EntityLink link : links) if (!link.isValid())
+        throw new IllegalStateException("Factory configuration invalidated an earlier link");
+      // The transaction is only committed after every object has configured.
+      for (EntityLink link : links) link.factoryOwned = false;
       return List.copyOf(links);
     } catch (RuntimeException | Error failure) {
       for (EntityLink link : List.copyOf(links)) try { system.rollbackCreatedLink(link); } catch (RuntimeException | Error e) { failure.addSuppressed(e); }

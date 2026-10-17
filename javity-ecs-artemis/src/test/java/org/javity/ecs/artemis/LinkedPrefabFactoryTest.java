@@ -169,4 +169,49 @@ public class LinkedPrefabFactoryTest {
     assertTrue("unrelated entity reusing the ID must survive rollback", replacement.get().isActive());
     game.close();
   }
+
+  @Test public void prefabKeepsRollbackOwnershipForEveryPairUntilTheWholeFactoryCommits() {
+    Game game = new Game(); World world = new World(new WorldConfigurationBuilder().build());
+    ArtemisSystem bridge = game.addSystem(new ArtemisSystem(world)); game.start();
+    Prefab prefab = new Prefab("{\"version\":1,\"objects\":[{\"name\":\"first\",\"components\":[]},{\"name\":\"second\",\"components\":[]}]}");
+    java.util.List<Integer> ids = new java.util.ArrayList<>();
+    assertThrows(IllegalStateException.class, () -> LinkedPrefabFactory.instantiate(bridge, prefab,
+        new SceneJson(), edit -> {
+          ids.add(edit.getEntityId());
+          if (ids.size() == 2) {
+            world.edit(ids.get(0)).remove(GameObjectRef.class);
+            game.step(.01f);
+            throw new IllegalStateException("later pair fails after earlier link invalidation");
+          }
+        }));
+    game.step(.01f);
+    assertEquals(2, ids.size());
+    assertFalse(world.getEntity(ids.get(0)).isActive());
+    assertFalse(world.getEntity(ids.get(1)).isActive());
+    assertTrue(game.getObjects().isEmpty());
+    game.close();
+  }
+
+  @Test public void oldPrefabRollbackCannotClearWitnessOfEntityReboundDuringConfiguration() {
+    Game game = new Game(); World world = new World(new WorldConfigurationBuilder().build());
+    ArtemisSystem bridge = game.addSystem(new ArtemisSystem(world)); game.start();
+    Prefab prefab = new Prefab("{\"version\":1,\"objects\":[{\"name\":\"factory\",\"components\":[]}]}");
+    AtomicReference<EntityLink> replacementLink = new AtomicReference<>();
+    AtomicReference<GameObject> unrelated = new AtomicReference<>();
+    assertThrows(IllegalStateException.class, () -> LinkedPrefabFactory.instantiate(bridge, prefab,
+        new SceneJson(), edit -> {
+          int id = edit.getEntityId();
+          world.edit(id).remove(GameObjectRef.class);
+          game.step(.01f);
+          unrelated.set(game.createObject("unrelated"));
+          replacementLink.set(bridge.bind(unrelated.get(), world.getEntity(id)));
+          throw new IllegalStateException("old factory transaction fails after rebind");
+        }));
+    assertTrue("unrelated binding must remain valid after old rollback", replacementLink.get().isValid());
+    assertSame(unrelated.get(), world.getMapper(GameObjectRef.class).get(replacementLink.get().entity()).objectOrNull());
+    game.step(.01f);
+    assertTrue(replacementLink.get().isValid());
+    assertFalse(unrelated.get().isDestroyed());
+    game.close();
+  }
 }
