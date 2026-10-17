@@ -191,3 +191,14 @@ Status: projekt do przeglądu, nie wdrożona optymalizacja. [Projekt i zakres A1
 - [ ] A3: wspólne dane świateł dla ordinary/static/skinned oraz parity/recovery testy przed odblokowaniem scene instancingu. Osobny projekt przed implementacją.
 
 Nie deklarujemy nowych wyników RAM/FPS ani runtime Androida na podstawie audytu źródeł.
+
+## Opcjonalny Artemis ECS — korekta użytkownika
+
+- [x] Audyt istniejących hooków core i porównanie Artemis/Ashley/Dominion/Fleks na podstawie oficjalnych metadanych. [Projekt i źródła](superpowers/specs/2026-10-17-optional-artemis-design.md).
+- [ ] Pisany projekt opcjonalnego `javity-ecs-artemis` do przeglądu, potem plan wykonania z agentami Luna. Jeszcze bez implementacji.
+- [ ] Native World/systemy/mappers/aspects/subscriptions/Bag, jeden właściciel i wybrana faza Game.
+- [ ] Powiązania/fabryka GameObject–Entity, bezpieczne recycled IDs, lifetime i cleanup także przy wyłączonej synchronizacji.
+- [ ] Typowane reference/data projekcje, single writer, struktura/enabled/active, duplikaty i sync on/off; bez automatycznego śledzenia dowolnych publicznych pól.
+- [ ] Benchmark pure ECS/GO/mixed i osobne bramki platform.
+
+Pełne wycofanie Artemisa nie jest aktualnym celem. Cleanup starego Galaxy nie może usuwać nowej opcjonalnej możliwości używania ECS. Wcześniejsze pozycje A1/legacy są historycznym kierunkiem zastąpionym tą korektą.

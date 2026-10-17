@@ -1,5 +1,7 @@
 # Konsolidacja JavityEngine: jeden core i spójny rendering
 
+> Aktualizacja zakresu: użytkownik zlecił nowy opcjonalny podsystem Artemis obok GameObject. Aktualny [projekt mostu ECS](2026-10-17-optional-artemis-design.md) zastępuje kolejność i decyzje A1 poniżej; A2/A3 pozostają roadmapą. Opis wariantów A/B i opt-in launchera jest zapisem wcześniejszej propozycji, nie instrukcją usuwania Artemisa ani aktualnym planem wykonania. Kod nie został dotąd zmieniony.
+
 2026-10-16, Europe/Warsaw. Baza audytu: `48814ae`. **Projekt do przeglądu; opisane zmiany nie są wdrożone.** Użytkownik zlecił konsolidację i pracę agentów Luna pod nadzorem. Trzy audyty są ukończone; zmiany kodu wymagają jeszcze przeglądu tego projektu.
 
 ## Cel i kryterium prostoty

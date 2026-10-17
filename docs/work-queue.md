@@ -73,3 +73,9 @@ Końcowy przegląd całego batcha oraz scoped re-review poprawek: Spec/Quality P
 [Projekt do przeglądu](superpowers/specs/2026-10-16-core-consolidation-design.md), baza `48814ae`. Audyty trzech agentów Luna ukończone, kod produktu pozostaje bez zmian. Kolejność: A1 czysty domyślny core i osobna zgodność legacy; A2 pomiar/ograniczenie alokacji; A3 wspólne dane światła i zgodność shaderów instancingu. Opcjonalne moduły fizyki/map/UI pozostają zależne od jednego modelu GameObject/Component.
 
 Potwierdzono oficjalnie najnowszy stabilny libGDX 1.14.2; zależności niezależnie wersjonowane zachowują własne numery. Przed implementacją A1 pozostaje przegląd pisanego projektu i planu. Sposób wykonania: Luna pod nadzorem, sekwencyjne zmiany wspólnych plików i niezależne przeglądy. Pełne usunięcie starych API jest oddzielnym wyborem kompatybilności; bez odpowiedzi wariantem projektu pozostaje izolacja opt-in.
+
+## Korekta zakresu — opcjonalny Artemis ECS
+
+Użytkownik wybrał Artemis jako osobny podsystem obok GameObject, z natywnymi systemami/encjami, fabryką powiązań i dynamiczną, typowaną synchronizacją. [Aktualny projekt](superpowers/specs/2026-10-17-optional-artemis-design.md) zastępuje dotychczasowy plan A1. Nie usunięto kodu i nie dodano jeszcze nowego modułu; stary runtime Galaxy i nowy adapter ECS to odrębne zadania.
+
+Kolejność: przegląd projektu → szczegółowy plan nowego adaptera → native World/lifecycle → bezpieczne powiązania i projektory → odcięcie starego Galaxy bez globalnego zakazu Artemis → pamięć i shadery. Metoda nadal Luna pod nadzorem. Stan upstream porównano w oficjalnych metadanych; nie wykonano benchmarku dowodzącego wyższej wydajności alternatywy.
