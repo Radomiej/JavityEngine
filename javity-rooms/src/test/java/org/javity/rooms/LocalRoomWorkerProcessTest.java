@@ -7,7 +7,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.LockSupport;
 import java.util.function.Predicate;
 import org.junit.Test;
 
@@ -154,8 +153,15 @@ public class LocalRoomWorkerProcessTest {
               .append(sequence).append("\",\"sessionId\":\"s\",\"sequence\":").append(sequence)
               .append(",\"x\":1,\"z\":0}\n");
         }
-        worker.stdin.write(frames.toString()); worker.stdin.flush();
-        LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(18));
+        // A join ack is an ordered fence after this bounded input batch. Awaiting it proves the
+        // worker consumed those inputs before the next batch can enter the 64-frame queue.
+        String joinFence = "join-fence-" + batch;
+        String leaveFence = "leave-fence-" + batch;
+        frames.append(join("room-live", joinFence, "fence"));
+        worker.send(frames.toString());
+        worker.await("ack", joinFence);
+        worker.send(leave("room-live", leaveFence, "fence"));
+        worker.await("ack", leaveFence);
       }
       worker.send(shutdown("room-live", "done"));
       worker.await("ack", "done");

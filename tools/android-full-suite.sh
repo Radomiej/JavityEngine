@@ -104,11 +104,20 @@ collect_diagnostics() {
 trap collect_diagnostics EXIT
 
 adb logcat -c
+adb shell wm size 640x1120
 adb shell wm density 320
 adb shell svc power stayon true
 adb shell getprop > "$artifact_dir/device-properties.txt"
-adb shell wm size > "$artifact_dir/display-size.txt"
-adb shell wm density > "$artifact_dir/display-density.txt"
+adb shell wm size | tee "$artifact_dir/display-size.txt"
+if ! grep -Fqx 'Override size: 640x1120' "$artifact_dir/display-size.txt"; then
+  echo "Expected emulator display override 640x1120; see $artifact_dir/display-size.txt" >&2
+  exit 1
+fi
+adb shell wm density | tee "$artifact_dir/display-density.txt"
+if ! grep -Fqx 'Override density: 320' "$artifact_dir/display-density.txt"; then
+  echo "Expected emulator density override 320; see $artifact_dir/display-density.txt" >&2
+  exit 1
+fi
 adb logcat -v threadtime > "$artifact_dir/logcat.txt" 2>&1 &
 logcat_pid=$!
 

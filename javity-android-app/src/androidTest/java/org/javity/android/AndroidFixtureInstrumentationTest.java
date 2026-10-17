@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
@@ -446,8 +447,8 @@ public final class AndroidFixtureInstrumentationTest
     MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
     MotionEvent up = MotionEvent.obtain(downTime, downTime + 80, MotionEvent.ACTION_UP, x, y, 0);
     try {
-      getInstrumentation().sendPointerSync(down);
-      getInstrumentation().sendPointerSync(up);
+      injectPointerEvent(down);
+      injectPointerEvent(up);
     } finally {
       down.recycle();
       up.recycle();
@@ -462,9 +463,9 @@ public final class AndroidFixtureInstrumentationTest
     MotionEvent up =
         MotionEvent.obtain(downTime, downTime + 80, MotionEvent.ACTION_UP, moveX, moveY, 0);
     try {
-      getInstrumentation().sendPointerSync(down);
-      getInstrumentation().sendPointerSync(move);
-      getInstrumentation().sendPointerSync(up);
+      injectPointerEvent(down);
+      injectPointerEvent(move);
+      injectPointerEvent(up);
     } finally {
       down.recycle();
       move.recycle();
@@ -502,10 +503,62 @@ public final class AndroidFixtureInstrumentationTest
             InputDevice.SOURCE_TOUCHSCREEN,
             0);
     try {
-      getInstrumentation().sendPointerSync(event);
+      injectPointerEvent(event);
     } finally {
       event.recycle();
     }
+  }
+
+  private void injectPointerEvent(MotionEvent event) {
+    event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+    JavityGameActivity activity = getActivity();
+    int[][] window = new int[1][];
+    boolean[] focused = new boolean[1];
+    boolean[] visible = new boolean[1];
+    boolean[] finishing = new boolean[1];
+    getInstrumentation()
+        .runOnMainSync(
+            () -> {
+              View decor = activity.getWindow().getDecorView();
+              int[] origin = new int[2];
+              decor.getLocationOnScreen(origin);
+              window[0] =
+                  new int[] {origin[0], origin[1], decor.getWidth(), decor.getHeight()};
+              focused[0] = activity.hasWindowFocus() && decor.hasWindowFocus();
+              visible[0] = decor.isAttachedToWindow() && decor.isShown();
+              finishing[0] = activity.isFinishing() || activity.isDestroyed();
+            });
+    int[] bounds = window[0];
+    assertNotNull("Activity window bounds should be available before touch injection", bounds);
+    assertTrue(
+        "Activity window must own focus before injecting touch; focused="
+            + focused[0]
+            + " visible="
+            + visible[0]
+            + " finishingOrDestroyed="
+            + finishing[0]
+            + " bounds="
+            + java.util.Arrays.toString(bounds),
+        focused[0] && visible[0] && !finishing[0]);
+    for (int pointer = 0; pointer < event.getPointerCount(); pointer++) {
+      float x = event.getX(pointer);
+      float y = event.getY(pointer);
+      assertTrue(
+          "Touch pointer "
+              + pointer
+              + " at "
+              + x
+              + ","
+              + y
+              + " must be inside the focused Activity window "
+              + java.util.Arrays.toString(bounds),
+          x >= bounds[0]
+              && x < bounds[0] + bounds[2]
+              && y >= bounds[1]
+              && y < bounds[1] + bounds[3]);
+    }
+    boolean injected = getInstrumentation().getUiAutomation().injectInputEvent(event, true);
+    assertTrue("UiAutomation must inject the touchscreen event into the focused app", injected);
   }
 
   private AndroidGameFixture.FixtureSnapshot awaitInputAndFrame(
