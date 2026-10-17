@@ -14,7 +14,7 @@ Z katalogu repozytorium uruchom:
 ./gradlew dev -PdevPort=0
 ```
 
-Gradle buduje worker i wykonuje `npm ci` dla lokalnej paczki Colyseus (ponownie po zmianie lockfile). Następnie proces Java `LocalDevServerMain` uruchamia i nadzoruje Node. Wypisuje URL dopiero po readiness Colyseus. Ctrl+C zamyka gateway i jego workery; odłączenie kontrolnego stdin po nagłym zakończeniu rodzica też zamyka Node. Nie trzeba ręcznie uruchamiać kilku terminali. Wymagane pozostają JDK 25, Node 24 i npm; pierwsze uruchomienie pobiera zależności.
+Gradle buduje worker i wykonuje `npm ci` dla lokalnej paczki Colyseus (ponownie po zmianie lockfile). Następnie proces Java `LocalDevServerMain` uruchamia i nadzoruje Node. Wypisuje URL dopiero po readiness Colyseus. Ctrl+C zamyka gateway i jego workery; odłączenie kontrolnego stdin po nagłym zakończeniu rodzica też zamyka Node. Nie trzeba ręcznie uruchamiać kilku terminali. Wymagane pozostają JDK 25 i npm; minimum pakietów to Node.js 22, a opisany proof wykonano na Node.js 24 (22/23 nie sprawdzono w tym środowisku). Pierwsze uruchomienie pobiera zależności.
 
 Podgląd **Client view** pokazuje replikę klienta i wysyła intencje ruchu. **Server view** pokazuje bezpośrednie snapshoty Java, wyłącza sterowanie i nie tworzy kolejnego gracza. Można też wpisać ID pokoju i oglądać jego serwer bez dołączania klientem. To podgląd danych przykładowego pokoju; nie jest zdalnym inspektorem całego drzewa GameObject ani przekazaniem authority klientowi. Przełączanie widoku zachowuje istniejącą sesję klienta.
 
@@ -35,7 +35,7 @@ java -cp 'javity-rooms/build/install/javity-rooms/lib/*' \
 
 ## Ręczne uruchomienie składników
 
-Wymagane są JDK 25, Node.js 24 (Node 22+ jest wymagany przez serwer Colyseus) i npm. Z katalogu repozytorium:
+Wymagane są JDK 25, npm i Node.js co najmniej 22 według `engines` paczek. Zapisana weryfikacja używa Node.js 24; nie stanowi osobnego testu wersji 22/23. Z katalogu repozytorium:
 
 ```sh
 ./gradlew :javity-rooms:installDist

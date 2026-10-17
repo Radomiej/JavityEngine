@@ -282,3 +282,5 @@ Lokalny multiplayer z nadzorem Java uruchomisz jedną komendą: `./gradlew dev`.
 [Client/server view, konfiguracja i przyszłe hostowanie](docs/local-multiplayer.md).
 
 Eksperymentalny [build Javity/libGDX do WebAssembly z renderowaniem 3D](docs/javity-wasm-rendering-spike.md).
+
+[Checklisty błędów](docs/Bugs/README.md) i [specyfikacje](docs/Spec/README.md) rozdzielają naprawy, otwarte blokady i niezweryfikowane platformy.

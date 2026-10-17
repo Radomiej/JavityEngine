@@ -25,11 +25,16 @@ tasks.matching { it.name == 'gdx_teavm_web_wasm_build' }.configureEach {
     doLast {
         def html = layout.buildDirectory.file('dist/wasm/webapp/index.html').get().asFile
         def content = html.getText('UTF-8')
-        if (!content.contains('id="spike-label"')) {
+        def label = file('web/label.html').getText('UTF-8').trim()
+        if (!content.contains('rel="icon"')) {
             content = content.replace('<head>', '<head><link rel="icon" href="data:,">')
-            content = content.replace('<body oncontextmenu="return false">', '<body oncontextmenu="return false"><aside id="spike-label" style="position:fixed;top:20px;left:24px;pointer-events:none;font:14px/1.6 system-ui;color:#e0f1ff;background:#102032dd;border:1px solid #3e607b;border-radius:12px;padding:14px 20px"><strong style="font-size:20px">JavityEngine · WebAssembly</strong><br>libGDX renderer · WebGL2<br>WASD / arrows: move the green cube</aside>')
-            html.setText(content, 'UTF-8')
         }
+        if (content.contains('id="spike-label"')) {
+            content = content.replaceAll('(?s)<aside id="spike-label".*?</aside>', java.util.regex.Matcher.quoteReplacement(label))
+        } else {
+            content = content.replace('<body oncontextmenu="return false">', '<body oncontextmenu="return false">' + label)
+        }
+        html.setText(content, 'UTF-8')
     }
 }
 
@@ -41,3 +46,6 @@ tasks.register('buildCore', Exec) {
     commandLine new File(engineRoot, 'gradlew').absolutePath, ':javity-core:jar', '--no-daemon'
 }
 tasks.named('compileJava') { dependsOn tasks.named('buildCore') }
+
+dependencies { testImplementation 'junit:junit:4.13.2' }
+tasks.named('test') { useJUnit() }

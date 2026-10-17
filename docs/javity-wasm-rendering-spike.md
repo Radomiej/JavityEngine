@@ -26,10 +26,13 @@ The backend's `useGL30` option is experimental and can fall back to WebGL1. This
 After building, run:
 
 ```sh
+./gradlew -p experiments/javity-wasm test
 python3 experiments/javity-wasm/tools/chromium-proof.py
+# Negative control: expected nonzero exit, because no WebGL geometry is drawn.
+python3 experiments/javity-wasm/tools/chromium-proof.py --disable-draw --evidence-dir /tmp/javity-wasm-negative
 ```
 
-The script owns a temporary HTTP server and Chromium instance. It requires Python Playwright, Pillow and `/usr/bin/chromium`. It checks Java-rendered frame progression, real GDX keyboard movement and release, resize, nonuniform framebuffer pixels, GL errors accumulated from the first frame, and explicit scene disposal. It saves [the screenshot](../experiments/javity-wasm/evidence/javity-wasm.png) and [runtime evidence](../experiments/javity-wasm/evidence/runtime.json). Artifact/source hashes and build results are recorded in the adjacent `verification.json` after verification.
+The script owns a temporary HTTP server and Chromium instance. It requires Python Playwright, Pillow and `/usr/bin/chromium`. It checks Java-rendered frame progression, real GDX keyboard movement and release, resize, canvas pixels with the HTML label hidden, expected orange/green geometry, GL errors accumulated from the first frame, and explicit scene disposal. Four JUnit tests cover ordered cleanup after initialization/disposal errors. No subsequent scene frame may be drawn after disposal. It saves [the screenshot](../experiments/javity-wasm/evidence/javity-wasm.png) and [runtime evidence](../experiments/javity-wasm/evidence/runtime.json). Artifact/source hashes and build results are recorded in the adjacent `verification.json` after verification.
 
 The verified browser path uses **ANGLE/SwiftShader software WebGL2 in headless Chromium**. This proves the API/renderer path and framebuffer output; it is not a hardware-GPU performance measurement or support matrix for other browsers.
 
@@ -42,3 +45,5 @@ The first real engine compilation failed because TeaVM 0.15 does not provide `Ar
 This is an executable rendered scene using real engine classes, not the entire engine feature set certified for the web. The earlier [Yoga/Ammo bridge spike](teavm-wasm-spike.md) remains separate. Production Yoga/UI, browser physics, assets beyond this generated scene, MapLibre GL JS, networking integration, context loss, mobile/Firefox/Safari and performance still need their own integrations and gates. Compiling the reachable renderer code does not prove every public API or every optional module.
 
 Upstream source: [gdx-teavm 1.6.1](https://github.com/xpenatan/gdx-teavm/tree/1.6.1), tag commit `e098ddf3b9c3dcb9dfd43356e66be05db91237a0`; [example launcher](https://github.com/xpenatan/gdx-teavm/blob/1.6.1/examples/basic/platforms/web/plugin/src/main/java/TestWebLauncher.java). gdx-teavm and libGDX use Apache-2.0; dependencies and generated backend resources retain their upstream licensing.
+
+Quality review, fixes and remaining limits: [Bugs](Bugs/2026-10-17-wasm-integration-review.md) and [Spec](Spec/2026-10-17-runtime-wasm-quality.md). The full-page screenshot is presentation only; the DOM-free framebuffer image is separate.

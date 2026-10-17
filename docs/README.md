@@ -55,3 +55,6 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 - [Eksperyment TeaVM Wasm GC, Yoga i Bullet/Ammo](teavm-wasm-spike.md).
 
 - [Javity/libGDX: rzeczywisty renderer 3D w WebAssembly](javity-wasm-rendering-spike.md).
+
+- [Rejestr błędów i checklisty](Bugs/README.md).
+- [Specyfikacje runtime i rozwoju](Spec/README.md).

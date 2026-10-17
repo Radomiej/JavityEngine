@@ -234,3 +234,16 @@ Podgląd nie jest drugim właścicielem autorytatywnego Game, Colyseus nie uruch
 - [ ] Sprzętowy GPU i pomiary; Chromium/SwiftShader potwierdza uruchomienie i obraz, nie wydajność.
 
 Wyniki i uruchomienie: [Javity Wasm rendering](javity-wasm-rendering-spike.md).
+
+
+## Review jakości Wasm i integracji — 2026-10-17
+
+Źródło statusów: [checklista Bugs](Bugs/2026-10-17-wasm-integration-review.md). Kontrakty i kolejność prac: [specyfikacja](Spec/2026-10-17-runtime-wasm-quality.md).
+
+- [x] Usunąć fałszywy PASS testu grafiki z etykiety HTML; dodać kontrolę negatywną bez draw calls i sprawdzanie pikseli właściwej sceny.
+- [x] Refactoring sceny: nazwane komponenty, oddzielne tworzenie i cleanup, zwolnienie pozostałych zasobów po błędzie oraz zachowanie błędu inicjalizacji.
+- [x] Domknąć wyścigi i częściową konstrukcję mostu Ammo; niezależny przebieg siedmiu scenariuszy Chromium zaliczony.
+- [x] Ujednoznacznić minimum Node i wersję faktycznie sprawdzoną.
+- [ ] Osobna bramka platformowa: pełny Android runner ANR, browser context loss, DPR, inne przeglądarki i pomiary sprzętowego GPU.
+
+Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpointami. Nie oznaczają aktualnego PASS dla modułów zmienionych później.

@@ -98,3 +98,6 @@ Niezależne audyty Luna i sprawdzenie źródeł zakończono dla [pokoi Colyseus 
 
 
 Rzeczywisty browser renderer ma osobny [spike Javity/libGDX Wasm](javity-wasm-rendering-spike.md), ze sceną komponowaną w Javie i GdxRenderer. Następne platformowe providery pozostają osobnymi bramkami.
+
+
+Review jakości Wasm/integracji: bieżące defekty i status napraw są w [Bugs](Bugs/2026-10-17-wasm-integration-review.md), a kontrakty i kolejne bramki w [Spec](Spec/2026-10-17-runtime-wasm-quality.md). Pierwszeństwo mają potwierdzone defekty lifecycle i wiarygodność proofów; brak platformowego testu nie jest oznaczany jako gotowość.

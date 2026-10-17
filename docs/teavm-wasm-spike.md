@@ -44,3 +44,7 @@ This proves WasmGC compilation, TeaVM runtime loading in one Chromium build, cal
 
 
 The next experiment now exercises the actual Javity/libGDX renderer on Wasm GC: [rendering spike](javity-wasm-rendering-spike.md). The original Yoga/Ammo lifecycle proof remains separate.
+
+## Review lifecycle — 2026-10-17
+
+Host wydzielono do `web/browser-host.js`: własność per generacja, anulowanie spóźnionego startu, rollback częściowej konstrukcji i idempotentny cleanup. `python experiments/teavm-wasm/tools/bridge-lifecycle-proof.py` uruchamia siedem scenariuszy w rzeczywistym Chromium/Yoga/Ammo. [Checklista błędów](Bugs/2026-10-17-wasm-integration-review.md), [specyfikacja](Spec/2026-10-17-runtime-wasm-quality.md). Wyniki liczą tożsamości wrapperów, nie odzyskaną liniową pamięć Wasm. Kod Java i jego wygenerowany Wasm nie zmieniły się w tym refactoringu; nowe hashe hosta i dowody zapisano w `experiments/teavm-wasm/evidence/quality-verification.json`.
