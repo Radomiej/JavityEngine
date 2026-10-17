@@ -1,0 +1,8 @@
+plugins { id 'application' }
+
+dependencies {
+    api project(':javity-core')
+    implementation "com.badlogicgames.gdx:gdx:${rootProject.gdxVersion}"
+}
+
+application { mainClass = 'org.javity.rooms.LocalRoomWorker' }
