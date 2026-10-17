@@ -14,7 +14,8 @@ import java.util.concurrent.locks.LockSupport;
 public final class LocalRoomWorker {
   static final int MAX_LINE_BYTES = 8192, INPUT_QUEUE_CAPACITY = 64, OUTPUT_QUEUE_CAPACITY = 64;
   private static final String STOP = new String("__STOP__");
-  private LocalRoomWorker() {}
+  static final int MAX_COMMANDS_PER_TICK = 64;
+  LocalRoomWorker() {}
   public static void main(String[] args) {
     if (args.length != 1 || args[0].isBlank()) { System.err.println("usage: LocalRoomWorker <roomId>"); System.exit(2); }
     int result = new LocalRoomWorker().run(args[0], System.in, System.out);
@@ -22,7 +23,7 @@ public final class LocalRoomWorker {
   }
   private int run(String roomId, InputStream input, PrintStream output) {
     ArrayBlockingQueue<byte[]> inbound = new ArrayBlockingQueue<>(INPUT_QUEUE_CAPACITY);
-    ArrayBlockingQueue<String> outbound = new ArrayBlockingQueue<>(OUTPUT_QUEUE_CAPACITY);
+    BoundedOutput outbound = new BoundedOutput(OUTPUT_QUEUE_CAPACITY);
     AtomicBoolean eof = new AtomicBoolean();
     AtomicReference<String> framingFailure = new AtomicReference<>();
     AtomicReference<Throwable> writerFailure = new AtomicReference<>();
@@ -37,6 +38,7 @@ public final class LocalRoomWorker {
     reader.setDaemon(true); reader.start();
     LocalRoomSimulation room = null;
     boolean orderly = true;
+    TickInputBudget inputBudget = new TickInputBudget(MAX_COMMANDS_PER_TICK);
     try {
       room = new LocalRoomSimulation(roomId);
       if (!emit(outbound, message("ready", roomId))) return 1;
@@ -44,7 +46,8 @@ public final class LocalRoomWorker {
       while (true) {
         if (writerFailure.get() != null || framingFailure.get() != null) { orderly = false; break; }
         byte[] frame;
-        while ((frame = inbound.poll()) != null) {
+        while (inputBudget.remaining() > 0 && (frame = inbound.poll()) != null) {
+          inputBudget.consume();
           if (!handle(frame, roomId, room, outbound)) { orderly = false; return 1; }
           if (shutdownRequested) { shutdownRequested = false; return 0; }
         }
@@ -52,7 +55,7 @@ public final class LocalRoomWorker {
         if (eof.get() && inbound.isEmpty()) break;
         long now = System.nanoTime();
         if (now >= nextStep) {
-          room.step(); nextStep += 16_666_667L;
+          room.step(); inputBudget.reset(); nextStep += 16_666_667L;
           if (room.tick() % 3 == 0 && !emit(outbound, snapshot(room))) { orderly = false; break; }
         } else {
           LockSupport.parkNanos(Math.min(1_000_000L, nextStep - now));
@@ -63,14 +66,14 @@ public final class LocalRoomWorker {
       System.err.println("local room worker failed: " + failure.getMessage()); return 1;
     } finally {
       if (room != null) try { room.close(); } catch (Throwable failure) { orderly = false; }
-      outbound.offer(STOP);
+      outbound.offerStop();
       try { writer.join(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
       // Both auxiliaries are daemon threads; closing input unblocks the reader where supported.
       try { input.close(); } catch (IOException ignored) { }
     }
   }
   private boolean shutdownRequested;
-  private boolean handle(byte[] bytes, String roomId, LocalRoomSimulation room, ArrayBlockingQueue<String> out) {
+  boolean handle(byte[] bytes, String roomId, LocalRoomSimulation room, OutputSink out) {
     String requestId = null;
     try {
       String text = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
@@ -91,7 +94,8 @@ public final class LocalRoomWorker {
         case "shutdown" -> { fields(json, "v", "roomId", "type", "requestId"); ack(out,roomId,requestId); shutdownRequested = true; }
         default -> throw new ProtocolException("unknown_command", "Unknown command type");
       }
-    } catch (ProtocolException e) { return emit(out, error(roomId, e.code, e.getMessage(), requestId)); }
+    } catch (OutputQueueOverflow e) { System.err.println("local room worker stopped: stdout queue full"); return false; }
+    catch (ProtocolException e) { return emit(out, error(roomId, e.code, e.getMessage(), requestId)); }
     catch (RuntimeException | CharacterCodingException e) {
       return emit(out, error(roomId, "invalid_command", "Malformed or invalid command", requestId));
     }
@@ -126,8 +130,24 @@ public final class LocalRoomWorker {
     double d=v.asDouble(); if(!Double.isFinite(d)||d<0||d>9_007_199_254_740_991d||d!=Math.rint(d)) throw new ProtocolException("invalid_field", key + " outside safe integer range"); return (long)d;
   }
   private static long number(JsonValue value,String key) { return safeInteger(value,key); }
-  private static void ack(ArrayBlockingQueue<String> out,String room,String request) { if(!emit(out, message("ack",room,"requestId",request))) throw new IllegalStateException("stdout queue full"); }
-  private static boolean emit(ArrayBlockingQueue<String> out,String json) { return out.offer(json); }
+  private static void ack(OutputSink out,String room,String request) { if(!emit(out, message("ack",room,"requestId",request))) throw new OutputQueueOverflow(); }
+  private static boolean emit(OutputSink out,String json) { return out.offer(json); }
+  interface OutputSink { boolean offer(String line); String take() throws InterruptedException; boolean offerStop(); }
+  static final class BoundedOutput implements OutputSink {
+    private final ArrayBlockingQueue<String> lines;
+    BoundedOutput(int capacity) { lines = new ArrayBlockingQueue<>(capacity); }
+    public boolean offer(String line) { return lines.offer(line); }
+    public String take() throws InterruptedException { return lines.take(); }
+    public boolean offerStop() { return lines.offer(STOP); }
+  }
+  static final class TickInputBudget {
+    private final int limit; private int remaining;
+    TickInputBudget(int limit) { if (limit < 1) throw new IllegalArgumentException("limit"); this.limit=limit; this.remaining=limit; }
+    int remaining() { return remaining; }
+    void consume() { if (remaining == 0) throw new IllegalStateException("tick input budget exhausted"); remaining--; }
+    void reset() { remaining=limit; }
+  }
+  private static final class OutputQueueOverflow extends RuntimeException {}
   private static String quote(String value) { StringBuilder b=new StringBuilder("\""); for (int i=0;i<value.length();i++) { char c=value.charAt(i); switch(c) { case '\\' -> b.append("\\\\"); case '\"' -> b.append("\\\""); case '\n' -> b.append("\\n"); case '\r' -> b.append("\\r"); case '\t' -> b.append("\\t"); default -> { if (c < 0x20) b.append(String.format("\\u%04x", (int)c)); else b.append(c); } } } return b.append('\"').toString(); }
   private static String message(String type,String room,Object... pairs) { StringBuilder b=new StringBuilder("{\"v\":1,\"roomId\":").append(quote(room)).append(",\"type\":").append(quote(type)); for(int i=0;i<pairs.length;i+=2) { b.append(',').append(quote((String)pairs[i])).append(':'); Object value=pairs[i+1]; b.append(value == null ? "null" : quote(value.toString())); } return b.append('}').toString(); }
   private static String error(String room,String code,String message,String request) { return request == null ? message("error",room,"code",code,"message",message) : message("error",room,"code",code,"message",message,"requestId",request); }

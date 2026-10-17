@@ -14,6 +14,7 @@ public class LocalRoomSimulationTest {
     LocalRoomSimulation.PlayerState p = room.snapshot().players().get(0);
     assertEquals(4d / Math.sqrt(2) / 60, p.x(), 1e-6);
     assertEquals(p.x(), p.z(), 1e-9);
+    now.set(240_000_000L);
     assertFalse(room.acceptInput("a", 0, -1, 0));
     now.set(250_000_001L);
     room.step();
