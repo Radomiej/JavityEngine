@@ -40,7 +40,7 @@ Twórca gry lub agent AI powinien uruchamiać grę i lokalne testy autorytatywne
 - [x] Rzeczywista scena Wasm: postęp Game, realne GDX keydown/keyup, resize, brak zaobserwowanego GL/JS error i brak dalszego rysowania sceny po dispose.
 - [x] Kontrola pikseli wyklucza DOM i sprawdza konkretne kolory sceny. Wyłączenie draw calls musi dać FAIL, nie PASS dzięki etykiecie.
 - [x] Most Yoga/Ammo: opóźniony load + dispose, recreate podczas pending, częściowa awaria i wielokrotne dispose; sprawdzić rzeczywiste obiekty Wasm.
-- [ ] Dowody przypisane do sourceCommit i hashów; zmiana kodu wymaga aktualnego proofu. Historyczne wyniki nie są przepisywane na nową wersję bez uruchomienia.
+- [x] Dowody przypisane do sourceCommit i hashów; zmiana kodu wymaga aktualnego proofu. Historyczne wyniki nie są przepisywane na nową wersję bez uruchomienia.
 
 Wyniki zamknięcia bieżącego przeglądu będą zapisane przy [checkliście Bugs](../Bugs/2026-10-17-wasm-integration-review.md) i w odpowiednich artefaktach, nie wywnioskowane z samych checkboxów.
 

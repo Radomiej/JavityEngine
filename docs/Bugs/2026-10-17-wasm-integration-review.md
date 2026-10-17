@@ -60,3 +60,11 @@ W statycznym przeglądzie opcjonalnego ECS i kodu lokalnego Colyseus/Java nie po
 ## Granica dowodów lifecycle
 
 Siedem scenariuszy przeglądarkowych sprawdza tożsamość i własność wrapperów rzeczywistych obiektów Yoga/Ammo. Nie jest to pomiar odzyskania liniowej pamięci Wasm. Drugi agent niezależnie przejrzał końcowy kod obu eksperymentów; nie potwierdził dodatkowego błędu w tym zakresie.
+
+## Końcowe bramki
+
+- [x] Domyślny build i ECS usage smoke: PASS, 113 zadań (6 wykonanych, 107 up-to-date), 871 przypadków w 99 zestawach XML, bez błędów. To inventory obejmujące cache, nie 871 świeżych wykonań.
+- [x] Osobny build Wasm oraz 4 testy cleanupu: PASS.
+- [x] Oba happy-path proofy Chromium oraz siedem regresji bridge: PASS.
+- [x] Kontrola negatywna renderera: oczekiwany FAIL, 3 kolory, zapis `success: false`.
+- [x] Hashe źródeł i artefakty w `experiments/javity-wasm/evidence/verification.json` oraz `experiments/teavm-wasm/evidence/quality-verification.json`.

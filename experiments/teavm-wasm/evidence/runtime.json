@@ -2,7 +2,6 @@
   "frame": 60,
   "state": 15,
   "ballYAfter60Ticks": 0.0833342969417572,
-  "ammoFrees": 13,
   "tickCallbacks": 60,
   "events": [
     "java:create",
@@ -27,6 +26,7 @@
     "destroy:ok",
     "bridge:dispose"
   ],
+  "ammoFrees": 13,
   "exports": [
     "create",
     "dispose",

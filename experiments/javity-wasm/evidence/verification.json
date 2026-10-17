@@ -1,18 +1,21 @@
 {
   "date": "2026-10-17",
-  "sourceCommit": "86a831303c17692bb5b7ecc8395e581f02a70e19",
+  "sourceCommit": "d210e0f196e2c889453313fc3db809d066270a0e",
   "sourceFileHashes": {
-    "experiments/javity-wasm/build.gradle": "c0d6b28b5e6e1b3de5ca1639aa3b8d91ea7bbd36d781ffcfd07510ed34ac57b7",
+    "experiments/javity-wasm/build.gradle": "a79d5c690ab8ece36246001876eb4bf689e3ba0d5f7c367c312ab1e8e4d48740",
     "experiments/javity-wasm/settings.gradle": "2860c4f69431f5d81201d755da5edbd675981bcfe0ff16cde40656244be1e3e6",
     "experiments/javity-wasm/src/main/java/org/javity/wasm/WebLauncher.java": "6733bfe5ed23fbf84a6c46df56af9401279741694be313750fcc33ec5e55f768",
-    "experiments/javity-wasm/src/main/java/org/javity/wasm/JavityWasmDemo.java": "5a7ecc34062a1d46024e17f11b2e30f414131965dbc43f3dab3a102da589a517",
-    "experiments/javity-wasm/tools/chromium-proof.py": "12225273d8f5290ddca6e0b02481f14d179da8d3675dc531d3f3dd253079a425",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/JavityWasmDemo.java": "74021c5662a0fb9ad984df155a9407b619a6c155c980770694b898bb596c5144",
+    "experiments/javity-wasm/tools/chromium-proof.py": "6fab8efb7fecab0bc041ff330e1ae33a89cd115237814f81c8a470b4b76d67ae",
     "javity-core/src/main/java/org/javity/core/Game.java": "dfc3b76931f9be191e55643e3e9cb15a84615bb75055ee26b2f733acbc39bb66",
     "javity-core/src/main/java/org/javity/render/GdxRenderer.java": "db2002386cfc40026f62cf181d7321935342a92b9339277c1501d00126b12ef1",
     "javity-core/src/main/java/org/javity/render/ModelRenderer.java": "9e3b7f1f3a00c8f85fca4d30b4716be0f7824745acb7423c408f5490c0ee443f",
     "javity-core/src/main/java/org/javity/render/RecoverableDefaultShaderProvider.java": "40b2154fd3909f533c6ac6f2cbe0e88efa8713de1433c9fd3a31b87e7e4730bf",
     "javity-core/src/main/java/org/javity/render/lighting/SceneLightingAttribute.java": "c1c5d84c71f6d228093daf8d3d78029929d6226171121e6c51248733f7487f83",
-    "javity-core/src/test/java/org/javity/render/lighting/SceneLightingOrderingTest.java": "0a4a54f04b61bedd236c39572a01521a1e4ba4f52266ca421c022c960dd4482d"
+    "javity-core/src/test/java/org/javity/render/lighting/SceneLightingOrderingTest.java": "0a4a54f04b61bedd236c39572a01521a1e4ba4f52266ca421c022c960dd4482d",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/SceneCleanup.java": "1ea98453ff80396a0580083462074388564c68aaadc6de1f94afcc574c295842",
+    "experiments/javity-wasm/src/test/java/org/javity/wasm/SceneCleanupTest.java": "cb70a5156da62cd62f31c30e880f0d86c5418d8c9d453ef03c592c23cfae9046",
+    "experiments/javity-wasm/web/label.html": "bc9a4cbfda8f786e3f2b6a2aec00927993b538dfdf848497c310fac4eade42b9"
   },
   "versions": {
     "gdx-teavm": "1.6.1",
@@ -22,21 +25,23 @@
     "upstreamGdxTeavmTagCommit": "e098ddf3b9c3dcb9dfd43356e66be05db91237a0"
   },
   "build": {
-    "command": "./gradlew -p experiments/javity-wasm gdx_teavm_web_wasm_build --no-daemon",
+    "command": "./gradlew -p experiments/javity-wasm test gdx_teavm_web_wasm_build --no-daemon",
     "result": "PASS",
-    "seconds": 25,
-    "tasksExecuted": 3,
+    "seconds": 27,
+    "tasksExecuted": 5,
     "tasksUpToDate": 2,
-    "coreBootstrapProof": "Moved the generated core jar out of build/libs before the command. buildCore regenerated it; then actual TeaVM compilation succeeded. No raw core source copy or replacement JS renderer used."
+    "cleanupJUnitTests": 4,
+    "note": "Executed before source commit; verified source bytes match sourceCommit. Earlier missing-core-jar bootstrap proof remains historical."
   },
   "artifacts": {
     "experiments/javity-wasm/build/dist/wasm/webapp/app.wasm": {
-      "sha256": "17b024789a0f2960fa2e490edd5240e2b7def16d04618d31739c427af936f867",
-      "bytes": 4443343,
+      "sha256": "a5d516000476e7d87639209226d1b12bd336b21196ff40bb6e61dc5296cb858d",
+      "bytes": 4448176,
       "magic": "0061736d"
     },
     "javity-core/build/libs/javity-core-0.7.0-SNAPSHOT.jar": {
-      "sha256": "3d8242c85c1ba5fc97e5a2c50cf4c969b9654cdf70897330987577e1a797c693"
+      "sha256": "3d8242c85c1ba5fc97e5a2c50cf4c969b9654cdf70897330987577e1a797c693",
+      "bytes": 602557
     }
   },
   "browser": {
@@ -45,8 +50,14 @@
     "runtime": "runtime.json",
     "screenshot": "javity-wasm.png",
     "backend": "Actual org.javity.render.GdxRenderer via gdx-teavm WasmGC, not custom JS geometry.",
-    "method": "Real GDX input and Game component updates, framebuffer screenshot/color probe, CSS viewport resize, scene dispose.",
-    "limits": "Chromium154 software ANGLE/SwiftShader at DPR1; not hardware performance, browser matrix, context loss or zero-live-GL-handle proof."
+    "method": "Real GDX input, update, resize and dispose; DOM label hidden for canvas pixel assertions.",
+    "limits": "Chromium154 software ANGLE/SwiftShader at DPR1; not hardware performance, browser matrix, context loss or zero-live-GL-handle proof.",
+    "framebuffer": "framebuffer.png",
+    "negativeControl": {
+      "result": "EXPECTED_FAIL",
+      "runtime": "negative-control.json",
+      "reason": "Draw entry points disabled; only 3 framebuffer colors. Runtime success is false."
+    }
   },
   "regression": {
     "initialWasmFailure": "Method java.util.Arrays.compare([F[F)I was not found in SceneLightingAttribute.compareTo",
@@ -57,11 +68,11 @@
   },
   "integration": {
     "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon",
-    "sourceCommit": "86a831303c17692bb5b7ecc8395e581f02a70e19",
+    "sourceCommit": "d210e0f196e2c889453313fc3db809d066270a0e",
     "result": "PASS",
-    "seconds": 21,
-    "executedTasks": 24,
-    "upToDateTasks": 89,
+    "seconds": 8,
+    "executedTasks": 6,
+    "upToDateTasks": 107,
     "testResultInventory": {
       "tests": 871,
       "failures": 0,
@@ -69,7 +80,7 @@
       "skipped": 0
     },
     "suites": 99,
-    "cacheDisclosure": "Incremental default reactor. Current result inventory includes retained unchanged results; it is not a claim that all 871 cases were newly executed in this command."
+    "cacheDisclosure": "Incremental build; retained unchanged XML results included. Not 871 newly executed cases. Build ran on identical source bytes before source commit."
   },
-  "review": "Scoped read-only review accepted rendering/comparator behavior; missing/stale core jar caveat fixed by buildCore and verified with missing generated jar."
+  "review": "Two scoped read-only reviews and independent root browser regression runs. No additional confirmed scoped defect after fixes; see docs/Bugs."
 }

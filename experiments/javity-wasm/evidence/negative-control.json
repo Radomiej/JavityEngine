@@ -1,0 +1,9 @@
+{
+  "scope": "Actual Javity GdxRenderer on gdx-teavm Wasm GC",
+  "success": false,
+  "negativeControl": true,
+  "error": "('empty/flat canvas framebuffer', 3)",
+  "pageErrors": [],
+  "console": [],
+  "failedRequests": []
+}
