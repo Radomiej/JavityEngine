@@ -247,3 +247,14 @@ Wyniki i uruchomienie: [Javity Wasm rendering](javity-wasm-rendering-spike.md).
 - [ ] Osobna bramka platformowa: pełny Android runner ANR, browser context loss, DPR, inne przeglądarki i pomiary sprzętowego GPU.
 
 Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpointami. Nie oznaczają aktualnego PASS dla modułów zmienionych później.
+
+## Maintenance and publication — 2026-10-17
+
+[Specification](Spec/2026-10-17-maintenance-and-pages.md).
+
+- [x] Revisit Android runner evidence; no speculative app fix. [Diagnosis and full-suite workflow](Bugs/2026-10-17-android-followup.md).
+- [ ] Run the unfiltered hosted Android suite and review ANR/system traces before closing BUG-ANDROID-001.
+- [x] Update canonical AGENTS.md, local ignore rules, README and Unreleased CHANGELOG.
+- [ ] Validate and publish the static engine showcase, merge the reviewed branch into master, and record deployment evidence.
+
+Feature gaps in browser providers, remote netcode and physical-device validation remain separate backlog items; this maintenance batch does not mark them implemented.

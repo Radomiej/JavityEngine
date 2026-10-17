@@ -43,7 +43,7 @@ Bazą przeglądu jest `650cfa6`. Zakres: oba spike’i Wasm, ich buildy/proofy, 
 
 ## Znane otwarte blokady spoza bieżącej naprawy
 
-- [ ] **BUG-ANDROID-001 / P2 — łączny runner instrumentacyjny APK kończy się ANR.** Historyczny, potwierdzony problem uruchomienia zestawu; pięć przypadków przeszło osobno. Nie ustalono, że przyczyna leży w silniku, zamiast w środowisku/runnerze. Bramka zamknięcia: stabilny pełny przebieg na odtworzonym środowisku oraz analiza ANR, bez zastępowania go sumą pojedynczych PASS. [Stan i logi](../android-status.md). Nie ponawiano Androida w tym przeglądzie.
+- [ ] **BUG-ANDROID-001 / P2 — łączny runner instrumentacyjny APK kończy się ANR.** Historyczny, potwierdzony problem uruchomienia zestawu; pięć przypadków przeszło osobno. Nie ustalono, że przyczyna leży w silniku, zamiast w środowisku/runnerze. Bramka zamknięcia: stabilny pełny przebieg na odtworzonym środowisku oraz analiza ANR, bez zastępowania go sumą pojedynczych PASS. [Stan i logi](../android-status.md). Nie ponawiano Androida w pierwotnym przeglądzie. [Późniejsza diagnoza i workflow pełnego zestawu](2026-10-17-android-followup.md) zapisują aktualny stan; brak SDK/adb lokalnie uniemożliwił odtworzenie.
 
 ## Braki i ograniczenia, które nie są potwierdzonymi błędami
 

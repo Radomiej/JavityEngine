@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101619">
+    <meta name="description" content="JavityEngine is an open source Java game engine built on libGDX, with a scene-local component core, 2D and 3D rendering, tools, UI and optional modules.">
+    <title>JavityEngine — Java, games, all the way down</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preload" as="image" href="assets/voxel-fps.webp" fetchpriority="high">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="JavityEngine home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Javity<span class="brand-light">Engine</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation">
+        <span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+        <a href="#engine">The engine</a>
+        <a href="#systems">Systems</a>
+        <a href="#examples">Examples</a>
+        <a href="#status">Platform status</a>
+        <a class="nav-github" href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">View on GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero wrap" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="pulse"></span> OPEN SOURCE · JAVA · LIBGDX</p>
+          <h1 id="hero-title">Games, all the way <em>down.</em></h1>
+          <p class="hero-deck">A Java game engine with a clear scene model, an extensible component core, and the tools to take an idea from a single object to a whole world.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">Explore the repository <span aria-hidden="true">↗</span></a>
+            <a class="button button-quiet" href="#start">See how it works <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-meta"><span>JDK 25</span><span>Gradle 9.8.1</span><span>Desktop first</span></div>
+        </div>
+        <figure class="hero-visual">
+          <div class="visual-chrome"><span class="chrome-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>javity / voxel-world</span><span class="live-label">DEMO CAPTURE</span></div>
+          <img src="assets/voxel-fps.webp" width="1280" height="720" alt="First-person view across a voxel landscape in the JavityEngine desktop demo" fetchpriority="high">
+          <figcaption><span class="caption-mark">01</span> One scene. One component model. A world that runs.</figcaption>
+          <span class="visual-index" aria-hidden="true">J / 01</span>
+        </figure>
+        <div class="hero-bottom"><span>BUILT FOR MAKING, NOT MAGIC</span><span class="scroll-cue"><i></i> SCROLL TO EXPLORE</span></div>
+      </section>
+
+      <section class="intro-section" id="engine">
+        <div class="wrap intro-grid">
+          <p class="eyebrow">01 / THE ENGINE</p>
+          <div>
+            <h2>Small pieces.<br><span>One living scene.</span></h2>
+            <p class="section-lead">JavityEngine is built around <strong>Game</strong>, <strong>GameObject</strong> and <strong>Component</strong>. Gameplay stays in Java; rendering, physics, UI and services join the scene as explicit systems.</p>
+            <div class="principles">
+              <article><span class="principle-no">A</span><div><h3>Know what owns what</h3><p>Systems belong to one scene. Resources have visible lifetimes. Shutdown follows a predictable order.</p></div></article>
+              <article><span class="principle-no">B</span><div><h3>Compose the behavior</h3><p>Objects can carry multiple components of the same type. Systems query the scene without hiding game state in a global registry.</p></div></article>
+              <article><span class="principle-no">C</span><div><h3>Keep modules optional</h3><p>Maps, Bullet 3D physics, asset streaming and React UI are separate additions. A small game can keep a small runtime.</p></div></article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="code-section" id="start">
+        <div class="wrap code-grid">
+          <div class="code-copy">
+            <p class="eyebrow">02 / JAVA, DIRECTLY</p>
+            <h2>Start with an object.<br><span>Give it a behavior.</span></h2>
+            <p>Components are ordinary Java classes. The engine owns their lifecycle; your update logic stays close to the object it describes.</p>
+            <a class="text-link" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/game-authoring.md" target="_blank" rel="noreferrer">Read the game authoring guide <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span><b class="java-dot"></b> MoveRight.java</span><button class="copy-button" type="button" aria-label="Copy Java example">Copy</button></div>
+            <pre><code><span class="code-muted">// A Component runs with its owning GameObject.</span>
+<span class="code-key">public final class</span> <span class="code-type">MoveRight</span> <span class="code-key">extends</span> <span class="code-type">Component</span> {
+  <span class="code-key">private final float</span> speed = <span class="code-num">120f</span>;
+
+  <span class="code-key">@Override public void</span> onUpdate(<span class="code-key">float</span> delta) {
+    <span class="code-type">Transform2D</span> transform = getTransform();
+    transform.position.x += speed * delta;
+  }
+}
+
+<span class="code-type">Game</span> game = <span class="code-key">new</span> <span class="code-type">Game</span>();
+<span class="code-type">GameObject</span> player = game.createObject(<span class="code-string">"player"</span>);
+player.addComponent(<span class="code-key">new</span> <span class="code-type">MoveRight</span>());
+game.start();</code></pre>
+            <div class="code-foot"><span><i></i> COMPONENT LIFECYCLE</span><span>org.javity.core</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="systems-section" id="systems">
+        <div class="wrap">
+          <div class="section-heading">
+            <div><p class="eyebrow">03 / THE TOOLKIT</p><h2>More room to make.</h2></div>
+            <p>Keep the pieces you need. Add the rest when the game calls for it.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card feature-large">
+              <div class="feature-top"><span class="feature-index">01</span><span class="feature-tag">CORE</span></div>
+              <h3>2D and 3D,<br>side by side.</h3>
+              <p>Scene-local cameras and renderers, sprites, models, lighting and sky. Shared components give gameplay one place to live.</p>
+              <div class="feature-glyph glyph-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/engine-guide.md" target="_blank" rel="noreferrer">Engine guide <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="feature-card feature-teal">
+              <div class="feature-top"><span class="feature-index">02</span><span class="feature-tag">RENDERING</span></div>
+              <h3>Draw with shape.</h3>
+              <p>Antialiased circles, rounded rectangles and expressive polylines. Animate styles or bring a bounded custom shader material.</p>
+              <div class="shape-glyph" aria-hidden="true"><i></i><i></i><i></i><svg viewBox="0 0 200 80"><path d="M6 68 C40 68 38 15 84 15 S126 65 194 9" /></svg></div>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/shapes-and-shaders.md" target="_blank" rel="noreferrer">Shapes and shaders <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="feature-card feature-amber">
+              <div class="feature-top"><span class="feature-index">03</span><span class="feature-tag">CHARACTERS</span></div>
+              <h3>Animation with intent.</h3>
+              <p>Per-instance model poses, clip crossfades, masked layers, 2D sprites and an avatar view that can share one animation clock.</p>
+              <div class="avatar-glyph" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/animation-api.md" target="_blank" rel="noreferrer">Animation API <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="feature-card feature-image">
+              <img src="assets/crowd-instancing.webp" width="1280" height="720" alt="Procedurally animated fox models shown in a GPU instancing comparison" loading="lazy">
+              <div class="image-shade"></div>
+              <div class="image-card-copy"><span class="feature-tag">GPU INSTANCING</span><h3>More characters.<br>One coherent crowd.</h3><p>Opt-in static and skinned instancing, with ordinary rendering as a compatibility path.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/gpu-instancing-guide.md" target="_blank" rel="noreferrer">See the guide <span aria-hidden="true">↗</span></a><small class="asset-credit">Fox: PixelMannen (CC0 1.0); rig / animation: tomkranis and conversion: AsoboStudio / scurest (CC BY 4.0). <a href="https://github.com/Radomiej/JavityEngine/blob/master/tools/animation-validation/fox/NOTICE.md" target="_blank" rel="noreferrer">Full asset credits ↗</a></small></div>
+            </article>
+            <article class="feature-card feature-row">
+              <span class="feature-index">04</span><div><span class="feature-tag">TOOLS</span><h3>Look inside the scene.</h3><p>Runtime hierarchy, selection, transforms, gizmos, undo/redo and explicit SceneJson export.</p></div><a class="arrow-link" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/runtime-tools.md" aria-label="Read about runtime tools" target="_blank" rel="noreferrer">↗</a>
+            </article>
+            <article class="feature-card feature-row">
+              <span class="feature-index">05</span><div><span class="feature-tag">UI</span><h3>Native layout. Optional React.</h3><p>Scene2D and Yoga-backed declarative widgets, with a typed React/TSX host as an optional layer.</p></div><a class="arrow-link" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/declarative-ui.md" aria-label="Read about declarative UI" target="_blank" rel="noreferrer">↗</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="world-section">
+        <div class="wrap world-grid">
+          <div class="world-copy"><p class="eyebrow">04 / BUILD A WORLD</p><h2>From a block<br>to a <em>place.</em></h2><p>Grow the scene with optional systems for physics, streamed assets, geographic maps and multiplayer room experiments.</p>
+            <div class="world-links">
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/voxels.md" target="_blank" rel="noreferrer"><span class="link-code">VXL</span><span><b>Voxel terrain</b><small>Chunk data, meshing and FPS controls</small></span><span class="link-arrow">↗</span></a>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/physics3d.md" target="_blank" rel="noreferrer"><span class="link-code">PHY</span><span><b>Physics</b><small>Optional Box2D and Bullet modules</small></span><span class="link-arrow">↗</span></a>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/asset-streaming.md" target="_blank" rel="noreferrer"><span class="link-code">IO</span><span><b>Asset streaming</b><small>Priorities, leases and a bounded cache</small></span><span class="link-arrow">↗</span></a>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/maps-and-maplibre.md" target="_blank" rel="noreferrer"><span class="link-code">MAP</span><span><b>Maps</b><small>Raster tiles and a Linux MapLibre Native adapter</small></span><span class="link-arrow">↗</span></a>
+              <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/local-multiplayer.md" target="_blank" rel="noreferrer"><span class="link-code">NET</span><span><b>Local multiplayer proof</b><small>Java authority with a Colyseus room preview</small></span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+          <figure class="world-image"><img src="assets/last-light.webp" width="1100" height="720" alt="An original JavityEngine 3D courtyard demonstration at dusk" loading="lazy"><figcaption><span>SCENE LIGHTING / LAST LIGHT</span><span>DESKTOP · OPENGL</span></figcaption><div class="image-outline" aria-hidden="true"></div></figure>
+        </div>
+      </section>
+
+      <section class="examples-section" id="examples">
+        <div class="wrap">
+          <div class="section-heading examples-heading"><div><p class="eyebrow">05 / RUN THE EXAMPLES</p><h2>See it in motion.</h2></div><p>Every entry point below is wired into the desktop demo. Start with one scene, then follow the code.</p></div>
+          <div class="examples-layout">
+              <div class="example-list" role="tablist" aria-label="Desktop examples">
+              <button class="example-tab is-active" id="tab-voxels" role="tab" aria-selected="true" aria-controls="example-panel" data-example="voxels" tabindex="0"><span>01</span><b>Voxel world</b><small>FPS · chunks · avatar</small><i>↗</i></button>
+              <button class="example-tab" id="tab-shapes" role="tab" aria-selected="false" aria-controls="example-panel" data-example="shapes" tabindex="-1"><span>02</span><b>Shapes & materials</b><small>2D · SDF · shader styles</small><i>↗</i></button>
+              <button class="example-tab" id="tab-physics" role="tab" aria-selected="false" aria-controls="example-panel" data-example="physics" tabindex="-1"><span>03</span><b>Physics 3D</b><small>Bullet · capsule controller</small><i>↗</i></button>
+              <button class="example-tab" id="tab-map" role="tab" aria-selected="false" aria-controls="example-panel" data-example="map" tabindex="-1"><span>04</span><b>MapLibre Native</b><small>Linux x64 · local vector map</small><i>↗</i></button>
+              <button class="example-tab" id="tab-relay" role="tab" aria-selected="false" aria-controls="example-panel" data-example="relay" tabindex="-1"><span>05</span><b>Relay Ward</b><small>Java gameplay · React HUD</small><i>↗</i></button>
+            </div>
+            <article class="example-panel" id="example-panel" role="tabpanel" aria-labelledby="tab-voxels" tabindex="0">
+              <div class="example-screen"><img id="example-image" src="assets/voxel-fps.webp" width="1280" height="720" alt="Voxel world demo viewed from first person"><span class="screen-label"><i></i> DESKTOP DEMO</span></div>
+              <div class="example-info"><div><span id="example-kicker" class="feature-tag">VOXEL MODULE</span><h3 id="example-title">Step into the world.</h3><p id="example-description">Explore a chunked voxel landscape in first or third person. Edit blocks, switch tools and follow the shared avatar animation.</p></div><div class="command"><span>RUN FROM REPOSITORY ROOT</span><code id="example-command">./gradlew :javity-desktop:run --args='--voxels'</code></div><a class="text-link" id="example-source" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/voxels.md" target="_blank" rel="noreferrer">Read the walkthrough <span aria-hidden="true">↗</span></a></div>
+            </article>
+          </div>
+          <p class="example-note">Examples need JDK 25 and a desktop OpenGL context. Some optional demos need additional native libraries. Commands and prerequisites are documented with each guide.</p>
+        </div>
+      </section>
+
+      <section class="status-section" id="status">
+        <div class="wrap status-grid">
+          <div><p class="eyebrow">06 / HONEST PLATFORM STATUS</p><h2>Ready where<br>it’s been proven.</h2><p class="section-lead">A build passing is a start. Each platform and module still has its own runtime gates.</p><a class="text-link" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/modernization-status.md" target="_blank" rel="noreferrer">Read current modernization status <span aria-hidden="true">↗</span></a></div>
+          <div class="status-cards">
+            <article class="status-card status-good"><div><span class="status-dot"></span><h3>Desktop JVM</h3><span class="status-pill">VERIFIED</span></div><p>JDK 25 on Linux x64, including real OpenGL/Mesa smoke coverage for named demos.</p></article>
+            <article class="status-card status-amber"><div><span class="status-dot"></span><h3>Android</h3><span class="status-pill">SCOPED</span></div><p>Named API 35 x86_64 emulator flows passed separately. The combined runner hit a system startup ANR, and two Activity test cases timed out; those cases remain unverified. Physical ARM64, performance, MapLibre and Bullet are also unverified.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/android-status.md" target="_blank" rel="noreferrer">Android evidence ↗</a></article>
+            <article class="status-card status-muted"><div><span class="status-dot"></span><h3>Browser / Wasm</h3><span class="status-pill">EXPERIMENTAL</span></div><p>A separate TeaVM WasmGC build renders an actual Javity scene through GdxRenderer and WebGL2 in Chromium. Yoga/UI, browser physics, broad asset support and the rest of the optional providers still need integration and verification.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/javity-wasm-rendering-spike.md" target="_blank" rel="noreferrer">Wasm rendering spike ↗</a></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="map-strip wrap" aria-label="Map demo">
+        <img src="assets/gorzow-map.webp" width="1100" height="720" alt="Night-style vector map of Gorzów Wielkopolski displayed by the MapLibre Native demo" loading="lazy">
+        <div class="map-strip-copy"><span class="feature-tag">OPTIONAL MAP BACKEND</span><h2>Bring the map<br>into the scene.</h2><p>MapLibre Native renders local vector tiles through a separate Linux x64 adapter.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/maplibre-native.md" target="_blank" rel="noreferrer">How the adapter works <span aria-hidden="true">↗</span></a></div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · OpenMapTiles · OpenFreeMap</p>
+      </section>
+
+      <section class="closing-section">
+        <div class="wrap closing-inner"><p class="eyebrow">MAKE SOMETHING THAT MOVES</p><h2>Your game starts<br>with <em>one object.</em></h2><p>Read the engine guide, run a desktop demo, or start exploring the source.</p><div class="hero-actions"><a class="button button-primary" href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">Open JavityEngine on GitHub <span aria-hidden="true">↗</span></a><a class="button button-quiet" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/engine-guide.md" target="_blank" rel="noreferrer">Read the engine guide <span aria-hidden="true">↗</span></a></div></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><div class="wrap footer-main"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Javity<span class="brand-light">Engine</span></span></a><p>Open source, built in the open.<br>Java 25 · libGDX</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/LICENSE" target="_blank" rel="noreferrer">Apache License 2.0</a><a href="https://github.com/Radomiej/JavityEngine/blob/master/THIRD_PARTY.md" target="_blank" rel="noreferrer">Third-party notices</a><a href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">GitHub ↗</a></div><div class="wrap footer-bottom"><span>© 2026 JavityEngine contributors</span><span>SCREENSHOTS FROM REPOSITORY DEMOS · SEE CAPTIONS AND NOTICES</span><a href="#top">Back to top ↑</a></div></footer>
+    <script src="script.js" defer></script>
+  </body>
+</html>

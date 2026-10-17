@@ -52,3 +52,34 @@ __pycache__/
 # Generated local QA captures; curated screenshots live in docs/.
 /artifacts/
 /web/maplibre-reference/node_modules/
+
+# Local tools, dependency caches and editor state
+**/node_modules/
+**/.gradle/
+/.gradle-cache/
+/.npm-cache/
+/.m2/
+/.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Private machine configuration (sample files stay versioned)
+local.properties
+.env
+.env.*
+!.env.example
+!.env.sample
+*.jks
+*.keystore
+
+# Android SDK/emulator state and local scratch
+/.android/
+/.javity-android-runtime/
+/android-sdk/
+/.worktrees/
+/worktrees/
+
+# Disposable browser QA reports; curated evidence remains tracked
+/playwright-report/
+/test-results/

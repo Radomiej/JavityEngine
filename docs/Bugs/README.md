@@ -7,3 +7,7 @@ Przeglądy zapisują konkretną przyczynę, reprodukcję, status i dowód napraw
 - [Zadania](../TODO.md).
 
 Nowy wpis powinien mieć trwałe ID, priorytet, zakres wersji, kroki odtworzenia, oczekiwane zachowanie i bramkę zamknięcia. Historyczne dowody pozostają przypisane do źródłowego commita; nie traktujemy ich jako świeżych testów zmienionego kodu.
+
+- [Android runner follow-up — reproduction limits and closure gate](2026-10-17-android-followup.md).
+
+- [Publication and maintenance integration findings](2026-10-17-publication-review.md).

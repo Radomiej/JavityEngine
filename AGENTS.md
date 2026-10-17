@@ -86,7 +86,7 @@ MapRenderer posiada cache GPU, zwalnia Pixmap ze źródła i wykonuje Batch.flus
 
 Domyślny font jest bundlowany z licencją; UiTheme zarządza FreeType atlasem albo pożyczonym BitmapFont zgodnie z ownsFont. Zachowuj polskie glyphy. Camera2D bierze pozycję/obrót z Transform2D; FollowTarget2D działa po fizyce i nie może wskazywać innej sceny. Nie dodawaj globalnej main camera do nowego API.
 
-Dokumentuj nowe ustalenia użytkownika w docs/TODO.md i powiązanych notatkach. Multiplayer jest na razie projektem: nie deklaruj transportu/replikacji bez implementacji i testów.
+Dokumentuj nowe ustalenia użytkownika w docs/TODO.md i powiązanych notatkach. Lokalny vertical slice Colyseus/Java ma implementację i real-process testy; nie rozszerzaj tej deklaracji na dowolną replikację, hosting produkcyjny lub transport klienta Java bez osobnych dowodów.
 
 ## Runtime po aktualizacji bazy
 
@@ -187,3 +187,12 @@ SmoothShapeRenderer zachowuje desktop GLSL120 i wybiera lokalnie GLES300 dla GLE
 ## Eksperymentalne Javity/libGDX Wasm
 
 `experiments/javity-wasm` jest osobnym buildem gdx-teavm1.6.1/libGDX1.14.2/TeaVM0.15.0. `gdx_teavm_web_wasm_build` najpierw odświeża core przez rootwrapper, potem generuje prawdziwy Wasm GC i webapp. Actual GdxRenderer/ModelRenderer/Game/Component mają Chromium/SwiftShader pixel/input/resize/dispose proof; nie oznacza to pełnego portu UI/Yoga/physics/MapLibre ani wydajności GPU. Zachowaj jawne reflection metadata cache shaderów. TeaVM0.15 nie ma Arrays.compare(float[]); przenośna pętla w SceneLightingAttribute zachowuje kolejność Float.compare. Instrukcja: docs/javity-wasm-rendering-spike.md.
+
+## Maintenance, public documentation and Pages
+
+- This `AGENTS.md` is the canonical agent instruction file; do not create a second `agent.md` with divergent rules. Update `docs/Bugs/` for confirmed defects, `docs/Spec/` for contracts and `docs/TODO.md` for unfinished work. Record reproduction, source version, exact gate and limitations before closing a bug.
+- Keep README and `CHANGELOG.md` user-facing. Use Unreleased until an actual release; distinguish API/platform changes from verified runtime support. Never claim full OneJS/Tailwind/Feel/Animancer compatibility.
+- `site/` is the static GitHub Pages showcase. Use local credited screenshots and dependency-free HTML/CSS/JS. Verify at `/JavityEngine/`, mobile and desktop, before publication; link examples to the current default branch. A pushed workflow is not a verified deployment.
+- Keep `.gitignore` focused on generated output/local configuration. Curated evidence under docs and experiments/evidence, lockfiles, sample configuration and the Gradle wrapper JAR remain versioned. Existing tracked logs stay tracked; add newly reviewed evidence logs explicitly with `git add -f` because disposable `.log` output is ignored. Never commit SDKs, AVDs, credentials or environment-specific Gradle/proxy settings.
+- Default branch was verified as `master` on 2026-10-17. Fetch before merge, preserve remote changes, run the integrated build and never force-push to resolve divergence. Publication and merging require user authorization; the current maintenance task explicitly grants it.
+- BUG-ANDROID-001 remains open until an unfiltered full instrumentation run is diagnosed and passes. Five individually passing tests do not close a runner ANR. A local environment without SDK/adb cannot supply that proof.
