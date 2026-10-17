@@ -1,0 +1,99 @@
+apply plugin: 'application'
+
+application {
+    mainClass = 'org.javity.gatekeepers.GatekeepersLauncher'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+dependencies {
+    implementation project(':javity-core')
+    implementation project(':javity-ui')
+    runtimeOnly project(':javity-ui-yoga-lwjgl')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:${rootProject.gdxVersion}"
+    runtimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
+    runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-desktop"
+}
+tasks.withType(JavaExec).configureEach { workingDir rootProject.projectDir }
+tasks.register('smoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke'
+}
+tasks.register('pveSmoke',JavaExec){
+    group='verification'
+    classpath=sourceSets.main.runtimeClasspath
+    mainClass=application.mainClass
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--pve-smoke','--captures=artifacts/gatekeepers-pve'
+}
+distributions {
+    main {
+        contents {
+            from(rootProject.file('LICENSE'))
+            from(rootProject.file('THIRD_PARTY.md'))
+            from(rootProject.file('docs/gatekeepers.md')) { rename { 'CZYTAJ.md' } }
+        }
+    }
+}
+
+// The same executable carries Windows x64 Yoga plus the existing desktop native resources.
+configurations { windowsNatives }
+dependencies { windowsNatives "org.lwjgl:lwjgl-yoga:${rootProject.lwjglVersion}:natives-windows" }
+
+def mergedExecutable = layout.buildDirectory.dir('merged-executable')
+tasks.register('prepareExecutableJar') {
+    inputs.files(configurations.runtimeClasspath, configurations.windowsNatives)
+    outputs.dir(mergedExecutable)
+    doLast {
+        def destination=mergedExecutable.get().asFile
+        delete destination
+        destination.mkdirs()
+        def providers=[:].withDefault { new LinkedHashSet<String>() }
+        (configurations.runtimeClasspath.files+configurations.windowsNatives.files).each { library ->
+            if(library.name.endsWith('.jar')) {
+                new java.util.zip.ZipFile(library).withCloseable { archive ->
+                    archive.entries().each { entry ->
+                        if(!entry.directory && entry.name.startsWith('META-INF/services/')) {
+                            archive.getInputStream(entry).getText('UTF-8').eachLine { line ->
+                                def provider=line.split('#',2)[0].trim()
+                                if(provider) providers[entry.name].add(provider)
+                            }
+                        }
+                        if(!entry.directory && entry.name.toUpperCase(Locale.ROOT).matches('.*(LICENSE|NOTICE|COPYING).*')) {
+                            def target=new File(destination,'META-INF/licenses/'+library.name+'/'+entry.name)
+                            target.parentFile.mkdirs()
+                            target.bytes=archive.getInputStream(entry).bytes
+                        }
+                    }
+                }
+            }
+        }
+        providers.each { name, values ->
+            def target=new File(destination,name)
+            target.parentFile.mkdirs()
+            target.setText(values.join('\n')+'\n','UTF-8')
+        }
+    }
+}
+tasks.register('executableJar',Jar) {
+    dependsOn 'classes','prepareExecutableJar'
+    archiveFileName='Straznicy-Bram.jar'
+    duplicatesStrategy=DuplicatesStrategy.EXCLUDE
+    preserveFileTimestamps=false
+    reproducibleFileOrder=true
+    manifest {
+        attributes 'Main-Class':application.mainClass.get(),
+            'Enable-Native-Access':'ALL-UNNAMED','Multi-Release':'true',
+            'Implementation-Title':'Straznicy Bram - PvE','Implementation-Version':'0.2.0'
+    }
+    from sourceSets.main.output
+    from({ (configurations.runtimeClasspath.files+configurations.windowsNatives.files).collect { zipTree(it) } }) {
+        exclude 'META-INF/MANIFEST.MF','META-INF/*.SF','META-INF/*.RSA','META-INF/*.DSA',
+            'META-INF/INDEX.LIST','META-INF/services/**','module-info.class',
+            'META-INF/versions/**/module-info.class'
+    }
+    from mergedExecutable
+    from(rootProject.file('LICENSE')) { into 'META-INF/licenses/JavityEngine' }
+    from(rootProject.file('THIRD_PARTY.md')) { into 'META-INF/licenses/JavityEngine' }
+}

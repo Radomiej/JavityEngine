@@ -1,0 +1,28 @@
+PVE FULL LOOP PASS
+PASS: Walked from village spawn to actual arena entrance
+PASS: Shift activates actual dodge action
+PASS: E starts repeatable arena from READY
+PASS: Arena advanced to wave 1
+PASS: Arena advanced to wave 2
+PASS: Arena advanced to wave 3
+PASS: Victory reward collected once and returned to village
+PASS: Arena payout is exactly sixty coins
+PASS: Walked back to merchant after PvE run
+PASS: Earned arena money purchases permanent level-two sword
+PASS: Walked from village spawn to actual arena entrance
+PASS: Shift activates actual dodge action
+PASS: E starts repeatable arena from READY
+PASS: Arena advanced to wave 1
+PASS: Arena advanced to wave 2
+PASS: Arena advanced to wave 3
+PASS: Victory reward collected once and returned to village
+PASS: Arena payout is exactly sixty coins
+PASS: Arena kills also complete repeatable hunt at village board
+PASS: Second run buys final sword upgrade at increased price
+PASS: Inventory opens after full repeatable loop
+PASS: Pause freezes hunger, health and buff clocks
+PASS: Sword upgrades, arena wins and inventory survive save/load
+PASS: Native input produced actual melee hits, not assigned enemy health
+Frames: 1849
+Arena wins: 2
+Renderer: llvmpipe (LLVM 19.1.7, 256 bits)

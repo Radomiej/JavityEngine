@@ -1,5 +1,15 @@
 # JavityEngine
 
+## Strażnicy Bram — grywalne RPG
+
+Lokalne RPG 2D: osada, kupcy, jedzenie/głód, misje, walka ze slajmami,
+boss oraz powtarzalna arena trzech fal i ulepszanie miecza.
+Uruchom `./gradlew :gatekeepers:run`; samodzielny JAR:
+`./gradlew :gatekeepers:executableJar`.
+[Instrukcja, sterowanie i zakres](docs/gatekeepers.md).
+[Nowe komponenty minimapy/walki i użycie ProgressBar](docs/minimap-and-melee.md).
+
+
 Silnik Java do gier 2D i 3D, modernizowany z historycznej wersji Javity. Nowy rdzeń ma prosty model `Game → GameObject → Component`, inspirowany API Java-lab. Oryginalny Galaxy Rapid jest teraz lokalnym modułem repozytorium.
 
 ## Uruchomienie

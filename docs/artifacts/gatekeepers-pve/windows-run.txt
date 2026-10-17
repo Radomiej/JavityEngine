@@ -1,0 +1,35 @@
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/Z:/workspace/.tools/windows-release/Straznicy-Bram-Windows-x64/Straznicy-Bram.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+[PvE walk] frame=500 phase=2 hero=(2259.1943,488.23996) held=[62] wave=2 alive=1
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+[PvE walk] frame=1000 phase=0 hero=(460.61,665.88934) held=[32, 47] wave=0 alive=0
+[PvE walk] frame=1500 phase=2 hero=(2166.7231,406.62567) held=[62, 47] wave=3 alive=3
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+OpenJDK 64-Bit Server VM warning: Attempt to get process group affinity failed: Call not implemented
+PVE FULL LOOP PASS: 24 checks, 1849 frames, 2 arena wins; Z:\workspace\JavityEngine\artifacts\gatekeepers-wine

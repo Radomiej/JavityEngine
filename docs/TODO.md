@@ -191,3 +191,32 @@ Status: projekt do przeglądu, nie wdrożona optymalizacja. [Projekt i zakres A1
 - [ ] A3: wspólne dane świateł dla ordinary/static/skinned oraz parity/recovery testy przed odblokowaniem scene instancingu. Osobny projekt przed implementacją.
 
 Nie deklarujemy nowych wyników RAM/FPS ani runtime Androida na podstawie audytu źródeł.
+
+## Strażnicy Bram — RPG użytkownika, 2026-10-17
+
+- [x] Zaakceptowane GDD i plan pierwszego lokalnego rozdziału na rewizji95b951c.
+- [x] Osobny moduł `gatekeepers`: osada, wojownik, kupcy, głód/HP/EXP,
+  walka ze slajmami, misje, Król Slajmów z obstawą, jedzenie, buff, portal i zapis.
+- [x] Natywny HUD Scene2D/Yoga, proceduralne autorskie sprite'y i smoki OpenGL.
+- [ ] Następne rozdziały: hogliny/pigliny, gobliny, klasy dystansowe i tarcza.
+- [ ] Osobny projekt multiplayer przed wdrożeniem PvP i transferu EXP/przedmiotów.
+- [ ] Sezony i specjalne itemy po otrzymaniu szczegółów użytkownika.
+
+[Instrukcja i zakres](gatekeepers.md), [GDD](superpowers/specs/2026-10-17-rpg-gdd.md).
+
+## Strażnicy Bram — PvE i Windows, kontynuacja 2026-10-17
+
+- [x] Wydzielone MinimapModel/Minimap w javity-ui i MeleeAttack2D w javity-core,
+  CPU testy i [kontrakty API](minimap-and-melee.md).
+- [x] Paski gry oparte na istniejącym ProgressBar; prawdziwa mapa terenu i znaczniki.
+- [x] Kolizje budynków, stawu i wspólnie rozmieszczonych pni; zasięg/stożek,
+  odrzut, cleave trzech celów, unik i krótka ochrona po trafieniu.
+- [x] Arena trzech fal od startu, Brutal, jednorazowe odebranie nagrody na próbę,
+  powrót, trwałe ulepszenia miecza i ponawianie. Zapis v2 z migracją v1.
+- [x] Natywny test dwóch pełnych obiegów sterowany wejściem, bez ustawiania HP,
+  nagród i bez teleportów testowych.
+- [x] Wykonywalny JAR z zależnościami/DLL-ami Windows x64, scalonymi SPI i licencjami;
+  Start.bat i opcjonalny prywatny runtime25.
+- [ ] Niezależny test na fizycznym komputerze Windows10/11. Linux OpenGL i audyt
+  PE/DLL nie zastępują tej weryfikacji.
+- [ ] PvP/multiplayer poza zakresem tej iteracji; silnik rozwijany osobno.

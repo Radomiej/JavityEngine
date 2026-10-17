@@ -1,0 +1,285 @@
+> Task :assemble UP-TO-DATE
+> Task :check UP-TO-DATE
+> Task :gatekeepers:processResources NO-SOURCE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :gatekeepers:sourcesJar
+> Task :gatekeepers:processTestResources NO-SOURCE
+> Task :javity-assets:processResources NO-SOURCE
+> Task :javity-assets:sourcesJar UP-TO-DATE
+> Task :javity-assets:processTestResources NO-SOURCE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-backend:sourcesJar UP-TO-DATE
+> Task :javity-backend:assemble UP-TO-DATE
+> Task :javity-backend:compileTestJava UP-TO-DATE
+> Task :javity-backend:processTestResources NO-SOURCE
+> Task :javity-backend:testClasses UP-TO-DATE
+> Task :javity-backend:test UP-TO-DATE
+> Task :javity-backend:check UP-TO-DATE
+> Task :javity-backend:build UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-core:compileJava
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-core:processResources UP-TO-DATE
+> Task :javity-core:classes
+> Task :javity-core:jar
+> Task :javity-assets:compileJava UP-TO-DATE
+> Task :javity-assets:classes UP-TO-DATE
+> Task :javity-ui:compileJava
+> Task :javity-assets:jar UP-TO-DATE
+> Task :javity-ui:classes
+> Task :javity-ui:jar
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-assets:assemble UP-TO-DATE
+> Task :javity-assets:compileTestJava UP-TO-DATE
+> Task :javity-assets:testClasses UP-TO-DATE
+
+> Task :gatekeepers:compileJava
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :gatekeepers:classes
+> Task :gatekeepers:jar
+> Task :gatekeepers:startScripts
+> Task :gatekeepers:distTar
+> Task :javity-assets:test
+> Task :javity-assets:check
+> Task :javity-assets:build
+> Task :javity-core:sourcesJar
+> Task :javity-core:assemble
+> Task :javity-core:compileTestJava
+> Task :javity-core:processTestResources NO-SOURCE
+> Task :javity-core:testClasses
+> Task :gatekeepers:distZip
+> Task :gatekeepers:assemble
+> Task :gatekeepers:prepareExecutableJar
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :javity-core:test
+> Task :javity-core:check
+> Task :javity-core:build
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-desktop:compileJava UP-TO-DATE
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-desktop:classes UP-TO-DATE
+> Task :javity-desktop:jar UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-desktop:startScripts
+> Task :javity-desktop:distTar
+> Task :gatekeepers:executableJar
+> Task :gatekeepers:compileTestJava
+> Task :gatekeepers:testClasses
+> Task :gatekeepers:test
+> Task :gatekeepers:check
+> Task :gatekeepers:build
+> Task :javity-engine:sourcesJar UP-TO-DATE
+> Task :javity-engine:assemble UP-TO-DATE
+> Task :javity-engine:compileTestJava UP-TO-DATE
+> Task :javity-engine:processTestResources NO-SOURCE
+> Task :javity-engine:testClasses UP-TO-DATE
+> Task :javity-engine:test UP-TO-DATE
+> Task :javity-engine:check UP-TO-DATE
+> Task :javity-engine:build UP-TO-DATE
+> Task :javity-net:compileJava UP-TO-DATE
+> Task :javity-map:compileJava UP-TO-DATE
+> Task :javity-map:processResources NO-SOURCE
+> Task :javity-map:classes UP-TO-DATE
+> Task :javity-map:jar UP-TO-DATE
+> Task :javity-map:sourcesJar UP-TO-DATE
+> Task :javity-map:assemble UP-TO-DATE
+> Task :javity-map:compileTestJava UP-TO-DATE
+> Task :javity-map:processTestResources NO-SOURCE
+> Task :javity-map:testClasses UP-TO-DATE
+> Task :javity-net:processResources NO-SOURCE
+> Task :javity-net:classes UP-TO-DATE
+> Task :javity-net:jar UP-TO-DATE
+> Task :javity-map:test UP-TO-DATE
+> Task :javity-map:check UP-TO-DATE
+> Task :javity-map:build UP-TO-DATE
+> Task :javity-map-core:sourcesJar UP-TO-DATE
+> Task :javity-map-core:assemble UP-TO-DATE
+> Task :javity-map-core:compileTestJava UP-TO-DATE
+> Task :javity-map-core:processTestResources NO-SOURCE
+> Task :javity-map-core:testClasses UP-TO-DATE
+> Task :javity-map-core:test
+> Task :javity-map-core:check
+> Task :javity-map-core:build
+> Task :javity-maplibre:sourcesJar UP-TO-DATE
+> Task :javity-maplibre:assemble UP-TO-DATE
+> Task :javity-maplibre:compileTestKotlin NO-SOURCE
+> Task :javity-maplibre:compileTestJava UP-TO-DATE
+> Task :javity-maplibre:processTestResources NO-SOURCE
+> Task :javity-maplibre:testClasses UP-TO-DATE
+> Task :javity-maplibre:test UP-TO-DATE
+> Task :javity-maplibre:check UP-TO-DATE
+> Task :javity-maplibre:build UP-TO-DATE
+> Task :javity-net:sourcesJar UP-TO-DATE
+> Task :javity-net:assemble UP-TO-DATE
+> Task :javity-net:compileTestJava UP-TO-DATE
+> Task :javity-net:processTestResources NO-SOURCE
+> Task :javity-net:testClasses UP-TO-DATE
+> Task :javity-net:test UP-TO-DATE
+> Task :javity-net:check UP-TO-DATE
+> Task :javity-net:build UP-TO-DATE
+> Task :javity-physics2d:sourcesJar UP-TO-DATE
+> Task :javity-physics2d:assemble UP-TO-DATE
+> Task :javity-physics2d:compileTestJava UP-TO-DATE
+> Task :javity-physics2d:processTestResources NO-SOURCE
+> Task :javity-physics2d:testClasses UP-TO-DATE
+> Task :javity-physics2d:test
+> Task :javity-physics2d:check
+> Task :javity-physics2d:build
+> Task :javity-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-physics3d:assemble UP-TO-DATE
+> Task :javity-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-physics3d:processTestResources NO-SOURCE
+> Task :javity-physics3d:testClasses UP-TO-DATE
+> Task :javity-desktop:distZip
+> Task :javity-desktop:sourcesJar UP-TO-DATE
+> Task :javity-desktop:assemble
+> Task :javity-desktop:compileTestJava UP-TO-DATE
+> Task :javity-desktop:processTestResources NO-SOURCE
+> Task :javity-desktop:testClasses UP-TO-DATE
+> Task :javity-physics3d:test
+> Task :javity-physics3d:check
+> Task :javity-physics3d:build
+> Task :javity-script:sourcesJar UP-TO-DATE
+> Task :javity-script:assemble UP-TO-DATE
+> Task :javity-script:compileTestJava UP-TO-DATE
+> Task :javity-script:processTestResources NO-SOURCE
+> Task :javity-script:testClasses UP-TO-DATE
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :javity-desktop:test
+> Task :javity-desktop:check
+> Task :javity-desktop:build
+> Task :javity-script-graal:sourcesJar UP-TO-DATE
+> Task :javity-script-graal:assemble UP-TO-DATE
+> Task :javity-script-graal:compileTestJava NO-SOURCE
+> Task :javity-script-graal:processTestResources NO-SOURCE
+> Task :javity-script-graal:testClasses UP-TO-DATE
+> Task :javity-script-graal:test NO-SOURCE
+> Task :javity-script-graal:check UP-TO-DATE
+> Task :javity-script-graal:build UP-TO-DATE
+> Task :javity-ui:sourcesJar
+> Task :javity-ui:assemble
+> Task :javity-ui:compileTestJava
+> Task :javity-ui:processTestResources NO-SOURCE
+> Task :javity-ui:testClasses
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :javity-ui:test
+> Task :javity-ui:check
+> Task :javity-ui:build
+> Task :javity-ui-yoga-lwjgl:sourcesJar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:assemble UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileTestJava NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:processTestResources NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:testClasses UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:test NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:check UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:build UP-TO-DATE
+> Task :javity-voxel:sourcesJar UP-TO-DATE
+> Task :javity-voxel:assemble UP-TO-DATE
+> Task :javity-voxel:compileTestJava UP-TO-DATE
+> Task :javity-voxel:processTestResources NO-SOURCE
+> Task :javity-voxel:testClasses UP-TO-DATE
+> Task :javity-voxel:test
+> Task :javity-voxel:check
+> Task :javity-voxel:build
+> Task :javity-voxel-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-voxel-physics3d:assemble UP-TO-DATE
+> Task :javity-voxel-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-voxel-physics3d:processTestResources NO-SOURCE
+> Task :javity-voxel-physics3d:testClasses UP-TO-DATE
+> Task :javity-voxel-physics3d:test
+> Task :javity-voxel-physics3d:check
+> Task :javity-voxel-physics3d:build
+> Task :javity-script:test
+> Task :javity-script:check
+> Task :javity-script:build
+> Task :build
+
+> Task :gatekeepers:pveSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+> Task :javity-desktop:smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[JavitySmoke] PASS: 120 frames, 2D + 3D + Camera2D, Yoga rounded/border/Rectangle, Box2D, pause/resume, resize; WORLD=90, UI=120, contacts=3, triggers=1
+
+> Task :gatekeepers:pveSmoke
+[PvE walk] frame=500 phase=2 hero=(2259.1943,488.23996) held=[62] wave=2 alive=1
+[PvE walk] frame=1000 phase=0 hero=(460.61,665.88934) held=[32, 47] wave=0 alive=0
+[PvE walk] frame=1500 phase=2 hero=(2166.7231,406.62567) held=[62, 47] wave=3 alive=3
+PVE FULL LOOP PASS: 24 checks, 1849 frames, 2 arena wins; artifacts/gatekeepers-pve
+
+> Task :gatekeepers:smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.tools/gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+GATEKEEPERS SMOKE PASS: 33 checks, 2038 frames; captures artifacts/gatekeepers
+
+[Incubating] Problems report is available at: file:///workspace/JavityEngine/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 51s
+107 actionable tasks: 34 executed, 73 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html

@@ -1,0 +1,60 @@
+STRAZNICY BRAM — PvE 0.2
+Windows 10/11 x64
+
+URUCHOMIENIE
+1. Rozpakuj caly ZIP do zwyklego katalogu (nie uruchamiaj z podgladu ZIP).
+2. Kliknij Start.bat. Paczka zawiera prywatna Jave 25 w katalogu runtime.
+   Nie wymaga instalowania Javy ani uprawnien administratora.
+3. Jesli pobrales tylko Straznicy-Bram.jar, potrzebujesz 64-bitowej Javy 25:
+   java -jar Straznicy-Bram.jar
+
+STEROWANIE
+WASD / strzalki: ruch
+LPM: atak w kierunku kursora; Spacja: atak w kierunku patrzenia
+Shift: unik (krotka ochrona i odnowienie)
+E: rozmowa, zlecenie, wejscie, rozpoczecie areny, odbior nagrody
+R: przerwanie areny i powrot bez nagrody za probe
+1 / 2: chleb / zlote jablko
+I: ekwipunek
+Esc: pauza / zamkniecie panelu
+
+PETLA ROZGRYWKI
+Kupiec z jedzeniem stoi na polnoc od spawnu, klasy na poludnie.
+Tablica zlecen jest przy wschodnim wyjsciu. Zabijaj slajmy na lakach,
+zbieraj monety i EXP, odbieraj powtarzalne zadania i jedz, by sie leczyc.
+
+Portal ARENA PvE w poludniowo-wschodniej czesci osady jest dostepny od startu.
+Wejdz przez E, potem nacisnij E ponownie, by zaczac trzy fale.
+Na ostatniej fali pojawia sie silniejszy Brutal areny. Przeciwnicy oznaczaja
+ataki na ziemi. Unikaj ich lub wyjdz z zasiegu przed trafieniem.
+Po zwyciestwie E odbiera 60 monet i 100 EXP oraz wraca do osady.
+U kupca kupisz trwale ulepszenia miecza za 60 i 120 monet (obrazenia 12/16/20).
+Podejmij kolejna probe z lepsza bronia. Nieukonczona arena nie daje koncowej
+nagrody; smierc resetuje probe. Zwykle nagrody za zabite moby pozostaja.
+
+Krol Slajmow na polnocnym wschodzie nadal jest dostepny. Pokonanie go
+odblokowuje drugi portal na arene i jednorazowa nagrode przy tablicy.
+
+ZAPIS
+%USERPROFILE%\.gatekeepers\profile.properties
+Automatyczny co 10 sekund i przy zwyklym zamknieciu okna.
+Zachowuje EXP, monety, ekwipunek, misje, bossa, ulepszenie miecza i wygrane areny.
+Stary zapis v1 jest wczytywany i przy kolejnym zapisie migrowany do v2.
+Trwajaca fala i pozycja postaci nie sa utrwalane: startujesz w osadzie.
+
+ZAKRES I TESTY
+Gra lokalna PvE, bez multiplayer/PvP. Jedna klasa, laki, boss i powtarzalna arena.
+Bez dzwieku. Budynki, woda, pnie drzew i granice areny maja kolizje.
+JAR zawiera DLL-e x64 LWJGL/GLFW/OpenGL/Yoga/libGDX/FreeType dla Windows.
+Wymagany dzialajacy sterownik OpenGL; prywatna Java nie zastapi sterownika GPU.
+
+Sprawdzono caly build, testy jednostkowe, prawdziwe uruchomienie graficzne
+oraz dwa pelne obiegi areny i sklepu. JAR uruchomiono samodzielnie na Linuxie.
+Paczka Windows (Start.bat, dolaczona Java, JAR i DLL-e) przeszla dodatkowo
+dwa pelne obiegi pod Wine 10: 24 sprawdzenia, 1849 klatek, kod wyjscia 0.
+Nie deklarujemy testu na fizycznym komputerze z Windows.
+
+LICENCJE
+Kod i proceduralne grafiki gry: licencja repozytorium JavityEngine (LICENSE).
+Licencje bibliotek i fontow sa zachowane w JAR/META-INF/licenses.
+Dolaczony runtime: Eclipse Temurin 25, warunki w runtime/legal i runtime/NOTICE.

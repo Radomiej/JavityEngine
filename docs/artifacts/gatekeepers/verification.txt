@@ -1,0 +1,36 @@
+Base: 95b951c249d59d2c7285701e6e2610933c71b75d
+Renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+PASS: Fresh profile starts in protected village
+PASS: Nonempty native framebuffer: 00-resize-1920
+PASS: Nonempty native framebuffer: 01-osada
+PASS: Native keyboard input moves actual character controller
+PASS: E opens actual native merchant menu
+PASS: Stage button purchases bread for four coins
+PASS: Native merchant rejects unaffordable apple without charging
+PASS: Clicking HUD while merchant is open cannot attack world
+PASS: Nonempty native framebuffer: 02-kupiec
+PASS: Native close button resumes world
+PASS: Food shortcut restores health and consumes one item
+PASS: Focus loss releases movement
+PASS: Escape pauses simulation
+PASS: Portal rejects entry before boss victory
+PASS: Nonempty native framebuffer: 03-walka
+PASS: Six actual combat kills complete repeatable hunt
+PASS: Nonempty native framebuffer: 04-misja
+PASS: Board pays quest once and resets repeatable counter
+PASS: Repeated interaction cannot duplicate reward
+PASS: Nonempty native framebuffer: 05-nagroda
+PASS: Nonempty native framebuffer: 06-boss
+PASS: Boss defeated using real attack cooldown and damage
+PASS: Nonempty native framebuffer: 07-boss-pokonany
+PASS: Nonempty native framebuffer: 08-portal
+PASS: Unlocked portal reaches explicitly labelled next-chapter outpost
+PASS: Nonempty native framebuffer: 09-ostepy
+PASS: Nonempty native framebuffer: 10-resize-1280
+PASS: Frontier preview offers working return interaction
+PASS: Boss quest reward can be collected at board
+PASS: Earned money buys special apple through native merchant
+PASS: Special apple shortcut activates strength buff
+PASS: Nonempty native framebuffer: 11-zlote-jablko
+PASS: Actual progress survives disk save/load
+Frames: 2092
