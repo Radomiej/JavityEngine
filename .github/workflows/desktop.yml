@@ -50,10 +50,17 @@ jobs:
           git diff --exit-code -- javity-script/src/main/resources/org/javity/script/javity-ui.js javity-script/src/main/resources/org/javity/script/javity-sample.js javity-script/src/main/resources/org/javity/script/javity-mm.js
       - name: Display dependencies
         run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libegl1 libgles2
+      - name: Install pinned Chrome for UI parity
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 154.0.8037.57
       - name: Real HTML reference
+        env:
+          CHROME_FOR_TESTING_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: |
           python3 -m pip install playwright==1.62.0 Pillow==12.3.0 numpy==2.3.5
-          sudo ln -sf "$(command -v google-chrome)" /usr/bin/chromium
+          sudo ln -sf "$CHROME_FOR_TESTING_PATH" /usr/bin/chromium
           npm --prefix web/javity-ui-reference ci
           npm --prefix web/javity-ui-reference run css
           python3 web/javity-ui-reference/compare.py

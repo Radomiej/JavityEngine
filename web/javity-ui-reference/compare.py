@@ -1,3 +1,4 @@
+import hashlib
 import json
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -11,12 +12,42 @@ ROOT = BASE.parent.parent
 server = ThreadingHTTPServer(("127.0.0.1", 0), lambda *a, **k: SimpleHTTPRequestHandler(*a, directory=str(ROOT), **k))
 threading.Thread(target=server.serve_forever, daemon=True).start()
 url = f"http://127.0.0.1:{server.server_port}/web/javity-ui-reference/index.html"
+font_path = ROOT / "javity-ui/src/main/resources/org/javity/ui/fonts/OpenSans-Regular.ttf"
+font_sha256 = hashlib.sha256(font_path.read_bytes()).hexdigest()
+font_url_path = "/javity-ui/src/main/resources/org/javity/ui/fonts/OpenSans-Regular.ttf"
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True, executable_path="/usr/bin/chromium", args=["--no-sandbox", "--disable-features=OverlayScrollbar"])
     page = browser.new_page(viewport={"width": 1100, "height": 720}, device_scale_factor=1)
+    font_responses = []
+    page.on("response", lambda response: font_responses.append({"url": response.url, "status": response.status}) if response.url.endswith(font_url_path) else None)
     page.goto(url, wait_until="networkidle")
     page.evaluate("document.fonts.ready")
     page.wait_for_selector("#classic-card")
+    font_diagnostic = page.evaluate("""() => {
+      const faces=[];
+      const visit=(rules,sheetUrl)=>{for(const rule of rules){
+        if(rule instanceof CSSFontFaceRule){
+          const src=rule.style.getPropertyValue('src');
+          const source=src.match(/url\\((.*?)\\)/);
+          faces.push({family:rule.style.getPropertyValue('font-family').replace(/[\"']/g,''),weight:rule.style.getPropertyValue('font-weight'),style:rule.style.getPropertyValue('font-style'),src,resolvedSrc:source?new URL(source[1].replace(/[\"']/g,''),sheetUrl).href:null});
+        } else if(rule.cssRules) visit(rule.cssRules,sheetUrl);
+      }};
+      for(const sheet of document.styleSheets){try{visit(sheet.cssRules,sheet.href||location.href)}catch(_){}}
+      const face=[...document.fonts].find(f=>f.family.replace(/[\"']/g,'')==='Open Sans'&&f.weight==='400'&&f.style==='normal');
+      const computed=getComputedStyle(document.querySelector('#card-title'));
+      return {faces,loadedFace:face?{family:face.family,weight:face.weight,style:face.style,status:face.status}:null,computedFamily:computed.fontFamily,computedWeight:computed.fontWeight};
+    }""")
+    expected_font_url = f"{url.rsplit('/web/', 1)[0]}{font_url_path}"
+    font_checks = {
+        "declaredBundledFace": any(face["family"].strip().lower() == "open sans" and face["weight"].strip() == "400" and face["style"].strip() == "normal" and face["resolvedSrc"] == expected_font_url for face in font_diagnostic["faces"]),
+        "faceLoaded": bool(font_diagnostic["loadedFace"] and font_diagnostic["loadedFace"]["status"] == "loaded"),
+        "fontResponseOk": any(response["url"] == expected_font_url and response["status"] == 200 for response in font_responses),
+        "computedOpenSans": font_diagnostic["computedFamily"].split(",")[0].strip().strip("\"'").lower() == "open sans" and font_diagnostic["computedWeight"] == "400",
+    }
+    font_diagnostic.update({"browserVersion": browser.version, "expectedFontUrl": expected_font_url, "fontFileSha256": font_sha256, "fontResponses": font_responses, "checks": font_checks})
+    print("UI reference browser/font: " + json.dumps(font_diagnostic, sort_keys=True), flush=True)
+    if not all(font_checks.values()):
+        raise AssertionError("The bundled Open Sans 400 face must load and be applied to the browser reference")
     page.locator("#scroll-sample").hover(position={"x": 418, "y": 36})
     page.locator("#scroll-sample").evaluate("e => e.scrollTop = 0")
     page.screenshot(path=str(BASE / "tailwind-4.3.3-reference.png"))
@@ -29,6 +60,7 @@ with sync_playwright() as p:
       const thumb=document.querySelector('#scroll-thumb').getBoundingClientRect();
       return {viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},els:Object.fromEntries(keys.map(k=>[k,el(k)])),scrollbar:{clientWidth:scroll.clientWidth,offsetWidth:scroll.offsetWidth,scrollWidth:scroll.scrollWidth,scrollHeight:scroll.scrollHeight,scrollTop:scroll.scrollTop,rect:{x:round(sr.x),y:round(sr.y),width:round(sr.width),height:round(sr.height)},thumb:{x:round(thumb.x),y:round(thumb.y),width:round(thumb.width),height:round(thumb.height)}}};
     }""")
+    metrics["browserFont"] = font_diagnostic
     metrics["states"] = {"inputBorderPoint": page.locator("#classic-input").evaluate("e => {const r=e.getBoundingClientRect(); return [Math.round(r.x),Math.round(r.y+r.height/2)]}")}
     page.locator("#classic-button").hover()
     metrics["states"]["buttonHover"] = page.locator("#classic-button").evaluate("e => getComputedStyle(e).backgroundColor")
