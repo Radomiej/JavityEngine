@@ -1,0 +1,91 @@
+name: ORBIT WebAssembly package
+on:
+  push:
+    branches: [master, feat/orbit-wasm-publishing]
+    paths: ['experiments/javity-wasm/**', 'javity-core/**', 'gradle/**', 'gradlew', 'build.gradle', 'settings.gradle', 'web/orbit/**', 'tools/orbit/**', '.github/workflows/orbit-wasm.yml']
+  pull_request:
+    paths: ['experiments/javity-wasm/**', 'javity-core/**', 'gradle/**', 'gradlew', 'build.gradle', 'settings.gradle', 'web/orbit/**', 'tools/orbit/**', '.github/workflows/orbit-wasm.yml']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New immutable game version
+        default: '1.0.0'
+        required: true
+      publish:
+        description: Publish to the configured ORBIT API
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      ORBIT_LAUNCHER_ORIGINS: ${{ vars.ORBIT_LAUNCHER_ORIGINS || 'http://localhost:5173' }}
+      GAME_VERSION: ${{ inputs.version || '1.0.0' }}
+      PUBLISH_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.publish }}
+      CONFIGURED_ORIGINS: ${{ vars.ORBIT_LAUNCHER_ORIGINS }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Validate publisher configuration and version
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib,re
+          if os.environ['PUBLISH_REQUESTED']=='true' and not os.environ['CONFIGURED_ORIGINS']:
+              raise SystemExit('Set repository variable ORBIT_LAUNCHER_ORIGINS before publishing')
+          version=os.environ['GAME_VERSION']
+          if not re.fullmatch('[a-zA-Z0-9._-]{1,64}',version):raise SystemExit('Invalid version')
+          p=pathlib.Path('experiments/javity-wasm/orbit-game.json');m=json.loads(p.read_text());m['version']=version;p.write_text(json.dumps(m,indent=2)+'\n')
+          PY
+      - name: Test packaging and credential isolation
+        run: python3 -m unittest discover -s tools/orbit/tests -v
+      - name: Build WebAssembly and ORBIT archive
+        run: ./gradlew -p experiments/javity-wasm orbitPackage test --no-daemon --max-workers=2
+      - name: Verify actual standalone WebGL renderer
+        run: |
+          python3 -m pip install playwright==1.62.0 Pillow==12.3.0
+          sudo ln -sf "$(command -v google-chrome)" /usr/bin/chromium
+          python3 experiments/javity-wasm/tools/chromium-proof.py --evidence-dir artifacts/orbit-standalone
+      - uses: actions/upload-artifact@v4
+        with:
+          name: javity-orbit-wasm
+          path: experiments/javity-wasm/build/orbit/*.nekko
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: javity-orbit-browser-evidence
+          path: artifacts/orbit-standalone
+          if-no-files-found: ignore
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: orbit-publishing
+    concurrency:
+      group: orbit-game-publishing
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: javity-orbit-wasm
+          path: artifacts/orbit-package
+      - name: Publish with a private credential file
+        env:
+          ORBIT_API_URL: ${{ vars.ORBIT_API_URL }}
+          ORBIT_PUBLISH_TOKEN: ${{ secrets.ORBIT_PUBLISH_TOKEN }}
+        run: |
+          umask 077
+          printf '%s' "$ORBIT_PUBLISH_TOKEN" > "$RUNNER_TEMP/orbit-publish-token"
+          ORBIT_TOKEN_FILE="$RUNNER_TEMP/orbit-publish-token" python3 tools/orbit/publish.py --package artifacts/orbit-package/javity-wasm.nekko
+      - name: Remove publishing credential
+        if: always()
+        run: rm -f "$RUNNER_TEMP/orbit-publish-token"

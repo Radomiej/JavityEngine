@@ -104,3 +104,7 @@ Selected animation, feedback, and React/TSX APIs adapt ideas from Unity ecosyste
 This modernization raises the build baseline to Java 25 and Gradle 9.8.1 and introduces the new `org.javity.core` API. Existing games built against the historical `javity-engine` or Galaxy Rapid APIs may need source and build changes to use the new modules. The legacy API and its desktop demo remain available to support migration; Artemis is also available through the separate optional adapter. See the [legacy API inventory](docs/migration-api.md) and [modernization status](docs/modernization-status.md).
 
 Galaxy Rapid sources are built from this repository rather than a historical published snapshot. External code and assets retain their upstream licenses and notices; see [THIRD_PARTY.md](THIRD_PARTY.md). For project practices and implementation notes, see [AGENTS.md](AGENTS.md).
+
+## ORBIT launcher
+
+Build a versioned `.nekko` archive containing WebAssembly, its loader, assets and the ORBIT API bridge. See [packaging, publishing and cloud saves](docs/orbit-wasm.md). The launcher API must support the explicit TeaVM JSO script policy; the ordinary standalone Wasm target remains available.

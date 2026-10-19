@@ -1,0 +1,8 @@
+{
+  "source": "https://github.com/Radomiej/nekko-launcher",
+  "commit": "d4bb30d28ce8731c5974de3441b63c5bea08b46c",
+  "sourcePath": "packages/game-sdk/src",
+  "artifact": "dist/index.global.js",
+  "sha256": "d54cd5211e2e55d9797cef49c2950bd30d73445a7e94d67178c3604bb70446df",
+  "protocolVersion": 1
+}

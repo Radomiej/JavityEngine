@@ -71,6 +71,11 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     view.camera.near = .1f;
     view.camera.far = 80;
     game.start();
+    if (OrbitBrowser.available()) {
+      OrbitBrowser.request("player.get", "{}", json -> {
+        if (!disposed) OrbitBrowser.reportJavaPlayer(json);
+      }, error -> { /* The standalone renderer does not depend on an ORBIT session. */ });
+    }
     resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
   }
 
@@ -97,6 +102,8 @@ public final class JavityWasmDemo extends ApplicationAdapter {
       dispose();
       return;
     }
+    OrbitBrowser.Restore restore = OrbitBrowser.takeRestore();
+    if (restore != null) player.position.set(restore.getX(), player.position.y, restore.getZ());
     game.step(Math.min(Gdx.graphics.getDeltaTime(), .05f));
     Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     Gdx.gl.glClearColor(.12f, .18f, .28f, 1);
@@ -112,6 +119,7 @@ public final class JavityWasmDemo extends ApplicationAdapter {
   public void dispose() {
     if (disposed) return;
     disposed = true;
+    OrbitBrowser.dispose();
     releaseScene(null);
     captureGlError();
     report(rendered, -1, 0, 0, 0, 0, Gdx.gl30 != null, firstGlError, true);

@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "gameId": "javity-qa-4b4ac1e0",
+  "javaProfile": true,
+  "saveRevision": 2,
+  "savedX": 1.863999843597412,
+  "reopenedX": 1.863999843597412,
+  "webgl2": true,
+  "glError": 0,
+  "orangePixels": 1146,
+  "greenPixels": 9293,
+  "browser": "Chromium/SwiftShader",
+  "errors": []
+}

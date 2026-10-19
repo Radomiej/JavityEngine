@@ -4,6 +4,12 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Launcher integration — 2026-10-19
+
+- Integrated ORBIT `.nekko` packaging, browser API bridge and cloud-save example with the current engine tree.
+- Build and validate the Wasm package on master and pull requests; publishing remains a separate manual action.
+- Requires the matching launcher API with explicit TeaVM JSO script policy; source updates do not establish production deployment.
+
 ### Modernization — 2026-10-17
 
 - Updated the build baseline to a full JDK 25 and Gradle 9.8.1 wrapper, and aligned the engine with libGDX 1.14.2.

@@ -260,3 +260,9 @@ Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpoin
 Feature gaps in browser providers, remote netcode and physical-device validation remain separate backlog items; this maintenance batch does not mark them implemented.
 
 - [ ] BUG-UI-001: capture font advances and ink-edge coverage on hosted CI; keep the failing glyph gate until a diagnosis-backed fix. [Specification](Spec/2026-10-17-ui-font-parity.md).
+
+## ORBIT WebAssembly — 2026-10-17
+
+- [x] Oddzielny branch, pakowanie pełnego runtime do .nekko, SDK/Java JSO, publikacja CLI/Actions bez sekretów w grze.
+- [x] Profil i cloud save/load/reopen zweryfikowane w rzeczywistym launcherze; [instrukcja i dowody](orbit-wasm.md).
+- [ ] Osobna certyfikacja Safari i WebView Tauri/Capacitor; rozszerzanie zgodności pozostałych modułów silnika z web.

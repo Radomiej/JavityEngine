@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-19",
+  "baseEngine": "e4cabbfff23f3d2175c9fb175fafeb06ae8a58f9",
+  "integrationBranch": "ea02b7932af8c7c5de23e625f4be1830b08effe1",
+  "sourceFileHashes": {
+    ".github/workflows/orbit-wasm.yml": "d9f4fa582f0e6e450cfa1209eb96e3a2c50b656f74b8577031b6b961d49055ff",
+    "experiments/javity-wasm/build.gradle": "97799707dbf3f42c64cc86daece9d2a4c6cc079470740b1abbc723421c326dd5",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/OrbitBrowser.java": "2f47ee74e3638c84336f0c764b92efff59f12471e5f4949e2478184573cef733",
+    "web/orbit/bridge.js": "f12d9964a16bbf6537a5dd9839435c2824120e8152c966103c4adfb4f239e786",
+    "tools/orbit/package.py": "f2c5bc0716f5fff4a31462e350c6bd276a07d35720ce280172a330f8218f6cda",
+    "tools/orbit/publish.py": "88910d6c76eaebe372c027b1089109843b66ab2d983498debb3b70c093e5188d"
+  },
+  "package": {
+    "formatVersion": 1,
+    "runtime": "web",
+    "scriptPolicy": "teavm-jso",
+    "files": 23,
+    "bytes": 1331842,
+    "sha256": "663af2cba8fe9a165bd2fc59a72c039cc736bed8a93dae8f08ab4ddd5076351a",
+    "allManifestHashesAndSizesVerified": true,
+    "wasmMagicVerified": true
+  },
+  "checks": {
+    "orbitPackageAndExperimentTests": "PASS;37s,4 JUnit cases",
+    "packagerPublisherTests": "5 PASS",
+    "defaultReactor": {
+      "command": "./gradlew build :javity-ecs-artemis:usageSmoke --no-daemon --max-workers=2",
+      "result": "PASS;22s,6 executed/107 up-to-date",
+      "suites": 99,
+      "xmlInventory": {
+        "tests": 871,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "limit": "Includes cached unchanged results, not all tests freshly executed."
+    },
+    "standaloneBrowser": "PASS: pixels/input/resize/dispose, Chromium154/SwiftShader",
+    "packagedBrowser": "PASS: actual extracted archive under TeaVM JSO CSP, pixels/input/resize/dispose/bridge shutdown"
+  },
+  "limits": [
+    "No fresh live account/API/Postgres/S3 end-to-end run in this verification. Earlier launcher evidence remains dated2026-10-17.",
+    "No package published to private API; production VPS deployment not established.",
+    "BUG-UI-001 hosted native glyph parity remains open and unrelated to this Wasm package gate."
+  ]
+}

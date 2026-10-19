@@ -49,3 +49,31 @@ tasks.named('compileJava') { dependsOn tasks.named('buildCore') }
 
 dependencies { testImplementation 'junit:junit:4.13.2' }
 tasks.named('test') { useJUnit() }
+
+// ORBIT export stays opt-in; the ordinary standalone Wasm target is unchanged.
+def orbitOrigins = providers.gradleProperty('orbitLauncherOrigins')
+    .orElse(providers.environmentVariable('ORBIT_LAUNCHER_ORIGINS'))
+def orbitOutput = layout.buildDirectory.file('orbit/javity-wasm.nekko')
+tasks.register('orbitPackage', Exec) {
+    group = 'distribution'
+    description = 'Builds a complete versioned .nekko package for the ORBIT launcher.'
+    dependsOn tasks.named('gdx_teavm_web_wasm_build')
+    workingDir file('../..')
+    doFirst {
+        if (!orbitOrigins.isPresent() || orbitOrigins.get().isBlank()) {
+            throw new GradleException('Set -PorbitLauncherOrigins or ORBIT_LAUNCHER_ORIGINS to the actual trusted launcher origins')
+        }
+        commandLine 'python3', 'tools/orbit/package.py',
+            '--source', layout.buildDirectory.dir('dist/wasm/webapp').get().asFile.absolutePath,
+            '--metadata', file('orbit-game.json').absolutePath,
+            '--launcher-origins', orbitOrigins.get(),
+            '--output', orbitOutput.get().asFile.absolutePath
+    }
+}
+tasks.register('orbitPublish', Exec) {
+    group = 'publishing'
+    description = 'Uploads the ORBIT package using ORBIT_API_URL and ORBIT_TOKEN_FILE.'
+    dependsOn tasks.named('orbitPackage')
+    workingDir file('../..')
+    commandLine 'python3', 'tools/orbit/publish.py', '--package', orbitOutput.get().asFile.absolutePath
+}
