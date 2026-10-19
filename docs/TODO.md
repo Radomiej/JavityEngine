@@ -266,3 +266,13 @@ Feature gaps in browser providers, remote netcode and physical-device validation
 - [x] Oddzielny branch, pakowanie pełnego runtime do .nekko, SDK/Java JSO, publikacja CLI/Actions bez sekretów w grze.
 - [x] Profil i cloud save/load/reopen zweryfikowane w rzeczywistym launcherze; [instrukcja i dowody](orbit-wasm.md).
 - [ ] Osobna certyfikacja Safari i WebView Tauri/Capacitor; rozszerzanie zgodności pozostałych modułów silnika z web.
+
+## API i stabilność rdzenia — 2026-10-19
+
+[Przegląd kontraktów i priorytety](Spec/2026-10-19-engine-api-review.md), [regresje](Bugs/2026-10-19-core-api-review.md).
+
+- [x] Usuwanie komponentu po tożsamości, cleanup bez self-suppression i zachowanie pierwotnego błędu aktualizacji.
+- [ ] Typowane SPI usług platformy/ORBIT (profil, zapisy, pokoje) z capabilities i lifecycle, bez TeaVM w core.
+- [ ] Wspólny scope zamykanych subskrypcji/uchwytów, również przed inicjalizacją komponentu.
+- [ ] Konteksty wejścia oraz spójne bindy klawiatury/gamepada/touch i focus loss.
+- [ ] Pipeline prefabów/asset IDs i generyczny schemat authority/replikacji; istniejące Prefab/SceneJson oraz lokalny przykład Colyseus pozostają bazą.

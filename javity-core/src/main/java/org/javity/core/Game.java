@@ -181,6 +181,10 @@ public class Game implements Disposable, AutoCloseable {
     initialize();
   }
 
+  /**
+   * Advances one single-threaded frame and always flushes deferred removals. If both an update
+   * callback and cleanup fail, the update failure is primary and cleanup is suppressed.
+   */
   public void step(float delta) {
     if (!Float.isFinite(delta) || delta < 0) throw new IllegalArgumentException("Invalid delta");
     if (!started || disposed) return;
@@ -188,6 +192,7 @@ public class Game implements Disposable, AutoCloseable {
     if (stepping) throw new IllegalStateException("Recursive game.step");
     stepping = true;
     frameIndex++;
+    Throwable updateFailure = null;
     try {
       unscaledDeltaTime = Math.min(delta, .1f);
       unscaledElapsed += unscaledDeltaTime;
@@ -220,9 +225,15 @@ public class Game implements Disposable, AutoCloseable {
       for (Component c : snapshot)
         if (runnable(c) && (c.updateMode == Component.UpdateMode.UI || (!paused && !scaleFrozen)))
           c.onLateUpdate(c.updateMode == Component.UpdateMode.UI ? unscaledDeltaTime : deltaTime);
+    } catch (RuntimeException | Error e) {
+      updateFailure = e;
+      throw e;
     } finally {
       try {
         flush();
+      } catch (RuntimeException | Error cleanupFailure) {
+        if (updateFailure == null) throw cleanupFailure;
+        if (updateFailure != cleanupFailure) updateFailure.addSuppressed(cleanupFailure);
       } finally {
         stepping = false;
       }
@@ -246,7 +257,7 @@ public class Game implements Disposable, AutoCloseable {
         c.disposeComponent();
       } catch (RuntimeException | Error e) {
         if (failure == null) failure = e;
-        else failure.addSuppressed(e);
+        else if (failure != e) failure.addSuppressed(e);
       }
     }
     for (GameObject o : List.copyOf(objects))
@@ -256,7 +267,7 @@ public class Game implements Disposable, AutoCloseable {
           o.cleanup();
         } catch (RuntimeException | Error e) {
           if (failure == null) failure = e;
-          else failure.addSuppressed(e);
+          else if (failure != e) failure.addSuppressed(e);
         }
       }
     if (failure instanceof RuntimeException e) throw e;
@@ -296,7 +307,7 @@ public class Game implements Disposable, AutoCloseable {
       onDestroy();
     } catch (RuntimeException | Error e) {
       if (failure == null) failure = e;
-      else failure.addSuppressed(e);
+      else if (failure != e) failure.addSuppressed(e);
     }
     if (failure instanceof RuntimeException e) throw e;
     if (failure instanceof Error e) throw e;

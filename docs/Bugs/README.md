@@ -11,3 +11,5 @@ Nowy wpis powinien mieć trwałe ID, priorytet, zakres wersji, kroki odtworzenia
 - [Android runner follow-up — reproduction limits and closure gate](2026-10-17-android-followup.md).
 
 - [Publication and maintenance integration findings](2026-10-17-publication-review.md).
+
+- [Tożsamość komponentów i błędy cleanup — 2026-10-19](2026-10-19-core-api-review.md).

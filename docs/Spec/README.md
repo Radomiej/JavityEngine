@@ -7,3 +7,5 @@ Starsze zaakceptowane specyfikacje i plany pozostają w [docs/superpowers](../su
 - [Maintenance, integration and GitHub Pages](2026-10-17-maintenance-and-pages.md) · [implementation plan](2026-10-17-maintenance-and-pages-plan.md).
 
 - [Unresolved cross-host UI font parity](2026-10-17-ui-font-parity.md).
+
+- [Przegląd API i kolejność rozwoju — 2026-10-19](2026-10-19-engine-api-review.md).

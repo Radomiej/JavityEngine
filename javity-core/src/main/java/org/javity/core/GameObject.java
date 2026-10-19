@@ -94,8 +94,17 @@ public final class GameObject {
     return List.copyOf(result);
   }
 
+  /** Removes this exact attached instance; component equality is not an ownership relation. */
   public boolean removeComponent(Component c) {
-    if (!components.remove(c)) return false;
+    int index = -1;
+    for (int i = 0; i < components.size(); i++) {
+      if (components.get(i) == c) {
+        index = i;
+        break;
+      }
+    }
+    if (index < 0) return false;
+    components.remove(index);
     c.removed = true;
     game.changed(this);
     game.removed(c);
@@ -160,7 +169,7 @@ public final class GameObject {
         c.disposeComponent();
       } catch (RuntimeException | Error e) {
         if (failure == null) failure = e;
-        else failure.addSuppressed(e);
+        else if (failure != e) failure.addSuppressed(e);
       }
     }
     components.clear();

@@ -4,6 +4,12 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Core API reliability — 2026-10-19
+
+- Remove the exact component instance even when components override equality; preserve scene indexes and removal notifications.
+- Continue cleanup when callbacks reuse the same exception, and preserve the original update failure if deferred cleanup also fails.
+- Added eight lifecycle regressions and a scoped [API review and prioritized backlog](docs/Spec/2026-10-19-engine-api-review.md).
+
 ### Launcher integration — 2026-10-19
 
 - Integrated ORBIT `.nekko` packaging, browser API bridge and cloud-save example with the current engine tree.

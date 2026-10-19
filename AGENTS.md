@@ -45,7 +45,7 @@ Wzorcem nowego rdzenia jest `Radomiej/java-lab`, zwłaszcza `shared/lab-game-v2/
 - `hasComponent(Type)` sprawdza obecność, `getComponent(Type)` zwraca komponent lub null, `getComponents(Type)` wszystkie zgodne komponenty, również z klas pochodnych.
 - `requireComponent(Type)` może pozostać opcjonalnym sprawdzeniem konfiguracji podczas inicjalizacji; nie używaj wyjątków jako normalnego sterowania gameplay.
 - Gdy potrzebujesz komponentu, pobierz go raz i sprawdź null zamiast `hasComponent` + `getComponent`.
-- Kolejność aktualizacji i moment dodawania/usuwania komponentów muszą być deterministyczne. Rejestry i indeksy należą do sceny.
+- Kolejność aktualizacji i moment dodawania/usuwania komponentów muszą być deterministyczne. Rejestry i indeksy należą do sceny. Usuwanie konkretnego komponentu używa tożsamości instancji, nie equals. Cleanup ma kontynuować zwalnianie pozostałych zasobów; nie dodawaj wyjątku do samego siebie przez addSuppressed. Game.step zachowuje pierwotny błąd aktualizacji i dołącza różne błędy flush jako suppressed.
 - Aktualny core GameObject/Component pozostaje niezależny od Artemis. Opcjonalny `javity-ecs-artemis` udostępnia natywne Artemis API i jawny most do GameObjectów; natywne encje/World należą do tego adaptera, nie do API core. Nie dodawaj alternatywnego ECS backendu ani nie deklaruj przewagi wydajności bez konkretnych pomiarów. Nie usuwaj Artemisa na podstawie poprzedniej propozycji pełnego wycofania legacy. Przykłady i granice wsparcia: `docs/artemis-ecs.md`.
 
 ## 3D i mapy

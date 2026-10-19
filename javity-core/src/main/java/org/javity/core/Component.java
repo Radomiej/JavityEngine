@@ -118,7 +118,7 @@ public abstract class Component {
         onRelease();
       } catch (RuntimeException | Error e) {
         if (failure == null) failure = e;
-        else failure.addSuppressed(e);
+        else if (failure != e) failure.addSuppressed(e);
       }
       if (failure instanceof RuntimeException e) throw e;
       if (failure instanceof Error e) throw e;
