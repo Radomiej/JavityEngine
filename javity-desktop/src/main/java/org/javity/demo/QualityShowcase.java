@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -41,6 +42,7 @@ import org.javity.gltf.GltfAssets;
 import org.javity.gltf.GltfInstance;
 import org.javity.gltf.HdrSettings;
 import org.javity.gltf.HdrWorldPass;
+import org.javity.gltf.PbrFoliage;
 import org.javity.gltf.PbrShaderProvider;
 import org.javity.input.InputActions;
 import org.javity.input.InputContext;
@@ -48,6 +50,8 @@ import org.javity.render.Camera3D;
 import org.javity.render.GdxRenderer;
 import org.javity.render.ModelRenderer;
 import org.javity.render.ShadowPolicy3D;
+import org.javity.render.foliage.FoliageAtlas;
+import org.javity.render.foliage.FoliagePatch3D;
 import org.javity.render.lighting.DirectionalLight3D;
 import org.javity.render.lighting.PointLight3D;
 import org.javity.render.lighting.RenderEnvironment3D;
@@ -74,6 +78,7 @@ public final class QualityShowcase extends ApplicationAdapter {
   private Game game;
   private Camera3D camera;
   private GdxRenderer renderer;
+  private Texture foliageTexture;
   private HdrWorldPass hdr;
   private RenderEnvironment3D environment;
   private DirectionalLight3D sun;
@@ -234,7 +239,7 @@ public final class QualityShowcase extends ApplicationAdapter {
   private void buildGarden() {
     Model grass = box(0x54745aff, 0, .95f), stone = box(0xb8b1a1ff, 0, .86f);
     Model dark = box(0x334750ff, .1f, .65f), brass = box(0xc3944dff, .78f, .25f);
-    Model bark = box(0x574336ff, 0, .96f), leaves = cone(0x376357ff), blade = cone(0x729457ff);
+    Model bark = box(0x574336ff, 0, .96f), leaves = cone(0x376357ff);
     object("Meadow island", grass, 0, -.4f, -1, 20, .7f, 17, false);
     object("Fox court / shadow receiver", stone, 0, .03f, .5f, 10, .55f, 7, false);
     for (int i = 0; i < 4; i++)
@@ -257,9 +262,22 @@ public final class QualityShowcase extends ApplicationAdapter {
       object("Tree canopy low " + i, leaves, x, 2.15f, z, 2.2f, 2.9f, 2.2f, true);
       object("Tree canopy high " + i, leaves, x, 3.2f, z, 1.65f, 2.5f, 1.65f, true);
     }
-    for (int i = 0; i < 42; i++) {
-      float x = -8.4f + (i % 14) * 1.28f, z = -7.4f + (i / 14) * 1.5f;
-      object("Authored grass tuft " + i, blade, x, .05f, z, .36f, .55f + (i % 3) * .1f, .36f, true);
+    foliageTexture = new Texture(Gdx.files.classpath("foliage/leaves-and-grass.png"));
+    foliageTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    FoliageAtlas atlas = FoliageAtlas.bundled(foliageTexture);
+    for (int i = 0; i < 4; i++) {
+      GameObject patch = game.createObject(i < 3 ? "Merged meadow " + i : "Merged shrubs");
+      patch
+          .addComponent(new Transform3D())
+          .position
+          .set(i < 3 ? -6.5f + i * 6.5f : -6.4f, .0f, i < 3 ? -5.8f : .2f);
+      FoliagePatch3D plants =
+          i < 3
+              ? FoliagePatch3D.grass(atlas).area(4.5f, 2.5f).count(64).seed(41 + i)
+              : FoliagePatch3D.bushes(atlas).area(2, 3).count(6).seed(71);
+      plants.material(PbrFoliage.material(atlas, .5f), PbrShaderProvider.class);
+      patch.addComponent(plants);
+      patch.addComponent(new ShadowPolicy3D(true, true));
     }
     for (int i = 0; i < 9; i++)
       object("Court edging " + i, dark, -5.1f + i * 1.28f, .35f, -3.1f, .8f, .3f, .5f, true);
@@ -512,11 +530,18 @@ public final class QualityShowcase extends ApplicationAdapter {
   }
 
   private void verify() {
+    require(
+        renderer.foliageStats().patches() == 4,
+        "Garden must use four merged foliage patches, got " + renderer.foliageStats());
+    require(
+        renderer.foliageStats().draws() > 0,
+        "Merged foliage must participate in the PBR world color pass");
     paused = true;
     game.pause();
     require(
         foxModels[0].instance.model == foxModels[1].instance.model, "Fox GPU model is not shared");
     double secondTime = animators[1].current().time();
+    long patchBuilds = renderer.foliageStats().builds();
     int[] before = pixels();
     animators[0].current().seek(.55);
     int animation = changed(before, pixels());
@@ -542,6 +567,11 @@ public final class QualityShowcase extends ApplicationAdapter {
     int tone = changed(before, pixels());
     require(tone > 1000, "HDR exposure had no visible effect: " + tone);
     record("exposurePixels", tone);
+    require(
+        renderer.foliageStats().builds() == patchBuilds,
+        "Unchanged foliage rebuilt across camera/light/exposure views");
+    record("foliagePatches", renderer.foliageStats().patches());
+    record("foliageDraws", renderer.foliageStats().draws());
     capture("fox-garden-lantern.png");
     preset(2);
     capture("fox-garden-last-light.png");
@@ -695,6 +725,7 @@ public final class QualityShowcase extends ApplicationAdapter {
     for (GltfInstance instance : instances) next = clean(next, instance::close);
     for (AssetLease<GltfAsset> lease : leases) next = clean(next, lease::close);
     for (Model model : authored) next = clean(next, model::dispose);
+    if (foliageTexture != null) next = clean(next, foliageTexture::dispose);
     if (next instanceof RuntimeException e) throw e;
     if (next instanceof Error e) throw e;
   }

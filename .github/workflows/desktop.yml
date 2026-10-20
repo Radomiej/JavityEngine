@@ -85,7 +85,7 @@ jobs:
           xvfb-run -a ./gradlew --no-daemon :javity-desktop:run --args='--legacy --smoke'
       - name: Imported models, PBR, shadows, HDR and integrated authoring
         run: |
-          xvfb-run -a ./gradlew --no-daemon :javity-desktop:gltfSmoke :javity-desktop:gltfGl20Smoke :javity-desktop:gltfFoxSmoke :javity-desktop:gltfFoxGl20Smoke :javity-desktop:directionalShadowSmoke :javity-desktop:hdrSmoke :javity-desktop:qualitySmoke
+          xvfb-run -a ./gradlew --no-daemon :javity-desktop:gltfSmoke :javity-desktop:gltfGl20Smoke :javity-desktop:gltfFoxSmoke :javity-desktop:gltfFoxGl20Smoke :javity-desktop:directionalShadowSmoke :javity-desktop:hdrSmoke :javity-desktop:qualitySmoke :javity-desktop:foliageSmoke :javity-desktop:foliageGl20Smoke :javity-desktop:importedAvatarSmoke :javity-desktop:importedAvatarGl20Smoke
       - name: Browser and native screenshot gates
         run: |
           python3 web/javity-ui-reference/k1-controls-compare.py
@@ -147,4 +147,6 @@ jobs:
             build/reports/shadows/**
             build/reports/hdr/**
             build/reports/quality-showcase/**
+            build/reports/foliage/**
+            build/imported-avatar/**
             javity-desktop/build/distributions/*.zip

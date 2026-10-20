@@ -384,3 +384,22 @@ tasks.register('qualitySmoke', JavaExec) {
     jvmArgs '--enable-native-access=ALL-UNNAMED'
     args '--smoke'
 }
+
+// Static merged foliage and explicit imported-avatar authoring examples.
+[
+    foliage: ['org.javity.demo.FoliageDemo', []],
+    foliageSmoke: ['org.javity.demo.FoliageDemo', ['--smoke', '--output=build/reports/foliage/gl30']],
+    foliageGl20Smoke: ['org.javity.demo.FoliageDemo', ['--smoke', '--gl20', '--output=build/reports/foliage/gl20']],
+    importedAvatar: ['org.javity.demo.ImportedAvatarDemo', []],
+    importedAvatarSmoke: ['org.javity.demo.ImportedAvatarDemo', ['--smoke']],
+    importedAvatarGl20Smoke: ['org.javity.demo.ImportedAvatarDemo', ['--smoke', '--gl20']]
+].each { taskName, demo ->
+    tasks.register(taskName, JavaExec) {
+        group = taskName.endsWith('Smoke') ? 'verification' : 'application'
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = demo[0]
+        jvmArgs '--enable-native-access=ALL-UNNAMED'
+        args demo[1]
+        if (taskName.endsWith('Gl20Smoke')) environment 'MESA_GL_VERSION_OVERRIDE', '2.1'
+    }
+}
