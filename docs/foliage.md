@@ -86,6 +86,7 @@ No downloaded asset or image-generation service is needed.
 ./gradlew :javity-desktop:foliage
 ./gradlew :javity-desktop:foliageSmoke
 ./gradlew :javity-desktop:foliageGl20Smoke
+./gradlew :javity-desktop:foliageGallery
 ```
 
 Interactive keys: 1 wide daylight, 2 close view, 3 dusk/fog. `FoliageDemo.main`
@@ -94,6 +95,16 @@ Its default capture directory is `build/reports/foliage`. Smoke runs pixel contr
 then captures fixed wide, close and dusk frames. Curated evidence is retained in
 [GL30 captures](artifacts/foliage/gl30/day-wide.png) and
 [GL20 captures](artifacts/foliage/gl20/day-wide.png).
+
+`--gallery` runs the same deterministic woodland in a hidden 1920×1080 native GL
+window and writes clean `day-wide.png`, `day-close.png` and `dusk-wide.png` frames.
+HUD is omitted; the world renderer, lighting and fog are unchanged. A lower fixed
+wide camera emphasizes the path and crowns. It defaults to
+`build/reports/gallery/foliage`, accepts the same `--output`
+override, and exits after capture and resource cleanup. `--gallery` and `--smoke`
+are mutually exclusive: gallery capture does not replace the pixel controls in
+smoke mode or establish performance. Preserve the original CC0 atlas/tree credit
+in published captions.
 
 ## Verified scope — 2026-10-20
 

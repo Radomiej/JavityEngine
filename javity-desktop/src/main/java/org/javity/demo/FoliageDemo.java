@@ -22,7 +22,7 @@ import org.javity.render.lighting.*;
 
 /** Original CC0 woodland, ordinary merged patches and shared branching tree models. */
 public final class FoliageDemo extends ApplicationAdapter {
-  private final boolean smoke;
+  private final boolean smoke, gallery;
   private final FileHandle output;
   private final List<Model> models = new ArrayList<>();
   private Game game;
@@ -38,17 +38,20 @@ public final class FoliageDemo extends ApplicationAdapter {
   private int frame;
 
   public FoliageDemo(boolean smoke) {
-    this(smoke, "build/reports/foliage");
+    this(smoke, false, "build/reports/foliage");
   }
 
-  private FoliageDemo(boolean smoke, String output) {
+  private FoliageDemo(boolean smoke, boolean gallery, String output) {
     this.smoke = smoke;
+    this.gallery = gallery;
     this.output = new FileHandle(output);
   }
 
   public static void main(String[] args) {
     List<String> flags = Arrays.asList(args);
-    String output = "build/reports/foliage";
+    boolean smoke = flags.contains("--smoke"), gallery = flags.contains("--gallery");
+    if (smoke && gallery) throw new IllegalArgumentException("Choose --smoke or --gallery");
+    String output = gallery ? "build/reports/gallery/foliage" : "build/reports/foliage";
     for (int i = 0; i < args.length; i++) {
       if (args[i].startsWith("--output=")) output = args[i].substring(9);
       else if (args[i].equals("--output") && i + 1 < args.length) output = args[++i];
@@ -56,15 +59,16 @@ public final class FoliageDemo extends ApplicationAdapter {
     boolean gl20 = flags.contains("--gl20");
     var config = new Lwjgl3ApplicationConfiguration();
     config.setTitle("Javity · The fernwood path");
-    config.setWindowedMode(960, 640);
-    config.setInitialVisible(!flags.contains("--smoke"));
+    config.setWindowedMode(gallery ? 1920 : 960, gallery ? 1080 : 640);
+    config.setInitialVisible(!smoke && !gallery);
+    config.disableAudio(true);
     config.setOpenGLEmulation(
         gl20
             ? Lwjgl3ApplicationConfiguration.GLEmulation.GL20
             : Lwjgl3ApplicationConfiguration.GLEmulation.GL30,
         gl20 ? 2 : 3,
         gl20 ? 0 : 2);
-    var demo = new FoliageDemo(flags.contains("--smoke"), output);
+    var demo = new FoliageDemo(smoke, gallery, output);
     new Lwjgl3Application(demo, config);
     if (demo.failure != null) throw new AssertionError("Foliage demo failed", demo.failure);
   }
@@ -287,6 +291,7 @@ public final class FoliageDemo extends ApplicationAdapter {
 
   private void view(boolean close) {
     camera.camera.position.set(close ? 2.6f : 11.5f, close ? 1.7f : 7.3f, close ? 4.2f : 15.4f);
+    if (gallery && !close) camera.camera.position.set(8.5f, 4.3f, 12);
     camera.camera.lookAt(close ? -1.6f : 0, close ? .8f : 1.1f, close ? -1.5f : -4);
     camera.camera.update();
   }
@@ -309,7 +314,7 @@ public final class FoliageDemo extends ApplicationAdapter {
   public void render() {
     if (disposed || failure != null) return;
     try {
-      if (!smoke) {
+      if (!smoke && !gallery) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
           day(false);
           view(false);
@@ -320,8 +325,8 @@ public final class FoliageDemo extends ApplicationAdapter {
           view(false);
         }
       }
-      if (smoke && frame == 2) view(true);
-      if (smoke && frame == 4) {
+      if ((smoke || gallery) && frame == 2) view(true);
+      if ((smoke || gallery) && frame == 4) {
         view(false);
         day(true);
       }
@@ -329,45 +334,12 @@ public final class FoliageDemo extends ApplicationAdapter {
       Gdx.gl.glClearColor(.55f, .66f, .72f, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
       renderer.renderWorld(game, camera, null);
-      batch.begin();
-      font.setColor(Color.WHITE);
-      font.draw(
-          batch,
-          "THE FERNWOOD PATH   |   1 Day   2 Close   3 Dusk",
-          24,
-          Gdx.graphics.getHeight() - 24);
-      font.draw(
-          batch,
-          "Static merged grass / shrubs. Shared branching trees. Original CC0 atlas.",
-          24,
-          56);
-      var stats = renderer.foliageStats();
-      font.draw(
-          batch,
-          "Patches "
-              + stats.patches()
-              + " / draws "
-              + stats.draws()
-              + " / vertices "
-              + stats.vertices()
-              + " / geometry "
-              + stats.geometryBytes()
-              + " bytes / builds "
-              + stats.builds(),
-          24,
-          20);
-      var trees = renderer.instanceStats();
-      font.draw(
-          batch,
-          "Shared trees: "
-              + trees.instanced()
-              + " instanced / "
-              + trees.fallback()
-              + " ordinary fallback (scene lighting)",
-          24,
-          38);
-      batch.end();
-      if (smoke) {
+      if (!gallery) drawHud();
+      if (smoke || gallery) {
+        if (gallery
+            && (Gdx.graphics.getBackBufferWidth() != 1920
+                || Gdx.graphics.getBackBufferHeight() != 1080))
+          throw new IllegalStateException("Gallery requires an actual 1920x1080 framebuffer");
         if (frame == 1) capture("day-wide");
         if (frame == 3) capture("day-close");
         if (frame == 5) capture("dusk-wide");
@@ -375,7 +347,8 @@ public final class FoliageDemo extends ApplicationAdapter {
           if (Gdx.gl.glGetError() != GL20.GL_NO_ERROR)
             throw new AssertionError("Foliage demo GL error");
           System.out.println(
-              "FoliageDemo: PASS beauty day/close/dusk "
+              (gallery ? "FoliageGallery: PASS native 1920x1080 " : "FoliageDemo: PASS beauty ")
+                  + "day/close/dusk "
                   + renderer.foliageStats()
                   + " trees="
                   + renderer.instanceStats());
@@ -388,11 +361,53 @@ public final class FoliageDemo extends ApplicationAdapter {
     }
   }
 
+  private void drawHud() {
+    batch.begin();
+    font.setColor(Color.WHITE);
+    font.draw(
+        batch,
+        "THE FERNWOOD PATH   |   1 Day   2 Close   3 Dusk",
+        24,
+        Gdx.graphics.getHeight() - 24);
+    font.draw(
+        batch,
+        "Static merged grass / shrubs. Shared branching trees. Original CC0 atlas.",
+        24,
+        56);
+    var stats = renderer.foliageStats();
+    font.draw(
+        batch,
+        "Patches "
+            + stats.patches()
+            + " / draws "
+            + stats.draws()
+            + " / vertices "
+            + stats.vertices()
+            + " / geometry "
+            + stats.geometryBytes()
+            + " bytes / builds "
+            + stats.builds(),
+        24,
+        20);
+    var trees = renderer.instanceStats();
+    font.draw(
+        batch,
+        "Shared trees: "
+            + trees.instanced()
+            + " instanced / "
+            + trees.fallback()
+            + " ordinary fallback (scene lighting)",
+        24,
+        38);
+    batch.end();
+  }
+
   private void capture(String name) {
     Pixmap p =
         ScreenUtils.getFrameBufferPixmap(
             0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     try {
+      output.mkdirs();
       PixmapIO.writePNG(output.child(name + ".png"), p, -1, true);
     } finally {
       p.dispose();

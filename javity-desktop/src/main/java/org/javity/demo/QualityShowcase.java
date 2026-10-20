@@ -61,7 +61,7 @@ import org.javity.ui.inspector.RuntimeToolsOverlay;
 
 /** Optional, local, bounded integration of the engine's PBR, shadows, HDR, animation and tools. */
 public final class QualityShowcase extends ApplicationAdapter {
-  private final boolean smoke, shadowsEnabled;
+  private final boolean smoke, gallery, shadowsEnabled;
   private final FileHandle output;
   private FileHandle foxRoot;
   private final boolean explicitAssetRoot;
@@ -97,8 +97,10 @@ public final class QualityShowcase extends ApplicationAdapter {
   private String presetName = "Afternoon";
   private final Vector3 target = new Vector3(0, 1, -1);
 
-  private QualityShowcase(boolean smoke, boolean shadows, String assetRoot, String output) {
+  private QualityShowcase(
+      boolean smoke, boolean gallery, boolean shadows, String assetRoot, String output) {
     this.smoke = smoke;
+    this.gallery = gallery;
     this.shadowsEnabled = shadows;
     this.explicitAssetRoot = assetRoot != null;
     this.foxRoot = new FileHandle(assetRoot == null ? "tools/animation-validation/fox" : assetRoot);
@@ -107,21 +109,27 @@ public final class QualityShowcase extends ApplicationAdapter {
 
   /** Run from repository root. GL30 and a complete RGBA16F target are required explicitly. */
   public static void main(String[] args) {
-    boolean smoke = false, shadows = true, small = false;
-    String assetRoot = null, output = "build/reports/quality-showcase";
+    boolean smoke = false, gallery = false, shadows = true, small = false;
+    String assetRoot = null, output = null;
     for (String arg : args) {
       if (arg.equals("--smoke")) smoke = true;
+      else if (arg.equals("--gallery")) gallery = true;
       else if (arg.equals("--no-shadows")) shadows = false;
       else if (arg.equals("--small")) small = true;
       else if (arg.startsWith("--asset-root=")) assetRoot = arg.substring(13);
       else if (arg.startsWith("--output=")) output = arg.substring(9);
       else throw new IllegalArgumentException("Unknown quality showcase argument: " + arg);
     }
-    QualityShowcase app = new QualityShowcase(smoke, shadows, assetRoot, output);
+    if (smoke && gallery) throw new IllegalArgumentException("Choose --smoke or --gallery");
+    if (output == null)
+      output = gallery ? "build/reports/gallery/quality" : "build/reports/quality-showcase";
+    QualityShowcase app = new QualityShowcase(smoke, gallery, shadows, assetRoot, output);
     var config = new Lwjgl3ApplicationConfiguration();
     config.setTitle("Javity | Fox Garden | PBR + directional shadow + HDR");
-    config.setWindowedMode(smoke || small ? 800 : 1280, smoke || small ? 600 : 800);
-    config.setInitialVisible(!smoke);
+    config.setWindowedMode(
+        gallery ? 1920 : smoke || small ? 800 : 1280,
+        gallery ? 1080 : smoke || small ? 600 : 800);
+    config.setInitialVisible(!smoke && !gallery);
     config.setForegroundFPS(60);
     config.disableAudio(true);
     config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL30, 3, 2);
@@ -462,14 +470,19 @@ public final class QualityShowcase extends ApplicationAdapter {
   public void render() {
     if (failure != null || closed) return;
     try {
-      float dt = smoke ? 1f / 60 : Math.min(.05f, Gdx.graphics.getDeltaTime());
-      controls(dt);
+      float dt = smoke || gallery ? 1f / 60 : Math.min(.05f, Gdx.graphics.getDeltaTime());
+      if (!gallery) controls(dt);
       game.step(dt);
       actions.finishFrame();
       tools.update(dt);
       stage.act(dt);
-      draw(true);
-      if (smoke && ++frame == 6) {
+      draw(!gallery);
+      if (gallery && ++frame == 6) {
+        captureGallery();
+        cleanup();
+        System.out.println("qualityGallery: PASS native 1920x1080 captures in " + output);
+        Gdx.app.exit();
+      } else if (smoke && ++frame == 6) {
         verify();
         cleanup();
         evidence.addChild("cleanup", new JsonValue(true));
@@ -481,6 +494,40 @@ public final class QualityShowcase extends ApplicationAdapter {
     } catch (Throwable next) {
       fail(next);
     }
+  }
+
+  /** Fixed poses and cameras; all color, shadow and tone mapping remain in the native world pass. */
+  private void captureGallery() {
+    require(
+        Gdx.graphics.getBackBufferWidth() == 1920 && Gdx.graphics.getBackBufferHeight() == 1080,
+        "Gallery requires an actual 1920x1080 framebuffer");
+    game.pause();
+    animators[0].current().seek(.2);
+    animators[1].current().seek(.7);
+    game.step(0);
+    galleryView(10, 6.8f, 13, 0, 1, -1);
+    preset(1);
+    capture("fox-garden.png", false);
+    preset(2);
+    capture("fox-garden-last-light.png", false);
+    preset(3);
+    capture("fox-garden-lantern.png", false);
+    preset(1);
+    galleryView(7, 2.9f, 6, 0, 1.1f, 1);
+    capture("fox-garden-close.png", false);
+    galleryView(10, 6.8f, 13, 0, 1, -1);
+    input.keyDown(Input.Keys.F1);
+    tools.update(0);
+    stage.act(0);
+    capture("fox-garden-tools.png", true);
+    require(Gdx.gl.glGetError() == GL20.GL_NO_ERROR, "GL error in gallery captures");
+  }
+
+  private void galleryView(float x, float y, float z, float tx, float ty, float tz) {
+    camera.camera.position.set(x, y, z);
+    camera.camera.up.set(Vector3.Y);
+    camera.camera.lookAt(tx, ty, tz);
+    camera.camera.update();
   }
 
   private void draw(boolean ui) {
@@ -650,7 +697,11 @@ public final class QualityShowcase extends ApplicationAdapter {
   }
 
   private void capture(String name) {
-    draw(true);
+    capture(name, true);
+  }
+
+  private void capture(String name, boolean ui) {
+    draw(ui);
     Pixmap p =
         Pixmap.createFromFrameBuffer(
             0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());

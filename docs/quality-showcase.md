@@ -15,6 +15,7 @@ From the repository root:
 ./gradlew :javity-desktop:qualityDemo
 ./gradlew :javity-desktop:qualityDemo --args='--small'
 ./gradlew :javity-desktop:qualitySmoke
+./gradlew :javity-desktop:qualityGallery
 ```
 
 The normal window is 1280×800; `--small` and `--smoke` use 800×600. Launch requires
@@ -23,6 +24,17 @@ HDR/shadow targets fail explicitly. `--no-shadows` omits the directional shadow
 pass while retaining linear PBR/HDR. Other arguments are `--asset-root=<directory>`
 (default `tools/animation-validation/fox`) and `--output=<directory>` (default
 `build/reports/quality-showcase`). Unknown arguments fail rather than being ignored.
+
+`--gallery` is a separate, hidden-window native GL30 capture mode at exactly
+1920×1080. It uses fixed animation poses and cameras and writes afternoon,
+last-light, lantern and close Fox compositions without HUD, gizmos or Stage.
+`fox-garden-tools.png` deliberately includes the existing runtime tools and HUD.
+The default directory is `build/reports/gallery/quality`; override it with
+`--output=<directory>`. Gallery mode exits after capture and resource cleanup;
+it cannot be combined with `--smoke` and does not replace smoke assertions or
+establish performance. The scene's normal PBR, shadow and HDR passes produce the
+images directly. No screenshot effects or background replacement are applied.
+Retain the Fox credit below in captions when publishing clean images.
 
 | Input | Effect |
 | --- | --- |

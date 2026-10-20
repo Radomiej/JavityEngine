@@ -403,3 +403,18 @@ tasks.register('qualitySmoke', JavaExec) {
         if (taskName.endsWith('Gl20Smoke')) environment 'MESA_GL_VERSION_OVERRIDE', '2.1'
     }
 }
+
+// Deterministic, HUD-free captures rendered by the actual desktop demos.
+[
+    qualityGallery: 'org.javity.demo.QualityShowcase',
+    foliageGallery: 'org.javity.demo.FoliageDemo'
+].each { taskName, launcher ->
+    tasks.register(taskName, JavaExec) {
+        group = 'application'
+        description = 'Capture full-HD engine gallery views without the gameplay HUD.'
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = launcher
+        jvmArgs '--enable-native-access=ALL-UNNAMED'
+        args '--gallery'
+    }
+}
