@@ -130,7 +130,8 @@ public class LocalRoomWorkerProcessTest {
       worker.await("ack", "join-1");
       worker.send("{\"v\":1,\"roomId\":\"room-A\",\"type\":\"input\",\"requestId\":\"i1\",\"sessionId\":\"s\",\"sequence\":0,\"x\":1,\"z\":0}\n");
       JsonValue snapshot = worker.await(m -> "snapshot".equals(m.getString("type"))
-          && m.get("players") != null && m.get("players").size > 0, "player snapshot");
+          && m.get("players") != null && m.get("players").size > 0
+          && m.get("players").get(0).getDouble("x") > 0, "movement snapshot");
       assertTrue(snapshot.get("players").get(0).getDouble("x") > 0);
       worker.send(leave("room-A", "leave-1", "s"));
       worker.await("ack", "leave-1");

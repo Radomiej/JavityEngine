@@ -41,7 +41,11 @@ public final class PlatformServices implements AutoCloseable {
       String payload,
       long expectedRevision,
       PlatformProvider.Callback<PlatformProvider.Save> cb) {
-    return submit(cb, done -> provider.putSave(slot, payload, expectedRevision, done));
+    return submit(
+        cb,
+        done ->
+            provider.putSave(
+                slot, PlatformSavePayload.canonicalize(payload), expectedRevision, done));
   }
 
   public PlatformProvider.Operation listRooms(
@@ -104,6 +108,10 @@ public final class PlatformServices implements AutoCloseable {
             request,
             PlatformResult.failure(
                 PlatformResult.ErrorCode.REQUEST_FAILED, "provider returned a null operation"));
+    } catch (IllegalArgumentException invalid) {
+      enqueue(
+          request,
+          PlatformResult.failure(PlatformResult.ErrorCode.INVALID_ARGUMENT, invalid.getMessage()));
     } catch (RuntimeException failure) {
       enqueue(
           request,

@@ -20,6 +20,9 @@ public final class OrbitBrowser {
 
     @JSProperty
     float getZ();
+
+    @JSProperty
+    double getRevision();
   }
 
   @JSBody(script = "return !!globalThis.JavityOrbit && globalThis.JavityOrbit.enabled;")

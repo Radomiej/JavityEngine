@@ -53,6 +53,11 @@ public final class OrbitPlatformProvider implements PlatformProvider {
   public Operation putSave(String slot, String payload, long expectedRevision, Callback<Save> cb) {
     if (!validSlot(slot) || payload == null || expectedRevision < 0)
       return invalid(cb, "invalid save request");
+    try {
+      payload = org.javity.platform.PlatformSavePayload.canonicalize(payload);
+    } catch (IllegalArgumentException invalid) {
+      return invalid(cb, invalid.getMessage());
+    }
     return call(
         "saves.put",
         "{\"slot\":"

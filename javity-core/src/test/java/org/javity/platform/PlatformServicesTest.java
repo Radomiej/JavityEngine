@@ -73,6 +73,51 @@ public class PlatformServicesTest {
   }
 
   @Test
+  public void savePayloadIsOneCanonicalJsonValueAndCannotEscapeRequestEnvelope() {
+    PlatformServices api = new PlatformServices(new LocalPlatformProvider());
+    AtomicInteger errors = new AtomicInteger();
+    api.putSave(
+        "safe",
+        "null,\"slot\":\"escaped\"",
+        0,
+        r -> {
+          assertEquals(PlatformResult.ErrorCode.INVALID_ARGUMENT, r.errorCode());
+          errors.incrementAndGet();
+        });
+    api.pump();
+    assertEquals(1, errors.get());
+    api.getSave(
+        "safe",
+        r -> {
+          assertTrue(r.isSuccess());
+          assertNull(r.value());
+        });
+    api.getSave(
+        "escaped",
+        r -> {
+          assertTrue(r.isSuccess());
+          assertNull(r.value());
+        });
+    api.pump();
+    String[] payloads = {"{ \"level\" : 2 }", "[1,true,\"x\"]", "null", "\"plain text\""};
+    String[] expected = {"{\"level\":2}", "[1,true,\"x\"]", "null", "\"plain text\""};
+    for (int i = 0; i < payloads.length; i++) {
+      String slot = "json-" + i;
+      String serialized = expected[i];
+      api.putSave(
+          slot,
+          payloads[i],
+          0,
+          r -> {
+            assertTrue(r.isSuccess());
+            assertEquals(serialized, r.value().payload());
+          });
+    }
+    api.pump();
+    api.close();
+  }
+
+  @Test
   public void cancellationSuppressesAlreadyQueuedAndLateCallbacks() {
     ManualProvider provider = new ManualProvider();
     PlatformServices api = new PlatformServices(provider);

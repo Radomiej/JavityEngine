@@ -53,6 +53,11 @@ public final class LocalPlatformProvider implements PlatformProvider {
     if (closed) return fail(cb, ErrorCode.CLOSED, "provider is closed");
     if (!validSlot(slot) || payload == null || expectedRevision < 0)
       return fail(cb, ErrorCode.INVALID_ARGUMENT, "invalid save request");
+    try {
+      payload = PlatformSavePayload.canonicalize(payload);
+    } catch (IllegalArgumentException invalid) {
+      return fail(cb, ErrorCode.INVALID_ARGUMENT, invalid.getMessage());
+    }
     Save current = saves.get(slot);
     long actual = current == null ? 0 : current.revision();
     if (actual != expectedRevision)

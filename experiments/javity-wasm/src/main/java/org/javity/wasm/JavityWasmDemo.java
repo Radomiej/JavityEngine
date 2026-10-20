@@ -110,12 +110,17 @@ public final class JavityWasmDemo extends ApplicationAdapter {
             platformStatus = result.errorCode().name();
             return;
           }
-          if (result.value() == null) {
+          PlatformProvider.Save save = result.value();
+          long returnedRevision = save == null ? 0 : save.revision();
+          if (returnedRevision < saveRevision) {
+            platformStatus = "save revision " + saveRevision;
+            return;
+          }
+          if (save == null) {
             platformStatus = "new progress";
             return;
           }
           try {
-            PlatformProvider.Save save = result.value();
             JsonValue data = new JsonReader().parse(save.payload());
             float x = data.getFloat("x"), z = data.getFloat("z");
             if (!"javity-demo-position-v1".equals(data.getString("kind", ""))
@@ -128,7 +133,7 @@ public final class JavityWasmDemo extends ApplicationAdapter {
               return;
             }
             player.position.set(x, player.position.y, z);
-            saveRevision = save.revision();
+            saveRevision = Math.max(saveRevision, save.revision());
             OrbitBrowser.syncSaveRevision(saveRevision);
             platformStatus = "save loaded";
           } catch (RuntimeException ignored) {
@@ -161,14 +166,29 @@ public final class JavityWasmDemo extends ApplicationAdapter {
       dispose();
       return;
     }
-    OrbitBrowser.Restore restore = OrbitBrowser.takeRestore();
-    if (restore != null) player.position.set(restore.getX(), player.position.y, restore.getZ());
+    if (platform != null) platform.pump();
     double panelRevision = OrbitBrowser.takeSaveRevision();
     if (Double.isFinite(panelRevision)
-        && panelRevision >= 0
+        && panelRevision >= saveRevision
         && panelRevision <= 9007199254740991d
         && panelRevision == Math.floor(panelRevision)) saveRevision = (long) panelRevision;
-    if (platform != null) platform.pump();
+    OrbitBrowser.Restore restore = OrbitBrowser.takeRestore();
+    if (restore != null) {
+      double restoredRevision = restore.getRevision();
+      float x = restore.getX(), z = restore.getZ();
+      if (Double.isFinite(restoredRevision)
+          && restoredRevision >= saveRevision
+          && restoredRevision <= 9007199254740991d
+          && restoredRevision == Math.floor(restoredRevision)
+          && Float.isFinite(x)
+          && Float.isFinite(z)
+          && Math.abs(x) <= 10
+          && Math.abs(z) <= 10) {
+        player.position.set(x, player.position.y, z);
+        saveRevision = (long) restoredRevision;
+        OrbitBrowser.syncSaveRevision(saveRevision);
+      }
+    }
     if (platform != null && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
       String payload =
           "{\"kind\":\"javity-demo-position-v1\",\"x\":"
@@ -182,8 +202,11 @@ public final class JavityWasmDemo extends ApplicationAdapter {
           saveRevision,
           result -> {
             if (result.isSuccess()) {
-              saveRevision = result.value().revision();
-              OrbitBrowser.syncSaveRevision(saveRevision);
+              long writtenRevision = result.value().revision();
+              if (writtenRevision >= saveRevision) {
+                saveRevision = writtenRevision;
+                OrbitBrowser.syncSaveRevision(saveRevision);
+              }
               platformStatus = "save revision " + saveRevision;
             } else platformStatus = result.errorCode().name();
           });

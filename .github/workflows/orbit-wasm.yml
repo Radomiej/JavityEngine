@@ -43,8 +43,13 @@ jobs:
           if not re.fullmatch('[a-zA-Z0-9._-]{1,64}',version):raise SystemExit('Invalid version')
           p=pathlib.Path('experiments/javity-wasm/orbit-game.json');m=json.loads(p.read_text());m['version']=version;p.write_text(json.dumps(m,indent=2)+'\n')
           PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Test packaging and credential isolation
-        run: python3 -m unittest discover -s tools/orbit/tests -v
+        run: |
+          python3 -m unittest discover -s tools/orbit/tests -v
+          node --test tools/orbit/tests/bridge-race.test.cjs
       - name: Build WebAssembly and ORBIT archive
         run: ./gradlew -p experiments/javity-wasm orbitPackage test --no-daemon --max-workers=2
       - name: Verify actual standalone WebGL renderer

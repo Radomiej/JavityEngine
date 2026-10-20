@@ -37,7 +37,7 @@
   globalThis.JavityOrbit=Object.freeze({enabled:embedded,ready:()=>ready,request,state,
     takeRestore(){const value=pendingRestore;pendingRestore=null;return value;},
     takeSaveRevision(){const value=pendingSaveRevision;pendingSaveRevision=-1;return value;},
-    syncSaveRevision(value){if(Number.isSafeInteger(value)&&value>=0){revision=value;state.revision=value;}},
+    syncSaveRevision(value){if(Number.isSafeInteger(value)&&value>=revision){revision=value;state.revision=value;}},
     reportJavaPlayer(json){if(!closed)state.javaPlayer=JSON.parse(json);},dispose});
   window.addEventListener('pagehide',dispose,{once:true});
   function attach(){
@@ -53,9 +53,11 @@
     const loadGame=async()=>{
       const value=await request('saves.get',{slot:'progress'});
       if(closed)return;
+      const returnedRevision=value&&Number.isSafeInteger(value.revision)&&value.revision>=1?value.revision:0;
+      if(returnedRevision<revision){loaded=true;state.revision=revision;buttons();status('Zapis jest już nowszy · rewizja '+revision);return;}
       if(value){const data=value.data;
         if(data?.kind!=='javity-demo-position-v1'||!Number.isFinite(data.x)||!Number.isFinite(data.z)||Math.abs(data.x)>10||Math.abs(data.z)>10||!Number.isSafeInteger(value.revision)||value.revision<1)throw Error('Zapis ma nieobsługiwany format');
-        revision=value.revision;pendingRestore={x:data.x,z:data.z};
+        revision=value.revision;pendingRestore={x:data.x,z:data.z,revision:value.revision};
       }else revision=0;
       pendingSaveRevision=revision;
       loaded=true;state.revision=revision;status(value?'Wczytano zapis z ORBIT':'Nowa rozgrywka — '+state.player.nickname);
@@ -65,7 +67,10 @@
       const snapshot=globalThis.javityWasm;
       if(!snapshot||snapshot.disposed||!Number.isFinite(snapshot.x)||!Number.isFinite(snapshot.z))throw Error('Scena nie jest gotowa');
       const value=await request('saves.put',{slot:'progress',data:{kind:'javity-demo-position-v1',x:snapshot.x,z:snapshot.z},expectedRevision:revision});
-      if(closed)return;revision=value.revision;state.revision=revision;pendingSaveRevision=revision;status('Zapisano w ORBIT · rewizja '+revision);
+      if(closed)return;
+      if(!Number.isSafeInteger(value?.revision)||value.revision<1)throw Error('Odpowiedź zapisu ma nieprawidłową rewizję');
+      if(value.revision<revision){status('Zapisano starszą rewizję; aktualna to '+revision);return;}
+      revision=value.revision;state.revision=revision;pendingSaveRevision=revision;status('Zapisano w ORBIT · rewizja '+revision);
     });
     load.onclick=()=>operation(loadGame);
     ready.then(()=>operation(loadGame)).catch(error=>status(error.message));

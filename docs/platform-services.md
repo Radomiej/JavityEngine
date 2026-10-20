@@ -4,7 +4,7 @@
 
 Provider callbacks may arrive on any thread. The façade queues them, and `pump()` delivers callbacks on the thread that constructed `PlatformServices`. Call it from the game/application loop; each pump processes only the completions queued when it began, so callbacks that submit more work cannot create an unbounded frame. Service calls, cancellation, pumping, and closing belong to the owner thread. Cancelling an operation suppresses its callback even when the provider already completed; closing the façade cancels outstanding operations, drops queued work, and closes its provider. Cleanup continues if cancellation or provider close throws, then rethrows the first failure with later distinct failures suppressed.
 
-Save payloads are caller-owned JSON strings. Revision zero means no save exists; `getSave` returns success with a null value for an empty slot, matching the SDK. `putSave` succeeds only when `expectedRevision` matches, then returns the incremented revision. This is compare-and-set behavior, not merge or retry. Stale revisions return `CONFLICT`.
+Save payloads are caller-owned JSON strings. The API parses and canonicalizes exactly one JSON value before constructing the ORBIT request, rejecting malformed or trailing values so payload text cannot change the request envelope. Revision zero means no save exists; `getSave` returns success with a null value for an empty slot, matching the SDK. `putSave` succeeds only when `expectedRevision` matches, then returns the incremented revision. This is compare-and-set behavior, not merge or retry. Stale revisions return `CONFLICT`.
 
 `LocalPlatformProvider` is an explicit offline implementation. Its identity is synthetic, data exists only for the lifetime of the provider instance, and room list/create/close state is local to that instance; joining returns `UNSUPPORTED` because it cannot issue a network ticket. Room close returns `{ok}`. `OrbitPlatformProvider` maps the same operations onto the existing ORBIT browser bridge; identity and cloud saves depend on an embedded, authorized ORBIT launch. ORBIT room operations follow the SDK's current shapes: create takes mode/private/ranked/maxPlayers, list returns room items, and join returns endpoint/externalRoomId/ticket/expiresIn. `player.get` exposes id/nickname; an empty save is null and a save otherwise has data/revision. Treat `inviteCode` and `ticket` as secret capabilities and keep them out of logs and telemetry. Field mappings were checked against the vendored SDK and `Radomiej/nekko-launcher` HEAD `956386c` (`packages/game-sdk/src/protocol.ts`, `index.ts`, and `host.ts`). Neither provider supplies generic game replication, persistence guarantees beyond the ORBIT save contract, or offline synchronization.
 
@@ -27,3 +27,9 @@ CAS: simultaneous writes may return `CONFLICT`, and neither path silently overwr
 The adapter validates save coordinates and required response fields before changing scene state.
 The provider/parser tests and standalone Wasm proof do not replace a fresh authorized account/API
 end-to-end test against the deployed private launcher.
+
+The repeatable browser QA helper `python tools/orbit/typed-platform-proof.py` expects a package built
+with launcher origin `http://localhost:5173` and that local port free. It serves the game on a second
+origin with TeaVM JSO CSP and uses a synthetic host for SDK/MessagePort responses.
+`--disable-draw --evidence-dir artifacts/typed-platform-negative` is a negative control and must fail.
+The ORBIT workflow builds its test package separately so production launcher origins remain intact.
