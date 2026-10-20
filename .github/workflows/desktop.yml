@@ -83,6 +83,9 @@ jobs:
           cp shapes-smoke.png build/smoke/shapes.png
           cp plugins-smoke.png build/smoke/plugins.png
           xvfb-run -a ./gradlew --no-daemon :javity-desktop:run --args='--legacy --smoke'
+      - name: Imported models, PBR, shadows, HDR and integrated authoring
+        run: |
+          xvfb-run -a ./gradlew --no-daemon :javity-desktop:gltfSmoke :javity-desktop:gltfGl20Smoke :javity-desktop:gltfFoxSmoke :javity-desktop:gltfFoxGl20Smoke :javity-desktop:directionalShadowSmoke :javity-desktop:hdrSmoke :javity-desktop:qualitySmoke
       - name: Browser and native screenshot gates
         run: |
           python3 web/javity-ui-reference/k1-controls-compare.py
@@ -139,4 +142,9 @@ jobs:
             docs/gorzow-verification.json
             docs/maplibre-comparison.png
             docs/maplibre-*.json
+            build/reports/gltf/**
+            build/reports/gltf-fox/**
+            build/reports/shadows/**
+            build/reports/hdr/**
+            build/reports/quality-showcase/**
             javity-desktop/build/distributions/*.zip

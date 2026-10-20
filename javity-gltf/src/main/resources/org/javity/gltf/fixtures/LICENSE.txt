@@ -1,0 +1,5 @@
+Javity minimal static and skinned glTF fixtures and their generator are original
+work dedicated to the public domain under CC0 1.0 Universal:
+https://creativecommons.org/publicdomain/zero/1.0/
+No third-party artwork is included. Each fixture contains an original quad,
+five 1x1 procedural PNGs and (skinned.glb) a two-joint linear translation clip.

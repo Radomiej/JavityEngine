@@ -1,0 +1,5 @@
+dependencies {
+    api project(':javity-core')
+    api project(':javity-assets')
+    api 'com.github.mgsx-dev.gdx-gltf:gltf:2.3.0'
+}

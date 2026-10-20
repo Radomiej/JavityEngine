@@ -15,6 +15,14 @@ tasks.named('processResources') {
         into 'org/javity/demo/ui-reference'
     }
 }
+// Bundle the already licensed original sample; default quality demo also works outside checkout.
+tasks.named('processResources') {
+    from(rootProject.file('tools/animation-validation/fox')) {
+        include 'Fox.gltf', 'Fox.bin', 'Texture.png', 'oracle.json', 'NOTICE.md', 'SOURCE.md'
+        into 'org/javity/demo/quality-assets/fox'
+    }
+}
+
 dependencies {
     implementation project(':javity-engine')
     implementation project(':javity-ui')
@@ -23,6 +31,7 @@ dependencies {
     implementation project(':javity-script-graal')
     implementation project(':javity-core')
     implementation project(':javity-assets')
+    implementation project(':javity-gltf')
     implementation project(':javity-map-core')
     implementation project(':javity-maplibre')
     implementation project(':javity-voxel')
@@ -297,4 +306,81 @@ tasks.register('environmentDemoSmoke', JavaExec) {
     mainClass = application.mainClass
     jvmArgs '--enable-native-access=ALL-UNNAMED'
     args '--environment', '--smoke'
+}
+
+// CPU-only allocation probe; opt-in and deliberately separate from graphical smoke.
+tasks.register('lightSnapshotBenchmark', JavaExec) {
+    group = 'verification'
+    description = 'Measures total CPU lighting snapshot allocations after warmup; no GL required.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.LightSnapshotBenchmark'
+}
+
+// Optional imported glTF/PBR examples; gameplay continues to use core components.
+tasks.register('gltf', JavaExec) {
+    group = 'application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfDemoLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+tasks.register('gltfSmoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+tasks.register('gltfGl20Smoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfGpuSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--gl20'
+}
+
+tasks.register('gltfFox', JavaExec) {
+    group = 'application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfFoxDemo'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+tasks.register('gltfFoxSmoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfFoxDemo'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke'
+}
+tasks.register('gltfFoxGl20Smoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.GltfFoxDemo'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke', '--gl20'
+}
+tasks.register('directionalShadowSmoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.DirectionalShadowSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('hdrSmoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.HdrSmokeLauncher'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('qualityDemo', JavaExec) {
+    group = 'application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.QualityShowcase'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+tasks.register('qualitySmoke', JavaExec) {
+    group = 'verification'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.javity.demo.QualityShowcase'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    args '--smoke'
 }

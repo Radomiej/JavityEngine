@@ -8,7 +8,13 @@ pluginManagement {
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories { mavenCentral(); google() }
+    repositories {
+        mavenCentral(); google()
+        maven {
+            url = uri('https://jitpack.io')
+            content { includeGroup 'com.github.mgsx-dev.gdx-gltf' }
+        }
+    }
 }
 rootProject.name = 'JavityEngine'
 include 'javity-backend', 'javity-engine', 'javity-net', 'javity-map', 'javity-desktop'
@@ -37,3 +43,5 @@ if (providers.gradleProperty('javityAndroid').map { it.toBoolean() }.getOrElse(f
 include 'javity-assets'
 include 'javity-ecs-artemis'
 include 'javity-rooms'
+
+include 'javity-gltf'
