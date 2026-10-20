@@ -2,7 +2,7 @@ package org.javity.render.lighting;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.*;
 import com.badlogic.gdx.graphics.g3d.environment.*;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +17,10 @@ public final class RenderEnvironment3D extends GameSystem {
       DEFAULT_POINT_CAPACITY = 4,
       DEFAULT_SPOT_CAPACITY = 2;
   private final Environment environment = new Environment();
+  // A failed rebuild may mutate staging, but never the currently published attributes.
+  private SnapshotBuffer published = new SnapshotBuffer(), staging = new SnapshotBuffer();
+  private final Color color = new Color();
+  private final Vector3 position = new Vector3(), direction = new Vector3();
   private final Color ambient = new Color(0, 0, 0, 1), fog = new Color();
   private float fogNear, fogFar = 1;
   private boolean fogEnabled;
@@ -71,18 +75,19 @@ public final class RenderEnvironment3D extends GameSystem {
       throw new IllegalStateException("Environment must belong to a live scene");
     if (directionalCapacity < 0 || pointCapacity < 0 || spotCapacity < 0)
       throw new IllegalArgumentException("Light capacities must be nonnegative");
-    Environment candidate = new Environment();
-    candidate.set(new ColorAttribute(ColorAttribute.AmbientLight, ambient));
-    if (fogEnabled) candidate.set(new ColorAttribute(ColorAttribute.Fog, fog));
-    float[] points = new float[pointCapacity], spots = new float[spotCapacity];
+    staging.prepare(directionalCapacity, pointCapacity, spotCapacity);
+    staging.ambient.color.set(ambient);
+    staging.fog.color.set(fog);
     int nd = 0, np = 0, ns = 0, od = 0, op = 0, os = 0;
-    Color color = new Color();
-    Vector3 position = new Vector3(), direction = new Vector3();
-    for (GameObject owner : getGame().getObjectsWith(Light3D.class)) {
+    var owners = getGame().getObjectsWith(Light3D.class);
+    for (int ownerIndex = 0; ownerIndex < owners.size(); ownerIndex++) {
+      GameObject owner = owners.get(ownerIndex);
       if (!owner.isActive()) continue;
       Transform3D transform = owner.getComponent(Transform3D.class);
       if (transform == null || !transform.isInitialized() || !transform.isEnabled()) continue;
-      for (Light3D light : owner.getComponents(Light3D.class)) {
+      var lights = owner.getComponents(Light3D.class);
+      for (int lightIndex = 0; lightIndex < lights.size(); lightIndex++) {
+        Light3D light = lights.get(lightIndex);
         if (!light.isInitialized() || !light.isEnabled()) continue;
         Matrix4 world = transform.worldMatrix();
         for (float value : world.val)
@@ -104,23 +109,24 @@ public final class RenderEnvironment3D extends GameSystem {
             os++;
             continue;
           }
-          spots[ns++] = spot.range();
-          candidate.add(
-              new SpotLight()
-                  .set(
-                      color,
-                      position,
-                      direction,
-                      spot.intensity(),
-                      spot.cutoffDegrees(),
-                      spot.exponent()));
+          staging.marker.setSpotRange(ns, spot.range());
+          SpotLight target = staging.spotPool[ns];
+          if (target == null) staging.spotPool[ns] = target = new SpotLight();
+          target.set(
+              color, position, direction, spot.intensity(), spot.cutoffDegrees(), spot.exponent());
+          staging.spots.lights.add(target);
+          ns++;
         } else if (light instanceof PointLight3D point) {
           if (np >= pointCapacity) {
             op++;
             continue;
           }
-          points[np++] = point.range();
-          candidate.add(new PointLight().set(color, position, point.intensity()));
+          staging.marker.setPointRange(np, point.range());
+          PointLight target = staging.pointPool[np];
+          if (target == null) staging.pointPool[np] = target = new PointLight();
+          target.set(color, position, point.intensity());
+          staging.points.lights.add(target);
+          np++;
         } else if (light instanceof DirectionalLight3D) {
           if (nd >= directionalCapacity) {
             od++;
@@ -131,18 +137,52 @@ public final class RenderEnvironment3D extends GameSystem {
               color.r * light.intensity(),
               color.g * light.intensity(),
               color.b * light.intensity());
-          candidate.add(new DirectionalLight().set(color, direction));
+          DirectionalLight target = staging.directionalPool[nd];
+          if (target == null) staging.directionalPool[nd] = target = new DirectionalLight();
+          target.set(color, direction);
+          staging.directionals.lights.add(target);
           nd++;
         }
       }
     }
-    candidate.set(
-        new SceneLightingAttribute(
-            Arrays.copyOf(points, np), Arrays.copyOf(spots, ns), fogNear, fogFar));
-    // Adopt only a fully validated candidate; a failed snapshot leaves the previous one intact.
+    staging.marker.finish(np, ns, fogNear, fogFar);
+    // Publish only a fully validated buffer, retaining the public borrowed Environment identity.
     environment.clear();
-    environment.set(candidate);
-    overflow = new Overflow(od, op, os);
+    environment.set(staging.ambient);
+    if (fogEnabled) environment.set(staging.fog);
+    if (nd != 0) environment.set(staging.directionals);
+    if (np != 0) environment.set(staging.points);
+    if (ns != 0) environment.set(staging.spots);
+    environment.set(staging.marker);
+    SnapshotBuffer previous = published;
+    published = staging;
+    staging = previous;
+    if (overflow.directional() != od || overflow.point() != op || overflow.spot() != os)
+      overflow = new Overflow(od, op, os);
     return environment;
+  }
+
+  private static final class SnapshotBuffer {
+    final ColorAttribute ambient = new ColorAttribute(ColorAttribute.AmbientLight);
+    final ColorAttribute fog = new ColorAttribute(ColorAttribute.Fog);
+    final DirectionalLightsAttribute directionals = new DirectionalLightsAttribute();
+    final PointLightsAttribute points = new PointLightsAttribute();
+    final SpotLightsAttribute spots = new SpotLightsAttribute();
+    final SceneLightingAttribute marker = new SceneLightingAttribute();
+    DirectionalLight[] directionalPool = new DirectionalLight[0];
+    PointLight[] pointPool = new PointLight[0];
+    SpotLight[] spotPool = new SpotLight[0];
+
+    void prepare(int directionalCapacity, int pointCapacity, int spotCapacity) {
+      // Retain high-water storage, bounded by requested capacities, independently of active counts.
+      if (directionalPool.length < directionalCapacity)
+        directionalPool = Arrays.copyOf(directionalPool, directionalCapacity);
+      if (pointPool.length < pointCapacity) pointPool = Arrays.copyOf(pointPool, pointCapacity);
+      if (spotPool.length < spotCapacity) spotPool = Arrays.copyOf(spotPool, spotCapacity);
+      directionals.lights.clear();
+      points.lights.clear();
+      spots.lights.clear();
+      marker.prepare(pointCapacity, spotCapacity);
+    }
   }
 }
