@@ -164,7 +164,7 @@ public final class DirectionalShadowSmokeLauncher {
             public void render(
                 Camera view,
                 Array<Renderable> renderables,
-                IdentityHashMap<Renderable, ModelRenderer> owners,
+                IdentityHashMap<Renderable, Component> owners,
                 Environment selected) {
               int[] before = fingerprint();
               try {

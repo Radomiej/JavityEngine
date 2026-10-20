@@ -19,6 +19,7 @@ import org.javity.avatar.AvatarView;
 import org.javity.core.*;
 import org.javity.presentation.Presentation2D;
 import org.javity.presentation.Presentation3D;
+import org.javity.render.foliage.FoliagePatch3D;
 import org.javity.render.lighting.RenderEnvironment3D;
 import org.javity.render.sky.SkyboxRenderer;
 
@@ -45,8 +46,9 @@ public final class GdxRenderer implements Disposable {
   private final ModelBatch models;
   private WorldRenderPass worldRenderPass;
   private boolean disposed;
-  private final IdentityHashMap<Renderable, ModelRenderer> worldOwners = new IdentityHashMap<>();
+  private final IdentityHashMap<Renderable, Component> worldOwners = new IdentityHashMap<>();
   private Game instanceScene;
+  private final FoliageRenderCache foliage = new FoliageRenderCache();
   private StaticInstanceBatch staticInstances;
   private SkinnedInstanceBatch skinnedInstances;
   private final IdentityHashMap<ModelRenderer, Map<AvatarView.RenderKey, Long>> avatarInstanceIds =
@@ -65,6 +67,10 @@ public final class GdxRenderer implements Disposable {
       Collections.newSetFromMap(new IdentityHashMap<>());
   private long nextInstanceOwnerId;
   private final com.badlogic.gdx.utils.Array<Renderable> worldOrdinary =
+      new com.badlogic.gdx.utils.Array<>();
+  private final com.badlogic.gdx.utils.Array<Renderable> worldPassOnly =
+      new com.badlogic.gdx.utils.Array<>();
+  private final com.badlogic.gdx.utils.Array<Renderable> worldPassInputs =
       new com.badlogic.gdx.utils.Array<>();
   private final com.badlogic.gdx.utils.Array<Renderable> worldCandidates =
       new com.badlogic.gdx.utils.Array<>();
@@ -256,6 +262,7 @@ public final class GdxRenderer implements Disposable {
 
   public void render(Game game) {
     beginWorldScene(Objects.requireNonNull(game, "game"));
+    foliage.beginView();
     Camera3D view = null;
     for (GameObject o : game.getObjectsWith(Camera3D.class)) {
       for (Camera3D c : o.getComponents(Camera3D.class))
@@ -279,6 +286,7 @@ public final class GdxRenderer implements Disposable {
     if (camera.getGame() != game)
       throw new IllegalArgumentException("Camera3D must belong to the rendered Game");
     beginWorldScene(game);
+    foliage.beginView();
     if (!visible(camera)) return;
     if (localOverride != null) {
       ModelRenderer target = localOverride.renderer();
@@ -305,6 +313,8 @@ public final class GdxRenderer implements Disposable {
       sky.render(camera.camera, sceneEnvironment.sky());
     }
     worldOrdinary.clear();
+    worldPassOnly.clear();
+    worldPassInputs.clear();
     worldOwners.clear();
     worldCandidates.clear();
     worldCandidateOwners.clear();
@@ -377,6 +387,25 @@ public final class GdxRenderer implements Disposable {
           }
         }
       }
+      for (GameObject object : game.getObjectsWith(FoliagePatch3D.class, Transform3D.class)) {
+        Transform3D transform = object.getComponent(Transform3D.class);
+        if (!FoliageRenderCache.eligible(transform)) continue;
+        for (FoliagePatch3D patch : object.getComponents(FoliagePatch3D.class)) {
+          if (!FoliageRenderCache.eligible(patch)) continue;
+          FoliageRenderCache.validateShaderProvider(patch, customModelShaders);
+          Matrix4 base = presentedBase(transform, object);
+          FoliageRenderCache.Entry entry = foliage.prepare(patch, Gdx.graphics.getFrameId());
+          foliage.collect(
+              patch,
+              entry,
+              base,
+              camera.camera,
+              worldOrdinary,
+              worldRenderPass == null ? null : worldPassOnly,
+              worldPool,
+              worldOwners);
+        }
+      }
       instanceOwnerIds.keySet().retainAll(seenInstanceOwners);
       avatarInstanceIds.keySet().retainAll(seenInstanceOwners);
       skinnedCandidates.clear();
@@ -406,8 +435,14 @@ public final class GdxRenderer implements Disposable {
                 selectedEnvironment,
                 worldCandidateOwners.toArray()));
       for (Renderable renderable : worldOrdinary) renderable.environment = selectedEnvironment;
-      if (worldRenderPass != null)
-        worldRenderPass.render(camera.camera, worldOrdinary, worldOwners, selectedEnvironment);
+      if (worldRenderPass != null) {
+        // Color-camera culling must not remove offscreen geometry from a shadow/custom pass.
+        // Both arrays borrow the same pooled descriptors; color submits only worldOrdinary.
+        for (Renderable renderable : worldPassOnly) renderable.environment = selectedEnvironment;
+        worldPassInputs.addAll(worldOrdinary);
+        worldPassInputs.addAll(worldPassOnly);
+        worldRenderPass.render(camera.camera, worldPassInputs, worldOwners, selectedEnvironment);
+      }
       models.begin(camera.camera);
       try {
         for (Renderable renderable : worldOrdinary) {
@@ -418,6 +453,8 @@ public final class GdxRenderer implements Disposable {
       }
     } finally {
       worldOrdinary.clear();
+      worldPassOnly.clear();
+      worldPassInputs.clear();
       worldOwners.clear();
       worldCandidates.clear();
       skinnedCandidates.clear();
@@ -460,9 +497,11 @@ public final class GdxRenderer implements Disposable {
 
   // render2D may be a separate overlay Game and deliberately does not cross this boundary.
   private void beginWorldScene(Game game) {
-    if (instanceScene == game) return;
-    releaseInstanceBatches();
-    instanceScene = game;
+    if (instanceScene != game) {
+      releaseInstanceBatches();
+      instanceScene = game;
+    }
+    foliage.reconcile(game);
   }
 
   private void releaseInstanceBatches() {
@@ -479,8 +518,26 @@ public final class GdxRenderer implements Disposable {
     try {
       if (oldStatic != null) oldStatic.dispose();
     } finally {
-      if (oldSkinned != null) oldSkinned.dispose();
+      try {
+        if (oldSkinned != null) oldSkinned.dispose();
+      } finally {
+        foliage.dispose();
+      }
     }
+  }
+
+  /** Live foliage memory, latest view counts and cumulative rebuild diagnostics. */
+  public FoliageStats foliageStats() {
+    return foliage.stats();
+  }
+
+  /**
+   * Borrowed generated meshes for live-context diagnostics. The list is a snapshot, with no
+   * ownership transfer. Never modify/dispose meshes, and discard references before a patch
+   * revision, context recovery, scene change or renderer disposal.
+   */
+  public List<Mesh> foliageMeshes() {
+    return foliage.meshes();
   }
 
   /** Statistics for opt-in world candidates in the most recently completed view. */

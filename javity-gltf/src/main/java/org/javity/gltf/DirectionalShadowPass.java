@@ -125,7 +125,7 @@ public final class DirectionalShadowPass implements WorldRenderPass, ShadowMap {
   public void render(
       Camera camera,
       Array<Renderable> renderables,
-      IdentityHashMap<Renderable, ModelRenderer> owners,
+      IdentityHashMap<Renderable, Component> owners,
       Environment environment) {
     requireIdle();
     requireCapability();
@@ -135,7 +135,7 @@ public final class DirectionalShadowPass implements WorldRenderPass, ShadowMap {
     validateSun(sun, environment);
     // Validate all borrowed input before changing GL or the published receiver environments.
     for (Renderable source : renderables) {
-      ModelRenderer model = owners.get(source);
+      Component model = owners.get(source);
       if (model == null || model.getGame() != sun.getGame() || !eligible(model))
         throw new IllegalArgumentException(
             "Shadow input must belong to the selected sun's live scene");

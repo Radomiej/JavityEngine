@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import java.util.IdentityHashMap;
+import org.javity.core.Component;
 
 /** Optional owned stage after presented world collection and before ordinary color submission. */
 public interface WorldRenderPass extends Disposable {
@@ -20,7 +21,7 @@ public interface WorldRenderPass extends Disposable {
   void render(
       Camera camera,
       Array<Renderable> renderables,
-      IdentityHashMap<Renderable, ModelRenderer> owners,
+      IdentityHashMap<Renderable, Component> owners,
       Environment environment);
 
   /** GL owner thread, outside active batches, after managed resources have been restored. */
