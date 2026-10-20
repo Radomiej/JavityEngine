@@ -13,3 +13,5 @@ Nowy wpis powinien mieć trwałe ID, priorytet, zakres wersji, kroki odtworzenia
 - [Publication and maintenance integration findings](2026-10-17-publication-review.md).
 
 - [Tożsamość komponentów i błędy cleanup — 2026-10-19](2026-10-19-core-api-review.md).
+
+- [Przegląd integracji nowych API — 2026-10-20](2026-10-20-authoring-integration.md).

@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "syntheticHost": true,
+  "negativeControl": false,
+  "scope": "Actual packaged Java/Wasm + ORBIT SDK/MessagePort; no live account/API",
+  "browser": "154.0.8037.57",
+  "javaProfile": true,
+  "typedSave": true,
+  "sharedPanelRevision": true,
+  "finalRevision": 8,
+  "invalidSaveRejected": true,
+  "dispose": true,
+  "framebuffer": {
+    "colors": 393,
+    "orangePixels": 1234,
+    "greenPixels": 10736,
+    "domLabelExcluded": true
+  },
+  "errors": []
+}

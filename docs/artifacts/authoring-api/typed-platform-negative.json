@@ -1,0 +1,7 @@
+{
+  "success": false,
+  "syntheticHost": true,
+  "negativeControl": true,
+  "scope": "Actual packaged Java/Wasm + ORBIT SDK/MessagePort; no live account/API",
+  "error": "AssertionError(('empty/flat canvas framebuffer', 9))"
+}

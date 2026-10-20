@@ -1,5 +1,7 @@
 # Przegląd API i jakości rdzenia — 2026-10-19
 
+Aktualizacja2026-10-20: bazowe zakresy API zostały wdrożone; [aktualne kontrakty, dowody i granice](2026-10-20-authoring-api-batch.md). Poniższa tabela pozostaje historycznym przeglądem potrzeb.
+
 Zakres: bieżący master po integracji ORBIT (`2ec7684`), Game/Component/GameObject/GameSystem, publiczne wejście, sceny/prefaby/zasoby oraz granice API launchera. Jest to przegląd tych kontraktów, nie certyfikacja całego renderera ani wszystkich modułów/platform.
 
 ## Utrzymany model

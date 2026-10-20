@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "a323571e6f678d246a7fd54db82d060535c41ed0",
+  "base": "908b75845ae0462122102a1980f3fa41303cc0a1",
+  "sourceFileHashes": {
+    ".github/workflows/orbit-wasm.yml": "defc9509c408630bf0a1f0dae1418b412143672ae2676b32a23c6e37cd4f746d",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/JavityWasmDemo.java": "a14ffc2e292007aebe505f8f37bdcb97e9c8b3cc8f1f150a3f964dd2be201edf",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/OrbitBrowser.java": "84960833168e277990bd4d6c011452ad75a41530b43d123be47bee016fca9b42",
+    "experiments/javity-wasm/src/main/java/org/javity/wasm/OrbitPlatformProvider.java": "c153c5cb27e1a15ac89d90830a42edd006157f195f59e297f2155b1f45500958",
+    "experiments/javity-wasm/src/test/java/org/javity/wasm/OrbitPlatformProviderTest.java": "b38e14459ac824c46bcca734bbfae77d0cdbf6483d74e9e84890b251fa839f99",
+    "javity-core/src/main/java/org/javity/core/Component.java": "4333d85bdd97eaf77cf841a0ed9b14ee4aadb6620867763fcd282c8b2d662196",
+    "javity-core/src/main/java/org/javity/core/GameObject.java": "55ae6a3dbc08c094a56e73f919dce8e1e8ad1e04e298cdc7d5ee4183ec443321",
+    "javity-core/src/main/java/org/javity/core/ResourceScope.java": "9ff243690af845cf5ac35ccf4f8c0b7bce959ac25951886d2f9a6bc10bcda237",
+    "javity-core/src/main/java/org/javity/input/InputActions.java": "d49fc74e8a1c9c878e18740d978217b6b1c499c16bcd734580f5f1948e66fb1c",
+    "javity-core/src/main/java/org/javity/input/InputBinding.java": "980b8d006515936064eef4d5265314eaa71835f016c31fce0cee1e5e1a26ebc7",
+    "javity-core/src/main/java/org/javity/input/InputContext.java": "26ddb7d38c765af56ad03a2b016dac80dfaa3d92395587ea6eaea413b9b3c67f",
+    "javity-core/src/main/java/org/javity/platform/LocalPlatformProvider.java": "0b618bcd283a43e4f7ea291dcb4caa53ede9ea514c8a411ff548c93463a8e8aa",
+    "javity-core/src/main/java/org/javity/platform/PlatformProvider.java": "21e638a30ae49a63ef3a9544cd3156781c3b805788c6a0c01a21456c439b5ce7",
+    "javity-core/src/main/java/org/javity/platform/PlatformResult.java": "727b7988b93adbf15a26fc6c9ce0c0e333cd511af03c5fd82a74d2178398a4a6",
+    "javity-core/src/main/java/org/javity/platform/PlatformSavePayload.java": "0a57e67baddc54af0c572b55932bd284aa2ab321433927dcdf10f35c3d2acf11",
+    "javity-core/src/main/java/org/javity/platform/PlatformServices.java": "c43d477544830370d10849ec1deeb8ae214d11bb6978847b035bbb62d0605abc",
+    "javity-core/src/main/java/org/javity/serialization/AssetId.java": "49f0feabeeba965dd18fbb61b4348931ae7cc3279cfe42aa439d646d855819b0",
+    "javity-core/src/main/java/org/javity/serialization/AssetResolver.java": "e795b09162f7c83f8390a9c646b5ad745c79a32fec4769af78f9c40200e305df",
+    "javity-core/src/main/java/org/javity/serialization/PrefabCatalog.java": "f3de6b7f05dd941a1d24bb86e285f9c31c24c9e1edb1312ac2d4f5d0f4157632",
+    "javity-core/src/main/java/org/javity/serialization/PrefabDefinition.java": "84a09025cd3ac9e11534a5178a8388381ade863dbbd14c36e22fbf258591fd88",
+    "javity-core/src/main/java/org/javity/serialization/PrefabId.java": "0b60d234b60287d054a0d354104e829554d17b8d99f64ec70df514c837cb29c9",
+    "javity-core/src/main/java/org/javity/serialization/PrefabOverride.java": "d34fa6709dd4b9f703f461374b2f7d5c0dc5d76abe700d3bbb5557326f85d8ec",
+    "javity-core/src/test/java/org/javity/core/ComponentActivationTest.java": "84c60c915ed67ee3dcadadd84a37ca9efe9b0664a8866ece45ce6cd18a2a86d8",
+    "javity-core/src/test/java/org/javity/core/GameActivationTest.java": "e313b03a28eff3860a7b44a9be3be78bbccd8a94afe8c522eaefec3ff725bc9b",
+    "javity-core/src/test/java/org/javity/core/ResourceScopeTest.java": "c03e71a938c55ac073188fbe8e1dccd2be83914c979344d9d5ede1d119b1d4df",
+    "javity-core/src/test/java/org/javity/input/InputActionsTest.java": "1a89efa792be66f1ef802a407e9bd19b014416010a681d7b9e0bad305576c57e",
+    "javity-core/src/test/java/org/javity/platform/PlatformSavePayloadTest.java": "1ce989b1eb3efc2acd51d91b2b3ab1eba61ec131be60503b5293d21b4b03cbe2",
+    "javity-core/src/test/java/org/javity/platform/PlatformServicesTest.java": "c0fe43f05b02880db4800df7e273116281af8f7e3e6e8031f82904e5b8526e49",
+    "javity-core/src/test/java/org/javity/serialization/PrefabCatalogTest.java": "cd2a1101728f7f30d55b5f7bfc192f29857d7113d5fa4c954c85d2275f12b789",
+    "javity-desktop/src/main/java/org/javity/demo/UiParityDemo.java": "7ebe58d5370aa8de5739cf6be8fe30fe747ff14a8f6075939f3a90c44029c4f2",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/AuthoritativeReplicationServer.java": "464cb584490a41b78a263ef2aa2f168114d0c117cdfc26225f787eb2cbe2712e",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/GameObjectBinding.java": "310234cc26324917ae0144f14c8983fef3082053a48a503f5b37b042df6eb7c2",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/InProcessReplicationExample.java": "20fcd0c884e605382e28bcd27952305fb00616868655d01c935380db755514b5",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/NetworkId.java": "be30d5131fbd9176ee3e2a82ee20575a31658b5e343d2539f7cd2a54c5f2345a",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/PlayerCommand.java": "b5ac7879d0ff8914265340c6b259eb948f3294da43bf1d4532e90e70c194c65a",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/ReplicationClient.java": "485f7bfa74a87ed42db338085566c59abede682205163ae409c9a719c5c44a5f",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/ReplicationEnvelope.java": "1560facabd2db7ac68d35dc926acca70544b46b1bcc7792f37a03904c5eddaca",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/ReplicationRegistry.java": "99587e3fd87e6c5e941222faf6b05d08ca89ca3e12dbbfefe4d8970bbdfb99cc",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/ReplicationSchema.java": "4db00b1cf12d18d42e107504bd80037c96c6d9fa390aebd97c1e23b01492bc69",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/ReplicationWireCodec.java": "56a30eace99ee090511e6302beeb1f16bef284031fd99e88f51bace98ad3ac8b",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/StateCodec.java": "29bd15dd2733a46507a426a33ffbecc5eec138f27f9b0cdc5c71755dddf23139",
+    "javity-rooms/src/main/java/org/javity/rooms/replication/Transform2DState.java": "c524bcd850e112a87483e46f9041e22d98eccf9f69a20b95cbeb36209820b10f",
+    "javity-rooms/src/test/java/org/javity/rooms/LocalRoomWorkerProcessTest.java": "7f0ae90684b8b390131208d2112a3eac937bca267ffa832f0441d3c38aa938c7",
+    "javity-rooms/src/test/java/org/javity/rooms/replication/ReplicationTest.java": "869a1eb78a610936ceb2bb1b84b831daef0b13a5593106f395c81657c2dff85a",
+    "javity-ui/src/main/java/org/javity/ui/components/UiDocumentComponent.java": "f693b7460635f0f65ec1e63985c99537e56b7334849badf56ad73562119e64ed",
+    "javity-ui/src/test/java/org/javity/ui/components/UiDocumentComponentTest.java": "e29ea44f7ef64541941059eaec1c6fb60841daaf2299f2f94183b2e5a94e6e7c",
+    "tools/orbit/tests/bridge-race.test.cjs": "ba4a305a32f4e3a8b2bfeefac4e39f0cbd190f841ea0cc8a22f6e615943d1945",
+    "tools/orbit/typed-platform-proof.py": "f011445b6cb7ecda252a7a23e8b31aa0c0e6f493aeb694c53c590371dcc16565",
+    "web/javity-ui-reference/compare.py": "23f5a4ee2e099c3692d5285da17fa0056a37ef4be7beda1e48b786807affaece",
+    "web/orbit/bridge.js": "fe9575b30e955174948a8d40781d66a12984bf2df6e12d39602301ab687a2287"
+  },
+  "reactor": {
+    "command": "./gradlew build :javity-ecs-artemis:usageSmoke :javity-desktop:uiParitySmoke --no-daemon --max-workers=2",
+    "result": "PASS",
+    "seconds": 22,
+    "tasksExecuted": 12,
+    "tasksUpToDate": 102,
+    "xmlSuites": 109,
+    "xmlInventory": {
+      "tests": 928,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newRegressionCases": 49,
+    "cacheDisclosure": "Includes cached unchanged test results; not all inventory cases were rerun. Native proof uses Xvfb/Mesa software GL."
+  },
+  "wasm": {
+    "command": "./gradlew -p experiments/javity-wasm orbitPackage test -PorbitLauncherOrigins=http://localhost:5173 --no-daemon --max-workers=2",
+    "result": "PASS",
+    "seconds": 34,
+    "suites": [
+      {
+        "suite": "org.javity.wasm.SceneCleanupTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "suite": "org.javity.wasm.OrbitPlatformProviderTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0
+      }
+    ],
+    "packageSha256": "b36c9c01195b8b045005780f6ffff1e813823eff47cacc8b8e65f128b87c2be7"
+  },
+  "pythonPackaging": {
+    "command": "python -m unittest discover -s tools/orbit/tests -v",
+    "tests": 5,
+    "result": "PASS"
+  },
+  "browser": {
+    "standaloneCommand": "python experiments/javity-wasm/tools/chromium-proof.py --evidence-dir artifacts/api-batch-wasm",
+    "standaloneResult": "PASS",
+    "typedPlatformCommand": "python tools/orbit/typed-platform-proof.py",
+    "typedPlatformResult": "PASS",
+    "host": "Synthetic two-origin host; actual packaged Java/Wasm, ORBIT SDK and MessagePort; not private API",
+    "negativeControlCommand": "python tools/orbit/typed-platform-proof.py --disable-draw --evidence-dir artifacts/typed-platform-negative",
+    "negativeControlResult": "EXPECTED_FAIL: empty/flat canvas,9 colors; success:false persisted"
+  },
+  "nativeUi": {
+    "result": "PASS",
+    "gameObjectPanelActivation": "PASS; native visibility lifecycle assertion",
+    "focus": "CPU Stage regression verifies keyboard/scroll release on hide",
+    "comparison": "ui-comparison.json"
+  },
+  "transport": {
+    "result": "PASS",
+    "scope": "Two peers transfer production v1 codec output over loopback TCP. Host injects verified session; forged JSON sender rejected. Not live Colyseus."
+  },
+  "workflowValidation": "YAML parsed, master trigger and typed browser gate checked; local-only test package is separate from publishable artifact.",
+  "limits": [
+    "BUG-UI-001 remains open for hosted native/HTML font parity.",
+    "No fresh private ORBIT account/API deployment proof.",
+    "No live Colyseus ticket transport, generic client prediction/reconciliation or automatic GameObject spawn factory.",
+    "No new Android/native gamepad/hardware performance certification."
+  ],
+  "nodeBridgeRace": {
+    "command": "node tools/orbit/tests/bridge-race.test.cjs",
+    "tests": 3,
+    "result": "PASS"
+  }
+}

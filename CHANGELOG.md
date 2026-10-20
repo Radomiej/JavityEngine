@@ -4,6 +4,15 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Game authoring APIs — 2026-10-20
+
+- Added typed platform services with a local provider and a browser ORBIT adapter, bounded owner-thread callback delivery, cancellation and versioned saves.
+- Added GameObject UI panels, activation notifications and owned resource scopes; hidden panels release Stage focus.
+- Added prioritized input contexts, source consumption, analog/button feeds, touch support and atomic rebinding.
+- Added versioned prefab catalogs, explicit asset dependencies, migrations and validated scalar overrides.
+- Added authority/replication schemas, stable network IDs, bounded snapshots/interpolation and a versioned wire codec tested over TCP. Live Colyseus transport and prediction/reconciliation remain separate work.
+- Added font-layout diagnostics without changing the open native/HTML parity gate. See the [implementation and limits](docs/Spec/2026-10-20-authoring-api-batch.md).
+
 ### Core API reliability — 2026-10-19
 
 - Remove the exact component instance even when components override equality; preserve scene indexes and removal notifications.

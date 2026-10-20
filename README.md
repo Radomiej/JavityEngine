@@ -108,3 +108,7 @@ Galaxy Rapid sources are built from this repository rather than a historical pub
 ## ORBIT launcher
 
 Build a versioned `.nekko` archive containing WebAssembly, its loader, assets and the ORBIT API bridge. See [packaging, publishing and cloud saves](docs/orbit-wasm.md). The launcher API must support the explicit TeaVM JSO script policy; the ordinary standalone Wasm target remains available.
+
+## Game authoring APIs
+
+Use [typed platform services](docs/platform-services.md) for ORBIT/local profiles and versioned saves, [GameObject UI panels](docs/ui-game-object.md) for scene-owned UI, [input contexts](docs/input-actions.md) for gameplay/menu controls, and [prefab catalogs](docs/prefab-pipeline.md) for versioned templates. The [replication core](docs/game-replication.md) provides authority, snapshots and interpolation; live ticket-backed Colyseus transport remains a separate integration. [Scope and verification](docs/Spec/2026-10-20-authoring-api-batch.md).

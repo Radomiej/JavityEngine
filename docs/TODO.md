@@ -148,7 +148,7 @@ Gradle/JDK/libGDX zaktualizowane, lokalne źródła Galaxy/pluginów w buildzie,
 - [x] Gizmos translacji/rotacji/skali 2D/3D, local/world i snapping, jedna operacja undo na gest. Nieprzedstawialne konwersje WORLD są jawnie odrzucane; wejście UI ma pierwszeństwo. Testy obejmują zoom, viewport, owner/parent guards i anulowanie.
 - [x] Eksport runtime SceneJson z jawnymi codec/asset references, zagregowanym raportem i atomową podmianą jawnego celu; asset resolver dostarcza host.
 - Osobna karta inspektora UI/React wycofana przez użytkownika; priorytetem jest istniejący inspektor GameObjectów/komponentów.
-- [ ] Powiązanie deklaratywnego panelu UI z GameObjectem przez komponent, z jawną własnością i lifecycle; bez GameObjecta dla każdego elementu widoku.
+- [x] Panel UI jako komponent GameObject, jawne ownership/lifecycle i fokus; [UiDocumentComponent](ui-game-object.md).
 - Instrukcja: [runtime-tools.md](runtime-tools.md). Inspektor ma edycję transformacji, gizmos i jawnie konfigurowany eksport runtime; osobny inspektor drzewa UI nie jest już wymagany.
 
 
@@ -272,7 +272,22 @@ Feature gaps in browser providers, remote netcode and physical-device validation
 [Przegląd kontraktów i priorytety](Spec/2026-10-19-engine-api-review.md), [regresje](Bugs/2026-10-19-core-api-review.md).
 
 - [x] Usuwanie komponentu po tożsamości, cleanup bez self-suppression i zachowanie pierwotnego błędu aktualizacji.
-- [ ] Typowane SPI usług platformy/ORBIT (profil, zapisy, pokoje) z capabilities i lifecycle, bez TeaVM w core.
-- [ ] Wspólny scope zamykanych subskrypcji/uchwytów, również przed inicjalizacją komponentu.
-- [ ] Konteksty wejścia oraz spójne bindy klawiatury/gamepada/touch i focus loss.
-- [ ] Pipeline prefabów/asset IDs i generyczny schemat authority/replikacji; istniejące Prefab/SceneJson oraz lokalny przykład Colyseus pozostają bazą.
+- [x] Typowane SPI usług platformy/ORBIT (profil, zapisy, pokoje), capabilities i lifecycle, bez TeaVM w core; [zakres](platform-services.md).
+- [x] ResourceScope/Component.own dla subskrypcji/uchwytów, również przed inicjalizacją komponentu.
+- [x] Konteksty wejścia, klawiatura, host-fed gamepad/analog, touch i focus loss; natywne adaptery urządzeń pozostają osobno.
+- [x] Bazowy katalog prefabów/asset IDs i generyczny rdzeń authority/replikacji; [zakres i pozostałe integracje](Spec/2026-10-20-authoring-api-batch.md).
+
+## Wdrożenie API przez agentów — 2026-10-20
+
+[Kontrakty, wykonanie i ograniczenia](Spec/2026-10-20-authoring-api-batch.md). Poniższy zakres aktualizuje wcześniejsze ogólne wpisy; nie zamyka całych roadmap platformowych.
+
+- [x] Typowane SPI profilu/zapisów/pokoi, owner-thread pump, cancellation, lokalny provider i adapter ORBIT używany przez Wasm.
+- [x] ResourceScope/Component.own, hook aktywacji i panel UiDocument na GameObject z lifecycle i oddaniem fokusu.
+- [x] Konteksty wejścia, konsumpcja fizycznych źródeł, rebind, analog/button feed, pointer/touch i focus loss.
+- [x] Katalog prefabów z typowanymi ID, jawne zależności assetów, migracje i bezpieczne nadpisania pól.
+- [x] Rdzeń authority/replikacji, wersjonowany wire codec, interpolacja/reconnect i rzeczywisty test TCP.
+- [x] Diagnostyka advance i ink-edge przed asercją BUG-UI-001, bez zmiany tolerancji.
+- [ ] Podłączyć nowy rdzeń replikacji do faktycznego hosta Colyseus z uwierzytelnionymi sesjami/ticketami; prediction/reconciliation i obciążenie sieci osobno.
+- [ ] Test typowanego providera na aktualnym prywatnym API ORBIT; syntetyczny MessagePort host nie jest takim testem.
+- [ ] Natywne adaptery gamepad i touch gestures oraz dalsze prefab overrides/asset pipeline zgodnie z potrzebami gry.
+- [ ] Rozwiązać BUG-UI-001 na podstawie nowych metryk hostowanego CI; lokalny PASS nie zamyka różnicy pomiędzy hostami.

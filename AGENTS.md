@@ -200,3 +200,9 @@ SmoothShapeRenderer zachowuje desktop GLSL120 i wybiera lokalnie GLES300 dla GLE
 ## ORBIT launcher i paczki Wasm
 
 `orbitPackage` w osobnym buildzie `experiments/javity-wasm` generuje `.nekko` (ZIP v1/runtime web, manifest nekko.json, Wasm, loader, zasoby i hashe). Nie zastępuje root builda JVM. API launchera wymaga jawnego `scriptPolicy: "teavm-jso"`; nie osłabiaj globalnej CSP launchera. SDK/MessagePort egzekwuje originy i utrzymuje tokeny poza grą. Workflow ORBIT buduje paczkę na master/PR; publikacja gry pozostaje ręczna. Przed publikacją ustaw rzeczywiste originy, nową wersję i prywatny token. Aktualizacja main launchera nie dowodzi wdrożenia VPS. Instrukcja: docs/orbit-wasm.md.
+
+## API tworzenia gier —2026-10-20
+
+`Component.own` rejestruje zasoby w leniwym ResourceScope; cleanup: onDestroy → onRelease → scope LIFO. Rejestruj subskrypcje po zasobach, których używają. onActivationChanged uruchamia się dopiero po udanym onCreate i po rzeczywistych zmianach enabled/owner.active, również dla nieaktywnych komponentów. Nie wywołuj go jako zwykłego update. UiDocumentComponent posiada dokument, pożycza Stage/theme i zwalnia fokus ukrytego poddrzewa.
+
+PlatformServices wymaga owner-thread pump/cancel/close; provider callbacks mogą pochodzić z innych wątków i nie mogą bezpośrednio mutować sceny. LocalPlatformProvider nie wydaje ticketów sieciowych. PrefabCatalog rozwiązuje deklarowane assety jako borrowed preflight; actual asset injection jest jawna w codekach. InputActions konsumuje fizyczne źródła w kontekstach, a nie wyłącznie nazwy akcji. Replikacja wymaga pełnego baseline i kolejnych rewizji delta; pełny snapshot jest resetem broadcastowanym wszystkim peerom. Host wstawia uwierzytelnioną tożsamość do decodeCommand, nigdy JSON klienta. Nie deklaruj live Colyseus/prediction z testu TCP ani wdrożonego API z syntetycznego hosta. Przewodniki i ograniczenia: docs/Spec/2026-10-20-authoring-api-batch.md.
