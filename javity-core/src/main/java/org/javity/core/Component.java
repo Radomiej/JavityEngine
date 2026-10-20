@@ -114,8 +114,15 @@ public abstract class Component {
 
   public void onComponentChange(ComponentChange change) {}
 
+  /**
+   * Checks a prospective owner before attachment is committed. A rejected attachment leaves this
+   * component unattached, so it may be added to a compatible owner later.
+   */
+  protected void validateAttachment(GameObject owner) {}
+
   final void attach(GameObject owner) {
     if (this.owner != null) throw new IllegalArgumentException("Component already attached");
+    validateAttachment(owner);
     this.owner = owner;
   }
 

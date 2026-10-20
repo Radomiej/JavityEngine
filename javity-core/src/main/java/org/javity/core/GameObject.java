@@ -12,7 +12,16 @@ public final class GameObject {
   private long activeRevision;
   private final List<Component> components = new ArrayList<>();
   private final Set<String> tags = new LinkedHashSet<>();
-  private final List<Consumer<ComponentChange>> listeners = new ArrayList<>();
+  private final List<ChangeListener> listeners = new ArrayList<>();
+
+  private static final class ChangeListener {
+    final Consumer<ComponentChange> callback;
+    boolean subscribed = true;
+
+    ChangeListener(Consumer<ComponentChange> callback) {
+      this.callback = callback;
+    }
+  }
 
   GameObject(Game game, int id, String name) {
     this.game = game;
@@ -59,6 +68,12 @@ public final class GameObject {
     return activeRevision;
   }
 
+  /**
+   * Attaches the component and updates scene indexes before notifying observers. Notification
+   * failures are rethrown after delivery to the remaining eligible observers; they do not roll back
+   * the addition. Reentrant callbacks may make further changes before this method returns or
+   * throws.
+   */
   public <T extends Component> T addComponent(T component) {
     if (destroyed || game.isDisposed()) throw new IllegalStateException("Object destroyed");
     Objects.requireNonNull(component).attach(this);
@@ -105,7 +120,11 @@ public final class GameObject {
     return List.copyOf(result);
   }
 
-  /** Removes this exact attached instance; component equality is not an ownership relation. */
+  /**
+   * Removes this exact attached instance; component equality is not an ownership relation. Removal
+   * and index updates are committed before notification, and cleanup is queued even if an observer
+   * throws. Notification failures do not roll back the removal.
+   */
   public boolean removeComponent(Component c) {
     int index = -1;
     for (int i = 0; i < components.size(); i++) {
@@ -134,14 +153,54 @@ public final class GameObject {
     return count;
   }
 
+  /**
+   * Registers an observer and returns its idempotent unsubscribe action. Each change snapshots
+   * registrations and initialized components before delivery, then calls subscribed observers in
+   * registration order followed by still-attached components in attachment order. Newly registered,
+   * attached or initialized recipients wait for a subsequent change, including a nested change.
+   * Unsubscribed or removed recipients and recipients whose object is destroyed or game is closed
+   * are skipped. Active/enabled state does not affect structural notifications. Runtime exceptions
+   * and errors are collected, preserving the first failure and attaching other failures as
+   * suppressed, then rethrown after delivery completes.
+   */
   public Runnable onComponentChange(Consumer<ComponentChange> listener) {
-    listeners.add(Objects.requireNonNull(listener));
-    return () -> listeners.remove(listener);
+    ChangeListener registration = new ChangeListener(Objects.requireNonNull(listener));
+    listeners.add(registration);
+    return () -> {
+      registration.subscribed = false;
+      listeners.remove(registration);
+    };
   }
 
   private void notifyChange(ComponentChange change) {
-    for (var listener : List.copyOf(listeners)) listener.accept(change);
-    for (Component c : getComponents()) if (c.created && !c.removed) c.onComponentChange(change);
+    List<ChangeListener> listenerSnapshot = List.copyOf(listeners);
+    List<Component> componentSnapshot = new ArrayList<>(components.size());
+    for (Component component : components)
+      if (component.created && !component.removed && !component.destroyed)
+        componentSnapshot.add(component);
+    Throwable failure = null;
+    for (ChangeListener listener : listenerSnapshot) {
+      if (destroyed || game.isDisposed()) break;
+      if (!listener.subscribed) continue;
+      try {
+        listener.callback.accept(change);
+      } catch (RuntimeException | Error e) {
+        if (failure == null) failure = e;
+        else if (failure != e) failure.addSuppressed(e);
+      }
+    }
+    for (Component component : componentSnapshot) {
+      if (destroyed || game.isDisposed()) break;
+      if (!component.created || component.removed || component.destroyed) continue;
+      try {
+        component.onComponentChange(change);
+      } catch (RuntimeException | Error e) {
+        if (failure == null) failure = e;
+        else if (failure != e) failure.addSuppressed(e);
+      }
+    }
+    if (failure instanceof RuntimeException e) throw e;
+    if (failure instanceof Error e) throw e;
   }
 
   public GameObject addTag(String tag) {

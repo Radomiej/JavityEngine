@@ -2,6 +2,8 @@ package org.javity.serialization;
 
 import static org.junit.Assert.*;
 
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -407,7 +409,8 @@ public class SceneJsonTest {
   public void exportReportsForeignDisposedAndOutsideParentSelections() {
     SceneJson json = SceneJson.standard();
     try (Game first = new Game();
-        Game second = new Game()) {
+        Game second = new Game();
+        Game restored = new Game()) {
       GameObject foreign = second.createObject("foreign");
       assertTrue(
           json.prepareSelection(List.of(first.createObject("local"), foreign)).issues().stream()
@@ -415,16 +418,32 @@ public class SceneJsonTest {
 
       GameObject parent = first.createObject("parent");
       Transform3D parentTransform = parent.addComponent(new Transform3D());
+      parentTransform.position.set(10, 20, 30);
       GameObject child = first.createObject("child");
       Transform3D childTransform = child.addComponent(new Transform3D());
+      childTransform.position.set(2, 3, 4);
       childTransform.setParent(parentTransform);
       assertTrue(
           json.prepareSelection(List.of(child)).issues().stream()
               .anyMatch(issue -> issue.message().contains("outside the selected snapshot")));
       parent.removeComponent(parentTransform);
-      assertTrue(
-          json.prepareSelection(List.of(parent, child)).issues().stream()
-              .anyMatch(issue -> issue.message().contains("outside the selected snapshot")));
+      var detached = json.prepareSelection(List.of(parent, child));
+      assertTrue(detached.issues().toString(), detached.isValid());
+      assertNull(childTransform.getParent());
+      JsonValue childData =
+          new JsonReader()
+              .parse(detached.candidate())
+              .get("objects")
+              .get(1)
+              .get("components")
+              .get(0)
+              .get("data");
+      assertFalse(childData.has("parent"));
+      Transform3D copied =
+          json.read(restored, detached.candidate()).get(1).getComponent(Transform3D.class);
+      assertNull(copied.getParent());
+      assertEquals(new Vector3(2, 3, 4), copied.position);
+      assertEquals(new Vector3(2, 3, 4), copied.worldMatrix().getTranslation(new Vector3()));
     }
     Game disposed = new Game();
     GameObject disposedObject = disposed.createObject("disposed");
