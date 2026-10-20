@@ -9,10 +9,14 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import org.javity.core.Component;
 import org.javity.core.Game;
 import org.javity.core.GameObject;
 import org.javity.core.Transform3D;
+import org.javity.platform.PlatformProvider;
+import org.javity.platform.PlatformServices;
 import org.javity.render.Camera3D;
 import org.javity.render.GdxRenderer;
 import org.javity.render.ModelRenderer;
@@ -28,6 +32,9 @@ public final class JavityWasmDemo extends ApplicationAdapter {
   private Transform3D player;
   private Model cube, sphere, ground;
   private boolean disposed;
+  private PlatformServices platform;
+  private long saveRevision;
+  private String platformStatus = "offline";
   private long rendered;
   private int firstGlError;
 
@@ -48,21 +55,37 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     game = new Game();
     renderer = new GdxRenderer();
     ModelBuilder builder = new ModelBuilder();
-    cube = builder.createBox(1, 1, 1,
-        new Material(ColorAttribute.createDiffuse(.12f, .75f, .62f, 1)), VERTEX_ATTRIBUTES);
-    sphere = builder.createSphere(1.3f, 1.3f, 1.3f, 20, 16,
-        new Material(ColorAttribute.createDiffuse(1, .55f, .12f, 1)), VERTEX_ATTRIBUTES);
-    ground = builder.createBox(24, .3f, 24,
-        new Material(ColorAttribute.createDiffuse(.22f, .31f, .4f, 1)), VERTEX_ATTRIBUTES);
+    cube =
+        builder.createBox(
+            1,
+            1,
+            1,
+            new Material(ColorAttribute.createDiffuse(.12f, .75f, .62f, 1)),
+            VERTEX_ATTRIBUTES);
+    sphere =
+        builder.createSphere(
+            1.3f,
+            1.3f,
+            1.3f,
+            20,
+            16,
+            new Material(ColorAttribute.createDiffuse(1, .55f, .12f, 1)),
+            VERTEX_ATTRIBUTES);
+    ground =
+        builder.createBox(
+            24,
+            .3f,
+            24,
+            new Material(ColorAttribute.createDiffuse(.22f, .31f, .4f, 1)),
+            VERTEX_ATTRIBUTES);
     model("ground", ground, 0, -.2f, 0);
     player = model("player", cube, 0, .5f, 0).getComponent(Transform3D.class);
     player.getGameObject().addComponent(new KeyboardMovement(player));
-    Transform3D orb = model("animated sphere", sphere, -3, 1.7f, 0)
-        .getComponent(Transform3D.class);
+    Transform3D orb = model("animated sphere", sphere, -3, 1.7f, 0).getComponent(Transform3D.class);
     orb.getGameObject().addComponent(new Hover(orb));
     for (int i = 0; i < 6; i++) {
-      Transform3D column = model("column-" + i, cube, -5 + i * 2, .75f, -4)
-          .getComponent(Transform3D.class);
+      Transform3D column =
+          model("column-" + i, cube, -5 + i * 2, .75f, -4).getComponent(Transform3D.class);
       column.scale.set(.6f, 1.5f + (i % 3) * .7f, .6f);
     }
     view = game.createObject("camera").addComponent(new Camera3D(60));
@@ -71,11 +94,47 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     view.camera.near = .1f;
     view.camera.far = 80;
     game.start();
-    if (OrbitBrowser.available()) {
-      OrbitBrowser.request("player.get", "{}", json -> {
-        if (!disposed) OrbitBrowser.reportJavaPlayer(json);
-      }, error -> { /* The standalone renderer does not depend on an ORBIT session. */ });
-    }
+    platform = new PlatformServices(new OrbitPlatformProvider());
+    platform.profile(
+        result -> {
+          if (result.isSuccess()) {
+            PlatformProvider.Profile profile = result.value();
+            platformStatus = "profile: " + profile.displayName();
+            OrbitBrowser.reportJavaProfile(profile.id(), profile.displayName());
+          } else platformStatus = result.errorCode().name();
+        });
+    platform.getSave(
+        "progress",
+        result -> {
+          if (!result.isSuccess()) {
+            platformStatus = result.errorCode().name();
+            return;
+          }
+          if (result.value() == null) {
+            platformStatus = "new progress";
+            return;
+          }
+          try {
+            PlatformProvider.Save save = result.value();
+            JsonValue data = new JsonReader().parse(save.payload());
+            float x = data.getFloat("x"), z = data.getFloat("z");
+            if (!"javity-demo-position-v1".equals(data.getString("kind", ""))
+                || !Float.isFinite(x)
+                || !Float.isFinite(z)
+                || Math.abs(x) > 10
+                || Math.abs(z) > 10
+                || save.revision() < 1) {
+              platformStatus = "save format unsupported";
+              return;
+            }
+            player.position.set(x, player.position.y, z);
+            saveRevision = save.revision();
+            OrbitBrowser.syncSaveRevision(saveRevision);
+            platformStatus = "save loaded";
+          } catch (RuntimeException ignored) {
+            platformStatus = "save format unsupported";
+          }
+        });
     resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
   }
 
@@ -104,6 +163,31 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     }
     OrbitBrowser.Restore restore = OrbitBrowser.takeRestore();
     if (restore != null) player.position.set(restore.getX(), player.position.y, restore.getZ());
+    double panelRevision = OrbitBrowser.takeSaveRevision();
+    if (Double.isFinite(panelRevision)
+        && panelRevision >= 0
+        && panelRevision <= 9007199254740991d
+        && panelRevision == Math.floor(panelRevision)) saveRevision = (long) panelRevision;
+    if (platform != null) platform.pump();
+    if (platform != null && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+      String payload =
+          "{\"kind\":\"javity-demo-position-v1\",\"x\":"
+              + player.position.x
+              + ",\"z\":"
+              + player.position.z
+              + "}";
+      platform.putSave(
+          "progress",
+          payload,
+          saveRevision,
+          result -> {
+            if (result.isSuccess()) {
+              saveRevision = result.value().revision();
+              OrbitBrowser.syncSaveRevision(saveRevision);
+              platformStatus = "save revision " + saveRevision;
+            } else platformStatus = result.errorCode().name();
+          });
+    }
     game.step(Math.min(Gdx.graphics.getDeltaTime(), .05f));
     Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
     Gdx.gl.glClearColor(.12f, .18f, .28f, 1);
@@ -111,8 +195,17 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     renderer.render(game);
     rendered++;
     captureGlError();
-    report(rendered, game.getFrameIndex(), player.position.x, player.position.z,
-        Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Gdx.gl30 != null, firstGlError, false);
+    report(
+        rendered,
+        game.getFrameIndex(),
+        player.position.x,
+        player.position.z,
+        Gdx.graphics.getWidth(),
+        Gdx.graphics.getHeight(),
+        Gdx.gl30 != null,
+        firstGlError,
+        false);
+    reportPlatformStatus(platformStatus);
   }
 
   @Override
@@ -120,6 +213,7 @@ public final class JavityWasmDemo extends ApplicationAdapter {
     if (disposed) return;
     disposed = true;
     OrbitBrowser.dispose();
+    if (platform != null) platform.close();
     releaseScene(null);
     captureGlError();
     report(rendered, -1, 0, 0, 0, 0, Gdx.gl30 != null, firstGlError, true);
@@ -127,7 +221,8 @@ public final class JavityWasmDemo extends ApplicationAdapter {
 
   private void releaseScene(Throwable failure) {
     try {
-      SceneCleanup.close(failure,
+      SceneCleanup.close(
+          failure,
           game == null ? null : game::close,
           renderer == null ? null : renderer::dispose,
           cube == null ? null : cube::dispose,
@@ -148,18 +243,27 @@ public final class JavityWasmDemo extends ApplicationAdapter {
 
   private static final class KeyboardMovement extends Component {
     private final Transform3D transform;
-    KeyboardMovement(Transform3D transform) { this.transform = transform; }
+
+    KeyboardMovement(Transform3D transform) {
+      this.transform = transform;
+    }
+
     @Override
     public void onUpdate(float delta) {
-      float x = (pressed(Input.Keys.D, Input.Keys.RIGHT) ? 1 : 0)
-          - (pressed(Input.Keys.A, Input.Keys.LEFT) ? 1 : 0);
-      float z = (pressed(Input.Keys.S, Input.Keys.DOWN) ? 1 : 0)
-          - (pressed(Input.Keys.W, Input.Keys.UP) ? 1 : 0);
+      float x =
+          (pressed(Input.Keys.D, Input.Keys.RIGHT) ? 1 : 0)
+              - (pressed(Input.Keys.A, Input.Keys.LEFT) ? 1 : 0);
+      float z =
+          (pressed(Input.Keys.S, Input.Keys.DOWN) ? 1 : 0)
+              - (pressed(Input.Keys.W, Input.Keys.UP) ? 1 : 0);
       float length = (float) Math.sqrt(x * x + z * z);
       if (length == 0) return;
-      transform.position.x = Math.max(-10, Math.min(10, transform.position.x + x / length * delta * 4));
-      transform.position.z = Math.max(-10, Math.min(10, transform.position.z + z / length * delta * 4));
+      transform.position.x =
+          Math.max(-10, Math.min(10, transform.position.x + x / length * delta * 4));
+      transform.position.z =
+          Math.max(-10, Math.min(10, transform.position.z + z / length * delta * 4));
     }
+
     private static boolean pressed(int a, int b) {
       return Gdx.input.isKeyPressed(a) || Gdx.input.isKeyPressed(b);
     }
@@ -168,7 +272,11 @@ public final class JavityWasmDemo extends ApplicationAdapter {
   private static final class Hover extends Component {
     private final Transform3D transform;
     private float time;
-    Hover(Transform3D transform) { this.transform = transform; }
+
+    Hover(Transform3D transform) {
+      this.transform = transform;
+    }
+
     @Override
     public void onUpdate(float delta) {
       time += delta;
@@ -179,8 +287,23 @@ public final class JavityWasmDemo extends ApplicationAdapter {
   @JSBody(script = "return globalThis.javityWasmStop === true;")
   private static native boolean stopRequested();
 
-  @JSBody(params = {"rendered", "frame", "x", "z", "width", "height", "gl30", "error", "disposed"},
-      script = "globalThis.javityWasm={renderer:'org.javity.render.GdxRenderer',backend:'gdx-teavm',rendered:rendered,frame:frame,x:x,z:z,width:width,height:height,webgl2:gl30,glError:error,disposed:disposed};")
-  private static native void report(double rendered, double frame, float x, float z,
-      int width, int height, boolean gl30, int error, boolean disposed);
+  @JSBody(
+      params = {"status"},
+      script = "globalThis.javityWasmPlatformStatus=status;")
+  private static native void reportPlatformStatus(String status);
+
+  @JSBody(
+      params = {"rendered", "frame", "x", "z", "width", "height", "gl30", "error", "disposed"},
+      script =
+          "globalThis.javityWasm={renderer:'org.javity.render.GdxRenderer',backend:'gdx-teavm',rendered:rendered,frame:frame,x:x,z:z,width:width,height:height,webgl2:gl30,glError:error,disposed:disposed};")
+  private static native void report(
+      double rendered,
+      double frame,
+      float x,
+      float z,
+      int width,
+      int height,
+      boolean gl30,
+      int error,
+      boolean disposed);
 }

@@ -52,6 +52,10 @@ jobs:
           python3 -m pip install playwright==1.62.0 Pillow==12.3.0
           sudo ln -sf "$(command -v google-chrome)" /usr/bin/chromium
           python3 experiments/javity-wasm/tools/chromium-proof.py --evidence-dir artifacts/orbit-standalone
+      - name: Verify typed Java/Wasm platform through SDK and MessagePort
+        run: |
+          python3 tools/orbit/package.py --source experiments/javity-wasm/build/dist/wasm/webapp --metadata experiments/javity-wasm/orbit-game.json --launcher-origins http://localhost:5173 --output artifacts/orbit-local-fixture/javity-wasm.nekko
+          python3 tools/orbit/typed-platform-proof.py --package artifacts/orbit-local-fixture/javity-wasm.nekko --evidence-dir artifacts/orbit-platform
       - uses: actions/upload-artifact@v4
         with:
           name: javity-orbit-wasm
@@ -61,7 +65,9 @@ jobs:
         if: always()
         with:
           name: javity-orbit-browser-evidence
-          path: artifacts/orbit-standalone
+          path: |
+            artifacts/orbit-standalone
+            artifacts/orbit-platform
           if-no-files-found: ignore
   publish:
     if: github.event_name == 'workflow_dispatch' && inputs.publish

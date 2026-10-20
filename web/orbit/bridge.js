@@ -4,7 +4,7 @@
   const embedded = window.parent !== window;
   const config = globalThis.JAVITY_ORBIT_CONFIG;
   const sdk = embedded ? Orbit.createGameSdk({launcherOrigins: config.launcherOrigins}) : null;
-  let closed = false, revision = 0, pendingRestore = null, loaded = false, busy = false;
+  let closed = false, revision = 0, pendingRestore = null, pendingSaveRevision = -1, loaded = false, busy = false;
   const state = {mode: embedded ? 'connecting' : 'standalone', player: null, revision: 0, javaPlayer: null};
   const unavailable = () => Object.assign(new Error('Uruchom aplikację z launchera ORBIT'), {code:'NOT_IN_LAUNCHER'});
   const methods = Object.assign(Object.create(null), {
@@ -36,6 +36,8 @@
   function dispose(){if(closed)return;closed=true;state.mode='closed';pendingRestore=null;sdk?.dispose();}
   globalThis.JavityOrbit=Object.freeze({enabled:embedded,ready:()=>ready,request,state,
     takeRestore(){const value=pendingRestore;pendingRestore=null;return value;},
+    takeSaveRevision(){const value=pendingSaveRevision;pendingSaveRevision=-1;return value;},
+    syncSaveRevision(value){if(Number.isSafeInteger(value)&&value>=0){revision=value;state.revision=value;}},
     reportJavaPlayer(json){if(!closed)state.javaPlayer=JSON.parse(json);},dispose});
   window.addEventListener('pagehide',dispose,{once:true});
   function attach(){
@@ -55,6 +57,7 @@
         if(data?.kind!=='javity-demo-position-v1'||!Number.isFinite(data.x)||!Number.isFinite(data.z)||Math.abs(data.x)>10||Math.abs(data.z)>10||!Number.isSafeInteger(value.revision)||value.revision<1)throw Error('Zapis ma nieobsługiwany format');
         revision=value.revision;pendingRestore={x:data.x,z:data.z};
       }else revision=0;
+      pendingSaveRevision=revision;
       loaded=true;state.revision=revision;status(value?'Wczytano zapis z ORBIT':'Nowa rozgrywka — '+state.player.nickname);
     };
     const operation=async(fn)=>{if(busy||closed)return;busy=true;buttons();try{await fn();}catch(error){status(error.message);}finally{busy=false;buttons();}};
@@ -62,7 +65,7 @@
       const snapshot=globalThis.javityWasm;
       if(!snapshot||snapshot.disposed||!Number.isFinite(snapshot.x)||!Number.isFinite(snapshot.z))throw Error('Scena nie jest gotowa');
       const value=await request('saves.put',{slot:'progress',data:{kind:'javity-demo-position-v1',x:snapshot.x,z:snapshot.z},expectedRevision:revision});
-      if(closed)return;revision=value.revision;state.revision=revision;status('Zapisano w ORBIT · rewizja '+revision);
+      if(closed)return;revision=value.revision;state.revision=revision;pendingSaveRevision=revision;status('Zapisano w ORBIT · rewizja '+revision);
     });
     load.onclick=()=>operation(loadGame);
     ready.then(()=>operation(loadGame)).catch(error=>status(error.message));
