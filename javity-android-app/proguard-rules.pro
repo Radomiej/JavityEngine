@@ -22,6 +22,7 @@
 }
 -keepclassmembers class com.badlogic.gdx.graphics.glutils.VertexBufferObjectWithVAO {
     com.badlogic.gdx.utils.IntArray cachedLocations;
+    boolean isBound;
 }
 -keepclassmembers class com.badlogic.gdx.graphics.glutils.ShaderProgram {
     private static com.badlogic.gdx.utils.ObjectMap shaders;

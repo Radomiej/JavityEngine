@@ -53,6 +53,81 @@ public final class RecoverableFrameBufferTest {
             + "depth attachment and registry invariants verified against libGDX 1.14.2.");
   }
 
+  @org.junit.Test
+  public void unexpectedAllocationExceptionsDeleteEveryNewOwnedTokenExactlyOnce() {
+    for (String stage :
+        new String[] {
+          "glBindFramebuffer",
+          "glRenderbufferStorage",
+          "glTexImage2D",
+          "glTexParameteri",
+          "glFramebufferTexture2D",
+          "glFramebufferRenderbuffer",
+          "glCheckFramebufferStatus"
+        }) {
+      Rig rig = new Rig();
+      RuntimeException original = new RuntimeException("injected " + stage);
+      rig.throwAt = stage;
+      rig.allocationFailure = original;
+      try {
+        rig.newFramebuffer(32, 24, true);
+        throw new AssertionError("allocation unexpectedly succeeded at " + stage);
+      } catch (RuntimeException observed) {
+        require(observed == original, "original allocation failure is retained");
+      }
+      for (int handle : rig.generatedTextures)
+        require(
+            rig.count(rig.deletedTextures, handle) == 1,
+            stage + " deletes new texture exactly once");
+      for (int handle : rig.generatedRenderbuffers)
+        require(
+            rig.count(rig.deletedRenderbuffers, handle) == 1,
+            stage + " deletes new renderbuffer exactly once");
+      for (int handle : rig.generatedFramebuffers)
+        require(
+            rig.count(rig.deletedFramebuffers, handle) == 1,
+            stage + " deletes new framebuffer exactly once");
+      require(
+          RecoverableFrameBuffer.managedSnapshot(rig.app).size == 0,
+          stage + " registers no failed owner");
+    }
+  }
+
+  @org.junit.Test
+  public void unexpectedRebuildFailureDoesNotDeleteDestroyedContextOrReusedNames() {
+    Rig rig = new Rig();
+    RecoverableFrameBuffer owner = rig.newFramebuffer(32, 24, true);
+    int oldFbo = owner.getFramebufferHandle(),
+        oldTexture = owner.getColorBufferTexture().getTextureObjectHandle();
+    int oldDepth = owner.getDepthBufferHandle();
+    RuntimeException original = new RuntimeException("check failed during rebuild");
+    rig.throwAt = "glCheckFramebufferStatus";
+    rig.allocationFailure = original;
+    try {
+      GLFrameBuffer.invalidateAllFrameBuffers(rig.app);
+      throw new AssertionError("rebuild unexpectedly succeeded");
+    } catch (RuntimeException observed) {
+      require(observed == original, "rebuild preserves original failure");
+    }
+    require(rig.count(rig.deletedFramebuffers, oldFbo) == 0, "old context FBO name is not deleted");
+    require(
+        rig.count(rig.deletedTextures, oldTexture) == 0, "old context texture name is not deleted");
+    require(
+        rig.count(rig.deletedRenderbuffers, oldDepth) == 0,
+        "old context depth name is not deleted");
+    int failedFbo = rig.lastFramebufferName.get();
+    require(
+        rig.count(rig.deletedFramebuffers, failedFbo) == 1, "failed rebuild deletes its new FBO");
+    rig.forcedFramebufferName.set(failedFbo);
+    int sentinel = rig.gl20.glGenFramebuffer();
+    int deletes = rig.count(rig.deletedFramebuffers, sentinel);
+    owner.dispose();
+    require(
+        rig.count(rig.deletedFramebuffers, sentinel) == deletes,
+        "failed owner cannot delete reused FBO name");
+    assertNoOwner(rig, owner);
+  }
+
   private static void successfulMultiOwnerInvalidation(Rig rig) {
     RecoverableFrameBuffer first = rig.newFramebuffer(128, 80, false);
     RecoverableFrameBuffer second = rig.newFramebuffer(32, 24, true);
@@ -243,6 +318,11 @@ public final class RecoverableFrameBufferTest {
     final List<Integer> deletedTextures = new ArrayList<>();
     final List<Integer> deletedFramebuffers = new ArrayList<>();
     final List<Integer> deletedRenderbuffers = new ArrayList<>();
+    final List<Integer> generatedFramebuffers = new ArrayList<>(),
+        generatedTextures = new ArrayList<>(),
+        generatedRenderbuffers = new ArrayList<>();
+    String throwAt;
+    RuntimeException allocationFailure;
     final Application app;
     final GL20 gl20;
 
@@ -250,14 +330,23 @@ public final class RecoverableFrameBufferTest {
       InvocationHandler glHandler =
           (proxy, method, arguments) -> {
             String name = method.getName();
+            if (name.equals(throwAt)) {
+              throwAt = null;
+              throw allocationFailure;
+            }
             if (name.equals("glGenFramebuffer")) {
               int forced = forcedFramebufferName.getAndSet(-1);
               int handle = forced >= 0 ? forced : nextHandle.incrementAndGet();
               lastFramebufferName.set(handle);
+              generatedFramebuffers.add(handle);
               return handle;
             }
-            if (name.equals("glGenTexture") || name.equals("glGenRenderbuffer"))
-              return nextHandle.incrementAndGet();
+            if (name.equals("glGenTexture") || name.equals("glGenRenderbuffer")) {
+              int handle = nextHandle.incrementAndGet();
+              (name.equals("glGenTexture") ? generatedTextures : generatedRenderbuffers)
+                  .add(handle);
+              return handle;
+            }
             if (name.equals("glCheckFramebufferStatus")) {
               if (failNextFramebufferCheck.getAndSet(0) > 0)
                 return FRAMEBUFFER_INCOMPLETE_ATTACHMENT;

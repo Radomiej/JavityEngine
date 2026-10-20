@@ -43,6 +43,9 @@ public final class GdxRenderer implements Disposable {
   private final Matrix4 renderableCandidate = new Matrix4();
   private final Presentation3D.Pose presentationPose = new Presentation3D.Pose();
   private final ModelBatch models;
+  private WorldRenderPass worldRenderPass;
+  private boolean disposed;
+  private final IdentityHashMap<Renderable, ModelRenderer> worldOwners = new IdentityHashMap<>();
   private Game instanceScene;
   private StaticInstanceBatch staticInstances;
   private SkinnedInstanceBatch skinnedInstances;
@@ -82,6 +85,7 @@ public final class GdxRenderer implements Disposable {
         }
       };
   private final RecoverableDefaultShaderProvider modelShaders;
+  private final RecoverableShaderProvider customModelShaders;
   private final AssetManager assets;
   private SkyboxRenderer sky;
   public final OrthographicCamera camera2D;
@@ -116,6 +120,21 @@ public final class GdxRenderer implements Disposable {
       int directionalCapacity,
       int pointCapacity,
       int spotCapacity) {
+    this(maxBones, maxBoneWeights, directionalCapacity, pointCapacity, spotCapacity, null);
+  }
+
+  /**
+   * Transfers an exclusive provider on entry, after capacity validation. Custom providers use
+   * ordinary draws, including InstancedModel markers, to preserve their material contract. Provider
+   * recovery must rebuild stale shader bindings on the GL owner thread.
+   */
+  public GdxRenderer(
+      int maxBones,
+      int maxBoneWeights,
+      int directionalCapacity,
+      int pointCapacity,
+      int spotCapacity,
+      RecoverableShaderProvider ownedProvider) {
     if (directionalCapacity < 0 || pointCapacity < 0 || spotCapacity < 0)
       throw new IllegalArgumentException("Light capacities must be nonnegative");
     this.directionalCapacity = directionalCapacity;
@@ -130,8 +149,11 @@ public final class GdxRenderer implements Disposable {
     shaderConfig.numBones = maxBones;
     shaderConfig.numBoneWeights = maxBoneWeights;
     RecoverableDefaultShaderProvider createdModelShaders =
-        new RecoverableDefaultShaderProvider(
-            shaderConfig, directionalCapacity, pointCapacity, spotCapacity);
+        ownedProvider == null
+            ? new RecoverableDefaultShaderProvider(
+                shaderConfig, directionalCapacity, pointCapacity, spotCapacity)
+            : null;
+    customModelShaders = ownedProvider;
     SpriteBatch createdSprites = null;
     ShapeRenderer createdShapes = null;
     ModelBatch createdModels = null;
@@ -139,11 +161,18 @@ public final class GdxRenderer implements Disposable {
     try {
       createdSprites = new SpriteBatch();
       createdShapes = new ShapeRenderer();
-      createdModels = new ModelBatch(createdModelShaders);
+      createdModels = new ModelBatch(ownedProvider == null ? createdModelShaders : ownedProvider);
       createdAssets = new AssetManager();
     } catch (RuntimeException | Error failure) {
       disposeAfterConstructionFailure(
-          failure, createdAssets, createdModels, createdShapes, createdSprites);
+          failure,
+          createdAssets,
+          createdModels,
+          createdShapes,
+          createdSprites,
+          createdModels == null
+              ? (ownedProvider == null ? createdModelShaders : ownedProvider)
+              : null);
       throw failure;
     }
     sprites = createdSprites;
@@ -179,10 +208,26 @@ public final class GdxRenderer implements Disposable {
    * caller-supplied shaders remain their caller's responsibility.
    */
   public void restoreContextShaderBindings() {
-    modelShaders.contextRestored();
+    ManagedMeshBindingsRecovery.contextRestored(Gdx.app);
+    if (modelShaders != null) modelShaders.contextRestored();
+    if (customModelShaders != null) customModelShaders.contextRestored();
     if (sky != null) sky.contextRestored();
     if (staticInstances != null) staticInstances.contextRestored();
     if (skinnedInstances != null) skinnedInstances.contextRestored();
+    if (worldRenderPass != null) worldRenderPass.contextRestored();
+  }
+
+  /**
+   * Transfers one exclusive pass after validation. Install outside rendering; one pass can be
+   * installed during this renderer's lifetime. Its presence uses ordinary draws for every model.
+   */
+  public void setWorldRenderPass(WorldRenderPass pass) {
+    Objects.requireNonNull(pass, "pass");
+    if (disposed) throw new IllegalStateException("Renderer is disposed");
+    if (worldRenderPass != null)
+      throw new IllegalStateException("A world pass is already installed");
+    pass.validateShaderProvider(customModelShaders);
+    worldRenderPass = pass;
   }
 
   /** Load during initialization. Supports libGDX Model formats: G3DJ, G3DB and OBJ. */
@@ -247,6 +292,7 @@ public final class GdxRenderer implements Disposable {
           && !target.getGameObject().hasComponent(Transform3D.class))
         throw new IllegalArgumentException("AvatarView renderer requires Transform3D");
     }
+    if (customModelShaders != null) customModelShaders.beginView();
     Environment selectedEnvironment =
         RenderEnvironment3D.select(
             game, environment, directionalCapacity, pointCapacity, spotCapacity);
@@ -259,6 +305,7 @@ public final class GdxRenderer implements Disposable {
       sky.render(camera.camera, sceneEnvironment.sky());
     }
     worldOrdinary.clear();
+    worldOwners.clear();
     worldCandidates.clear();
     worldCandidateOwners.clear();
     seenInstanceOwners.clear();
@@ -268,13 +315,18 @@ public final class GdxRenderer implements Disposable {
         if (!visible(transform)) continue;
         for (ModelRenderer r : o.getComponents(ModelRenderer.class)) {
           if (!visible(r)) continue;
+          r.validateShaderProvider(customModelShaders);
           r.prepareForRender();
           if (localOverride != null && localOverride.renderer() == r) {
             if (!o.containsComponent(r)) continue;
             localOverride.validateShaderCapacity(maxBones, maxBoneWeights);
             Matrix4 objectBase = presentedBase(transform, o);
             InstancedModel marker = o.getComponent(InstancedModel.class);
-            boolean optedIn = marker != null && visible(marker);
+            boolean optedIn =
+                worldRenderPass == null
+                    && customModelShaders == null
+                    && marker != null
+                    && visible(marker);
             var output = optedIn ? worldCandidates : worldOrdinary;
             int start = output.size;
             avatarKeys.clear();
@@ -288,6 +340,7 @@ public final class GdxRenderer implements Disposable {
               ids.keySet().retainAll(present);
             }
             for (int i = start; i < output.size; i++) {
+              if (!optedIn) worldOwners.put(output.get(i), r);
               requireFinite(
                   output.get(i).worldTransform,
                   "presented avatar renderable matrix is not representable");
@@ -303,7 +356,10 @@ public final class GdxRenderer implements Disposable {
             validateModelInstanceComposition(r.instance, base, renderableCandidate);
             r.instance.transform.set(base);
             InstancedModel marker = o.getComponent(InstancedModel.class);
-            if (marker != null && visible(marker)) {
+            if (worldRenderPass == null
+                && customModelShaders == null
+                && marker != null
+                && visible(marker)) {
               seenInstanceOwners.add(r);
               IdentityHashMap<NodePart, Long> parts =
                   instanceOwnerIds.computeIfAbsent(r, ignored -> new IdentityHashMap<>());
@@ -312,7 +368,12 @@ public final class GdxRenderer implements Disposable {
                   parts,
                   () -> nextInstanceOwnerId = Math.incrementExact(nextInstanceOwnerId));
               for (Node node : r.instance.nodes) collectInstances(r.instance, node, parts);
-            } else r.instance.getRenderables(worldOrdinary, worldPool);
+            } else {
+              int start = worldOrdinary.size;
+              r.instance.getRenderables(worldOrdinary, worldPool);
+              for (int i = start; i < worldOrdinary.size; i++)
+                worldOwners.put(worldOrdinary.get(i), r);
+            }
           }
         }
       }
@@ -344,10 +405,12 @@ public final class GdxRenderer implements Disposable {
                 camera.camera,
                 selectedEnvironment,
                 worldCandidateOwners.toArray()));
+      for (Renderable renderable : worldOrdinary) renderable.environment = selectedEnvironment;
+      if (worldRenderPass != null)
+        worldRenderPass.render(camera.camera, worldOrdinary, worldOwners, selectedEnvironment);
       models.begin(camera.camera);
       try {
         for (Renderable renderable : worldOrdinary) {
-          renderable.environment = selectedEnvironment;
           models.render(renderable);
         }
       } finally {
@@ -355,6 +418,7 @@ public final class GdxRenderer implements Disposable {
       }
     } finally {
       worldOrdinary.clear();
+      worldOwners.clear();
       worldCandidates.clear();
       skinnedCandidates.clear();
       avatarKeys.clear();
@@ -590,6 +654,7 @@ public final class GdxRenderer implements Disposable {
     Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
     Gdx.gl.glDepthMask(true);
     Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+    if (customModelShaders != null) customModelShaders.beginView();
     models.begin(camera);
     try {
       models.render(provider, environment);
@@ -704,12 +769,25 @@ public final class GdxRenderer implements Disposable {
 
   @Override
   public void dispose() {
-    releaseInstanceBatches();
-    if (sky != null) sky.dispose();
-    models.dispose();
-    sprites.dispose();
-    shapes.dispose();
-    if (smoothShapes != null) smoothShapes.dispose();
-    assets.dispose();
+    if (disposed) return;
+    disposed = true;
+    Throwable failure = null;
+    try {
+      releaseInstanceBatches();
+    } catch (RuntimeException | Error problem) {
+      failure = problem;
+    }
+    for (Disposable resource :
+        new Disposable[] {worldRenderPass, sky, models, sprites, shapes, smoothShapes, assets}) {
+      if (resource == null) continue;
+      try {
+        resource.dispose();
+      } catch (RuntimeException | Error problem) {
+        if (failure == null) failure = problem;
+        else if (problem != failure) failure.addSuppressed(problem);
+      }
+    }
+    if (failure instanceof RuntimeException problem) throw problem;
+    if (failure instanceof Error problem) throw problem;
   }
 }

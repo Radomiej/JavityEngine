@@ -6,16 +6,13 @@ import com.badlogic.gdx.backends.android.AndroidApplicationBase;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.backends.android.AndroidGraphics;
 import com.badlogic.gdx.backends.android.surfaceview.ResolutionStrategy;
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.VertexBufferObjectWithVAO;
-import com.badlogic.gdx.graphics.glutils.VertexData;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectIntMap;
 import com.badlogic.gdx.utils.ObjectMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Map;
+import org.javity.render.ManagedMeshBindingsRecovery;
 
 /** GDX 1.14.2 Android recovery shim; call only on GL thread after backend invalidation. */
 public final class JavityAndroidGraphics extends AndroidGraphics {
@@ -50,26 +47,7 @@ public final class JavityAndroidGraphics extends AndroidGraphics {
   }
 
   private static int clearManagedVaoLocations(Application app) throws ReflectiveOperationException {
-    Field registryField = field(Mesh.class, "meshes");
-    @SuppressWarnings("unchecked")
-    Map<Application, Array<Mesh>> registry =
-        (Map<Application, Array<Mesh>>) registryField.get(null);
-    Array<Mesh> managed = registry.get(app);
-    if (managed == null) return 0;
-
-    Field verticesField = field(Mesh.class, "vertices");
-    Field locationsField = field(VertexBufferObjectWithVAO.class, "cachedLocations");
-    int changed = 0;
-    for (int i = 0; i < managed.size; i++) {
-      VertexData data = (VertexData) verticesField.get(managed.get(i));
-      if (data instanceof VertexBufferObjectWithVAO) {
-        com.badlogic.gdx.utils.IntArray cached =
-            (com.badlogic.gdx.utils.IntArray) locationsField.get(data);
-        cached.clear();
-        changed++;
-      }
-    }
-    return changed;
+    return ManagedMeshBindingsRecovery.contextRestored(app);
   }
 
   private static int refreshManagedShaderLocations(Application app)

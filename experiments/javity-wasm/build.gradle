@@ -11,6 +11,8 @@ gdxTeaVM {
     assets.from(file('../../javity-core/src/main/resources'))
     // GdxRenderer validates/rebinds the pinned libGDX shader cache through these fields.
     reflection.add('com.badlogic.gdx.Version')
+    reflection.add('com.badlogic.gdx.graphics.Mesh')
+    reflection.add('com.badlogic.gdx.graphics.glutils.VertexBufferObjectWithVAO')
     reflection.add('com.badlogic.gdx.graphics.g3d.shaders.BaseShader')
     reflection.add('com.badlogic.gdx.graphics.g3d.shaders.DefaultShader')
     wasm {

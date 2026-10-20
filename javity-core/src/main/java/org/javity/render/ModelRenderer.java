@@ -16,12 +16,31 @@ import org.javity.core.Component;
 public final class ModelRenderer extends Component {
   public final ModelInstance instance;
   public final AnimationController animation;
+  private final Class<? extends RecoverableShaderProvider> requiredShaderProvider;
   private ModelPoseAnimator observedPoseOwner;
   private final List<AvatarBinding> avatarBindings = new ArrayList<>();
 
   public ModelRenderer(Model model) {
-    instance = new ModelInstance(Objects.requireNonNull(model));
+    this(new ModelInstance(Objects.requireNonNull(model)));
+  }
+
+  /** Borrows a caller-owned instance. Its asset and instance lease must outlive this component. */
+  public ModelRenderer(ModelInstance instance) {
+    this(instance, null);
+  }
+
+  /** Borrows an instance whose material contract requires the specified custom shader provider. */
+  public ModelRenderer(
+      ModelInstance instance, Class<? extends RecoverableShaderProvider> requiredProvider) {
+    this.instance = Objects.requireNonNull(instance, "instance");
+    requiredShaderProvider = requiredProvider;
     animation = new AnimationController(instance);
+  }
+
+  void validateShaderProvider(RecoverableShaderProvider provider) {
+    if (requiredShaderProvider != null && !requiredShaderProvider.isInstance(provider))
+      throw new IllegalArgumentException(
+          "Model materials require " + requiredShaderProvider.getName());
   }
 
   public void play(String name, boolean loop) {
