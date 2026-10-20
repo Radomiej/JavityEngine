@@ -60,7 +60,7 @@ Historyczny checkpoint integracyjny: wydzielony provider Graal i przenośny host
 - [x] Wspólny tree viewer/gizma w voxelach i Bullet oraz typowany panel Feel z własnością playbacku i przekazaniem inputu F1. [Narzędzia](runtime-tools.md), [Feel](feel3d.md).
 - [x] Lokalny streaming modeli/tekstur: typed lease, współdzielone zależności, priorytety, cache i bezpieczna eksmisja, demo `--asset-streaming`. [Guide i zakres](asset-streaming.md), [dowody](artifacts/asset-streaming/README.md). Android tego modułu pozostaje UNVERIFIED. Końcowa poprawka ogranicza historię failed lease do bieżącego i poprzedniego żądania; 211 kontroli natywnych PASS.
 - [x] Światła sceny, skybox, mgła, WORLD dzień/noc i typowany authoring z undo — niezależne przeglądy PASS. [Guide](lighting-and-sky.md), [kadry i metryki](artifacts/environment/README.md). Android nowych funkcji UNVERIFIED. Panel wykrywa też pierwsze światło dodane do bieżącego zaznaczenia bez utraty draftu.
-- [ ] Foliage: [proponowany projekt gotowych komponentów](superpowers/specs/2026-10-16-foliage-components-design.md), nie wdrożone klasy. Kępy trawy/krzaków i współdzielone modele drzew; wiatr osobnym rozszerzeniem. Projekt oczekuje przeglądu użytkownika.
+- [x] Foliage: [statyczne komponenty i sprawdzone demo](foliage.md) wdrożone w autonomicznie zatwierdzonym zakresie; merged grass/bushes, atlas CC0, współdzielone drzewa i jawny PBR adapter. Wiatr, LOD i forest streaming pozostają rozszerzeniem.
 
 Końcowy przegląd całego batcha oraz scoped re-review poprawek: Spec/Quality PASS, bez pozostałych uwag. Pełny build i rzeczywiste bramki desktopowe PASS; [dokładne wyniki](runtime-batch-verification.md). Commity przygotowano na `modernization/java25-gradle-yoga`, bez PR/merge/release. [Guide silnika](engine-guide.md) opisuje aktualne API; [decyzje integracji](runtime-batch-decisions.md) zachowują uzasadnienia i koszty wyborów. Nie deklarujemy pełnej zgodności z komercyjnymi pakietami ani nowej walidacji Androida na podstawie desktopu.
 
@@ -101,3 +101,11 @@ Rzeczywisty browser renderer ma osobny [spike Javity/libGDX Wasm](javity-wasm-re
 
 
 Review jakości Wasm/integracji: bieżące defekty i status napraw są w [Bugs](Bugs/2026-10-17-wasm-integration-review.md), a kontrakty i kolejne bramki w [Spec](Spec/2026-10-17-runtime-wasm-quality.md). Pierwszeństwo mają potwierdzone defekty lifecycle i wiarygodność proofów; brak platformowego testu nie jest oznaczany jako gotowość.
+
+## Kolejny quality increment — 2026-10-20
+
+Statyczne foliage i jawne profile importowanych avatarów rozwijają wspólny rdzeń,
+bez zastępowania istniejących API. [Specyfikacja](Spec/2026-10-20-foliage-avatar.md)
+i przewodniki określają limity; stare liczniki/testy w tej kolejce są historyczne.
+Następne obszary: IBL authoring/baking, PBR instancing, wind/LOD i dalsze bramki
+platformowe; nie oznaczamy ich jako gotowe na podstawie tego batcha.

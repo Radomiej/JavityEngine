@@ -12,6 +12,8 @@ To kolejność proponowana, nie deklaracja zakończonego zakresu AAA.
 - [x] Q-003: zmierzyć i ograniczyć alokacje snapshotu światła z zachowaniem atomowości po błędzie.
 - [x] Opcjonalny javity-gltf: runtime GLB/glTF, jawny profil materiałów PBR, zarządzane tekstury, zasięgi point lights i test oryginalnego Fox na GL20/GL30.
 - [x] Ograniczone desktop PBR cienie kierunkowe, HDR/exposure/tone mapping, translation root motion i wspólna scena Fox Garden.
+- [x] Statyczna roślinność: komponenty grass/bushes, deterministyczne merged meshes, cache/rebuild/culling i jawny adapter PBR; [przewodnik](foliage.md).
+- [x] Importowany avatar: inspekcja node/part/clip/socket, jawne maski FPS/TPP, oryginalny CC0 humanoid GLB i niezależne animacje; [przewodnik](avatars.md#imported-gltf-authoring).
 - [ ] Dalsze etapy: authoring/baking IBL, cienie kaskadowe/lokalne, PBR instancing, pełniejsze root motion/IK/retargeting oraz osobne bramki Android/web.
 
 Aktualna kolejność nowych prac: [work-queue.md](work-queue.md). Audyt OneJS: [onejs-coverage-audit.md](onejs-coverage-audit.md).

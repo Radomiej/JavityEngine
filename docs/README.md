@@ -74,3 +74,7 @@ PBR/glTF/cieni ani zakończenia celu AAA.
 - [glTF/GLB, asset leases i PBR](gltf-assets.md).
 - [Cienie kierunkowe](shadows.md), [HDR/tone mapping](hdr-rendering.md), [translation root motion](root-motion.md).
 - [Plan i status jakości](Spec/2026-10-20-quality-implementation.md).
+
+- [Static foliage components and native proof](foliage.md).
+- [Imported avatar inspection, explicit masks and sockets](avatars.md#imported-gltf-authoring).
+- [Foliage/avatar increment specification](Spec/2026-10-20-foliage-avatar.md).

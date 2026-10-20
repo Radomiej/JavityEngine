@@ -48,12 +48,16 @@ navigation context after the tools/Stage processors.
 
 ## What is integrated
 
-Each authored stone, metallic box, tree canopy and grass tuft is a normal
-`GameObject` with `Transform3D`, `ModelRenderer` and explicit `ShadowPolicy3D`.
-The geometry shares a small set of application-owned PBR models. Tufts and trees
-use ordinary draws: this showcase does **not** demonstrate PBR foliage instancing.
-Materials use actual base color, metallic and roughness attributes; the lantern
-also emits linear radiance above one.
+Stones, metallic boxes and tree canopies are normal `GameObject`s with
+`Transform3D`, `ModelRenderer` and explicit `ShadowPolicy3D`. Their geometry shares
+a small set of application-owned PBR models. Grass and shrubs use four
+`FoliagePatch3D` objects:192 tufts and6 shrubs are merged into four ordinary patch
+draws. They borrow one managed CC0 atlas and explicitly select `PbrFoliage`
+materials/provider; no object is created per blade. The renderer owns generated
+patch geometry, with stable revisions across camera, light and exposure changes.
+Neither patches nor trees demonstrate PBR foliage instancing. Materials use actual
+base color, metallic and roughness attributes; the lantern also emits linear
+radiance above one. See [foliage contracts](foliage.md).
 
 Two glTF asset leases share the complete original Fox model/texture asset. Each
 `GltfInstance` has its own nodes, skin palette and `ModelPoseAnimator`: one plays

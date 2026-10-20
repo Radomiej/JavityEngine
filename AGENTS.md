@@ -210,3 +210,15 @@ PlatformServices wymaga owner-thread pump/cancel/close; provider callbacks mogą
 ## Autonomiczne dopracowanie jakości —2026-10-20
 
 Użytkownik polecił realizować plan jakości bez kolejnych potwierdzeń i użyć agentów Sol. Zachowaj tę autoryzację w kolejnych etapach; rozstrzygaj odwracalne wybory implementacyjne, zapisuj kontrakty i ryzyka, integruj po review/testach. Nie ponawiaj pytań o zgodę na specyfikację, plan lub kontynuację już zatwierdzonego zakresu. Źródło priorytetów: docs/engine-quality-review.md; bieżący plan: docs/Spec/2026-10-20-quality-implementation.md.
+
+## Static foliage and imported avatar profiles
+
+`FoliagePatch3D` keeps CPU settings/atlas metadata only; `GdxRenderer` owns generated
+managed meshes. Count is tufts/shrubs, never scene objects. Atlas/template textures
+are borrowed; close them after renderer reconciliation/disposal. Do not bypass
+explicit PBR provider validation or claim generated patches are instanced.
+Preserve camera-culling versus world-pass caster separation and cached bounds;
+never scan/rebuild static geometry per view. `foliageStats().geometryBytes()` is
+raw vertex/index payload, not total memory. ImportedAvatarProfile inspects exact
+canonical paths/parts/clips; semantic classification remains explicit and avatar
+visibility must not delete/prune bones. Guides: docs/foliage.md and docs/avatars.md.

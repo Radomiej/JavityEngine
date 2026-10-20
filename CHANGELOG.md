@@ -4,6 +4,14 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Foliage and imported-avatar authoring — 2026-10-20
+
+- Add seeded merged grass/shrub components, bounded unsigned-short geometry, renderer-owned transactional caches and geometry/draw diagnostics.
+- Add an original CC0 cutout atlas, branching-tree demo, explicit optional PBR foliage materials and native alpha/depth/lighting/lifetime controls.
+- Keep offscreen foliage available to world passes while culling its color draws; generalize world-pass ownership to Component.
+- Inspect imported avatar node/part/palette/clip metadata and build explicit semantic profiles; add an original CC0 GLB humanoid with independent animation, arms/tool views and socket tests.
+- Integrate four foliage patches into Fox Garden; add GL20/GL30 examples and CI gates.
+
 ### Engine quality and modern 3D — 2026-10-20
 
 - Enforce Transform3D scene ownership, detach removed parents and deliver committed component changes despite failed observers.

@@ -1,0 +1,3 @@
+first dispose: injected onDestroy failure
+model releases after first dispose=0
+model releases after second dispose=0

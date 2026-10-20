@@ -24,6 +24,8 @@ The default desktop demo shows the new core, including a 2D object, a 3D model, 
 ./gradlew :javity-desktop:run --args='--runtime'   # Runtime services and serialization
 ./gradlew :javity-desktop:run --args='--plugins'   # UI, animation, and scripting integrations
 ./gradlew :javity-desktop:qualityDemo             # PBR Fox Garden, shadows/HDR and runtime tools
+./gradlew :javity-desktop:foliage                 # Seeded grass, shrubs and shared trees
+./gradlew :javity-desktop:importedAvatar          # Imported GLB body / arms + tool
 ./gradlew :javity-desktop:run --args='--voxels'    # Voxel world
 ./gradlew :javity-desktop:run --args='--mm'         # Relay Ward systems demo
 ./gradlew :javity-desktop:run --args='--legacy'     # Historical API demo
@@ -124,3 +126,10 @@ lights, PBR/shadows/HDR, input and the existing GameObject tools. Start with
 [HDR](docs/hdr-rendering.md) and [root motion](docs/root-motion.md) describe the API
 and ownership rules. These optional features have scoped desktop tests, not
 blanket Android/WebAssembly or complete Unity compatibility certification.
+
+[Static foliage](docs/foliage.md) uses one component per merged grass/shrub patch,
+with deterministic seeds, bounded geometry and explicit borrowed atlas ownership.
+[Imported-avatar authoring](docs/avatars.md#imported-gltf-authoring) inspects
+exact model paths, parts, clips and sockets before explicit FPS/TPP selection.
+The original CC0 humanoid fixture proves imported animation and arms/tool views;
+it does not automatically classify arbitrary humanoid meshes.

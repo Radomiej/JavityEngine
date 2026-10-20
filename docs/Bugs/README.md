@@ -23,3 +23,5 @@ Q-001/Q-002 zamknięte regresjami core; Q-003 ma zmierzony spadek alokacji CPU.
 Osobne wpisy opisują naprawy glTF/VAO/FBO/root-motion/fontu. BUG-UI-001 zamknięty
 świeżym zielonym Desktop CI39391819541/source`f2fafce`. [Pierwotny audyt](../engine-quality-review.md)
 zachowuje historyczną reprodukcję sprzed poprawek.
+
+- [Foliage and imported-avatar integration findings](2026-10-20-foliage-avatar.md).

@@ -1,0 +1,8 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/JavityEngine/javity-desktop/build/install/javity-desktop/lib/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+importedAvatarSmoke: native GL=4.5 (Core Profile) Mesa 25.0.7-2+deb13u1, renderer=llvmpipe (LLVM 19.1.7, 256 bits), engine GL30=true
+importedAvatarSmoke: pixel counts arms+tool=33929, arms=32655, full=54789, fps=41856
+importedAvatarSmoke: PASS (real CC0 humanoid GLB, exact metadata, canonical palettes/socket/pose, full body vs arms/tool pixels, independent instances, deferred lease disposal)

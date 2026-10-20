@@ -13,3 +13,5 @@ Starsze zaakceptowane specyfikacje i plany pozostają w [docs/superpowers](../su
 - [Wdrożenie API tworzenia gier przez agentów — 2026-10-20](2026-10-20-authoring-api-batch.md).
 
 - [Autonomiczna realizacja planu jakości i pipeline 3D —2026-10-20](2026-10-20-quality-implementation.md).
+
+- [Foliage and imported-avatar authoring increment](2026-10-20-foliage-avatar.md).

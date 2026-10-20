@@ -1,0 +1,17 @@
+{
+"glVersion": "4.5 (Core Profile) Mesa 25.0.7-2+deb13u1",
+"source": "tools/animation-validation/fox/Fox.gltf",
+"shadows": true,
+"pipeline": "one Game -> linear PBR + directional depth/color -> RGBA16F -> ACES/sRGB -> HUD/Stage",
+"independentAnimationPixels": 2531,
+"modelMovementPixels": 5212,
+"pointTogglePixels": 68082,
+"exposurePixels": 477603,
+"foliagePatches": 4,
+"foliageDraws": 4,
+"inputActionsCamera": true,
+"toolsTogglePixels": 408842,
+"foxCredit": "See tools/animation-validation/fox/NOTICE.md and SOURCE.md",
+"cleanup": true,
+"result": "PASS"
+}
