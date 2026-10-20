@@ -132,7 +132,7 @@ not certify the overall roadmap, platform support or AAA readiness.
   translation only through an application-owned sink, with no implicit physics,
   rotation, IK or retargeting authority.
 
-- [ ] **BUG-UI-001 / P2 — hosted cross-rasterizer parity gate still awaits fresh green.**
+- [x] **BUG-UI-001 / P2 — hosted cross-rasterizer parity regression fixed.**
   CI[39375230181](https://github.com/Radomiej/JavityEngine/actions/runs/39375230181),
   job118471773977, source`af73022c9dafeaa14b9bfff7e597ec935e8c9cb2`, reproduced
   native Card title ink79px versus browser74px against the unchanged4px limit.
@@ -143,7 +143,11 @@ not certify the overall roadmap, platform support or AAA readiness.
   changed fixtures, goldens or tolerances; current title ink74px. Fresh font review
   also resolved borrowed source-scale refresh and unbounded historical clone
   retention, preserving a current cache entry per style and borrowed ownership.
-  **Closure requires a fresh successful hosted desktop workflow, not local replay.**
+  **Closed by fresh [Desktop39391819541](https://github.com/Radomiej/JavityEngine/actions/runs/39391819541) on source`f2fafce`**:
+  job118524909757 passed native UI parity and browser/native screenshot gates,
+  with unchanged fixtures/goldens/tolerances. Entire Desktop workflow succeeded;
+  Android, Wasm and Pages also passed on that exact source. This closes the scoped
+  hosted rasterizer defect, not full browser/CSS/shaping equivalence.
   [Historical entry](2026-10-17-publication-review.md),
   [font contract and limits](../ui-html-parity.md).
 
@@ -168,7 +172,7 @@ Shadows/HDR are desktop GL30; optional `GltfAssets` is synchronous, distinct fro
 budgeted `AssetStreams`; Fox proves one real imported24-joint rig against12 oracle
 samples, not arbitrary production rigs. New Android/GLES/Wasm features, physical
 GPU performance, broader streaming/foliage/authority integration and AAA readiness
-remain separate work. Fresh hosted BUG-UI-001 evidence remains pending.
+remain separate work. Fresh hosted BUG-UI-001 evidence is now green; see closure above.
 
 ## Final cross-feature review
 

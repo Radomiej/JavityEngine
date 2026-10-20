@@ -19,7 +19,7 @@ Independent Chromium verification passes at widths360/390/768/1440; images, comm
 
 - [x] **BUG-QA-003 / P2 — ack-saturation process test depended on host scheduling.** Run [39043396369](https://github.com/Radomiej/JavityEngine/actions/runs/39043396369) failed at the stderr assertion. Its sender could fill the inbound queue during a scheduler pause instead of saturating stdout. Replace only that timing-dependent assertion with a real BoundedOutput filled deterministically and an offer-counting sink. A valid join applies, handling returns fatal, and exactly one output attempt occurs. Removing the overflow-specific catch produces a failed second-offer assertion (RED); restored production passes (GREEN). The ack-saturation test is now in-process; other real-process lifecycle/protocol tests remain. No production behavior changed.
 
-- [ ] **BUG-UI-001 / P2 — cross-rasterizer glyph parity fails on hosted CI.** Run [39043514498](https://github.com/Radomiej/JavityEngine/actions/runs/39043514498) passed JVM build/tests and reached native smoke, but card-title ink measured native79px versus browser74px, beyond the existing4px residual bound. Local Chromium154 measured75px using the exact bundled OpenSans file and a loaded font face. The initial CI browser was unpinned; subsequent exact Chrome for Testing and font-readiness checks reproduced the same failure. Local genuine Mesa/Xvfb comparison passes against its75px reference. See the current [diagnostic specification](../Spec/2026-10-17-ui-font-parity.md) and [probe results](../artifacts/site/ui-font-diagnosis.txt). Until that gate passes, this is an open compatibility/verification defect, not a confirmed font asset mismatch.
+- [x] **BUG-UI-001 / P2 — cross-rasterizer glyph parity fails on hosted CI.** Run [39043514498](https://github.com/Radomiej/JavityEngine/actions/runs/39043514498) passed JVM build/tests and reached native smoke, but card-title ink measured native79px versus browser74px, beyond the existing4px residual bound. Local Chromium154 measured75px using the exact bundled OpenSans file and a loaded font face. The initial CI browser was unpinned; subsequent exact Chrome for Testing and font-readiness checks reproduced the same failure. Local genuine Mesa/Xvfb comparison passes against its75px reference. See the current [diagnostic specification](../Spec/2026-10-17-ui-font-parity.md) and [probe results](../artifacts/site/ui-font-diagnosis.txt). Until that gate passes, this is an open compatibility/verification defect, not a confirmed font asset mismatch.
 
 UI001 follow-up: CI now installs exact Chrome for Testing154.0.8037.57. Reference generation logs browser version, declared/resolved OpenSans URL, loaded FontFace, computed family/weight, HTTP200 and bundled TTF SHA. Local guarded proof passed with75px card-title ink; forcing Arial was correctly rejected before screenshots. Original reference captures were restored. Native hosted confirmation remains a separate gate; tolerance was not changed.
 
@@ -33,3 +33,12 @@ QA005 local regression: targeted sustained-input and full11-case rooms suite pas
 UI001 update: pinning Chrome alone did not fix the native79/browser74 bound on hosted run39045027236. A local genuine Mesa/Xvfb run against the checked-in75px browser reference passes. The exact same Chrome for Testing build and bundled font reproduce75px locally versus74px hosted. The cause is still unproven; no tolerance was increased.
 
 Final Android result: run39046532187/source5d2a206 passed5/5 in one unfiltered invocation. BUG-ANDROID-001 is closed for that scoped KVM emulator gate; historical ANR cause and physical-device coverage remain outside the closure. BUG-UI-001 remains OPEN.
+
+## Hosted font closure — 2026-10-20
+
+BUG-UI-001 is now CLOSED for its scoped rasterizer gate. Fresh
+[Desktop39391819541](https://github.com/Radomiej/JavityEngine/actions/runs/39391819541)
+on `f2fafce` passed native UI parity, unchanged browser/native screenshot gates
+and the entire workflow. The diagnosis/failures above remain historical evidence.
+See [current defect record](2026-10-20-engine-quality.md) for the fractional-metrics
+fix and remaining font/layout limitations.

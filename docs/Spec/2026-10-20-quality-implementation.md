@@ -115,7 +115,7 @@ gates; it does not validate the optional new PBR/shadow/HDR features on Wasm.
 The desktop failure in CI39375230181 was diagnosed from recovered hosted logs:
 native card-title ink79px versus browser74px. Fractional font metrics fix the
 local replay against that exact reference without changed tolerances or goldens.
-**BUG-UI-001 remains open until a fresh hosted workflow passes.**
+**BUG-UI-001 closed by fresh [Desktop39391819541](https://github.com/Radomiej/JavityEngine/actions/runs/39391819541), source`f2fafce`.**
 
 Shadow and HDR support here requires desktop GL30; plain PBR/import proof also
 ran on the libGDX GL20 path. The deliberate glTF profile rejects unsupported
@@ -135,3 +135,8 @@ MM HTML comparison passed. The final cutoff fix passed full reactor plus native
 shadow25-view proof; all1015 JVM tests in123 suites have no failures or skips.
 The [curated evidence manifest](../artifacts/engine-quality/manifest.json)
 records source and artifact hashes. Hosted workflow status remains separate.
+
+Hosted final evidence on `f2fafce`: Desktop39391819541 (all native/imported GPU,
+screenshot, installed-distribution and multiplayer gates), Android39391819590,
+Wasm39391819573 and Pages39391818848 all completed SUCCESS. This closes the scoped
+font gate. Broader platform/feature/performance limits above remain unchanged.

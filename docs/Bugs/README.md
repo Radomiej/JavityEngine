@@ -20,6 +20,6 @@ Nowy wpis powinien mieć trwałe ID, priorytet, zakres wersji, kroki odtworzenia
 
 [Potwierdzone problemy, naprawy i bramki](2026-10-20-engine-quality.md):
 Q-001/Q-002 zamknięte regresjami core; Q-003 ma zmierzony spadek alokacji CPU.
-Osobne wpisy opisują naprawy glTF/VAO/FBO/root-motion/fontu. BUG-UI-001 nadal
-wymaga świeżego zielonego hosted CI. [Pierwotny audyt](../engine-quality-review.md)
+Osobne wpisy opisują naprawy glTF/VAO/FBO/root-motion/fontu. BUG-UI-001 zamknięty
+świeżym zielonym Desktop CI39391819541/source`f2fafce`. [Pierwotny audyt](../engine-quality-review.md)
 zachowuje historyczną reprodukcję sprzed poprawek.

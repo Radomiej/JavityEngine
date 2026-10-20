@@ -8,7 +8,7 @@ To kolejność proponowana, nie deklaracja zakończonego zakresu AAA.
 - [x] Q-001: kontrakt własności hierarchii Transform3D, attach/usunięcie rodzica i regresje między scenami.
 - [x] Q-002: dostarczać zatwierdzone zmiany komponentów mimo błędu pojedynczego listenera; testy reentrancy i błędów.
 - [x] Wyjaśnić native smoke failure CI39375230181: ułamkowe metryki fontu; lokalny replay dokładnego hosted reference przechodzi bez zmian tolerancji.
-- [ ] BUG-UI-001: świeży zielony hosted CI po poprawce fontu; lokalny PASS nie zamyka bramki.
+- [x] BUG-UI-001: świeży hosted Desktop39391819541/source`f2fafce` PASS, bez zmiany tolerancji.
 - [x] Q-003: zmierzyć i ograniczyć alokacje snapshotu światła z zachowaniem atomowości po błędzie.
 - [x] Opcjonalny javity-gltf: runtime GLB/glTF, jawny profil materiałów PBR, zarządzane tekstury, zasięgi point lights i test oryginalnego Fox na GL20/GL30.
 - [x] Ograniczone desktop PBR cienie kierunkowe, HDR/exposure/tone mapping, translation root motion i wspólna scena Fox Garden.
@@ -273,7 +273,7 @@ Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpoin
 
 Feature gaps in browser providers, remote netcode and physical-device validation remain separate backlog items; this maintenance batch does not mark them implemented.
 
-- [ ] BUG-UI-001: diagnosis-backed fractional metrics fix and exact hosted-reference local replay pass; retain the glyph gate and obtain fresh hosted CI PASS. [Specification](Spec/2026-10-17-ui-font-parity.md).
+- [x] BUG-UI-001: fractional metrics fix; unchanged hosted glyph/screenshot gates PASS in Desktop39391819541/source`f2fafce`. [Specification](Spec/2026-10-17-ui-font-parity.md).
 
 ## ORBIT WebAssembly — 2026-10-17
 
@@ -304,4 +304,4 @@ Feature gaps in browser providers, remote netcode and physical-device validation
 - [ ] Podłączyć nowy rdzeń replikacji do faktycznego hosta Colyseus z uwierzytelnionymi sesjami/ticketami; prediction/reconciliation i obciążenie sieci osobno.
 - [ ] Test typowanego providera na aktualnym prywatnym API ORBIT; syntetyczny MessagePort host nie jest takim testem.
 - [ ] Natywne adaptery gamepad i touch gestures oraz dalsze prefab overrides/asset pipeline zgodnie z potrzebami gry.
-- [ ] Potwierdzić poprawkę BUG-UI-001 świeżym hosted CI; diagnoza i lokalny replay PASS nie zamykają bramki.
+- [x] Poprawka BUG-UI-001 potwierdzona świeżym hosted Desktop39391819541/source`f2fafce`.

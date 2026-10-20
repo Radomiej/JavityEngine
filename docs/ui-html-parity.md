@@ -106,4 +106,4 @@ Card title, mimo potwierdzonego wspólnego TTF. Poprawka przechodzi lokalnie
 z odtworzonym niezmienionym hosted reference oraz bramkami UI/K2/K4; obecny
 natywny Card title ma ink74px. Historyczne pomiary powyżej pozostają przypisane
 do swoich fixture/wersji; nie stanowią nowego pomiaru po tej zmianie.
-**BUG-UI-001 pozostaje otwarty do świeżego zielonego hosted CI.**
+**BUG-UI-001 zamknięty świeżym [Desktop39391819541](https://github.com/Radomiej/JavityEngine/actions/runs/39391819541), source`f2fafce`: native i browser screenshot gates PASS, bez zmiany tolerancji.**
