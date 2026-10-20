@@ -1,0 +1,10 @@
+{
+  "success": false,
+  "scope": "Static engine showcase",
+  "negativeControl": true,
+  "browserHarness": "Project Playwright with regular Chromium; not the connected browser extension",
+  "browserHarnessReason": "No browser control tool was exposed after tool discovery; AGENTS.md permits the existing Chromium showcase proof",
+  "browser": "154.0.8037.57",
+  "error": "AssertionError('tab-foliage')",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/JavityEngine/tools/site-browser-proof.py\", line 190, in main\n    result.update(check_page(page, url, args.output))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/JavityEngine/tools/site-browser-proof.py\", line 131, in check_page\n    assert_selected(page, \"tab-\" + name)\n  File \"/workspace/JavityEngine/tools/site-browser-proof.py\", line 62, in assert_selected\n    assert tab.get_attribute(\"aria-selected\") == \"true\", tab_id\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: tab-foliage\n"
+}

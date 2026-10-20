@@ -1,0 +1,72 @@
+{
+  "success": true,
+  "scope": "Static engine showcase",
+  "negativeControl": false,
+  "browserHarness": "Project Playwright with regular Chromium; not the connected browser extension",
+  "browserHarnessReason": "No browser control tool was exposed after tool discovery; AGENTS.md permits the existing Chromium showcase proof",
+  "browser": "154.0.8037.57",
+  "desktop": true,
+  "tabsAndKeyboard": true,
+  "examples": [
+    "quality",
+    "foliage",
+    "avatar",
+    "voxels",
+    "shapes",
+    "physics",
+    "map",
+    "relay"
+  ],
+  "gallery": [
+    {
+      "width": 1440,
+      "captures": [
+        "fox-garden-day.webp",
+        "fox-garden-dusk.webp",
+        "fox-garden-lantern.webp",
+        "foliage-path.webp",
+        "foliage-close.webp",
+        "foliage-dusk.webp",
+        "avatar-fps.webp",
+        "avatar-full.webp"
+      ],
+      "escapeAndClose": true,
+      "focusReturn": true
+    },
+    {
+      "width": 390,
+      "captures": [
+        "fox-garden-day.webp",
+        "fox-garden-dusk.webp",
+        "fox-garden-lantern.webp",
+        "foliage-path.webp",
+        "foliage-close.webp",
+        "foliage-dusk.webp",
+        "avatar-fps.webp",
+        "avatar-full.webp"
+      ],
+      "escapeAndClose": true,
+      "focusReturn": true
+    }
+  ],
+  "viewports": [
+    {
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "viewport": 1440,
+      "scroll": 1440
+    }
+  ],
+  "mobileMenu": true,
+  "errors": []
+}

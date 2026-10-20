@@ -4,6 +4,12 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Engine gallery and demo page — 2026-10-20
+
+- Add deterministic native full-HD `qualityGallery` / `foliageGallery` capture commands without HUD, keeping smoke assertions separate.
+- Refresh GitHub Pages with actual engine shots, full-size keyboard-accessible image previews and quality/foliage/imported-avatar launch examples.
+- Retain media source hashes/credits and add responsive gallery/browser QA plus native capture CI artifacts.
+
 ### Foliage and imported-avatar authoring — 2026-10-20
 
 - Add seeded merged grass/shrub components, bounded unsigned-short geometry, renderer-owned transactional caches and geometry/draw diagnostics.

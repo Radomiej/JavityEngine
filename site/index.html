@@ -7,7 +7,7 @@
     <meta name="description" content="JavityEngine is an open source Java game engine built on libGDX, with a scene-local component core, 2D and 3D rendering, tools, UI and optional modules.">
     <title>JavityEngine — Java, games, all the way down</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preload" as="image" href="assets/voxel-fps.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/fox-garden-day.webp" fetchpriority="high">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -22,6 +22,7 @@
       </button>
       <nav id="site-nav" class="site-nav" aria-label="Main navigation">
         <a href="#engine">The engine</a>
+        <a href="#gallery">Gallery</a>
         <a href="#systems">Systems</a>
         <a href="#examples">Examples</a>
         <a href="#status">Platform status</a>
@@ -37,17 +38,86 @@
           <p class="hero-deck">A Java game engine with a clear scene model, an extensible component core, and the tools to take an idea from a single object to a whole world.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">Explore the repository <span aria-hidden="true">↗</span></a>
-            <a class="button button-quiet" href="#start">See how it works <span aria-hidden="true">↓</span></a>
+            <a class="button button-quiet" href="#gallery">Explore the gallery <span aria-hidden="true">↓</span></a>
           </div>
           <div class="hero-meta"><span>JDK 25</span><span>Gradle 9.8.1</span><span>Desktop first</span></div>
         </div>
         <figure class="hero-visual">
-          <div class="visual-chrome"><span class="chrome-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>javity / voxel-world</span><span class="live-label">DEMO CAPTURE</span></div>
-          <img src="assets/voxel-fps.webp" width="1280" height="720" alt="First-person view across a voxel landscape in the JavityEngine desktop demo" fetchpriority="high">
-          <figcaption><span class="caption-mark">01</span> One scene. One component model. A world that runs.</figcaption>
+          <div class="visual-chrome"><span class="chrome-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>javity / fox-garden</span><span class="live-label">DEMO CAPTURE</span></div>
+          <img src="assets/fox-garden-day.webp" width="1920" height="1080" alt="Two animated Fox models in a sunlit garden, rendered by the JavityEngine desktop PBR and HDR showcase" fetchpriority="high">
+          <figcaption><span class="caption-mark">01</span> Fox Garden · PBR, HDR & directional shadows. <a href="#gallery-credits">Fox credits ↗</a></figcaption>
           <span class="visual-index" aria-hidden="true">J / 01</span>
         </figure>
         <div class="hero-bottom"><span>BUILT FOR MAKING, NOT MAGIC</span><span class="scroll-cue"><i></i> SCROLL TO EXPLORE</span></div>
+      </section>
+
+      <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+        <div class="wrap">
+          <div class="section-heading gallery-heading"><div><p class="eyebrow">CAPTURED IN THE ENGINE</p><h2 id="gallery-title">A closer look.</h2></div><p>Real frames from the desktop demos. Explore the light, the leaves and the characters, then run the scenes yourself.</p></div>
+          <div class="gallery-meta"><span><i></i> DESKTOP OPENGL CAPTURES</span><a href="#examples">Get the desktop commands <span aria-hidden="true">↓</span></a></div>
+          <div class="gallery-grid">
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Fox Garden / afternoon">
+                <img src="assets/fox-garden-day.webp" width="1920" height="1080" alt="Two animated Fox models among garden stones, shrubs and trees in afternoon light" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">01</span><span><b>Fox Garden / afternoon</b><small>PBR · HDR · directional shadows</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Fox Garden / last light">
+                <img src="assets/fox-garden-dusk.webp" width="1920" height="1080" alt="Fox Garden rendered with the warm last-light sun and ambient preset" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">02</span><span><b>Fox Garden / last light</b><small>Warm sun · exposure preset</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Fox Garden / lantern hour">
+                <img src="assets/fox-garden-lantern.webp" width="1920" height="1080" alt="Fox Garden at lantern hour with amber local lighting" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">03</span><span><b>Fox Garden / lantern hour</b><small>Finite-range point light</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Woodland / the long view">
+                <img src="assets/foliage-path.webp" width="1920" height="1080" alt="A path through original branching trees and merged grass and shrub patches" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">04</span><span><b>Woodland / the long view</b><small>Merged grass & shrub patches · CC0</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Woodland / up close">
+                <img src="assets/foliage-close.webp" width="1920" height="1080" alt="Close desktop view of textured grass and irregular cutout leaves in the foliage demo" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">05</span><span><b>Woodland / up close</b><small>Cutout leaves · scene lighting · CC0</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Woodland / dusk">
+                <img src="assets/foliage-dusk.webp" width="1920" height="1080" alt="Woodland foliage rendered with the dusk and fog preset" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">06</span><span><b>Woodland / dusk</b><small>Ordinary lighting & fog · CC0</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card gallery-card-avatar">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Imported avatar / first person">
+                <img src="assets/avatar-fps.webp" width="800" height="600" alt="Camera-local first-person arms and hand tool from the original imported block humanoid fixture" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">07</span><span><b>Imported avatar / first person</b><small>Camera-local arms & tool · CC0</small></span></figcaption>
+            </figure>
+            <figure class="gallery-card gallery-card-avatar">
+              <button type="button" class="gallery-open" data-gallery-open aria-haspopup="dialog" aria-controls="gallery-dialog" aria-label="Enlarge Imported avatar / full body">
+                <img src="assets/avatar-full.webp" width="800" height="600" alt="Full-body and independent arms and tool instances of the original imported block humanoid fixture" loading="lazy" decoding="async">
+                <span class="gallery-zoom" aria-hidden="true">↗</span>
+              </button>
+              <figcaption><span class="gallery-number">08</span><span><b>Imported avatar / full body</b><small>Independent instance poses · CC0</small></span></figcaption>
+            </figure>
+          </div>
+          <div class="gallery-foot">
+            <p>These are engine screenshots. Launch the desktop examples below to explore the scenes interactively.</p>
+            <p id="gallery-credits">Fox model: PixelMannen (CC0 1.0); rig / animation: tomkranis and glTF conversion: AsoboStudio / scurest (CC BY 4.0). <a href="https://github.com/Radomiej/JavityEngine/blob/master/tools/animation-validation/fox/NOTICE.md" target="_blank" rel="noreferrer">Fox notice & credits ↗</a><br>Original foliage artwork and tree geometry: <a href="https://github.com/Radomiej/JavityEngine/blob/master/javity-core/src/main/resources/foliage/NOTICE.md" target="_blank" rel="noreferrer">CC0 1.0 ↗</a>. Original block humanoid, rig and tool animation: <a href="https://github.com/Radomiej/JavityEngine/blob/master/javity-gltf/src/main/resources/org/javity/gltf/fixtures/LICENSE.txt" target="_blank" rel="noreferrer">CC0 1.0 ↗</a>.</p>
+          </div>
+        </div>
       </section>
 
       <section class="intro-section" id="engine">
@@ -104,7 +174,7 @@ game.start();</code></pre>
             <article class="feature-card feature-large">
               <div class="feature-top"><span class="feature-index">01</span><span class="feature-tag">CORE</span></div>
               <h3>2D and 3D,<br>side by side.</h3>
-              <p>Scene-local cameras and renderers, sprites, models, lighting and sky. Shared components give gameplay one place to live.</p>
+              <p>Scene-local cameras and renderers, sprites, models, lighting and sky. Optional glTF/PBR, HDR and directional shadows extend the desktop rendering path.</p>
               <div class="feature-glyph glyph-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
               <a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/engine-guide.md" target="_blank" rel="noreferrer">Engine guide <span aria-hidden="true">↗</span></a>
             </article>
@@ -154,21 +224,25 @@ game.start();</code></pre>
 
       <section class="examples-section" id="examples">
         <div class="wrap">
-          <div class="section-heading examples-heading"><div><p class="eyebrow">05 / RUN THE EXAMPLES</p><h2>See it in motion.</h2></div><p>Every entry point below is wired into the desktop demo. Start with one scene, then follow the code.</p></div>
+          <div class="section-heading examples-heading"><div><p class="eyebrow">05 / RUN THE EXAMPLES</p><h2>See it in motion.</h2></div><p>Run a garden, a woodland or an imported character fixture on desktop. Keep exploring with the earlier engine examples.</p></div>
           <div class="examples-layout">
               <div class="example-list" role="tablist" aria-label="Desktop examples">
-              <button class="example-tab is-active" id="tab-voxels" role="tab" aria-selected="true" aria-controls="example-panel" data-example="voxels" tabindex="0"><span>01</span><b>Voxel world</b><small>FPS · chunks · avatar</small><i>↗</i></button>
-              <button class="example-tab" id="tab-shapes" role="tab" aria-selected="false" aria-controls="example-panel" data-example="shapes" tabindex="-1"><span>02</span><b>Shapes & materials</b><small>2D · SDF · shader styles</small><i>↗</i></button>
-              <button class="example-tab" id="tab-physics" role="tab" aria-selected="false" aria-controls="example-panel" data-example="physics" tabindex="-1"><span>03</span><b>Physics 3D</b><small>Bullet · capsule controller</small><i>↗</i></button>
-              <button class="example-tab" id="tab-map" role="tab" aria-selected="false" aria-controls="example-panel" data-example="map" tabindex="-1"><span>04</span><b>MapLibre Native</b><small>Linux x64 · local vector map</small><i>↗</i></button>
-              <button class="example-tab" id="tab-relay" role="tab" aria-selected="false" aria-controls="example-panel" data-example="relay" tabindex="-1"><span>05</span><b>Relay Ward</b><small>Java gameplay · React HUD</small><i>↗</i></button>
+              <button class="example-tab is-active" id="tab-quality" role="tab" aria-selected="true" aria-controls="example-panel" data-example="quality" tabindex="0"><span>01</span><b>Fox Garden</b><small>glTF · PBR · HDR · shadows</small><i aria-hidden="true">↗</i></button>
+              <button class="example-tab" id="tab-foliage" role="tab" aria-selected="false" aria-controls="example-panel" data-example="foliage" tabindex="-1"><span>02</span><b>Woodland foliage</b><small>Grass · shrubs · original trees</small><i aria-hidden="true">↗</i></button>
+              <button class="example-tab" id="tab-avatar" role="tab" aria-selected="false" aria-controls="example-panel" data-example="avatar" tabindex="-1"><span>03</span><b>Imported avatar</b><small>Full body · FPS arms · hand tool</small><i aria-hidden="true">↗</i></button>
+              <button class="example-tab" id="tab-voxels" role="tab" aria-selected="false" aria-controls="example-panel" data-example="voxels" tabindex="-1"><span>04</span><b>Voxel world</b><small>FPS · chunks · avatar</small><i>↗</i></button>
+              <button class="example-tab" id="tab-shapes" role="tab" aria-selected="false" aria-controls="example-panel" data-example="shapes" tabindex="-1"><span>05</span><b>Shapes & materials</b><small>2D · SDF · shader styles</small><i>↗</i></button>
+              <button class="example-tab" id="tab-physics" role="tab" aria-selected="false" aria-controls="example-panel" data-example="physics" tabindex="-1"><span>06</span><b>Physics 3D</b><small>Bullet · capsule controller</small><i>↗</i></button>
+              <button class="example-tab" id="tab-map" role="tab" aria-selected="false" aria-controls="example-panel" data-example="map" tabindex="-1"><span>07</span><b>MapLibre Native</b><small>Linux x64 · local vector map</small><i>↗</i></button>
+              <button class="example-tab" id="tab-relay" role="tab" aria-selected="false" aria-controls="example-panel" data-example="relay" tabindex="-1"><span>08</span><b>Relay Ward</b><small>Java gameplay · React HUD</small><i>↗</i></button>
             </div>
-            <article class="example-panel" id="example-panel" role="tabpanel" aria-labelledby="tab-voxels" tabindex="0">
-              <div class="example-screen"><img id="example-image" src="assets/voxel-fps.webp" width="1280" height="720" alt="Voxel world demo viewed from first person"><span class="screen-label"><i></i> DESKTOP DEMO</span></div>
-              <div class="example-info"><div><span id="example-kicker" class="feature-tag">VOXEL MODULE</span><h3 id="example-title">Step into the world.</h3><p id="example-description">Explore a chunked voxel landscape in first or third person. Edit blocks, switch tools and follow the shared avatar animation.</p></div><div class="command"><span>RUN FROM REPOSITORY ROOT</span><code id="example-command">./gradlew :javity-desktop:run --args='--voxels'</code></div><a class="text-link" id="example-source" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/voxels.md" target="_blank" rel="noreferrer">Read the walkthrough <span aria-hidden="true">↗</span></a></div>
+            <article class="example-panel" id="example-panel" role="tabpanel" aria-labelledby="tab-quality" tabindex="0">
+              <div class="example-screen"><img id="example-image" src="assets/fox-garden-day.webp" width="1920" height="1080" alt="Two animated Fox models in the JavityEngine desktop garden showcase"><span class="screen-label"><i></i> DESKTOP DEMO</span></div>
+              <div class="example-info"><div><span id="example-kicker" class="feature-tag">OPTIONAL glTF / PBR / HDR</span><h3 id="example-title">One garden. Three moods.</h3><p id="example-description">Original imported Fox models, PBR foliage, directional shadows and HDR exposure share one scene. Switch afternoon, last light and lantern presets; open the runtime inspector with F1.</p></div><div class="command"><span>DESKTOP · RUN FROM REPOSITORY ROOT</span><code id="example-command">./gradlew :javity-desktop:qualityDemo</code></div><a class="text-link" id="example-source" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/quality-showcase.md" target="_blank" rel="noreferrer">Read the walkthrough <span aria-hidden="true">↗</span></a></div>
             </article>
           </div>
-          <p class="example-note">Examples need JDK 25 and a desktop OpenGL context. Some optional demos need additional native libraries. Commands and prerequisites are documented with each guide.</p>
+          <div class="example-credit" id="example-credit">Fox: PixelMannen (CC0); tomkranis / AsoboStudio / scurest (CC BY 4.0). <a href="https://github.com/Radomiej/JavityEngine/blob/master/tools/animation-validation/fox/NOTICE.md" target="_blank" rel="noreferrer">Asset notice ↗</a></div>
+          <p class="example-note">Examples need JDK 25 and a desktop OpenGL context. Fox Garden requires GL30 and supported HDR/shadow targets. Some optional demos need additional native libraries. Commands and prerequisites are documented with each guide.</p>
         </div>
       </section>
 
@@ -176,6 +250,7 @@ game.start();</code></pre>
         <div class="wrap status-grid">
           <div><p class="eyebrow">06 / HONEST PLATFORM STATUS</p><h2>Ready where<br>it’s been proven.</h2><p class="section-lead">A build passing is a start. Each platform and module still has its own runtime gates.</p><a class="text-link" href="https://github.com/Radomiej/JavityEngine/blob/master/docs/modernization-status.md" target="_blank" rel="noreferrer">Read current modernization status <span aria-hidden="true">↗</span></a></div>
           <div class="status-cards">
+            <article class="status-card status-good"><div><span class="status-dot"></span><h3>Recent rendering fixes</h3><span class="status-pill">SCOPED</span></div><p>Offscreen foliage stays in shadow-pass submissions. Demo cleanup continues after component errors, and failed avatar captures restore framebuffer state and release temporary pixels.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/Bugs/2026-10-20-foliage-avatar.md" target="_blank" rel="noreferrer">Fixes & regression evidence ↗</a></article>
             <article class="status-card status-good"><div><span class="status-dot"></span><h3>Desktop JVM</h3><span class="status-pill">VERIFIED</span></div><p>JDK 25 on Linux x64, including real OpenGL/Mesa smoke coverage for named demos.</p></article>
             <article class="status-card status-amber"><div><span class="status-dot"></span><h3>Android</h3><span class="status-pill">SCOPED</span></div><p>The complete five-test suite passes on an API35 x86_64 KVM emulator: input, rendering, context recovery, rotation and Activity recreation. Physical ARM64, performance, MapLibre and Bullet are also unverified.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/android-status.md" target="_blank" rel="noreferrer">Android evidence ↗</a></article>
             <article class="status-card status-muted"><div><span class="status-dot"></span><h3>Browser / Wasm</h3><span class="status-pill">EXPERIMENTAL</span></div><p>A separate TeaVM WasmGC build renders an actual Javity scene through GdxRenderer and WebGL2 in Chromium. Yoga/UI, browser physics, broad asset support and the rest of the optional providers still need integration and verification.</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/docs/javity-wasm-rendering-spike.md" target="_blank" rel="noreferrer">Wasm rendering spike ↗</a></article>
@@ -195,6 +270,11 @@ game.start();</code></pre>
     </main>
 
     <footer class="site-footer"><div class="wrap footer-main"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Javity<span class="brand-light">Engine</span></span></a><p>Open source, built in the open.<br>Java 25 · libGDX</p><a href="https://github.com/Radomiej/JavityEngine/blob/master/LICENSE" target="_blank" rel="noreferrer">Apache License 2.0</a><a href="https://github.com/Radomiej/JavityEngine/blob/master/THIRD_PARTY.md" target="_blank" rel="noreferrer">Third-party notices</a><a href="https://github.com/Radomiej/JavityEngine" target="_blank" rel="noreferrer">GitHub ↗</a></div><div class="wrap footer-bottom"><span>© 2026 JavityEngine contributors</span><span>SCREENSHOTS FROM REPOSITORY DEMOS · SEE CAPTIONS AND NOTICES</span><a href="#top">Back to top ↑</a></div></footer>
+    <dialog id="gallery-dialog" class="gallery-dialog" aria-labelledby="gallery-caption">
+      <div class="gallery-dialog-toolbar"><span>JAVITY / DESKTOP CAPTURE</span><button type="button" id="gallery-close" autofocus>Close <span aria-hidden="true">×</span></button></div>
+      <img id="gallery-image" alt="">
+      <p id="gallery-caption">Enlarged desktop engine capture.</p>
+    </dialog>
     <script src="script.js" defer></script>
   </body>
 </html>

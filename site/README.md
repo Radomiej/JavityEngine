@@ -29,3 +29,36 @@ The repository already publishes `master:/` through GitHub Pages. Root `.nojekyl
 Optional browser QA: install Python Playwright and `/usr/bin/chromium`, then run `python3 tools/site-browser-proof.py` from the repository root. It serves only the static site at `/JavityEngine/`, checks four viewport widths, actual image loading, example commands, keyboard tabs and mobile navigation, and writes captures to ignored `artifacts/site/`. This verifies the static presentation, not engine runtime.
 
 Negative control: `python3 tools/site-browser-proof.py --disable-scripts --output /tmp/javity-site-negative` must fail when tabs stop working. Every run overwrites its own result.json, including failures; use a separate output directory for negative evidence.
+
+## Current engine gallery — 2026-10-20
+
+The hero/gallery adds eight actual desktop captures. The six Fox Garden/woodland
+images are native1920×1080 renders without HUD; the two imported-avatar proof
+images retain their original640×480 resolution. Click a capture for a full image,
+use Escape or Close to return, and select any of eight desktop launch examples.
+These are screenshots with native commands, not embedded browser games.
+
+Reproduce the full-HD captures from the repository root:
+
+```sh
+./gradlew :javity-desktop:qualityGallery :javity-desktop:foliageGallery
+./gradlew :javity-desktop:importedAvatarSmoke
+```
+
+Gallery mode is separate from smoke verification; output defaults to
+`build/reports/gallery/{quality,foliage}`. Avatar proof images are under
+`build/imported-avatar`. `fox-garden-day.webp` uses the closer afternoon view
+`quality/fox-garden-close.png`; dusk and lantern use their matching named files.
+`foliage-path`, `foliage-close` and `foliage-dusk` use the three woodland frames.
+`avatar-fps` and `avatar-full` use first-person and two-full-bodies proof frames.
+The generator for these captures is the engine itself. Conversion is RGB WebP
+quality90/method6 only: no cropping, retouching, compositing or added effects.
+[Media provenance](assets/gallery-manifest.json) records original and encoded
+SHA-256, dimensions and source paths. Fox retains its CC0/CC BY4.0 credits and
+NOTICE links; original foliage and humanoid fixtures are CC0.
+
+`Engine showcase checks` now runs the browser proof in pinned Chrome in addition
+to static links. Desktop CI generates real full-HD gallery artifacts separately.
+Curated QA evidence: `docs/artifacts/site/gallery-refresh-qa.md`. The project
+Playwright harness is used because no connected-browser control tool is exposed;
+it uses local test content and does not access a user's browser session.

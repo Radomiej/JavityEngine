@@ -307,3 +307,10 @@ Feature gaps in browser providers, remote netcode and physical-device validation
 - [ ] Test typowanego providera na aktualnym prywatnym API ORBIT; syntetyczny MessagePort host nie jest takim testem.
 - [ ] Natywne adaptery gamepad i touch gestures oraz dalsze prefab overrides/asset pipeline zgodnie z potrzebami gry.
 - [x] Poprawka BUG-UI-001 potwierdzona świeżym hosted Desktop39391819541/source`f2fafce`.
+
+## Demo page and gallery — 2026-10-20
+
+- [x] Native full-HD gallery capture mode for current quality/foliage demos; keep smoke assertions intact.
+- [x] Real engine gallery and new quality/foliage/avatar launch examples on GitHub Pages, with source credits.
+- [x] Responsive/keyboard/lightbox/browser QA; screenshots are desktop captures, not a browser port. [Evidence](artifacts/site/gallery-refresh-qa.md).
+- Publication uses master GitHub Pages; verify the deployed gallery and media after push, separately from static artifact upload.

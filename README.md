@@ -133,3 +133,5 @@ with deterministic seeds, bounded geometry and explicit borrowed atlas ownership
 exact model paths, parts, clips and sockets before explicit FPS/TPP selection.
 The original CC0 humanoid fixture proves imported animation and arms/tool views;
 it does not automatically classify arbitrary humanoid meshes.
+
+See the [engine capture gallery](https://radomiej.github.io/JavityEngine/site/#gallery) for native Fox Garden, foliage and imported-avatar views with demo commands.

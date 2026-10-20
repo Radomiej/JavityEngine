@@ -1,0 +1,92 @@
+{
+  "scope": "Actual native desktop GL captures; not browser-rendered games or hardware performance proof",
+  "encoding": "RGB WebP quality90/method6; no crop, retouch or added effects",
+  "captures": [
+    {
+      "asset": "fox-garden-day.webp",
+      "source": "build/reports/gallery/quality/fox-garden-close.png",
+      "sourceSha256": "926b2e80c51bafde05e801d380c921812358bd265e81350f2b296e7d207b232a",
+      "webpSha256": "0af21c7674d5d5613ee265ec9f8a071c29af5fbebfb34cd0c0ad04e4a9e32e44",
+      "width": 1920,
+      "height": 1080,
+      "title": "Fox Garden / afternoon close view",
+      "credit": "Fox: PixelMannen CC0; rig/animation tomkranis, conversion AsoboStudio/scurest CC BY4.0"
+    },
+    {
+      "asset": "fox-garden-dusk.webp",
+      "source": "build/reports/gallery/quality/fox-garden-last-light.png",
+      "sourceSha256": "d6afa7453e2d9668ec9a1848c1269b74c02373f0334f4310a286d08bbc1dde29",
+      "webpSha256": "f534d013a837cb5d27bd57b18f22b1c3ceb31bf3c3193738ce16f3b9e58a5210",
+      "width": 1920,
+      "height": 1080,
+      "title": "Fox Garden / last light",
+      "credit": "Fox CC0 + CC BY4.0; see tools/animation-validation/fox/NOTICE.md"
+    },
+    {
+      "asset": "fox-garden-lantern.webp",
+      "source": "build/reports/gallery/quality/fox-garden-lantern.png",
+      "sourceSha256": "92f86d0f729f4caab9fc28cdc526ffbe6ab3ae8975ec94646be77ad55090b486",
+      "webpSha256": "7ddad6ca565a966b1e59edaa9fe48c1d2acde92cd844d08f264089e468d135f1",
+      "width": 1920,
+      "height": 1080,
+      "title": "Fox Garden / lantern hour",
+      "credit": "Fox CC0 + CC BY4.0; see tools/animation-validation/fox/NOTICE.md"
+    },
+    {
+      "asset": "foliage-path.webp",
+      "source": "build/reports/gallery/foliage/day-wide.png",
+      "sourceSha256": "99b0e0833047df258fbc74de796e8d5b7b77ffbb493389280d06888c51994d3b",
+      "webpSha256": "bfc80d348b0023e2f60b358f328536318a2d4b8f23e2ef76057104c43e89dbd6",
+      "width": 1920,
+      "height": 1080,
+      "title": "Woodland / long view",
+      "credit": "Original atlas and tree geometry CC0"
+    },
+    {
+      "asset": "foliage-close.webp",
+      "source": "build/reports/gallery/foliage/day-close.png",
+      "sourceSha256": "16aa67bc767d860f15e90610d2ab54029b12ba6ba951d893496cb0f9a3eb9fe6",
+      "webpSha256": "8b80c76a654aab999f0cb9e663468ae1c44b2a011083ea86cddf56bbea2e907a",
+      "width": 1920,
+      "height": 1080,
+      "title": "Woodland / close view",
+      "credit": "Original atlas and tree geometry CC0"
+    },
+    {
+      "asset": "foliage-dusk.webp",
+      "source": "build/reports/gallery/foliage/dusk-wide.png",
+      "sourceSha256": "f690bb9ad3fc4f12639763ef70b61df3283f096de320ad928c2ec1d3ac3c57eb",
+      "webpSha256": "65888e7a4eb94f7cd4fcc21fcbabc6fc96be9c63fb33d50f15e2898a4c9e73ed",
+      "width": 1920,
+      "height": 1080,
+      "title": "Woodland / dusk",
+      "credit": "Original atlas and tree geometry CC0"
+    },
+    {
+      "asset": "avatar-fps.webp",
+      "source": "build/imported-avatar/first-person.png",
+      "sourceSha256": "a959b1ec7f228ed3ccf8af039eeaae2b76b88fac60cacfc52b8616bca63d1673",
+      "webpSha256": "395eea52593358cb1e3b89d2f5007040fb3c90b5e9b4a4de1b6e1a79ad020af9",
+      "width": 640,
+      "height": 480,
+      "title": "Imported avatar / camera-local FPS arms and tool",
+      "credit": "Original humanoid fixture CC0"
+    },
+    {
+      "asset": "avatar-full.webp",
+      "source": "build/imported-avatar/two-full-bodies.png",
+      "sourceSha256": "7d2ed889ca277939bae774c037f9c687bd23d4b138ae5d6130f03a927f9d9367",
+      "webpSha256": "1752c723dbcefbb28810b45eda6c9b624a0e1e1d9dd4dc0eac50495c15672bb7",
+      "width": 640,
+      "height": 480,
+      "title": "Imported avatar / independent full-body poses",
+      "credit": "Original humanoid fixture CC0"
+    }
+  ],
+  "engineSourceRevision": "f8f57676b3c636eab60dba5a04efe03db7a02d9e",
+  "launcherSha256": {
+    "javity-desktop/src/main/java/org/javity/demo/QualityShowcase.java": "cd3fd42ed913d2db051e99babc5565f2b21736505e3ec7ff948e37e9b6b6348d",
+    "javity-desktop/src/main/java/org/javity/demo/FoliageDemo.java": "f30ac66018424afa9c8623754c61868c79cd8f3329ac653d625bb5cf470db463",
+    "javity-desktop/src/main/java/org/javity/demo/ImportedAvatarDemo.java": "7593888a44d1bfaff1d024bda814d9bf5c500c151f9c60d5a986204534ed9cea"
+  }
+}

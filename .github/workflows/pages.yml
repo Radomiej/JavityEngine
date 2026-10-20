@@ -7,11 +7,13 @@ on:
       - 'index.html'
       - '.nojekyll'
       - 'tools/verify-site.py'
+      - 'tools/site-browser-proof.py'
       - '.github/workflows/pages.yml'
   pull_request:
     paths:
       - 'site/**'
       - 'tools/verify-site.py'
+      - 'tools/site-browser-proof.py'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 permissions:
@@ -23,6 +25,23 @@ jobs:
       - uses: actions/checkout@v5
       - name: Validate self-contained static site
         run: python3 tools/verify-site.py site
+      - name: Install pinned Chrome for showcase QA
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 154.0.8037.57
+      - name: Verify rendered gallery and demo controls
+        env:
+          CHROME_FOR_TESTING_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          python3 -m pip install playwright==1.62.0
+          python3 tools/site-browser-proof.py --browser "$CHROME_FOR_TESTING_PATH"
+      - name: Retain browser QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-showcase-browser-qa
+          path: artifacts/site/
       - uses: actions/upload-artifact@v4
         with:
           name: engine-showcase-static

@@ -1,4 +1,31 @@
 const examples = {
+  quality: {
+    label: 'OPTIONAL glTF / PBR / HDR', title: 'One garden. Three moods.',
+    description: 'Original imported Fox models, PBR foliage, directional shadows and HDR exposure share one scene. Switch afternoon, last light and lantern presets; open the runtime inspector with F1.',
+    command: './gradlew :javity-desktop:qualityDemo', image: 'assets/fox-garden-day.webp',
+    guide: 'docs/quality-showcase.md',
+    imageAlt: 'Two animated Fox models in the JavityEngine desktop garden showcase',
+    credit: 'Fox: PixelMannen (CC0); tomkranis / AsoboStudio / scurest (CC BY 4.0).',
+    notice: 'tools/animation-validation/fox/NOTICE.md'
+  },
+  foliage: {
+    label: 'STATIC FOLIAGE PATCHES', title: 'Build a little woodland.',
+    description: 'Original grass, shrubs and branching trees meet ordinary scene lighting and fog. Deterministic patches merge the plants into meshes; use keys 1–3 for wide, close and dusk views.',
+    command: './gradlew :javity-desktop:foliage', image: 'assets/foliage-path.webp',
+    guide: 'docs/foliage.md',
+    imageAlt: 'A path through original trees, grass and shrubs in the JavityEngine desktop foliage demo',
+    credit: 'Original foliage atlas and demo tree geometry: CC0 1.0.',
+    notice: 'javity-core/src/main/resources/foliage/NOTICE.md'
+  },
+  avatar: {
+    label: 'EXPLICIT IMPORTED AVATAR', title: 'One rig. Your point of view.',
+    description: 'An original CC0 block humanoid demonstrates explicit body regions, independent poses and a hand-tool socket. Space switches to camera-local FPS arms; T toggles the tool. A small authoring fixture with a documented scope.',
+    command: './gradlew :javity-desktop:importedAvatar', image: 'assets/avatar-full.webp',
+    guide: 'docs/avatars.md',
+    imageAlt: 'Full-body and independent arms and tool instances of the original imported block humanoid fixture',
+    credit: 'Original block humanoid, rig, hand tool and animation: CC0 1.0.',
+    notice: 'javity-gltf/src/main/resources/org/javity/gltf/fixtures/LICENSE.txt'
+  },
   voxels: {
     label: 'VOXEL MODULE', title: 'Step into the world.',
     description: 'Explore a chunked voxel landscape in first or third person. Edit blocks, switch tools and follow the shared avatar animation.',
@@ -57,6 +84,18 @@ function selectExample(tab, moveFocus = false) {
   document.querySelector('#example-source').href = source + item.guide;
   document.querySelector('#example-image').src = item.image;
   document.querySelector('#example-image').alt = item.imageAlt;
+  const credit = document.querySelector('#example-credit');
+  credit.replaceChildren();
+  credit.hidden = !item.credit;
+  if (item.credit) {
+    credit.append(document.createTextNode(item.credit + ' '));
+    const notice = document.createElement('a');
+    notice.href = source + item.notice;
+    notice.textContent = 'Asset notice ↗';
+    notice.target = '_blank';
+    notice.rel = 'noreferrer';
+    credit.append(notice);
+  }
   document.querySelector('#example-source').setAttribute('aria-label', `Read ${item.title.toLowerCase()} guide`);
   if (moveFocus) tab.focus();
 }
@@ -101,4 +140,43 @@ document.querySelector('.copy-button').addEventListener('click', async event => 
     button.textContent = 'Select code';
   }
   window.setTimeout(() => { button.textContent = 'Copy'; }, 1400);
+});
+
+// Native dialog keeps focus inside the enlarged capture and supports Escape.
+const galleryDialog = document.querySelector('#gallery-dialog');
+const galleryImage = document.querySelector('#gallery-image');
+const galleryCaption = document.querySelector('#gallery-caption');
+let galleryTrigger = null;
+for (const button of document.querySelectorAll('[data-gallery-open]')) {
+  button.addEventListener('click', () => {
+    const thumbnail = button.querySelector('img');
+    if (typeof galleryDialog.showModal !== 'function') {
+      window.location.href = thumbnail.src;
+      return;
+    }
+    galleryTrigger = button;
+    galleryImage.src = thumbnail.src;
+    galleryImage.alt = thumbnail.alt;
+    const card = button.closest('.gallery-card');
+    const title = card.querySelector('figcaption b').textContent;
+    const detail = card.querySelector('figcaption small').textContent;
+    const credit = thumbnail.src.includes('fox-garden')
+      ? 'Fox: PixelMannen (CC0); rig / animation: tomkranis; conversion: AsoboStudio / scurest (CC BY 4.0).'
+      : thumbnail.src.includes('avatar')
+        ? 'Original block humanoid, rig and tool animation: CC0 1.0.'
+        : 'Original foliage artwork and tree geometry: CC0 1.0.';
+    galleryCaption.textContent = `${title} · ${detail}. Desktop engine capture. ${credit}`;
+    galleryDialog.showModal();
+    document.body.classList.add('gallery-is-open');
+  });
+}
+document.querySelector('#gallery-close').addEventListener('click', () => galleryDialog.close());
+galleryDialog.addEventListener('close', () => {
+  document.body.classList.remove('gallery-is-open');
+  galleryTrigger?.focus({ preventScroll: true });
+});
+galleryDialog.addEventListener('click', event => {
+  if (event.target !== galleryDialog) return;
+  const bounds = galleryDialog.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) galleryDialog.close();
 });
