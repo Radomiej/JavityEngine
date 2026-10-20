@@ -54,7 +54,7 @@ with sync_playwright() as p:
     metrics = page.evaluate("""() => {
       const keys=['screen','nested','nested-header','header-left','header-right','header-label','nested-action','nested-content','flex-left','left-text','flex-right','right-text','controls','classic-button','classic-input','classic-progress','classic-card','card-title','card-body','typography','type-inherited','type-xl','type-2xl','scroll-sample'];
       const round=n=>Math.round(n*100)/100;
-      const el=id=>{const e=document.getElementById(id),s=getComputedStyle(e),r=e.getBoundingClientRect();return {rect:{x:round(r.x),y:round(r.y),width:round(r.width),height:round(r.height)},fontSize:s.fontSize,lineHeight:s.lineHeight,color:s.color,backgroundColor:s.backgroundColor,borderColor:s.borderColor,borderWidth:s.borderWidth,borderRadius:s.borderRadius,padding:{top:s.paddingTop,right:s.paddingRight,bottom:s.paddingBottom,left:s.paddingLeft},gap:s.gap,flexDirection:s.flexDirection}};
+      const el=id=>{const e=document.getElementById(id),s=getComputedStyle(e),r=e.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(e);const rects=[...range.getClientRects()].map(v=>({x:round(v.x),y:round(v.y),width:round(v.width),height:round(v.height)}));const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=s.font;if('letterSpacing'in ctx)ctx.letterSpacing=s.letterSpacing;const advance=ctx.measureText(e.textContent);return {rect:{x:round(r.x),y:round(r.y),width:round(r.width),height:round(r.height)},fontSize:s.fontSize,lineHeight:s.lineHeight,color:s.color,backgroundColor:s.backgroundColor,borderColor:s.borderColor,borderWidth:s.borderWidth,borderRadius:s.borderRadius,padding:{top:s.paddingTop,right:s.paddingRight,bottom:s.paddingBottom,left:s.paddingLeft},gap:s.gap,flexDirection:s.flexDirection,textDiagnostic:{text:e.textContent,font:s.font,fontFamily:s.fontFamily,letterSpacing:s.letterSpacing,rangeRects:rects,rangeAdvance:round(rects.reduce((w,v)=>Math.max(w,v.width),0)),canvasAdvance:round(advance.width),actualBoundingBoxLeft:round(advance.actualBoundingBoxLeft),actualBoundingBoxRight:round(advance.actualBoundingBoxRight)}}};
       const scroll=document.querySelector('#scroll-sample');
       const sr=scroll.getBoundingClientRect();
       const thumb=document.querySelector('#scroll-thumb').getBoundingClientRect();
@@ -116,5 +116,15 @@ for key in ("header-label", "left-text", "right-text", "card-title", "card-body"
     crop = image.crop((round(box["x"]), round(box["y"]), round(box["x"] + box["width"]), round(box["y"] + box["height"])))
     points = [(x, y) for y in range(crop.height) for x in range(crop.width) if max(crop.getpixel((x, y))) < 180]
     item["glyphPixels"] = {"x": box["x"] + min(p[0] for p in points), "y": box["y"] + min(p[1] for p in points), "width": max(p[0] for p in points) - min(p[0] for p in points) + 1, "height": max(p[1] for p in points) - min(p[1] for p in points) + 1} if points else None
+    # Keep the complete label text measurement separate from thresholded pixels:
+    # range width captures browser layout while canvas advance helps identify shaping drift.
+    item["textDiagnostic"] = metrics["els"][key]["textDiagnostic"]
+    item["thresholdEdgeCoverage"] = {
+        str(threshold): [
+            sum(1 for y in range(crop.height) if max(crop.getpixel((x, y))) < threshold)
+            for x in range(crop.width)
+        ]
+        for threshold in (180, 220, 245)
+    }
 (BASE / "reference-metrics.json").write_text(json.dumps(metrics, indent=2))
 print(json.dumps(metrics, indent=2))

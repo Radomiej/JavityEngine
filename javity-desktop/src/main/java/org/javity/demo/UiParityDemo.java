@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonReader;
@@ -57,6 +58,8 @@ final class UiParityDemo extends ApplicationAdapter {
   private Stage stage;
   private UiTheme theme;
   private UiDocument document;
+  private org.javity.core.Game panelGame;
+  private org.javity.ui.components.UiDocumentComponent panelComponent;
   private int frames;
   private int fixtureClicks;
   private boolean complete;
@@ -74,9 +77,15 @@ final class UiParityDemo extends ApplicationAdapter {
     document = new UiDocument(theme);
     JsonValue fixture =
         new JsonReader().parse(Gdx.files.classpath("org/javity/demo/ui-reference/fixture.json"));
-    document.render(read(fixture));
+    UiNode panel = read(fixture);
+    panelGame = new org.javity.core.Game();
+    panelComponent =
+        panelGame
+            .createObject("HTML parity panel")
+            .addComponent(
+                new org.javity.ui.components.UiDocumentComponent(stage, document, () -> panel));
+    panelGame.start();
     document.root().setFillParent(true);
-    stage.addActor(document.root());
     stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
   }
 
@@ -156,13 +165,25 @@ final class UiParityDemo extends ApplicationAdapter {
   @Override
   public void render() {
     ScreenUtils.clear(1, 1, 1, 1);
+    panelGame.step(Gdx.graphics.getDeltaTime());
     stage.act(Gdx.graphics.getDeltaTime());
     stage.draw();
     frames++;
     if (!complete && frames >= (smoke ? 120 : 1)) {
       complete = true;
       capture();
-      if (smoke) Gdx.app.exit();
+      if (smoke) {
+        panelComponent.getGameObject().setActive(false);
+        if (document.root().isVisible()) throw new AssertionError("Inactive panel stayed visible");
+        panelComponent.getGameObject().setActive(true);
+        panelComponent.setEnabled(false);
+        if (document.root().isVisible()) throw new AssertionError("Disabled panel stayed visible");
+        panelComponent.setEnabled(true);
+        if (!document.root().isVisible())
+          throw new AssertionError("Reactivated panel stayed hidden");
+        Gdx.app.log("UiParityDemo", "UiDocumentComponent native visibility lifecycle PASS");
+        Gdx.app.exit();
+      }
     }
   }
 
@@ -202,7 +223,16 @@ final class UiParityDemo extends ApplicationAdapter {
             .append(pixelCenter(pixels, domX + actor.getWidth() / 2, domY + actor.getHeight() / 2));
         if (actor instanceof com.badlogic.gdx.scenes.scene2d.ui.Label)
           out.append(", \"glyphPixels\": ")
-              .append(glyphBounds(pixels, domX, domY, actor.getWidth(), actor.getHeight()));
+              .append(glyphBounds(pixels, domX, domY, actor.getWidth(), actor.getHeight()))
+              .append(", \"textDiagnostic\": ")
+              .append(
+                  textDiagnostic(
+                      pixels,
+                      (com.badlogic.gdx.scenes.scene2d.ui.Label) actor,
+                      domX,
+                      domY,
+                      actor.getWidth(),
+                      actor.getHeight()));
         out.append("}").append(i + 1 == BOX_KEYS.size() ? "\n" : ",\n");
       }
       var scroll = document.actor("scroll-sample");
@@ -750,6 +780,62 @@ final class UiParityDemo extends ApplicationAdapter {
             + "}";
   }
 
+  /** Captures shaping advance and bounded edge profiles independently of the ink-box assertion. */
+  private static String textDiagnostic(
+      Pixmap pixels,
+      com.badlogic.gdx.scenes.scene2d.ui.Label label,
+      float x,
+      float y,
+      float width,
+      float height) {
+    String text = label.getText().toString();
+    BitmapFont font = label.getStyle().font;
+    GlyphLayout layout = new GlyphLayout();
+    layout.setText(font, text);
+    StringBuilder result = new StringBuilder("{\"text\":").append(jsonQuote(text));
+    result.append(",\"fontScaleX\":").append(round(font.getScaleX()));
+    result.append(",\"fontScaleY\":").append(round(font.getScaleY()));
+    result.append(",\"layoutAdvance\":").append(round(layout.width));
+    result.append(",\"layoutHeight\":").append(round(layout.height));
+    result.append(",\"actorWidth\":").append(round(width));
+    result.append(",\"edgeCoverage\":{");
+    int[] thresholds = {180, 220, 245};
+    int left = Math.max(0, (int) Math.floor(x));
+    int right = Math.min(pixels.getWidth(), (int) Math.ceil(x + width));
+    int top = Math.max(0, (int) Math.floor(y));
+    int bottom = Math.min(pixels.getHeight(), (int) Math.ceil(y + height));
+    for (int thresholdIndex = 0; thresholdIndex < thresholds.length; thresholdIndex++) {
+      if (thresholdIndex > 0) result.append(',');
+      int threshold = thresholds[thresholdIndex];
+      result.append('"').append(threshold).append("\":[");
+      int limit = Math.min(right, left + 256);
+      for (int px = left; px < limit; px++) {
+        if (px > left) result.append(',');
+        int count = 0;
+        for (int py = top; py < bottom; py++) {
+          int rgba = pixels.getPixel(px, pixels.getHeight() - 1 - py);
+          int red = (rgba >>> 24) & 255, green = (rgba >>> 16) & 255, blue = (rgba >>> 8) & 255;
+          if (Math.max(red, Math.max(green, blue)) < threshold) count++;
+        }
+        result.append(count);
+      }
+      result.append(']');
+    }
+    return result.append("}}").toString();
+  }
+
+  private static String jsonQuote(String value) {
+    StringBuilder result = new StringBuilder("\"");
+    for (int index = 0; index < value.length(); index++) {
+      char character = value.charAt(index);
+      if (character == '"' || character == '\\') result.append('\\');
+      if (character == '\n') result.append("\\n");
+      else if (character == '\r') result.append("\\r");
+      else result.append(character);
+    }
+    return result.append('"').toString();
+  }
+
   private static String wrapInkBounds(Pixmap pixels, float x, float y, float width, float height) {
     int minX = pixels.getWidth(), minY = pixels.getHeight(), maxX = -1, maxY = -1;
     for (int px = Math.max(0, (int) Math.floor(x));
@@ -886,6 +972,26 @@ final class UiParityDemo extends ApplicationAdapter {
                       Gdx.graphics.getHeight() - origin.y - actor.getHeight(),
                       actor.getWidth(),
                       actor.getHeight()));
+      String actualTextDiagnostic =
+          textDiagnostic(
+              pixels,
+              (com.badlogic.gdx.scenes.scene2d.ui.Label) actor,
+              origin.x,
+              Gdx.graphics.getHeight() - origin.y - actor.getHeight(),
+              actor.getWidth(),
+              actor.getHeight());
+      Gdx.app.log(
+          "UiParityDemo",
+          "fontDiagnostic key="
+              + key
+              + " browser="
+              + elements.get(key).get("textDiagnostic")
+              + " browserEdgeCoverage="
+              + elements.get(key).get("thresholdEdgeCoverage")
+              + " nativeInk="
+              + actualInk
+              + " nativeText="
+              + actualTextDiagnostic);
       if (actualInk.isNull()) throw new AssertionError("Missing rendered glyphs: " + key);
       for (String axis : List.of("y", "height"))
         maxGlyphVerticalError =
@@ -1012,8 +1118,9 @@ final class UiParityDemo extends ApplicationAdapter {
 
   @Override
   public void dispose() {
-    if (stage != null) stage.dispose();
+    if (panelGame != null) panelGame.close();
     if (document != null) document.close();
+    if (stage != null) stage.dispose();
     if (theme != null) theme.dispose();
   }
 
