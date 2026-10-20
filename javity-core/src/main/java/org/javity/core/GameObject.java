@@ -41,6 +41,17 @@ public final class GameObject {
       throw new IllegalStateException("GameObject active revision exhausted");
     this.active = active;
     activeRevision++;
+    Throwable failure = null;
+    for (Component component : getComponents()) {
+      try {
+        component.activationChanged();
+      } catch (RuntimeException | Error e) {
+        if (failure == null) failure = e;
+        else if (failure != e) failure.addSuppressed(e);
+      }
+    }
+    if (failure instanceof RuntimeException e) throw e;
+    if (failure instanceof Error e) throw e;
   }
 
   /** Monotonically changes whenever active state actually transitions. */

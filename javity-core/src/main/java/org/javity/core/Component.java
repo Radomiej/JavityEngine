@@ -11,9 +11,12 @@ public abstract class Component {
 
   public UpdateMode updateMode = UpdateMode.WORLD;
   private GameObject owner;
+  private ResourceScope ownedResources;
+  private boolean resourcesReleased;
   private boolean enabled = true;
   private long enabledRevision;
   boolean created, removed, destroyed;
+  private boolean activationReady;
 
   public final GameObject getGameObject() {
     return owner;
@@ -41,6 +44,7 @@ public abstract class Component {
       throw new IllegalStateException("Component enabled revision exhausted");
     this.enabled = enabled;
     enabledRevision++;
+    activationChanged();
   }
 
   /** Monotonically changes whenever enabled state actually transitions. */
@@ -82,6 +86,12 @@ public abstract class Component {
 
   public void onCreate() {}
 
+  /**
+   * Called after creation and whenever this component's enabled state or owner active state
+   * changes.
+   */
+  protected void onActivationChanged() {}
+
   public void onUpdate(float delta) {}
 
   public void onLateUpdate(float delta) {}
@@ -90,6 +100,17 @@ public abstract class Component {
 
   /** Release constructor-owned resources even when removed before initialization. */
   protected void onRelease() {}
+
+  /**
+   * Registers a constructor- or lifecycle-owned resource for release after {@link #onRelease()}.
+   * Register subscriptions here after their backing resources so the scope closes them first.
+   */
+  protected final <T extends AutoCloseable> T own(T resource) {
+    java.util.Objects.requireNonNull(resource, "resource");
+    if (resourcesReleased) throw new IllegalStateException("Component resources are released");
+    if (ownedResources == null) ownedResources = new ResourceScope();
+    return ownedResources.own(resource);
+  }
 
   public void onComponentChange(ComponentChange change) {}
 
@@ -102,7 +123,13 @@ public abstract class Component {
     if (!created && !removed) {
       created = true;
       onCreate();
+      activationReady = true;
+      activationChanged();
     }
+  }
+
+  final void activationChanged() {
+    if (activationReady && !removed && !destroyed) onActivationChanged();
   }
 
   final void disposeComponent() {
@@ -119,6 +146,14 @@ public abstract class Component {
       } catch (RuntimeException | Error e) {
         if (failure == null) failure = e;
         else if (failure != e) failure.addSuppressed(e);
+      }
+      try {
+        if (ownedResources != null) ownedResources.close();
+      } catch (RuntimeException | Error e) {
+        if (failure == null) failure = e;
+        else if (failure != e) failure.addSuppressed(e);
+      } finally {
+        resourcesReleased = true;
       }
       if (failure instanceof RuntimeException e) throw e;
       if (failure instanceof Error e) throw e;
