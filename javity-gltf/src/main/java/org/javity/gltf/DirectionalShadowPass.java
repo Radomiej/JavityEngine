@@ -310,6 +310,12 @@ public final class DirectionalShadowPass implements WorldRenderPass, ShadowMap {
         throw new IllegalArgumentException("MASK shadow casting requires unit base-color alpha");
       PBRTextureAttribute baseColor =
           renderable.material.get(PBRTextureAttribute.class, PBRTextureAttribute.BaseColorTexture);
+      float cutoff = renderable.material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value;
+      if (!Float.isFinite(cutoff) || cutoff < 0)
+        throw new IllegalArgumentException("MASK shadow cutoff must be finite and nonnegative");
+      if (baseColor == null && cutoff >= 1)
+        throw new IllegalArgumentException(
+            "MASK shadow casting does not support untextured cutoff at or above one");
       if (baseColor != null && baseColor.uvIndex != 0)
         throw new IllegalArgumentException("MASK shadow casting supports only base-color UV0");
       for (VertexAttribute attribute : renderable.meshPart.mesh.getVertexAttributes())
@@ -329,6 +335,15 @@ public final class DirectionalShadowPass implements WorldRenderPass, ShadowMap {
 
   private ModelBatch makeBatch() {
     DepthShader.Config config = PBRDepthShaderProvider.createDefaultConfig();
+    // Pinned PBR color discards alpha <= cutoff; its depth source instead uses <.
+    // Match the visible silhouette, including fully transparent texels with cutoff zero.
+    String alphaDiscard = "texture2D(u_diffuseTexture, v_texCoords0).a < u_alphaTest";
+    int seam = config.fragmentShader.indexOf(alphaDiscard);
+    if (seam < 0 || config.fragmentShader.indexOf(alphaDiscard, seam + 1) >= 0)
+      throw new IllegalStateException("gdx-gltf 2.3.0 depth alpha-test shader source drift");
+    config.fragmentShader =
+        config.fragmentShader.replace(
+            alphaDiscard, "texture2D(u_diffuseTexture, v_texCoords0).a <= u_alphaTest");
     config.numBones = maxBones;
     config.numBoneWeights = maxBoneWeights;
     config.defaultCullFace = GL20.GL_BACK;

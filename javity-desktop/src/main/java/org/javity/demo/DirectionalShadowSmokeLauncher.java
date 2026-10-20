@@ -345,6 +345,26 @@ public final class DirectionalShadowSmokeLauncher {
         receiving.receive = true;
         byte[] transparent = image("mask-transparent");
         require(darker(clear, transparent) < 10, "fully discarded MASK still cast a shadow");
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = 0;
+        receiving.receive = false;
+        byte[] zeroCutoffOff = image("mask-zero-cutoff-receive-off");
+        receiving.receive = true;
+        byte[] zeroCutoffOn = image("mask-zero-cutoff");
+        require(
+            darker(zeroCutoffOff, zeroCutoffOn) < 10,
+            "MASK alpha equal to zero cutoff still cast a shadow");
+        pixels.setColor(1, 1, 1, 128f / 255);
+        pixels.fill();
+        mask.draw(pixels, 0, 0);
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = 128f / 255;
+        receiving.receive = false;
+        byte[] equalCutoffOff = image("mask-equal-cutoff-receive-off");
+        receiving.receive = true;
+        byte[] equalCutoffOn = image("mask-equal-cutoff");
+        require(
+            darker(equalCutoffOff, equalCutoffOn) < 10,
+            "MASK alpha equal to cutoff still cast a shadow");
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = .5f;
         pixels.setColor(Color.WHITE);
         pixels.fill();
         mask.draw(pixels, 0, 0);
@@ -360,6 +380,11 @@ public final class DirectionalShadowSmokeLauncher {
         material.remove(PBRTextureAttribute.BaseColorTexture);
         rejectMask("base-color alpha");
         factor.color.a = 1;
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = 1;
+        rejectMask("untextured");
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = Float.NaN;
+        rejectMask("finite");
+        material.get(FloatAttribute.class, FloatAttribute.AlphaTest).value = .5f;
         PBRTextureAttribute channel = PBRTextureAttribute.createBaseColorTexture(mask);
         channel.uvIndex = 1;
         material.set(channel);

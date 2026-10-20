@@ -56,7 +56,12 @@ and the upstream `BlendingAttribute` marker alongside `AlphaTest`. Nonzero
 effective base-color UV indices (including texture-transform overrides) and
 other MASK variants reject before the depth draw, because the pinned upstream
 depth shader cannot reproduce their color-pass alpha. These materials remain
-usable with `cast=false`; receiving is independent. Transparent BLEND
+usable with `cast=false`; receiving is independent. A version-checked shader
+patch aligns depth discard with the pinned PBR color pass's `alpha <= cutoff`
+boundary, including transparent texels at cutoff zero. MASK casters without
+a base-color texture require a finite cutoff below one; an
+untextured cutoff at or above one rejects because upstream depth omits its alpha
+test there. All MASK cutoffs must be finite and nonnegative. Transparent BLEND
 casters are rejected before drawing; disable `cast` or use an explicit MASK
 material. Skinning uses the configured capacities and current engine pose. The
 optional importer currently rejects morph content, so this guide does not claim
@@ -109,7 +114,7 @@ retain the pinned fields.
 and first-directional selection. The desktop `directionalShadowSmoke` launcher
 uses actual scene components and numeric framebuffer comparisons for caster
 movement, independent cast/receive, fully discarded and opaque MASK textures,
-rejection of MASK factor/opacity/UV1/vertex-color variants,
+exact MASK alpha/cutoff boundaries and rejection of factor/opacity/UV1/vertex-color variants,
 imported skinned pose changes, unsupported BLEND rejection, failed draw recovery,
 incomplete target rollback, resize and resource deletion. It also creates a second
 unshared GLFW context, runs managed recovery and compares the entire first
