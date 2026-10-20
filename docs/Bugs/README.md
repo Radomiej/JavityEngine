@@ -15,9 +15,11 @@ Nowy wpis powinien mieć trwałe ID, priorytet, zakres wersji, kroki odtworzenia
 - [Tożsamość komponentów i błędy cleanup — 2026-10-19](2026-10-19-core-api-review.md).
 
 - [Przegląd integracji nowych API — 2026-10-20](2026-10-20-authoring-integration.md).
-## Nowe potwierdzone problemy jakości core — 2026-10-20
 
-[Audyt i reprodukcje](../engine-quality-review.md): Q-001 (rodzic Transform3D
-z obcej sceny), Q-002 (błąd listenera pomija pozostałych odbiorców). Oba
-potwierdzone sondami JVM; poprawki i regresje są jeszcze otwarte. Q-003 opisuje
-alokacje oświetlenia do pomiaru, nie zmierzony spadek wydajności.
+## Jakość silnika — 2026-10-20
+
+[Potwierdzone problemy, naprawy i bramki](2026-10-20-engine-quality.md):
+Q-001/Q-002 zamknięte regresjami core; Q-003 ma zmierzony spadek alokacji CPU.
+Osobne wpisy opisują naprawy glTF/VAO/FBO/root-motion/fontu. BUG-UI-001 nadal
+wymaga świeżego zielonego hosted CI. [Pierwotny audyt](../engine-quality-review.md)
+zachowuje historyczną reprodukcję sprzed poprawek.

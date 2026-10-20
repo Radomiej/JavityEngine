@@ -1,0 +1,1251 @@
+≈ tailwindcss v4.3.3
+
+Done in 51ms
+{
+  "status": "PASS",
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "dpr": 1
+  },
+  "maxFixedActorGeometryPx": 0.0,
+  "maxTextWidthDiagnosticPx": 1.55,
+  "glyphs": {
+    "idle": {
+      "game-title": {
+        "native": {
+          "x": 115,
+          "y": 44,
+          "width": 116,
+          "height": 14
+        },
+        "browser": {
+          "x": 115,
+          "y": 44,
+          "width": 118,
+          "height": 14
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "drone-state": {
+        "native": {
+          "x": 49,
+          "y": 159,
+          "width": 55,
+          "height": 12
+        },
+        "browser": {
+          "x": 49,
+          "y": 159,
+          "width": 57,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "mute-label": {
+        "native": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "browser": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      }
+    },
+    "hit": {
+      "game-title": {
+        "native": {
+          "x": 115,
+          "y": 44,
+          "width": 116,
+          "height": 14
+        },
+        "browser": {
+          "x": 115,
+          "y": 44,
+          "width": 118,
+          "height": 14
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "drone-state": {
+        "native": {
+          "x": 48,
+          "y": 159,
+          "width": 67,
+          "height": 12
+        },
+        "browser": {
+          "x": 48,
+          "y": 159,
+          "width": 68,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 1
+      },
+      "mute-label": {
+        "native": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "browser": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      }
+    },
+    "settings": {
+      "game-title": {
+        "native": {
+          "x": 115,
+          "y": 44,
+          "width": 116,
+          "height": 14
+        },
+        "browser": {
+          "x": 115,
+          "y": 44,
+          "width": 118,
+          "height": 14
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "drone-state": {
+        "native": {
+          "x": 49,
+          "y": 159,
+          "width": 67,
+          "height": 12
+        },
+        "browser": {
+          "x": 49,
+          "y": 159,
+          "width": 67,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      },
+      "mute-label": {
+        "native": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "browser": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      }
+    },
+    "loading": {
+      "game-title": {
+        "native": {
+          "x": 115,
+          "y": 44,
+          "width": 116,
+          "height": 14
+        },
+        "browser": {
+          "x": 115,
+          "y": 44,
+          "width": 118,
+          "height": 14
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "drone-state": {
+        "native": {
+          "x": 49,
+          "y": 159,
+          "width": 67,
+          "height": 12
+        },
+        "browser": {
+          "x": 49,
+          "y": 159,
+          "width": 67,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      },
+      "mute-label": {
+        "native": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "browser": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      }
+    },
+    "arena": {
+      "game-title": {
+        "native": {
+          "x": 115,
+          "y": 44,
+          "width": 116,
+          "height": 14
+        },
+        "browser": {
+          "x": 115,
+          "y": 44,
+          "width": 118,
+          "height": 14
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "drone-state": {
+        "native": {
+          "x": 49,
+          "y": 159,
+          "width": 55,
+          "height": 12
+        },
+        "browser": {
+          "x": 49,
+          "y": 159,
+          "width": 57,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 2
+      },
+      "mute-label": {
+        "native": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "browser": {
+          "x": 33,
+          "y": 521,
+          "width": 90,
+          "height": 12
+        },
+        "verticalPx": 0,
+        "heightPx": 0,
+        "widthPx": 0
+      }
+    }
+  },
+  "colors": {
+    "idle": {
+      "page": {
+        "point": [
+          5,
+          5
+        ],
+        "native": [
+          7,
+          17,
+          28
+        ],
+        "browser": [
+          7,
+          17,
+          28
+        ],
+        "expected": [
+          7,
+          17,
+          28
+        ],
+        "maxChannelDelta": 0
+      },
+      "scenePanel": {
+        "point": [
+          25,
+          25
+        ],
+        "native": [
+          12,
+          29,
+          44
+        ],
+        "browser": [
+          12,
+          29,
+          44
+        ],
+        "expected": [
+          12,
+          29,
+          44
+        ],
+        "maxChannelDelta": 0
+      },
+      "targetInset": {
+        "point": [
+          50,
+          125
+        ],
+        "native": [
+          16,
+          40,
+          58
+        ],
+        "browser": [
+          16,
+          40,
+          58
+        ],
+        "expected": [
+          16,
+          40,
+          58
+        ],
+        "maxChannelDelta": 0
+      },
+      "fireButton": {
+        "point": [
+          45,
+          260
+        ],
+        "native": [
+          8,
+          126,
+          131
+        ],
+        "browser": [
+          8,
+          126,
+          131
+        ],
+        "expected": [
+          8,
+          126,
+          131
+        ],
+        "maxChannelDelta": 0
+      },
+      "healthFill": {
+        "point": [
+          100,
+          232
+        ],
+        "native": [
+          0,
+          211,
+          243
+        ],
+        "browser": [
+          0,
+          211,
+          243
+        ],
+        "expected": [
+          0,
+          211,
+          243
+        ],
+        "maxChannelDelta": 0
+      },
+      "toggleOffTrack": {
+        "point": [
+          322,
+          527
+        ],
+        "native": [
+          107,
+          120,
+          140
+        ],
+        "browser": [
+          107,
+          120,
+          140
+        ],
+        "expected": [
+          107,
+          120,
+          140
+        ],
+        "maxChannelDelta": 0
+      },
+      "sliderRail": {
+        "point": [
+          260,
+          594
+        ],
+        "native": [
+          87,
+          102,
+          125
+        ],
+        "browser": [
+          87,
+          102,
+          125
+        ],
+        "expected": [
+          87,
+          102,
+          125
+        ],
+        "maxChannelDelta": 0
+      }
+    },
+    "hit": {
+      "page": {
+        "point": [
+          5,
+          5
+        ],
+        "native": [
+          7,
+          17,
+          28
+        ],
+        "browser": [
+          7,
+          17,
+          28
+        ],
+        "expected": [
+          7,
+          17,
+          28
+        ],
+        "maxChannelDelta": 0
+      },
+      "scenePanel": {
+        "point": [
+          25,
+          25
+        ],
+        "native": [
+          12,
+          29,
+          44
+        ],
+        "browser": [
+          12,
+          29,
+          44
+        ],
+        "expected": [
+          12,
+          29,
+          44
+        ],
+        "maxChannelDelta": 0
+      },
+      "targetInset": {
+        "point": [
+          50,
+          125
+        ],
+        "native": [
+          16,
+          40,
+          58
+        ],
+        "browser": [
+          16,
+          40,
+          58
+        ],
+        "expected": [
+          16,
+          40,
+          58
+        ],
+        "maxChannelDelta": 0
+      },
+      "healthTrack": {
+        "point": [
+          300,
+          232
+        ],
+        "native": [
+          38,
+          46,
+          56
+        ],
+        "browser": [
+          38,
+          46,
+          56
+        ],
+        "expected": [
+          38,
+          46,
+          56
+        ],
+        "maxChannelDelta": 0
+      }
+    },
+    "settings": {
+      "page": {
+        "point": [
+          5,
+          5
+        ],
+        "native": [
+          7,
+          17,
+          28
+        ],
+        "browser": [
+          7,
+          17,
+          28
+        ],
+        "expected": [
+          7,
+          17,
+          28
+        ],
+        "maxChannelDelta": 0
+      },
+      "scenePanel": {
+        "point": [
+          25,
+          25
+        ],
+        "native": [
+          12,
+          29,
+          44
+        ],
+        "browser": [
+          12,
+          29,
+          44
+        ],
+        "expected": [
+          12,
+          29,
+          44
+        ],
+        "maxChannelDelta": 0
+      },
+      "targetInset": {
+        "point": [
+          50,
+          125
+        ],
+        "native": [
+          16,
+          40,
+          58
+        ],
+        "browser": [
+          16,
+          40,
+          58
+        ],
+        "expected": [
+          16,
+          40,
+          58
+        ],
+        "maxChannelDelta": 0
+      },
+      "toggleOnTrack": {
+        "point": [
+          300,
+          527
+        ],
+        "native": [
+          31,
+          140,
+          237
+        ],
+        "browser": [
+          31,
+          140,
+          237
+        ],
+        "expected": [
+          31,
+          140,
+          237
+        ],
+        "maxChannelDelta": 0
+      },
+      "sliderFill": {
+        "point": [
+          60,
+          594
+        ],
+        "native": [
+          0,
+          211,
+          243
+        ],
+        "browser": [
+          0,
+          211,
+          243
+        ],
+        "expected": [
+          0,
+          211,
+          243
+        ],
+        "maxChannelDelta": 0
+      },
+      "sliderRail": {
+        "point": [
+          200,
+          594
+        ],
+        "native": [
+          87,
+          102,
+          125
+        ],
+        "browser": [
+          87,
+          102,
+          125
+        ],
+        "expected": [
+          87,
+          102,
+          125
+        ],
+        "maxChannelDelta": 0
+      }
+    },
+    "loading": {
+      "page": {
+        "point": [
+          5,
+          5
+        ],
+        "native": [
+          7,
+          17,
+          28
+        ],
+        "browser": [
+          7,
+          17,
+          28
+        ],
+        "expected": [
+          7,
+          17,
+          28
+        ],
+        "maxChannelDelta": 0
+      },
+      "scenePanel": {
+        "point": [
+          25,
+          25
+        ],
+        "native": [
+          12,
+          29,
+          44
+        ],
+        "browser": [
+          12,
+          29,
+          44
+        ],
+        "expected": [
+          12,
+          29,
+          44
+        ],
+        "maxChannelDelta": 0
+      },
+      "targetInset": {
+        "point": [
+          50,
+          125
+        ],
+        "native": [
+          16,
+          40,
+          58
+        ],
+        "browser": [
+          16,
+          40,
+          58
+        ],
+        "expected": [
+          16,
+          40,
+          58
+        ],
+        "maxChannelDelta": 0
+      }
+    },
+    "arena": {
+      "page": {
+        "point": [
+          5,
+          5
+        ],
+        "native": [
+          7,
+          17,
+          28
+        ],
+        "browser": [
+          7,
+          17,
+          28
+        ],
+        "expected": [
+          7,
+          17,
+          28
+        ],
+        "maxChannelDelta": 0
+      },
+      "scenePanel": {
+        "point": [
+          25,
+          25
+        ],
+        "native": [
+          12,
+          29,
+          44
+        ],
+        "browser": [
+          12,
+          29,
+          44
+        ],
+        "expected": [
+          12,
+          29,
+          44
+        ],
+        "maxChannelDelta": 0
+      },
+      "targetInset": {
+        "point": [
+          50,
+          125
+        ],
+        "native": [
+          16,
+          40,
+          58
+        ],
+        "browser": [
+          16,
+          40,
+          58
+        ],
+        "expected": [
+          16,
+          40,
+          58
+        ],
+        "maxChannelDelta": 0
+      }
+    }
+  },
+  "controls": {
+    "idle": {
+      "toggleTrack": {
+        "nativeFormula": {
+          "x": 295.64,
+          "y": 517.08,
+          "width": 34.72,
+          "height": 19.84
+        },
+        "browserComputed": {
+          "x": 295.6406,
+          "y": 517.08595,
+          "width": 34.7188,
+          "height": 19.8281
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.01,
+          "width": 0.0,
+          "height": 0.01
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 296,
+            "y": 517,
+            "width": 34,
+            "height": 20
+          },
+          "browser": {
+            "x": 297,
+            "y": 519,
+            "width": 32,
+            "height": 17
+          },
+          "deltaPx": {
+            "x": 1.0,
+            "y": 2.0,
+            "width": 2.0,
+            "height": 3.0
+          }
+        }
+      },
+      "toggleKnob": {
+        "nativeFormula": {
+          "x": 297.64,
+          "y": 519.08,
+          "width": 15.84,
+          "height": 15.84
+        },
+        "browserComputed": {
+          "x": 297.6406,
+          "y": 519.08595,
+          "width": 15.8281,
+          "height": 15.8281
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.01,
+          "width": 0.01,
+          "height": 0.01
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 298,
+            "y": 519,
+            "width": 15,
+            "height": 16
+          },
+          "browser": {
+            "x": 299,
+            "y": 520,
+            "width": 14,
+            "height": 15
+          },
+          "deltaPx": {
+            "x": 1.0,
+            "y": 1.0,
+            "width": 1.0,
+            "height": 1.0
+          }
+        }
+      },
+      "sliderTrack": {
+        "nativeFormula": {
+          "x": 40.0,
+          "y": 592.0,
+          "width": 290.0,
+          "height": 6
+        },
+        "browserComputed": {
+          "x": 40,
+          "y": 592,
+          "width": 290,
+          "height": 6
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        }
+      },
+      "sliderFill": {
+        "nativeFormula": {
+          "x": 40.0,
+          "y": 592.0,
+          "width": 203.0,
+          "height": 6
+        },
+        "browserComputed": {
+          "x": 40,
+          "y": 592,
+          "width": 203,
+          "height": 6
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        }
+      },
+      "sliderKnob": {
+        "nativeFormula": {
+          "x": 234.0,
+          "y": 586.0,
+          "width": 18,
+          "height": 18
+        },
+        "browserComputed": {
+          "x": 234,
+          "y": 586,
+          "width": 18,
+          "height": 18
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 234,
+            "y": 586,
+            "width": 18,
+            "height": 18
+          },
+          "browser": {
+            "x": 236,
+            "y": 588,
+            "width": 14,
+            "height": 14
+          },
+          "deltaPx": {
+            "x": 2.0,
+            "y": 2.0,
+            "width": 4.0,
+            "height": 4.0
+          }
+        }
+      },
+      "sliderKnobCornerGlyphGate": {
+        "native": {
+          "corners": [
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ]
+          ],
+          "center": [
+            255,
+            255,
+            255
+          ]
+        },
+        "browser": {
+          "corners": [
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ]
+          ],
+          "center": [
+            255,
+            255,
+            255
+          ]
+        }
+      }
+    },
+    "settings": {
+      "toggleTrack": {
+        "nativeFormula": {
+          "x": 295.64,
+          "y": 517.08,
+          "width": 34.72,
+          "height": 19.84
+        },
+        "browserComputed": {
+          "x": 295.6406,
+          "y": 517.08595,
+          "width": 34.7188,
+          "height": 19.8281
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.01,
+          "width": 0.0,
+          "height": 0.01
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 296,
+            "y": 517,
+            "width": 34,
+            "height": 20
+          },
+          "browser": {
+            "x": 297,
+            "y": 519,
+            "width": 32,
+            "height": 17
+          },
+          "deltaPx": {
+            "x": 1.0,
+            "y": 2.0,
+            "width": 2.0,
+            "height": 3.0
+          }
+        }
+      },
+      "toggleKnob": {
+        "nativeFormula": {
+          "x": 312.52,
+          "y": 519.08,
+          "width": 15.84,
+          "height": 15.84
+        },
+        "browserComputed": {
+          "x": 312.5313,
+          "y": 519.08595,
+          "width": 15.8281,
+          "height": 15.8281
+        },
+        "deltaPx": {
+          "x": 0.01,
+          "y": 0.01,
+          "width": 0.01,
+          "height": 0.01
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 313,
+            "y": 519,
+            "width": 15,
+            "height": 16
+          },
+          "browser": {
+            "x": 313,
+            "y": 520,
+            "width": 15,
+            "height": 14
+          },
+          "deltaPx": {
+            "x": 0.0,
+            "y": 1.0,
+            "width": 0.0,
+            "height": 2.0
+          }
+        }
+      },
+      "sliderTrack": {
+        "nativeFormula": {
+          "x": 40.0,
+          "y": 592.0,
+          "width": 290.0,
+          "height": 6
+        },
+        "browserComputed": {
+          "x": 40,
+          "y": 592,
+          "width": 290,
+          "height": 6
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        }
+      },
+      "sliderFill": {
+        "nativeFormula": {
+          "x": 40.0,
+          "y": 592.0,
+          "width": 101.5,
+          "height": 6
+        },
+        "browserComputed": {
+          "x": 40,
+          "y": 592,
+          "width": 101.5,
+          "height": 6
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        }
+      },
+      "sliderKnob": {
+        "nativeFormula": {
+          "x": 132.5,
+          "y": 586.0,
+          "width": 18,
+          "height": 18
+        },
+        "browserComputed": {
+          "x": 132.5,
+          "y": 586,
+          "width": 18,
+          "height": 18
+        },
+        "deltaPx": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 0.0,
+          "height": 0.0
+        },
+        "rasterPixelBounds": {
+          "native": {
+            "x": 133,
+            "y": 586,
+            "width": 17,
+            "height": 18
+          },
+          "browser": {
+            "x": 135,
+            "y": 588,
+            "width": 14,
+            "height": 14
+          },
+          "deltaPx": {
+            "x": 2.0,
+            "y": 2.0,
+            "width": 3.0,
+            "height": 4.0
+          }
+        }
+      },
+      "sliderKnobCornerGlyphGate": {
+        "native": {
+          "corners": [
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ]
+          ],
+          "center": [
+            255,
+            255,
+            255
+          ]
+        },
+        "browser": {
+          "corners": [
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ],
+            [
+              16,
+              40,
+              58
+            ]
+          ],
+          "center": [
+            255,
+            255,
+            255
+          ]
+        }
+      }
+    }
+  },
+  "pilotImageCropRgbMeanDifference": {
+    "idle": 3.364,
+    "hit": 3.364,
+    "settings": 3.364,
+    "loading": 3.364,
+    "arena": 3.364
+  }
+}

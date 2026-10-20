@@ -123,3 +123,38 @@ Legacy environments continue using the unmodified libGDX default sources.
 ## SDK platformy ORBIT
 
 `web/orbit/vendor/orbit-sdk.global.js` jest przypiętym artefaktem własnego projektu użytkownika [Radomiej/nekko-launcher](https://github.com/Radomiej/nekko-launcher), commit `d4bb30d28ce8731c5974de3441b63c5bea08b46c`, źródła `packages/game-sdk/src`. SHA256 i ścieżka artefaktu: `web/orbit/vendor/provenance.json`; packer weryfikuje checksum przed użyciem. Repozytorium źródłowe jest prywatne i nie deklaruje odrębnej otwartej licencji SDK; integracja na zlecenie właściciela nie nadaje mu automatycznie licencji Apache-2.0 całego silnika. Przed publiczną redystrybucją należy określić warunki dystrybucji SDK z właścicielem. Adapter Javity i narzędzia pakowania powstały dla tej integracji.
+
+## Opcjonalny importer glTF i shadery PBR
+
+`javity-gltf` używa `com.github.mgsx-dev.gdx-gltf:gltf:2.3.0` z projektu
+[mgsx-dev/gdx-gltf](https://github.com/mgsx-dev/gdx-gltf/tree/2.3.0), Apache-2.0.
+Zależność pozostaje opcjonalna względem core, z przypiętym libGDX1.14.2.
+Autorskie minimalne fixture glTF/GLB powstają przez
+`javity-gltf/tools/generate-fixtures.py` i są udostępnione jako CC0;
+`javity-gltf/src/main/resources/org/javity/gltf/fixtures/LICENSE.txt` zawiera
+warunki. Nie zastępują licencji modeli zewnętrznych: rzeczywisty Fox zachowuje
+istniejące `tools/animation-validation/fox/NOTICE.md` i źródłowe pochodzenie.
+
+`ManagedMeshBindingsRecovery` is a version-checked libGDX1.14.2 compatibility
+adapter for `Mesh` / `VertexBufferObjectWithVAO` CPU bookkeeping. After the host
+rebuilds managed meshes, it clears retained VAO attribute locations and stale
+bound flags for the current application, preserving borrowed mesh ownership and
+geometry. The upstream Apache-2.0 license and existing notices apply. Android R8
+keep rules retain only these pinned members. `DirectionalShadowPass` uses the
+upstream optional gdx-gltf PBR depth shaders and the same license; no upstream
+SceneManager or gameplay scene model is embedded.
+
+`javity-gltf/.../RangePbrShader.java` rozszerza upstreamowy `PBRShader`2.3.0
+i w runtime modyfikuje rozwinięte oficjalne źródło fragment shadera przez dwa
+ściśle sprawdzane, jednokrotne punkty podmiany. Upstream przechowuje
+`PointLightEx.range`, ale nie używa go w tym shaderze; lokalny adapter dodaje
+uniform zasięgu i skończone wygaszanie Javity, zachowując upstreamowy falloff
+dla nieograniczonych świateł legacy. Nie dołączono skopiowanego pełnego shadera
+ani importera. Obowiązują Apache-2.0 i notices przypiętego gdx-gltf; zmiana
+wersji wymaga ponownego audytu punktów podmiany i testów pikselowych.
+
+The optional directional-shadow pass also version-checks and adjusts the pinned
+upstream depth shader alpha-test comparison (`<` to `<=`) at runtime to agree
+with the PBR color silhouette. Original upstream copyright/license continues to
+apply; the local adjustment and its profile restrictions are in
+`DirectionalShadowPass` and `docs/shadows.md`.

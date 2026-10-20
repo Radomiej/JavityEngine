@@ -1,0 +1,74 @@
+{
+  "scope": "Actual Javity GdxRenderer on gdx-teavm Wasm GC",
+  "success": true,
+  "negativeControl": false,
+  "httpStatus": 200,
+  "initial": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 12,
+    "frame": 12,
+    "x": 0,
+    "z": 0,
+    "width": 1100,
+    "height": 800,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "afterInput": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 50,
+    "frame": 50,
+    "x": 1.1320000886917114,
+    "z": 0,
+    "width": 1100,
+    "height": 800,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "resized": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 79,
+    "frame": 79,
+    "x": 1.1320000886917114,
+    "z": 0,
+    "width": 760,
+    "height": 620,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": false
+  },
+  "disposed": {
+    "renderer": "org.javity.render.GdxRenderer",
+    "backend": "gdx-teavm",
+    "rendered": 89,
+    "frame": -1,
+    "x": 0,
+    "z": 0,
+    "width": 0,
+    "height": 0,
+    "webgl2": true,
+    "glError": 0,
+    "disposed": true
+  },
+  "gl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "WebKit WebGL",
+    "shadingLanguage": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)"
+  },
+  "framebuffer": {
+    "colors": 388,
+    "orangePixels": 1285,
+    "greenPixels": 10362,
+    "domLabelExcluded": true
+  },
+  "browser": "154.0.8037.57",
+  "rendering": "ANGLE/SwiftShader software WebGL2 in headless Chromium",
+  "pageErrors": [],
+  "console": [],
+  "failedRequests": []
+}

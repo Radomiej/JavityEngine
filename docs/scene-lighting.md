@@ -51,11 +51,45 @@ the cost of instancing performance. The snapshot is borrowed until the next
 snapshot call; callers must not mutate it or retain its light objects as live
 component state.
 
+## Snapshot storage and measured CPU allocation
+
+`RenderEnvironment3D.snapshot()` retains the borrowed `Environment` identity.
+Two internal buffers alternate only after a successful complete validation; a
+failed snapshot preserves the last published light values, ranges, fog and
+overflow. Lights, colors, attributes and range storage are copied and reused,
+never aliases of mutable component state. Capacity/count shrink clears active
+suffixes; internal high-water capacity remains until the environment is released.
+Increasing capacities or accepted light counts can allocate. `Attribute.copy()`
+explicitly creates independent storage. Borrowed attributes/lights must not be
+retained across the next snapshot call, even if their identity is reused later.
+
+The integrating root repeated the opt-in CPU allocation benchmark on JDK25.0.4.1,
+with `-Xms256m -Xmx256m`, 10,000 warmup snapshots per workload and three samples of
+10,000 snapshots, in separate before/after JVMs. Median allocated bytes/snapshot:
+
+| Workload | Owners | Lights D/P/S | Capacity D/P/S | Before | After |
+|---|---:|---|---|---:|---:|
+| Empty | 0 | 0/0/0 | 2/4/2 | 1,256 | 608 |
+| Default | 8 | 2/4/2 | 2/4/2 | 3,679.202 | 1,552.027 |
+| Dense | 16 | 16/64/16 | 16/64/16 | 16,640 | 4,880 |
+| Overflow | 16 | 16/64/16 | 2/4/2 | 7,128 | 4,904 |
+
+Raw samples: [before](artifacts/engine-quality/light-before.json),
+[after](artifacts/engine-quality/light-after.json). Run the current implementation
+with `./gradlew :javity-desktop:lightSnapshotBenchmark`. These totals include
+remaining scene query/component result copies. Overflow transitions and high-water
+growth can also allocate. This is a warmed CPU snapshot measurement, with no GL
+context; it does not establish frame time, GC latency, device performance or
+zero allocation. Two retained buffers trade bounded high-water memory for
+failure-atomic publication.
+
 `renderViewmodel(camera, provider)` deliberately uses legacy renderer lighting
 without scene fog or sky, keeping FPS hands readable independently of the world.
 This can produce a visible lighting difference between hands and world objects.
 
-The implementation is forward lighting without dynamic shadows or PBR. The integrated `environmentSmoke` now checks measured directional/point/spot/fog, scene-skinned textured poses and alpha-test depth holes, moved uniform recovery, WORLD clock, borrowed sockets and viewmodel/HUD isolation on desktop GL20/GL30. [Day/night and authoring](lighting-and-sky.md), [actual captures and scope](artifacts/environment/README.md). Android feature EGL gates remain **UNVERIFIED**.
+The default core path is forward lighting. Optional [glTF/PBR](gltf-assets.md),
+[directional shadows](shadows.md) and [HDR](hdr-rendering.md) use separate explicit
+providers/passes; shadows and HDR are verified only on desktop GL30. The integrated `environmentSmoke` now checks measured directional/point/spot/fog, scene-skinned textured poses and alpha-test depth holes, moved uniform recovery, WORLD clock, borrowed sockets and viewmodel/HUD isolation on desktop GL20/GL30. [Day/night and authoring](lighting-and-sky.md), [actual captures and scope](artifacts/environment/README.md). Android feature EGL gates remain **UNVERIFIED**.
 
 ## Sky backgrounds
 

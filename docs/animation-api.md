@@ -30,7 +30,7 @@ player.play("attack", PlayMode.ONCE).onComplete(
 
 SpriteClip kopiuje listę, pożycza TextureRegion; nie alokuje ani nie zwalnia tekstur. Sprite ma jedną region/frame, więc crossfade sprite nie jest wdrożone. Stary SpriteAnimator pozostaje dostępny; jednoczesne stare/nowe animatory na jednym sprite zgłaszają konflikt. ModelRenderer.play(name,loop) pozostaje adapterem (działa także przed podpięciem komponentu).
 
-Crossfade modelu nie oznacza layers/masks/mixer/IK/root motion/retargetingu. Nie importujemy gameplay event track z G3DJ/G3DB. Obsługiwane formaty loadera nadal OBJ (bez klipów), G3DJ/G3DB; GLB/PBR i współczesny Spine są osobnymi zadaniami. Syntetyczne testy animacji sprawdzają rzeczywistą pozycję node; test skinningu w GL trzeba raportować osobno.
+Sam klasyczny crossfade nie oznacza pełnego pipeline postaci. ModelPoseAnimator dodaje opisane niżej warstwy/maski/mixery oraz opcjonalne [translation root motion](root-motion.md); IK/retargeting pozostają poza zakresem. Nie importujemy gameplay event track z G3DJ/G3DB. Obsługiwane formaty loadera nadal OBJ (bez klipów), G3DJ/G3DB; Opcjonalny [javity-gltf](gltf-assets.md) dostarcza ograniczony profil GLB/glTF/PBR; współczesny Spine pozostaje osobnym zadaniem. Syntetyczne testy animacji sprawdzają rzeczywistą pozycję node; test skinningu w GL trzeba raportować osobno.
 
 `--plugins` pokazuje wygenerowaną siatkę z dwiema kośćmi i dwoma klipami. Native smoke sprawdza niezależne instancje, animowane macierze kości i zmianę pikseli geometrii przy tym samym viewport. To dowód skinningu libGDX, nie walidacja importu produkcyjnego rigu. [Podgląd](demo-plugins.png).
 
@@ -76,7 +76,7 @@ Wkład warstwy zachowuje osobne pokrycie translacji, rotacji i skali. Brak kana�
 
 Mixer interpoluje dwa sąsiednie progi i synchronizuje znormalizowaną fazę także dla klipów o różnych długościach. Parametry spoza zakresu trafiają na endpoint. Warstwy mają niezależne zegary. Brakujący kanał overlay zachowuje dolną pozę; brakujący kanał bazowy bierze bind pose. Przejście mixer→nazwany klip zamraża aktualną pozę mixer; play(mixer, ...) pozostaje natychmiastowym zastąpieniem i nie dostarcza crossfade do mixera. WORLD pauza/freeze zatrzymuje zegar i fade. `playback.pause()` zatrzymuje zegar klipu i jego fade, podczas gdy inne sloty i fade wagi warstwy mogą iść dalej. Dla celu ONCE pauza działa również po callbacku ukończenia, dopóki trwa fade wizualny; wznowienie kontynuuje fade bez ponownego callbacku ukończenia. Speed 0 zatrzymuje tylko zegar klipu, więc fade nadal biegnie. Fade używa sekund WORLD, niezależnie od speed. ONCE może zakończyć callback przed końcem fade; docelowa poza pozostaje widoczna, a koniec fade nie emituje drugiego callbacku. Seek natychmiast zmienia tylko czas celu, bez zdarzeń i bez resetu fade. Restart zachowuje źródło/postęp, resetuje czas i kolejkuje istniejący callback start. Stop czyści przejście i daje zwykły wynik stopu slotu. NodeMask.paths korzysta z pełnych ścieżek, NodeMask.ids dopuszcza tylko jednoznaczne identyfikatory.
 
-Obsługiwane: nazwany klip bazowy, mixer→klip przez zamrożone źródło, nazwany klip w maskowanej warstwie i niezależny fade wagi. Nieobsługiwane: crossfade do celu mixer, mixer warstw, additive, root motion, retargeting, IK, motion matching i crossfade/blending klipów sprite 2D.
+Obsługiwane: nazwany klip bazowy, mixer→klip przez zamrożone źródło, nazwany klip w maskowanej warstwie i niezależny fade wagi. Nieobsługiwane: crossfade do celu mixer, mixer warstw, additive, rotation root motion, retargeting, IK, motion matching i crossfade/blending klipów sprite 2D.
 
 `ModelPoseAnimator` wiąże się z pierwszym ModelRenderer obiektu; dodatkowe renderery zachowują własne sterowanie legacy. Usunięcie pierwszego unieważnia jego stare playbacki i przywraca bind pose; kolejny renderer można potem wybrać jako pierwszy. Sprawdzenie `GameObject.containsComponent(component)` ma semantykę tożsamości instancji i nie kopiuje listy.
 
@@ -87,8 +87,12 @@ Zapisane próby `artifacts/j-model-*.png` pochodzą z rzeczywistego OpenGL: sta�
 
 ## Importowany darmowy rig — Fox, 2026-10-16
 
-[Powtarzalny test i viewer](../tools/animation-validation/README.md) korzystają z rzeczywistego modelu Fox (24 kości; CC0 + CC BY4.0) z trzema klipami. [Ruchomy podgląd i wyniki GL20/GL30](artifacts/imported-animation/README.md) potwierdzają odtwarzanie, crossfade, maskę ogona, mikser fazowy, zegary/instancje/callbacki oraz cleanup tekstury. Porównanie odnosi się do oryginalnego glTF z udokumentowaną tolerancją, nie tylko do drugiego renderu tego samego kodu. Asset jest konwertowany offline do G3DJ; loader runtime nadal nie obsługuje GLB. To dodatkowy dowód importowanej animacji, nie dowód klasyfikacji regionów avataru, retargetingu lub wszystkich produkcyjnych rigów.
+[Powtarzalny test i viewer](../tools/animation-validation/README.md) korzystają z rzeczywistego modelu Fox (24 kości; CC0 + CC BY4.0) z trzema klipami. [Ruchomy podgląd i wyniki GL20/GL30](artifacts/imported-animation/README.md) potwierdzają odtwarzanie, crossfade, maskę ogona, mikser fazowy, zegary/instancje/callbacki oraz cleanup tekstury. Porównanie odnosi się do oryginalnego glTF z udokumentowaną tolerancją, nie tylko do drugiego renderu tego samego kodu. Ten historyczny test konwertuje asset offline do G3DJ. Nowy opcjonalny [runtime importer glTF/GLB](gltf-assets.md) ładuje oryginał bez konwersji; `:javity-desktop:gltfFoxSmoke` i `gltfFoxGl20Smoke` sprawdzają go z tym samym oracle. To dodatkowy dowód importowanej animacji, nie dowód klasyfikacji regionów avataru, retargetingu lub wszystkich produkcyjnych rigów.
 
 ```sh
 python3 tools/animation-validation/run.py --interactive
 ```
+
+## Translation root motion —2026-10-20
+
+`ModelPoseAnimator.setRootMotion(nodePath, sink)` przekazuje niemutowalny model-space displacement przed fazą fizyki. Nie nadpisuje automatycznie Transform3D/Bullet. Wymaga pojedynczego nazwanego klipu WORLD; root-affecting layers/mixery/base fades są odrzucane. Seek/restart nie teleportuje, a callback zmieniający krzywą anuluje deltę tej klatki. [Dokładny kontrakt i przykład](root-motion.md).

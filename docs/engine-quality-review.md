@@ -1,7 +1,9 @@
 # Jakość silnika: porównanie z Unity i jMonkeyEngine
 
 Data: 2026-10-20. Audyt źródeł: `af73022c9dafeaa14b9bfff7e597ec935e8c9cb2`.
-Status: badanie i propozycja kolejności; nowe moduły opisane poniżej nie są wdrożone.
+Status: kierunek zaakceptowany do autonomicznej realizacji2026-10-20.
+Implementacja i bramki: [plan](Spec/2026-10-20-quality-implementation.md).
+Status poszczególnych funkcji wymaga sprawdzenia bramek; audyt nie jest ich dowodem.
 
 ## Cel produktu
 
@@ -139,6 +141,7 @@ audyt. Software GL służy do poprawności; nie certyfikuje szybkości GPU.
 - Product Design: zidentyfikowano ścieżkę tworzenia gry jako cel oceny. Narzędzie
   Browser wymagane przez plugin nie jest dostępne w tej sesji, dlatego nie
   wykonano audytu UX ze świeżymi screenshotami i nie deklarujemy jego wyniku.
-- Opracowanie szczegółowego projektu nowego zakresu oczekuje na wybór kierunku
-  w pytaniu do użytkownika. Powyższe to badanie i kolejka, nie zatwierdzona
-  specyfikacja nowych modułów ani deklaracja gotowości AAA.
+- Po audycie użytkownik polecił wykonać plan bez kolejnych potwierdzeń i użyć
+  agentów Sol. Zachowujemy ten tryb realizacji dla kolejnych etapów; wybory
+  implementacyjne, testy i ograniczenia zapisujemy w dokumentacji. Samo
+  zatwierdzenie kierunku nie jest deklaracją gotowości AAA.

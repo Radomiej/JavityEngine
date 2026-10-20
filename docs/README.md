@@ -67,3 +67,10 @@ Tworzenie gier: [platforma/ORBIT](platform-services.md) · [panel jako komponent
 [Porównanie z Unity i jMonkeyEngine, potwierdzone luki i proponowane etapy](engine-quality-review.md).
 Aktualizacja 2026-10-20 obejmuje audyt źródeł i sondy CPU; nie oznacza wdrożenia
 PBR/glTF/cieni ani zakończenia celu AAA.
+
+## Nowy pipeline 3D i jakość
+
+- [Zintegrowana scena Fox Garden](quality-showcase.md).
+- [glTF/GLB, asset leases i PBR](gltf-assets.md).
+- [Cienie kierunkowe](shadows.md), [HDR/tone mapping](hdr-rendering.md), [translation root motion](root-motion.md).
+- [Plan i status jakości](Spec/2026-10-20-quality-implementation.md).

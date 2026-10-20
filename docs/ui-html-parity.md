@@ -82,3 +82,28 @@ Skrypt wymaga wszystkich identyfikatorów i obu zestawów screenshotów; sprawdz
 Do powtarzalnej próby przeładowania gotowej paczki służy `web/javity-ui-reference/packaged-dev-proof.py` z argumentami `--launcher`, `--bundle`, `--artifacts`. Skrypt pracuje na własnej kopii bundla w nowym katalogu tymczasowym: poprawna zmiana, błędna składnia z zachowaniem UI, przywrócenie, nowa scena i świeża aktualizacja health. Nie modyfikuje źródłowego TSX.
 
 Aktualna para z tego samego punktu animacji: [natywny screenshot](demo-mm.png), [rzeczywisty HTML/Tailwind](demo-mm-html.png). Każdy Progress we wszystkich pięciu stanach ma sprawdzony koniec wypełnienia (różnica najwyżej 1 px), a bursztynowy ślad obrażeń i zielony ślad wzrostu mają zgodne zmierzone końce i kolory. Wartości checkpointów wynikają z czasu modelu, są wspólnie opisane w fixture i porównywane z rzeczywistym stanem natywnego ProgressBar.
+
+## Kontrakt precyzji fontu — aktualizacja 2026-10-20
+
+Generowany font FreeType zachowuje teraz ułamkowe metryki26.6 (advance i unfitted
+kerning), początkowy bearing oraz ułamkowe pozycje cache. Rozdzielczość atlasu,
+TTF, fixture i tolerancje pozostały bez zmian. Primitive lookup tables ograniczają
+alokacje przy layoutowaniu glyphów. Zmiana usuwa skumulowane zaokrąglenia
+standardowej ścieżki BitmapFont; nie gwarantuje dokładnego Canvas advance, pełnego
+shapingu ani identycznego rastera Chromium. Końcowa szerokość GlyphLayout nadal
+uwzględnia granice tuszu, więc przypadki graniczne wrap mają osobny kontrakt.
+
+UiTheme posiada wygenerowany font/atlas. Font wstrzyknięty z `ownsFont=false`
+i jego tekstury pozostają własnością wywołującego. Kopie dla wrap mają niezależne
+dane glyphów i pożyczają atlas; nie zmieniają skali fontu właściciela. Cache
+zachowuje jedną bieżącą kopię na względną skalę stylu, wykrywa zmiany obu osi
+skali źródła przy odświeżaniu stylu i nie gromadzi historii skal. Starsze żywe
+label mogą zachować poprzednią kopię. Dowolna bezpośrednia modyfikacja metryk
+glyphów przy tej samej skali nie jest automatycznie propagowana do tych kopii.
+
+Dokładny hosted failure CI39375230181 miał native ink79px i browser74px dla
+Card title, mimo potwierdzonego wspólnego TTF. Poprawka przechodzi lokalnie
+z odtworzonym niezmienionym hosted reference oraz bramkami UI/K2/K4; obecny
+natywny Card title ma ink74px. Historyczne pomiary powyżej pozostają przypisane
+do swoich fixture/wersji; nie stanowią nowego pomiaru po tej zmianie.
+**BUG-UI-001 pozostaje otwarty do świeżego zielonego hosted CI.**

@@ -1,0 +1,498 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :javity-assets:processResources NO-SOURCE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-core:processResources UP-TO-DATE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-assets:compileJava UP-TO-DATE
+> Task :javity-assets:classes UP-TO-DATE
+> Task :javity-assets:jar UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-gltf:compileJava UP-TO-DATE
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-gltf:processResources UP-TO-DATE
+> Task :javity-gltf:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-gltf:jar UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-desktop:compileJava UP-TO-DATE
+> Task :javity-desktop:classes UP-TO-DATE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+
+> Task :javity-desktop:maplibreSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[MapLibre] libGDX startup GL status=1280
+[INFO] {java}[General]: GPU Identifier: llvmpipe (LLVM 19.1.7, 256 bits)
+MAPLIBRE_SMOKE_PASS {northLakePixel=true, threadGuard=true, featureQuery=true, queriedFeatures=1, projectionRoundTrip=true, dayCenterRgba=-1816296449, featureState=true, nightCenterRgba=541538815, styleSwitch=true, beforePanLongitude=21.0, panZoom=true, premultipliedAlpha=true, resizeAndDpi=true, dpiPreservesStyleAndState=true, runtime=MapLibre Native FFI 0.202610.0 / OpenGL EGL, offlineMbtiles=true, packagePathContainsSpaces=true, startupGlError=1280, renderedFrames=160, frames=180, databaseUnmodified=true, closedGuard=true, cleanup=true, nativeTextureDeleted=true, closeIdempotent=true}
+
+> Task :javity-desktop:gorzowSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[Gorzów] libGDX GLES startup status=1280
+[INFO] {java}[General]: GPU Identifier: llvmpipe (LLVM 19.1.7, 256 bits)
+GORZOW_SMOKE_PASS {city=Gorzów Wielkopolski, buildingHits=188, roadHits=521, waterPixelsAndGeometry=68, queriedNames=Michała Drzymały; Dziewięciu Muz; Muzeum Lubuskie im. Jana Dekerta w Gorzowie Wielkopolskim; Armii Polskiej; Franciszka Walczaka; Skwer Malarzy; Szkoła Podstawowa nr 17 im. Adama Mickiewicza; Śródmieście; Kłodawka; Zespół Szkół Elektrycznych; Warszawska; Plac Staromiejski; Przedszkole Miejskie nr 15 "Baśniowy Dom"; Józefa Wybickiego; Władysława Jagiełły; Państwowe Liceum Sztuk Plastycznych; IV Liceum Ogólnokształcące; Generała Władysława Sikorskiego; Szkolna; Planty Gorzowskie; Kosynierów Gdyńskich; Park Wiosny Ludów; Skwer 31 Sierpnia 1982 r.; Stanisława Żytkowskiego; Ewarysta Estkowskiego; Strzelecka; Żłobek Miejski nr 2; Ścieżka nad Wartą; Gorzów Wielkopolski; Spichrzowa; Łużycka; Wodna; Warta; Wojewódzki Zakład Doskonalenia Zawodowego; Garbary; Młyńska; Wał Okrężny; Przychodnia zdrowia "Dworcowa"; Stary kanał Kłodawki; Nadbrzeżna; Zespół Szkół Elektrycznych - laboratoria i pracownie szkolne, nativeMvtQuery=true, offline=true, dayNight=true, panZoom=true, frames=80, renderedFrames=41, sourceDatabaseUnmodified=true, nativeTextureDeleted=true, cleanup=true}
+
+> Task :javity-desktop:runtimeSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[JavityRuntimeSmoke] PASS: 120 frames; input/UI picking, atlas animation, shapes/text, native Sound/Music, timers, prefab, polygon/raycast, async tiles, resize, 2 scenes; clicks=1
+
+> Task :javity-desktop:shapesSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[JavityShapesSmoke] PASS: 120 frames; AA/alias coverage, alpha, caps, rounded corners, SCREEN/WORLD, sprite/text/UI sentinels, zoom, camera movement and resize
+
+> Task :javity-desktop:materialsSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[ShapeMaterials] GPU PASS: typed uniforms, isolation, cache, alpha, AA, compile recovery and program disposal
+[ShapeMaterials] PASS: native shader gallery, GPU ownership, WORLD/UI pause and visible animation
+
+> Task :javity-desktop:voxelSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[Voxels] GPU PASS: atlas UVs, depth, budget, seams, culling, large indices and resource recovery
+[RuntimeTools] runtime-inspector-panel framebuffer bounds [500.00003, 16.0, 884.00006, 584.0]
+[RuntimeTools] runtime-inspector-details-viewport framebuffer bounds [517.0, 269.0, 867.00006, 407.0]
+[RuntimeTools] runtime-transform-undo framebuffer bounds [517.0, 507.0, 690.00006, 539.0]
+[RuntimeTools] runtime-transform-redo framebuffer bounds [694.0, 507.0, 867.00006, 539.0]
+[RuntimeTools] runtime-edit-status framebuffer bounds [517.0, 543.0, 867.00006, 567.0]
+[RuntimeTools] voxel PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=465585
+[RuntimeTools] voxel debug focus PASS: close + step + return preserved feet/look; edited-body obstruction recovered
+[Voxels] SCENE PASS: FPS movement, camera controls, seam edits, resize and cleanup
+[Voxels] SCENE PASS: grounded FPS movement, free-fly, seam edits, resize and gallery proof
+
+> Task :javity-desktop:avatarSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+avatarGpuSmoke: PASS (requested=GL20, actual=GL20, VAOs=0, authored skin parity, region color/depth, leases, source resources)
+
+> Task :javity-desktop:avatarGl30Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+avatarGpuSmoke: PASS (requested=GL30, actual=GL30, VAOs=1, authored skin parity, region color/depth, leases, source resources)
+
+> Task :javity-desktop:physics3dSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[RuntimeTools] runtime-inspector-panel framebuffer bounds [500.00003, 16.0, 884.00006, 584.0]
+[RuntimeTools] runtime-inspector-details-viewport framebuffer bounds [517.0, 269.0, 867.00006, 407.0]
+[RuntimeTools] runtime-transform-undo framebuffer bounds [517.0, 507.0, 690.00006, 539.0]
+[RuntimeTools] runtime-transform-redo framebuffer bounds [694.0, 507.0, 867.00006, 539.0]
+[RuntimeTools] runtime-edit-status framebuffer bounds [517.0, 543.0, 867.00006, 567.0]
+[RuntimeTools] physics3d PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=467871
+[RuntimeTools] runtime-inspector-panel framebuffer bounds [500.00003, 16.0, 884.00006, 584.0]
+[RuntimeTools] runtime-inspector-details-viewport framebuffer bounds [517.0, 269.0, 867.00006, 407.0]
+[RuntimeTools] runtime-transform-undo framebuffer bounds [517.0, 507.0, 690.00006, 539.0]
+[RuntimeTools] runtime-transform-redo framebuffer bounds [694.0, 507.0, 867.00006, 539.0]
+[RuntimeTools] runtime-edit-status framebuffer bounds [517.0, 543.0, 867.00006, 567.0]
+[RuntimeTools] physics3d PASS: F1 capture/restore, input priority, filtering, controlled focus/TRS refusal, actual resize, pixels=467871
+
+> Task :javity-desktop:presentation3dSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+presentation3dGpuSmoke voxel FOV wall: baseRadius=0.11978672, wideRadius=0.13819999, constrainedFov=50.0, admittedFov=68.0
+presentation3dGpuSmoke pixels: model=95->139, world-camera=95->110, viewmodel=66->95, presentedFov=50.0, wallRadius=0.11978672
+presentation3dGpuSmoke: PASS (model/viewmodel pixels, presented camera ray, framebuffer)
+
+> Task :javity-desktop:particleSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+particle pixels center=2 sideBlue=0->242 at 157,114
+particleGpuSmoke: PASS (real pixels, depth, state, leases, resize, borrowed texture, cleanup)
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+particleGl20Unsupported: PASS (rejected before GL state mutation)
+
+> Task :javity-desktop:postprocessSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+worldPostProcessGpuSmoke: PASS (flat bypass, tint, desaturation, vignette, HUD isolation, leases, resize, resource ownership)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+worldPostProcessGl20Contract: PASS (repeated eligible capture, prebound rejection, element buffer)
+
+> Task :javity-desktop:feel3dSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+feel3dGpuSmoke: PASS (3D presentation + particles + world postprocess)
+
+> Task :javity-desktop:pluginsSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[JavityPoseCrossfadeSmoke] PASS base pixels=7480, masked upper=4562/4680, lower=0/0
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[JavityPluginsSmoke] PASS 120 frames; nativeClicks=3, score=3, UI=143, WORLD=134, scrollY=52.0, mixerPixels=7340/14820, maskedPixels=6054/10668, classicSeekPixels=5883
+[JavityPluginsSmoke] DISPOSE PASS GL_NO_ERROR after GPU resource disposal
+
+> Task :javity-desktop:mmSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[MmSystems] starting deterministic Relay Ward smoke
+[MmSystems] PASS: scene/audio/feedback/animation/React/shutdown smoke
+
+> Task :javity-desktop:sceneLightingShaderSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+sceneLightingShaderSmoke: PASS GL30 (ordinary constructor spot draw, scene/legacy switch, fog variant, instance fallback)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+sceneLightingShaderSmoke: PASS GL20 (ordinary constructor spot draw, scene/legacy switch, fog variant, instance fallback)
+
+> Task :javity-desktop:skySmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+GLES300 sky sources compile/link on desktop Mesa compiler (no device/context claim)
+sky managed mesh+shader recovery unchanged position 0 -> 0; first and repeated frames match
+sky recovery raw positions 0 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL30
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+GLES300 sky sources compile/link on desktop Mesa compiler (no device/context claim)
+sky managed mesh+shader recovery unchanged position 15 -> 15; first and repeated frames match
+sky recovery raw positions 15 -> 13, uniform 0 -> 8; stale aliases retained
+skySmoke PASS GL20
+
+> Task :javity-desktop:environmentDemoSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+LightAuthoringPanel: PASS dynamic first-light discovery, dirty draft identity, removal/readd and focus
+EnvironmentDemo: PASS courtyard day/dusk/night/fog/local lights/authoring captures and repeated owner dispose
+
+> Task :javity-desktop:environmentSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+PASS directionalChangesPixels bright=255 dark=0
+PASS pointAttenuates near=143 far=16
+PASS spotActuallyLightsCone inside=143 outside=0
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS newUniformLocationsRefreshAfterRelink 4 -> 210
+PASS scene light/fog pixels retained after real relink
+PASS disabledLightGone
+PASS lit world fog
+PASS unlit world fog independent of normals
+PASS unlit fog disabled control
+PASS unlit distance fog close=171 distant=41
+PASS legacy unlit behavior unchanged
+PASS scene world uses ordinary fallback
+PASS fogAffectsWorldOnly / legacy viewmodel remains visible
+PASS viewmodelAndHudRemainVisible
+PASS dayNightPauseClock
+PASS dayNight WORLD resumes
+PASS cubemap not replaced by cycle
+PASS scene skinned textured pose changes pixels=1470
+PASS socket and light gizmos borrow canonical pose without mutation
+PASS scene skinned alpha-test / opaque=3332 transparent holes revealing later background=3332
+PASS no residual GL errors
+environmentSmoke GL30: PASS checks=25
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+PASS directionalChangesPixels bright=255 dark=0
+PASS pointAttenuates near=143 far=16
+PASS spotActuallyLightsCone inside=143 outside=0
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS scene managed relink compiled: 
+PASS newUniformLocationsRefreshAfterRelink 4 -> 210
+PASS scene light/fog pixels retained after real relink
+PASS disabledLightGone
+PASS lit world fog
+PASS unlit world fog independent of normals
+PASS unlit fog disabled control
+PASS unlit distance fog close=171 distant=41
+PASS legacy unlit behavior unchanged
+PASS scene world uses ordinary fallback
+PASS fogAffectsWorldOnly / legacy viewmodel remains visible
+PASS viewmodelAndHudRemainVisible
+PASS dayNightPauseClock
+PASS dayNight WORLD resumes
+PASS cubemap not replaced by cycle
+PASS scene skinned textured pose changes pixels=1470
+PASS socket and light gizmos borrow canonical pose without mutation
+PASS scene skinned alpha-test / opaque=3332 transparent holes revealing later background=3332
+PASS no residual GL errors
+environmentSmoke GL20: PASS checks=25
+
+> Task :javity-desktop:assetStreamingSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[AssetStreaming] PASS: default loaders, live sentinel, textured model, leases/cache/pressure/retry and native cleanup
+
+> Task :javity-desktop:skinnedInstancingSmoke
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+actual GL: 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+six independent Walk/Run/Survey poses: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+independent poses actual draws 6 -> 1, paletteBytes=9216, instanceBytes=408
+production GPU transform-feedback source vertex error=1.068115234375E-4 vertices=10368
+ordinary-after-instance: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+shared-pose: foreground=5510 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+crossfade-mid: foreground=5453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+tail-mask: foreground=6733 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+mixer: foreground=7019 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+wrong-row negative control changed pixels=1114
+alpha-test: foreground=5892 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+fallback-restored: foreground=7004 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+budget-fallback: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected instance allocation failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:896)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glBufferData(Unknown Source)
+	at org.javity.render.InstanceGpuTransport$Chunk.update(InstanceGpuTransport.java:33)
+	at org.javity.render.SkinnedInstanceBatch$Group.prepare(SkinnedInstanceBatch.java:337)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:171)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:506)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:184)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+[SkinnedInstanceBatch] GPU preparation failed; ordinary fallback
+java.lang.IllegalStateException: injected palette upload failure
+	at org.javity.demo.SkinnedInstancingDemo$Calls.invoke(SkinnedInstancingDemo.java:900)
+	at jdk.proxy2/jdk.proxy2.$Proxy8.glTexSubImage2D(Unknown Source)
+	at org.javity.render.BonePalette.bindPage(BonePalette.java:228)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:172)
+	at org.javity.render.SkinnedInstanceBatch.render(SkinnedInstanceBatch.java:60)
+	at org.javity.demo.SkinnedInstancingDemo.verifyStateAndFailures(SkinnedInstancingDemo.java:516)
+	at org.javity.demo.SkinnedInstancingDemo.run(SkinnedInstancingDemo.java:184)
+	at org.javity.demo.SkinnedInstancingDemo.create(SkinnedInstancingDemo.java:64)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.initializeListener(Lwjgl3Window.java:464)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:402)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:181)
+	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:153)
+	at org.javity.demo.SkinnedInstancingSmokeLauncher.main(SkinnedInstancingSmokeLauncher.java:20)
+after-upload-failure: foreground=8174 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+original glTF oracle max vertex error source units=0.006999969482421875
+prepared-world-FULL_BODY-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-ARMS_ONLY-cache-false: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-false: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-FULL_BODY-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-ARMS_ONLY-cache-true: foreground=43775 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+prepared-world-BODY_WITHOUT_HEAD-cache-true: foreground=58298 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+skinnedInstancingSmoke GL33: PASS assertions=126
+
+> Task :javity-desktop:skinnedInstancingGl20Smoke
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+actual GL: 4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1 renderer: llvmpipe (LLVM 19.1.7, 256 bits)
+six independent Walk/Run/Survey poses: foreground=6453 offSilhouetteMaxRGB=0 offSilhouetteErrors=0 silhouetteChannelDifferences=0
+skinnedInstancingSmoke GL20: PASS assertions=7
+
+BUILD SUCCESSFUL in 1m 20s
+64 actionable tasks: 22 executed, 42 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html

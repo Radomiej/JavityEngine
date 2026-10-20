@@ -1,0 +1,578 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :assemble UP-TO-DATE
+> Task :check UP-TO-DATE
+> Task :javity-assets:processResources NO-SOURCE
+> Task :javity-assets:sourcesJar UP-TO-DATE
+> Task :javity-core:compileJava UP-TO-DATE
+> Task :javity-core:processResources UP-TO-DATE
+> Task :javity-core:classes UP-TO-DATE
+> Task :javity-core:jar UP-TO-DATE
+> Task :javity-assets:compileJava UP-TO-DATE
+> Task :javity-assets:classes UP-TO-DATE
+> Task :javity-assets:jar UP-TO-DATE
+> Task :javity-assets:assemble UP-TO-DATE
+> Task :javity-backend:compileJava UP-TO-DATE
+> Task :javity-backend:processResources NO-SOURCE
+> Task :javity-backend:classes UP-TO-DATE
+> Task :javity-assets:compileTestJava UP-TO-DATE
+> Task :javity-assets:processTestResources NO-SOURCE
+> Task :javity-backend:jar UP-TO-DATE
+> Task :javity-assets:testClasses UP-TO-DATE
+> Task :javity-backend:sourcesJar UP-TO-DATE
+> Task :javity-backend:assemble UP-TO-DATE
+> Task :javity-assets:test UP-TO-DATE
+> Task :javity-assets:check UP-TO-DATE
+> Task :javity-assets:build UP-TO-DATE
+> Task :javity-backend:compileTestJava UP-TO-DATE
+> Task :javity-backend:processTestResources NO-SOURCE
+> Task :javity-backend:testClasses UP-TO-DATE
+> Task :javity-core:sourcesJar UP-TO-DATE
+> Task :javity-core:assemble UP-TO-DATE
+> Task :javity-backend:test UP-TO-DATE
+> Task :javity-backend:check UP-TO-DATE
+> Task :javity-backend:build UP-TO-DATE
+> Task :javity-core:compileTestJava UP-TO-DATE
+> Task :javity-engine:compileJava UP-TO-DATE
+> Task :javity-core:processTestResources NO-SOURCE
+> Task :javity-core:testClasses UP-TO-DATE
+> Task :javity-gltf:compileJava UP-TO-DATE
+> Task :javity-core:test UP-TO-DATE
+> Task :javity-map-core:compileJava UP-TO-DATE
+> Task :javity-core:check UP-TO-DATE
+> Task :javity-core:build UP-TO-DATE
+> Task :javity-maplibre:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :javity-physics2d:compileJava UP-TO-DATE
+> Task :javity-physics3d:compileJava UP-TO-DATE
+> Task :javity-ui:compileJava UP-TO-DATE
+> Task :javity-script:compileJava UP-TO-DATE
+> Task :javity-script-graal:compileJava UP-TO-DATE
+> Task :javity-maplibre:compileKotlin UP-TO-DATE
+> Task :javity-maplibre:compileJava UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileJava UP-TO-DATE
+> Task :javity-desktop:processResources UP-TO-DATE
+> Task :javity-engine:processResources UP-TO-DATE
+> Task :javity-engine:classes UP-TO-DATE
+> Task :javity-voxel:compileJava UP-TO-DATE
+> Task :javity-engine:jar UP-TO-DATE
+> Task :javity-gltf:processResources UP-TO-DATE
+> Task :javity-gltf:classes UP-TO-DATE
+> Task :javity-gltf:jar UP-TO-DATE
+> Task :javity-map-core:processResources NO-SOURCE
+> Task :javity-map-core:classes UP-TO-DATE
+> Task :javity-map-core:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:compileJava UP-TO-DATE
+> Task :javity-maplibre:glesAdapterJar UP-TO-DATE
+> Task :javity-maplibre:processResources UP-TO-DATE
+> Task :javity-maplibre:classes UP-TO-DATE
+> Task :javity-maplibre:jar UP-TO-DATE
+> Task :javity-physics2d:processResources NO-SOURCE
+> Task :javity-physics2d:classes UP-TO-DATE
+> Task :javity-physics2d:jar UP-TO-DATE
+> Task :javity-physics3d:processResources NO-SOURCE
+> Task :javity-physics3d:classes UP-TO-DATE
+> Task :javity-physics3d:jar UP-TO-DATE
+> Task :javity-script:processResources UP-TO-DATE
+> Task :javity-script:classes UP-TO-DATE
+> Task :javity-script:jar UP-TO-DATE
+> Task :javity-script-graal:processResources UP-TO-DATE
+> Task :javity-script-graal:classes UP-TO-DATE
+> Task :javity-script-graal:jar UP-TO-DATE
+> Task :javity-ui:processResources UP-TO-DATE
+> Task :javity-ui:classes UP-TO-DATE
+> Task :javity-ui:jar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:processResources UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:classes UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:jar UP-TO-DATE
+> Task :javity-voxel:processResources NO-SOURCE
+> Task :javity-voxel:classes UP-TO-DATE
+> Task :javity-voxel:jar UP-TO-DATE
+> Task :javity-voxel-physics3d:processResources NO-SOURCE
+> Task :javity-voxel-physics3d:classes UP-TO-DATE
+> Task :javity-voxel-physics3d:jar UP-TO-DATE
+> Task :javity-ecs-artemis:compileJava UP-TO-DATE
+> Task :javity-ecs-artemis:processResources NO-SOURCE
+> Task :javity-ecs-artemis:classes UP-TO-DATE
+> Task :javity-ecs-artemis:jar UP-TO-DATE
+> Task :javity-ecs-artemis:sourcesJar UP-TO-DATE
+> Task :javity-ecs-artemis:assemble UP-TO-DATE
+> Task :javity-ecs-artemis:compileTestJava UP-TO-DATE
+> Task :javity-ecs-artemis:processTestResources NO-SOURCE
+> Task :javity-ecs-artemis:testClasses UP-TO-DATE
+> Task :javity-ecs-artemis:test UP-TO-DATE
+> Task :javity-core:ecsBoundaryGraph
+> Task :javity-ecs-artemis:ecsBoundaryGraph
+> Task :javity-ui:ecsBoundaryGraph
+> Task :javity-engine:sourcesJar UP-TO-DATE
+> Task :javity-engine:assemble UP-TO-DATE
+> Task :javity-engine:compileTestJava UP-TO-DATE
+> Task :javity-engine:processTestResources NO-SOURCE
+> Task :javity-engine:testClasses UP-TO-DATE
+> Task :javity-engine:test UP-TO-DATE
+> Task :javity-engine:check UP-TO-DATE
+> Task :javity-engine:build UP-TO-DATE
+> Task :javity-gltf:sourcesJar
+> Task :javity-gltf:assemble
+> Task :javity-gltf:compileTestJava UP-TO-DATE
+> Task :javity-gltf:processTestResources NO-SOURCE
+> Task :javity-gltf:testClasses UP-TO-DATE
+> Task :javity-desktop:compileJava
+> Task :javity-desktop:classes
+> Task :javity-gltf:test
+> Task :javity-gltf:check
+> Task :javity-gltf:build
+> Task :javity-net:compileJava UP-TO-DATE
+> Task :javity-map:compileJava UP-TO-DATE
+> Task :javity-map:processResources NO-SOURCE
+> Task :javity-map:classes UP-TO-DATE
+> Task :javity-map:jar UP-TO-DATE
+> Task :javity-map:sourcesJar UP-TO-DATE
+> Task :javity-map:assemble UP-TO-DATE
+> Task :javity-map:compileTestJava UP-TO-DATE
+> Task :javity-map:processTestResources NO-SOURCE
+> Task :javity-map:testClasses UP-TO-DATE
+> Task :javity-net:processResources NO-SOURCE
+> Task :javity-net:classes UP-TO-DATE
+> Task :javity-net:jar UP-TO-DATE
+> Task :javity-map:test UP-TO-DATE
+> Task :javity-map:check UP-TO-DATE
+> Task :javity-map:build UP-TO-DATE
+> Task :javity-map-core:sourcesJar UP-TO-DATE
+> Task :javity-map-core:assemble UP-TO-DATE
+> Task :javity-map-core:compileTestJava UP-TO-DATE
+> Task :javity-map-core:processTestResources NO-SOURCE
+> Task :javity-map-core:testClasses UP-TO-DATE
+> Task :javity-map-core:test UP-TO-DATE
+> Task :javity-map-core:check UP-TO-DATE
+> Task :javity-map-core:build UP-TO-DATE
+> Task :javity-maplibre:sourcesJar UP-TO-DATE
+> Task :javity-maplibre:assemble UP-TO-DATE
+> Task :javity-maplibre:compileTestKotlin NO-SOURCE
+> Task :javity-desktop:jar
+> Task :javity-maplibre:compileTestJava UP-TO-DATE
+> Task :javity-maplibre:processTestResources NO-SOURCE
+> Task :javity-maplibre:testClasses UP-TO-DATE
+> Task :javity-maplibre:test UP-TO-DATE
+> Task :javity-maplibre:check UP-TO-DATE
+> Task :javity-maplibre:build UP-TO-DATE
+> Task :javity-net:sourcesJar UP-TO-DATE
+> Task :javity-net:assemble UP-TO-DATE
+> Task :javity-net:compileTestJava UP-TO-DATE
+> Task :javity-net:processTestResources NO-SOURCE
+> Task :javity-net:testClasses UP-TO-DATE
+> Task :javity-net:test UP-TO-DATE
+> Task :javity-net:check UP-TO-DATE
+> Task :javity-net:build UP-TO-DATE
+> Task :javity-physics2d:sourcesJar UP-TO-DATE
+> Task :javity-physics2d:assemble UP-TO-DATE
+> Task :javity-physics2d:compileTestJava UP-TO-DATE
+> Task :javity-physics2d:processTestResources NO-SOURCE
+> Task :javity-physics2d:testClasses UP-TO-DATE
+> Task :javity-physics2d:test UP-TO-DATE
+> Task :javity-physics2d:check UP-TO-DATE
+> Task :javity-physics2d:build UP-TO-DATE
+> Task :javity-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-physics3d:assemble UP-TO-DATE
+> Task :javity-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-physics3d:processTestResources NO-SOURCE
+> Task :javity-physics3d:testClasses UP-TO-DATE
+> Task :javity-physics3d:test UP-TO-DATE
+> Task :javity-physics3d:check UP-TO-DATE
+> Task :javity-physics3d:build UP-TO-DATE
+> Task :javity-rooms:compileJava UP-TO-DATE
+> Task :javity-rooms:processResources NO-SOURCE
+> Task :javity-rooms:classes UP-TO-DATE
+> Task :javity-rooms:jar UP-TO-DATE
+> Task :javity-rooms:startScripts UP-TO-DATE
+> Task :javity-rooms:distTar UP-TO-DATE
+> Task :javity-rooms:distZip UP-TO-DATE
+> Task :javity-rooms:sourcesJar UP-TO-DATE
+> Task :javity-rooms:assemble UP-TO-DATE
+> Task :javity-rooms:compileTestJava UP-TO-DATE
+> Task :javity-rooms:processTestResources NO-SOURCE
+> Task :javity-rooms:testClasses UP-TO-DATE
+> Task :javity-rooms:test UP-TO-DATE
+> Task :javity-rooms:check UP-TO-DATE
+> Task :javity-rooms:build UP-TO-DATE
+> Task :javity-script:sourcesJar UP-TO-DATE
+> Task :javity-script:assemble UP-TO-DATE
+> Task :javity-script:compileTestJava UP-TO-DATE
+> Task :javity-script:processTestResources NO-SOURCE
+> Task :javity-script:testClasses UP-TO-DATE
+> Task :javity-script:test UP-TO-DATE
+> Task :javity-script:check UP-TO-DATE
+> Task :javity-script:build UP-TO-DATE
+> Task :javity-script-graal:sourcesJar UP-TO-DATE
+> Task :javity-script-graal:assemble UP-TO-DATE
+> Task :javity-script-graal:compileTestJava NO-SOURCE
+> Task :javity-script-graal:processTestResources NO-SOURCE
+> Task :javity-script-graal:testClasses UP-TO-DATE
+> Task :javity-script-graal:test NO-SOURCE
+> Task :javity-script-graal:check UP-TO-DATE
+> Task :javity-script-graal:build UP-TO-DATE
+> Task :javity-ui:sourcesJar UP-TO-DATE
+> Task :javity-ui:assemble UP-TO-DATE
+> Task :javity-ui:compileTestJava UP-TO-DATE
+> Task :javity-ui:processTestResources NO-SOURCE
+> Task :javity-ui:testClasses UP-TO-DATE
+> Task :javity-ui:test UP-TO-DATE
+> Task :javity-ui:check UP-TO-DATE
+> Task :javity-ui:build UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:sourcesJar UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:assemble UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:compileTestJava NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:processTestResources NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:testClasses UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:test NO-SOURCE
+> Task :javity-ui-yoga-lwjgl:check UP-TO-DATE
+> Task :javity-ui-yoga-lwjgl:build UP-TO-DATE
+> Task :javity-voxel:sourcesJar UP-TO-DATE
+> Task :javity-voxel:assemble UP-TO-DATE
+> Task :javity-voxel:compileTestJava UP-TO-DATE
+> Task :javity-voxel:processTestResources NO-SOURCE
+> Task :javity-voxel:testClasses UP-TO-DATE
+> Task :javity-voxel:test UP-TO-DATE
+> Task :javity-voxel:check UP-TO-DATE
+> Task :javity-voxel:build UP-TO-DATE
+> Task :javity-voxel-physics3d:sourcesJar UP-TO-DATE
+> Task :javity-voxel-physics3d:assemble UP-TO-DATE
+> Task :javity-voxel-physics3d:compileTestJava UP-TO-DATE
+> Task :javity-voxel-physics3d:processTestResources NO-SOURCE
+> Task :javity-voxel-physics3d:testClasses UP-TO-DATE
+> Task :javity-voxel-physics3d:test UP-TO-DATE
+> Task :javity-voxel-physics3d:check UP-TO-DATE
+> Task :javity-voxel-physics3d:build UP-TO-DATE
+> Task :javity-desktop:startScripts
+
+> Task :javity-ecs-artemis:usageSmoke
+{
+  "sourceCommit": "fb278749f4454d0a478d7e549a8601c05cffccbf",
+  "deltaSeconds": 0.016666666666666666,
+  "nativeProcessCalls": 3,
+  "aspectQueryEntities": 9,
+  "linksCreated": 2,
+  "linksClosed": 2,
+  "prefabInstances": 1,
+  "syncTransitions": 2,
+  "nativeOnlyEntities": 1,
+  "nativeSystemsInBag": 4,
+  "glScreenshotClaim": false
+}
+
+> Task :javity-desktop:distTar
+> Task :javity-desktop:distZip
+> Task :javity-desktop:sourcesJar
+> Task :javity-desktop:assemble
+> Task :javity-desktop:compileTestJava UP-TO-DATE
+> Task :javity-desktop:processTestResources NO-SOURCE
+> Task :javity-desktop:testClasses UP-TO-DATE
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.badlogic.gdx.utils.SharedLibraryLoader in an unnamed module (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen-loader/2.5.2/f35e90affe07c46b4f5e5958a1a4c1820c4890e2/gdx-jnigen-loader-2.5.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :javity-desktop:test
+> Task :javity-desktop:check
+> Task :javity-desktop:build
+> Task :javity-desktop:ecsBoundaryGraph
+
+> Task :javity-ecs-artemis:verifyEcsBoundary
+{
+    "apiProjectDependencies": [
+        "javity-core"
+    ],
+    "apiExternalDependencies": [
+        "net.onedaybeard.artemis:artemis-odb:2.3.0"
+    ],
+    "productionDirectDependencies": [
+        "net.onedaybeard.artemis:artemis-odb:2.3.0",
+        "project:javity-core"
+    ],
+    "runtimeGraphs": {
+        ":javity-ecs-artemis": [
+            "com.badlogicgames.gdx:gdx-jnigen-loader:2.5.2",
+            "com.badlogicgames.gdx:gdx:1.14.2",
+            "net.onedaybeard.artemis:artemis-odb:2.3.0",
+            "project::javity-core",
+            "project::javity-ecs-artemis"
+        ],
+        ":javity-core": [
+            "com.badlogicgames.gdx:gdx-jnigen-loader:2.5.2",
+            "com.badlogicgames.gdx:gdx:1.14.2",
+            "project::javity-core"
+        ],
+        ":javity-ui": [
+            "com.badlogicgames.gdx:gdx-freetype:1.14.2",
+            "com.badlogicgames.gdx:gdx-jnigen-loader:2.5.2",
+            "com.badlogicgames.gdx:gdx:1.14.2",
+            "project::javity-core",
+            "project::javity-ui"
+        ],
+        ":javity-desktop": [
+            "com.badlogicgames.gdx:gdx-ai:1.8.2",
+            "com.badlogicgames.gdx:gdx-backend-lwjgl3:1.14.2",
+            "com.badlogicgames.gdx:gdx-box2d-platform:1.14.2",
+            "com.badlogicgames.gdx:gdx-box2d:1.14.2",
+            "com.badlogicgames.gdx:gdx-bullet-platform:1.14.2",
+            "com.badlogicgames.gdx:gdx-bullet:1.14.2",
+            "com.badlogicgames.gdx:gdx-freetype-platform:1.14.2",
+            "com.badlogicgames.gdx:gdx-freetype:1.14.2",
+            "com.badlogicgames.gdx:gdx-jnigen-loader:2.5.2",
+            "com.badlogicgames.gdx:gdx-platform:1.14.2",
+            "com.badlogicgames.gdx:gdx:1.14.2",
+            "com.badlogicgames.jlayer:jlayer:1.0.1-gdx",
+            "com.esotericsoftware.spine:spine-libgdx:3.5.51.1",
+            "com.esotericsoftware:kryo:3.0.3",
+            "com.esotericsoftware:minlog:1.3.0",
+            "com.esotericsoftware:reflectasm:1.10.1",
+            "com.github.mgsx-dev.gdx-gltf:gltf:2.3.0",
+            "com.google.errorprone:error_prone_annotations:2.41.0",
+            "com.google.guava:failureaccess:1.0.3",
+            "com.google.guava:guava:33.5.0-jre",
+            "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+            "com.google.j2objc:j2objc-annotations:3.1",
+            "net.lingala.zip4j:zip4j:1.3.2",
+            "net.onedaybeard.artemis:artemis-odb:2.3.0",
+            "org.graalvm.js:js-community:25.0.2",
+            "org.graalvm.js:js-language:25.0.2",
+            "org.graalvm.js:js:25.0.2",
+            "org.graalvm.polyglot:js-community:25.0.2",
+            "org.graalvm.polyglot:polyglot:25.0.2",
+            "org.graalvm.regex:regex:25.0.2",
+            "org.graalvm.sdk:collections:25.0.2",
+            "org.graalvm.sdk:jniutils:25.0.2",
+            "org.graalvm.sdk:nativeimage:25.0.2",
+            "org.graalvm.sdk:word:25.0.2",
+            "org.graalvm.shadowed:icu4j:25.0.2",
+            "org.graalvm.shadowed:xz:25.0.2",
+            "org.graalvm.truffle:truffle-api:25.0.2",
+            "org.graalvm.truffle:truffle-compiler:25.0.2",
+            "org.graalvm.truffle:truffle-runtime:25.0.2",
+            "org.jcraft:jorbis:0.0.17",
+            "org.jetbrains.kotlin:kotlin-stdlib:2.4.20",
+            "org.jetbrains:annotations:13.0",
+            "org.jspecify:jspecify:1.0.0",
+            "org.lwjgl:lwjgl-bom:3.4.3",
+            "org.lwjgl:lwjgl-egl:3.4.3",
+            "org.lwjgl:lwjgl-glfw:3.4.3",
+            "org.lwjgl:lwjgl-jemalloc:3.4.3",
+            "org.lwjgl:lwjgl-openal:3.4.3",
+            "org.lwjgl:lwjgl-opengl:3.4.3",
+            "org.lwjgl:lwjgl-opengles:3.4.3",
+            "org.lwjgl:lwjgl-stb:3.4.3",
+            "org.lwjgl:lwjgl-yoga:3.4.3",
+            "org.lwjgl:lwjgl:3.4.3",
+            "org.maplibre.nativeffi:maplibre-native-ffi-jvm:0.202610.0",
+            "org.maplibre.nativeffi:maplibre-native-ffi-runtime-opengl-jvm:0.202610.0",
+            "org.objenesis:objenesis:2.1",
+            "org.ow2.asm:asm:5.0.3",
+            "project::javity-assets",
+            "project::javity-backend",
+            "project::javity-core",
+            "project::javity-desktop",
+            "project::javity-engine",
+            "project::javity-gltf",
+            "project::javity-map-core",
+            "project::javity-maplibre",
+            "project::javity-physics2d",
+            "project::javity-physics3d",
+            "project::javity-script",
+            "project::javity-script-graal",
+            "project::javity-ui",
+            "project::javity-ui-yoga-lwjgl",
+            "project::javity-voxel",
+            "project::javity-voxel-physics3d"
+        ]
+    },
+    "legacyArtemisInDesktop": [
+        "net.onedaybeard.artemis:artemis-odb:2.3.0"
+    ],
+    "adapterJarEntries": [
+        "META-INF/",
+        "META-INF/MANIFEST.MF",
+        "org/",
+        "org/javity/",
+        "org/javity/ecs/",
+        "org/javity/ecs/artemis/",
+        "org/javity/ecs/artemis/ArtemisSystem$1.class",
+        "org/javity/ecs/artemis/ArtemisSystem.class",
+        "org/javity/ecs/artemis/ComponentProjection.class",
+        "org/javity/ecs/artemis/EcsPhase.class",
+        "org/javity/ecs/artemis/EntityLink.class",
+        "org/javity/ecs/artemis/GameObjectRef.class",
+        "org/javity/ecs/artemis/InactiveGameObject.class",
+        "org/javity/ecs/artemis/LinkLifetime.class",
+        "org/javity/ecs/artemis/LinkRegistry.class",
+        "org/javity/ecs/artemis/LinkedPrefabFactory.class",
+        "org/javity/ecs/artemis/ProjectionDirection.class",
+        "org/javity/ecs/artemis/ProjectionOwnership.class",
+        "org/javity/ecs/artemis/ProjectionSession.class"
+    ],
+    "forbiddenManagementReferences": [
+        
+    ],
+    "violations": [
+        
+    ]
+}
+
+
+> Task :javity-ecs-artemis:check
+> Task :javity-ecs-artemis:build
+> Task :build
+
+> Task :javity-desktop:gltfSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+gltfContextDiagnostic: before=Pixels[count=11470, energy=4383981, checksum=194285293631] after=Pixels[count=11470, energy=4383981, checksum=194285293631]
+gltfGpuSmoke: PASS (GLB/glTF, five PBR maps, independent skin poses, scene light/transform pixels, rollback, cleanup)
+
+> Task :javity-desktop:gltfGl20Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+[GLTF] compute tangents for primitive null
+gltfContextDiagnostic: before=Pixels[count=11470, energy=4383981, checksum=194285293631] after=Pixels[count=11470, energy=4383981, checksum=194285293631]
+gltfGpuSmoke: PASS (GLB/glTF, five PBR maps, independent skin poses, scene light/transform pixels, rollback, cleanup)
+
+> Task :javity-desktop:gltfFoxSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute normals for primitive fox1
+gltfFoxSmoke: PASS {"source":"tools/animation-validation/fox/Fox.gltf","profile":"GL30","glVersion":"4.5 (Core Profile) Mesa 25.0.7-2+deb13u1","worldScale":0.02,"bones":24,"credit":"Fox: PixelMannen (CC0); rig/animation: tomkranis; glTF: AsoboStudio/scurest (CC BY 4.0). See tools/animation-validation/fox/NOTICE.md and SOURCE.md.","oracleSamples":12,"verticesPerSample":1728,"oracleMaxErrorAssetUnits":0.006999969482421875,"changedGeometryPixels":{"Survey":4030,"Walk":9595,"Run":11656},"independentInstances":true,"renderClockStable":true,"gameStepAdvancesAnimation":true,"sceneLightChangedPixels":25405,"result":"PASS"}
+
+> Task :javity-desktop:gltfFoxGl20Smoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute normals for primitive fox1
+gltfFoxSmoke: PASS {"source":"tools/animation-validation/fox/Fox.gltf","profile":"GL20","glVersion":"4.5 (Compatibility Profile) Mesa 25.0.7-2+deb13u1","worldScale":0.02,"bones":24,"credit":"Fox: PixelMannen (CC0); rig/animation: tomkranis; glTF: AsoboStudio/scurest (CC BY 4.0). See tools/animation-validation/fox/NOTICE.md and SOURCE.md.","oracleSamples":12,"verticesPerSample":1728,"oracleMaxErrorAssetUnits":0.006999969482421875,"changedGeometryPixels":{"Survey":4030,"Walk":9595,"Run":11656},"independentInstances":true,"renderClockStable":true,"gameStepAdvancesAnimation":true,"sceneLightChangedPixels":25405,"result":"PASS"}
+
+> Task :javity-desktop:directionalShadowSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute tangents for primitive null
+directionalShadowSmoke: PASS darkPixels=250 movedMaskPixels=659 stateCheckedPasses=21 (policy, movement, MASK, skinned pose, BLEND rejection, failed resize rollback, resize, unshared context replacement, disposal)
+
+> Task :javity-desktop:hdrSmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+hdrSmoke: PASS RGBA8=[255, 255] RGBA16F=[188, 231] exposure=[124, 188] ACES=[232, 252] (linear PBR, UI, callback sampler, state/throw, resize/budget, managed recovery, owned cleanup)
+
+> Task :javity-desktop:qualitySmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[GLTF] compute normals for primitive fox1
+qualitySmoke: PASS {"glVersion":"4.5 (Core Profile) Mesa 25.0.7-2+deb13u1","source":"tools/animation-validation/fox/Fox.gltf","shadows":true,"pipeline":"one Game -> linear PBR + directional depth/color -> RGBA16F -> ACES/sRGB -> HUD/Stage","independentAnimationPixels":2531,"modelMovementPixels":5212,"pointTogglePixels":68371,"exposurePixels":479014,"inputActionsCamera":true,"toolsTogglePixels":408841,"foxCredit":"See tools/animation-validation/fox/NOTICE.md and SOURCE.md","cleanup":true,"result":"PASS"}
+
+> Task :javity-desktop:uiParitySmoke
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.lwjgl.system.MemoryBackendUnsafeLegacy (file:/workspace/.gradle-cache/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.4.3/7ab5265a73d8a959ed62332d546536ae6be2f0d5/lwjgl-3.4.3.jar)
+WARNING: Please consider reporting this to the maintainers of class org.lwjgl.system.MemoryBackendUnsafeLegacy
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[UiParityDemo] fontDiagnostic key=header-label browser=null browserEdgeCoverage=null nativeInk={
+x: 58
+y: 34
+width: 77
+height: 16
+} nativeText={"text":"Navigation","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":80.08,"layoutHeight":12.0,"actorWidth":81.0,"edgeCoverage":{"180":[0,0,12,3,2,3,3,3,3,3,12,0,0,4,6,4,3,4,5,8,0,2,4,4,3,3,4,4,2,0,0,11,0,0,3,10,7,4,4,7,9,4,0,4,6,3,3,4,8,8,0,1,7,11,3,2,2,0,11,9,0,5,7,4,2,2,4,6,7,3,0,0,9,2,2,1,1,2,8,0,0],"220":[0,12,12,3,4,3,4,3,3,12,12,0,0,4,7,5,3,4,8,8,0,2,5,5,4,4,6,5,2,0,9,11,0,0,3,11,8,4,4,9,10,5,4,5,6,4,4,5,9,8,0,1,10,11,3,2,2,0,11,11,0,6,7,6,4,2,4,8,7,5,0,0,9,2,2,1,2,3,8,0,0],"245":[0,12,12,3,4,3,4,4,4,12,12,0,2,5,8,6,6,6,9,9,8,3,5,6,4,4,6,5,2,0,10,11,0,1,7,13,11,8,6,9,11,6,5,8,7,6,6,8,9,8,0,6,11,11,4,3,2,9,11,11,2,7,9,6,4,4,4,9,7,5,0,9,9,9,2,2,2,9,9,8,0]}}
+[UiParityDemo] fontDiagnostic key=left-text browser=null browserEdgeCoverage=null nativeInk={
+x: 34
+y: 78
+width: 22
+height: 12
+} nativeText={"text":"left","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":24.45,"layoutHeight":12.0,"actorWidth":272.0,"edgeCoverage":{"180":[0,0,12,0,0,7,5,5,3,4,5,5,0,1,1,11,3,2,1,1,10,11,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"220":[0,12,12,0,1,7,9,5,3,4,7,6,0,1,10,12,4,2,2,2,11,11,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"245":[24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24]}}
+[UiParityDemo] fontDiagnostic key=right-text browser=null browserEdgeCoverage=null nativeInk={
+x: 329
+y: 78
+width: 34
+height: 16
+} nativeText={"text":"right","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":35.17,"layoutHeight":12.0,"actorWidth":272.0,"edgeCoverage":{"180":[0,9,9,3,2,2,1,0,11,11,0,5,12,12,10,6,9,11,10,6,12,12,12,3,2,2,9,9,8,1,8,11,11,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"220":[24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24],"245":[24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24]}}
+[UiParityDemo] fontDiagnostic key=card-title browser=null browserEdgeCoverage=null nativeInk={
+x: 50
+y: 390
+width: 74
+height: 14
+} nativeText={"text":"Card title","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":75.2,"layoutHeight":13.0,"actorWidth":354.0,"edgeCoverage":{"180":[0,6,10,6,4,3,3,3,3,4,0,0,3,5,6,5,5,5,9,9,0,0,0,9,9,3,1,1,1,5,8,4,4,4,4,4,13,13,0,0,0,0,0,0,0,0,3,12,12,4,4,0,0,13,9,0,1,7,12,6,4,4,0,0,14,0,0,5,9,6,5,5,5,7,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"220":[0,8,10,6,5,5,3,3,5,5,0,0,5,8,9,7,5,7,9,10,0,0,0,10,10,9,2,1,1,7,9,11,6,4,6,6,14,14,0,0,0,0,0,0,0,2,8,12,13,5,4,4,0,13,12,0,2,10,12,13,5,4,2,0,14,14,0,7,9,10,7,5,6,8,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"245":[0,8,11,6,5,5,5,5,5,5,1,0,5,9,9,8,8,8,10,10,0,0,0,10,10,10,2,2,2,7,9,11,6,6,6,8,14,14,0,0,0,0,0,0,0,3,10,13,13,6,6,4,0,13,13,0,3,10,13,13,6,6,4,0,14,14,0,7,9,10,8,8,8,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}
+[UiParityDemo] fontDiagnostic key=card-body browser=null browserEdgeCoverage=null nativeInk={
+x: 50
+y: 415
+width: 102
+height: 15
+} nativeText={"text":"Card body copy.","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":103.22,"layoutHeight":10.0,"actorWidth":354.0,"edgeCoverage":{"180":[0,6,4,4,2,2,2,2,0,0,4,4,3,3,5,7,0,8,8,2,1,1,0,6,4,2,2,3,11,0,0,0,0,0,0,11,11,4,2,4,8,4,0,0,5,3,2,2,2,4,4,0,2,6,4,2,2,11,11,0,3,5,7,4,4,4,2,0,0,0,0,0,4,5,2,2,2,2,0,6,4,2,2,2,4,4,0,12,12,2,2,4,6,0,0,3,5,6,4,4,4,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"220":[0,6,4,4,2,2,2,3,0,2,5,6,3,4,8,7,0,8,8,2,1,1,0,6,4,2,2,6,11,0,0,0,0,0,0,11,11,4,2,4,8,6,0,0,6,8,4,2,2,6,6,0,6,8,4,2,4,11,11,0,3,6,9,7,7,7,4,0,0,0,0,0,6,8,4,2,2,2,0,6,5,2,2,4,6,5,0,12,12,4,2,6,8,0,2,5,8,9,6,7,5,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"245":[1,7,7,4,3,2,2,4,0,3,7,6,3,5,8,8,0,8,8,3,2,1,0,6,7,4,3,11,11,0,0,0,0,0,0,11,11,6,2,6,8,6,0,0,6,8,4,2,4,8,8,0,6,8,6,2,6,11,11,0,4,7,11,9,7,8,5,0,0,0,0,0,6,8,5,2,4,3,2,6,6,4,2,4,8,6,0,12,12,4,3,8,8,0,3,6,11,9,8,8,5,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}
+[UiParityDemo] fontDiagnostic key=type-inherited browser=null browserEdgeCoverage=null nativeInk={
+x: 18
+y: 486
+width: 87
+height: 12
+} nativeText={"text":"inherited 16","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":89.88,"layoutHeight":12.0,"actorWidth":90.0,"edgeCoverage":{"180":[0,0,11,0,0,0,9,2,2,1,1,2,8,0,0,0,12,1,1,1,1,3,8,0,2,7,5,3,3,4,5,3,0,0,9,9,2,1,1,1,0,11,0,0,1,10,3,2,2,0,7,5,5,3,4,4,3,0,0,7,5,2,2,4,4,12,0,0,0,0,0,0,0,0,1,2,12,12,0,0,0,0,8,5,5,3,5,7,4,0],"220":[0,9,11,0,0,0,9,2,2,1,2,4,8,0,0,12,12,3,2,1,2,9,8,0,5,7,7,5,3,5,7,5,0,0,9,9,3,2,1,1,0,11,11,1,2,11,11,3,2,1,7,8,5,3,4,7,6,0,1,7,6,4,2,4,12,12,0,0,0,0,0,0,0,1,2,3,12,12,0,0,0,3,9,9,6,4,5,9,6,0],"245":[0,10,11,0,0,9,9,9,2,2,2,9,9,6,0,12,12,4,2,2,2,9,8,0,7,9,9,6,6,8,8,7,0,0,9,9,4,2,2,1,9,11,11,1,8,11,11,4,3,5,7,9,6,6,6,8,7,0,6,9,8,4,4,6,12,12,0,0,0,0,0,0,0,1,2,3,12,12,0,0,0,8,10,11,6,6,8,10,6,0]}}
+[UiParityDemo] fontDiagnostic key=type-xl browser=null browserEdgeCoverage=null nativeInk={
+x: 17
+y: 514
+width: 114
+height: 15
+} nativeText={"text":"text-xl 20/28","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":115.06,"layoutHeight":14.0,"actorWidth":116.0,"edgeCoverage":{"180":[0,1,10,14,3,2,3,0,5,9,5,5,5,5,5,6,4,0,0,4,6,5,5,3,6,6,4,2,0,1,9,12,13,3,3,1,1,1,1,1,1,0,0,4,6,5,5,3,6,6,4,2,0,0,15,15,0,0,0,0,0,0,0,2,4,6,7,6,6,6,8,7,0,0,0,8,12,6,4,4,4,4,6,10,6,1,3,5,5,5,5,2,0,0,3,5,6,5,5,6,9,7,3,0,0,5,10,9,7,6,6,7,10,9,3,0],"220":[0,2,11,14,4,4,4,0,7,9,8,6,6,6,6,7,6,0,1,4,7,7,5,5,7,7,5,2,0,2,10,14,14,4,4,2,1,2,2,2,2,0,2,4,7,7,5,5,7,8,5,2,0,0,15,15,0,0,0,0,0,0,0,3,5,6,7,7,7,9,10,8,0,0,0,10,12,6,4,4,4,4,8,10,6,1,4,7,7,7,7,4,1,0,4,7,7,7,7,7,10,8,5,0,0,8,11,10,7,6,7,7,11,9,3,0],"245":[0,2,12,14,5,4,4,0,7,9,11,6,6,6,6,8,7,0,3,6,9,9,5,7,9,8,6,2,0,2,12,14,14,4,4,4,2,2,2,2,2,0,3,6,9,9,5,7,9,8,6,2,0,0,15,15,0,0,0,0,0,0,0,3,6,7,7,8,8,10,11,8,0,0,0,12,13,6,4,4,4,8,14,12,8,2,4,7,9,8,8,5,2,0,6,7,7,8,8,10,11,8,6,0,0,9,12,14,7,7,7,8,12,11,7,0]}}
+[UiParityDemo] fontDiagnostic key=type-2xl browser=null browserEdgeCoverage=null nativeInk={
+x: 17
+y: 547
+width: 150
+height: 18
+} nativeText={"text":"text-2xl 24/32","fontScaleX":1.0,"fontScaleY":1.0,"layoutAdvance":150.56,"layoutHeight":17.0,"actorWidth":151.0,"edgeCoverage":{"180":[0,1,2,14,15,5,5,4,5,4,8,10,8,6,7,7,7,7,8,7,0,0,1,5,7,8,7,5,6,8,8,6,3,0,0,1,2,14,15,6,5,4,5,1,2,2,2,2,2,0,0,3,7,6,7,8,7,7,7,9,11,8,0,0,0,3,6,8,7,6,4,7,8,6,5,2,0,0,0,18,17,0,0,0,0,0,0,0,0,0,4,7,7,8,7,7,7,7,11,9,5,0,0,2,4,6,6,7,6,7,6,16,17,3,3,3,0,4,6,5,6,6,5,3,0,0,1,4,5,7,7,7,8,9,9,13,11,5,0,0,4,7,7,8,7,7,7,7,11,9,5],"220":[0,3,3,14,15,7,6,6,6,6,10,12,10,8,8,8,8,9,10,8,0,0,3,6,9,11,8,6,7,10,10,7,5,2,0,3,3,14,15,7,6,6,6,2,2,2,2,2,2,0,0,3,7,8,8,9,9,9,9,11,12,10,0,0,0,4,7,9,9,6,5,8,9,8,5,3,0,0,0,18,18,0,0,0,0,0,0,0,0,0,7,8,8,8,9,9,10,11,13,11,8,0,0,3,5,6,8,7,8,7,7,17,17,16,3,3,2,5,7,7,7,7,6,3,1,0,2,6,5,8,8,8,8,9,14,16,12,5,0,0,7,8,8,9,9,9,10,11,13,11,8],"245":[0,3,3,15,16,7,6,6,6,8,10,12,12,10,8,8,8,10,10,11,0,2,4,7,10,12,10,6,8,11,11,9,6,3,0,3,3,15,16,7,6,6,6,2,2,2,2,2,2,0,0,6,7,8,9,9,10,10,10,13,13,12,0,0,2,5,8,10,10,7,6,9,11,9,6,3,0,0,0,18,18,0,0,0,0,0,0,0,0,0,7,8,9,9,10,10,10,12,13,12,9,0,0,4,5,7,8,9,9,8,8,17,17,17,3,3,3,5,8,9,8,8,7,4,1,0,6,7,9,8,8,8,9,10,14,16,14,7,0,0,7,8,9,9,10,10,10,12,13,12,9]}}
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[To redirect Truffle log output to a file use one of the following options:
+* '--log.file=<path>' if the option is passed using a guest language launcher.
+* '-Dpolyglot.log.file=<path>' if the option is passed using the host Java launcher.
+* Configure logging using the polyglot embedding API.]
+[engine] WARNING: The polyglot engine uses a fallback runtime that does not support runtime compilation to native code.
+Execution without runtime compilation will negatively impact the guest application performance.
+The following cause was found: JVMCI is not enabled for this JVM. Enable JVMCI using -XX:+EnableJVMCI.
+For more information see: https://www.graalvm.org/latest/reference-manual/embed-languages/#runtime-optimization-support.
+To disable this warning use the '--engine.WarnInterpreterOnly=false' option or the '-Dpolyglot.engine.WarnInterpreterOnly=false' system property.
+[UiParityDemo] UiDocumentComponent native visibility lifecycle PASS
+
+[Incubating] Problems report is available at: file:///workspace/JavityEngine/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 33s
+127 actionable tasks: 23 executed, 104 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html

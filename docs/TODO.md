@@ -5,12 +5,14 @@
 [Audyt kodu i referencji Unity/jMonkeyEngine](engine-quality-review.md).
 To kolejność proponowana, nie deklaracja zakończonego zakresu AAA.
 
-- [ ] Q-001: kontrakt własności hierarchii Transform3D, attach/usunięcie rodzica i regresje między scenami.
-- [ ] Q-002: dostarczać zatwierdzone zmiany komponentów mimo błędu pojedynczego listenera; testy reentrancy i błędów.
-- [ ] Wyjaśnić native smoke failure CI39375230181 przed zamknięciem desktop gate.
-- [ ] Q-003: zmierzyć i ograniczyć alokacje snapshotu światła z zachowaniem atomowości po błędzie.
-- [ ] Zaprojektować opcjonalny adapter glTF/GLB i materiałów PBR; zbadać gdx-gltf zamiast tworzyć importer od zera.
-- [ ] Kolejne niezależne etapy: IBL/cienie, HDR/tone mapping, eventy/root motion i wspólna scena referencyjna.
+- [x] Q-001: kontrakt własności hierarchii Transform3D, attach/usunięcie rodzica i regresje między scenami.
+- [x] Q-002: dostarczać zatwierdzone zmiany komponentów mimo błędu pojedynczego listenera; testy reentrancy i błędów.
+- [x] Wyjaśnić native smoke failure CI39375230181: ułamkowe metryki fontu; lokalny replay dokładnego hosted reference przechodzi bez zmian tolerancji.
+- [ ] BUG-UI-001: świeży zielony hosted CI po poprawce fontu; lokalny PASS nie zamyka bramki.
+- [x] Q-003: zmierzyć i ograniczyć alokacje snapshotu światła z zachowaniem atomowości po błędzie.
+- [x] Opcjonalny javity-gltf: runtime GLB/glTF, jawny profil materiałów PBR, zarządzane tekstury, zasięgi point lights i test oryginalnego Fox na GL20/GL30.
+- [x] Ograniczone desktop PBR cienie kierunkowe, HDR/exposure/tone mapping, translation root motion i wspólna scena Fox Garden.
+- [ ] Dalsze etapy: authoring/baking IBL, cienie kaskadowe/lokalne, PBR instancing, pełniejsze root motion/IK/retargeting oraz osobne bramki Android/web.
 
 Aktualna kolejność nowych prac: [work-queue.md](work-queue.md). Audyt OneJS: [onejs-coverage-audit.md](onejs-coverage-audit.md).
 
@@ -52,7 +54,7 @@ Priorytet użytkownika: zachować i migrować dotychczasowe funkcje, rozpakować
 - [x] SDF AA circle/rectangle/rounded/polyline, ROUND joins, BUTT/ROUND/SQUARE caps, WORLD/SCREEN i test pikseli GPU.
 - [x] Shapes: własne materiały GLSL z typowanymi uniformami, gradient/pulse/stripes, ShaderAnimator WORLD/UI, cache i testy pikseli/zasobów GPU.
 - [ ] Rozszerzenia Shapes: AA polygon, bevel/miter, clipping, render targets i postprocessing.
-- [ ] GLB/glTF/PBR i testy eksportowanych modeli animowanych.
+- [x] Opcjonalny ograniczony glTF/GLB/PBR oraz oryginalny rig Fox z niezależnymi klipami; [profil i bramki](gltf-assets.md).
 - [x] CameraRig3D: kamera FPS/TPP z F5, follow za avatar, kolizyjny boom i sweep bliskiej płaszczyzny oraz ray/picking; oddzielny viewmodel. Dowody proceduralnego avataru i Bullet w docs/avatars.md oraz docs/physics3d.md.
 - [ ] Ogólny edytorski orbit i dodatkowe warianty Camera3D pozostają rozszerzeniem poza kamerą postaci.
 - [x] UI ScrollView i TextField w deklaratywnym hoście.
@@ -81,7 +83,7 @@ Gradle/JDK/libGDX zaktualizowane, lokalne źródła Galaxy/pluginów w buildzie,
 - [x] Deklaratywne natywne UI: View/Text/Button/Progress/TextField/ScrollView, bindingi, keyed reuse i cleanup. [API](declarative-ui.md).
 - [x] Przenośny host React/TSX do Scene2D/Yoga z providerem GraalJS na desktopie i jawnie wstrzykiwanym QuickJS na Androidzie; hooki, schedulery, reload i jawne JavityGame actions/values. [Port OneJS](onejs-port.md). To ograniczony host inspirowany OneJS, nie pełna zgodność; katalog props/stylów jest jawnie ograniczony.
 - [x] Additive 2D punch/shake z własnością offsetów, screen flash oraz per-voice audio/buses/ducking; testy kontraktów i niezależny przegląd. Współpraca na GPU/native audio została sprawdzona w Relay Ward, również przy zamknięciu z aktywnymi zasobami.
-- [x] Animacje: transition/seek/markers, rzeczywisty 1D mixer, masked override layers, niezależne weight fades oraz crossfade klipów bazowych i warstw z zamrożonym źródłem; testy kości/pikseli, pauzy, przerwań i callbacków. Zatwierdzone przy 548 testach oraz pluginsSmoke. Bez additive layers, root motion i IK.
+- [x] Animacje: transition/seek/markers, rzeczywisty 1D mixer, masked override layers, niezależne weight fades oraz crossfade klipów bazowych i warstw z zamrożonym źródłem; testy kości/pikseli, pauzy, przerwań i callbacków. Zatwierdzone przy 548 testach oraz pluginsSmoke. Bez additive layers i IK; osobny translation-only [root motion](root-motion.md) dodano 2026-10-20.
 
 ## Feel / MMTools — audyt zakresu
 
@@ -172,7 +174,7 @@ Projekt zaakceptowany 2026-10-16; cztery plany wykonania do przeglądu: [FPS, na
 - [ ] Udostępnić tree viewer również w VoxelDemo/Physics3DDemo, poprawić wyszukiwanie i ergonomię; gizma socketów/świateł przez jawne adaptery.
 - [ ] Narzędzia Feel: wspólne scenariusze use-tool/hit/landing/sprint/scene transition i panel istniejących presetów bez nowego schedulera.
 - [x] Lokalny streaming nad AssetManager: typed lease, kolejki/priorytety, limity, cache i bezpieczna eksmisja nieprzypiętych rootów; autorski teksturowany model, prefetch i failure/retry w `--asset-streaming`. [API](asset-streaming.md), [native dowody](artifacts/asset-streaming/README.md). Android streaming **UNVERIFIED**; HTTP, hot reload i streaming chunków osobno.
-- [x] Światła sceny directional/point/spot, ambient, gradient/pożyczony cubemap, mgła także unlit modeli, WORLD dzień/noc, typowane edycje i wspólne undo oraz gizma świateł/socketu. `--environment` i jawne otoczenie voxelów; [API](lighting-and-sky.md), [dowody desktop GL20/GL30](artifacts/environment/README.md). Android nowych funkcji **UNVERIFIED** bez rzeczywistego GLES/EGL gate; PBR/cienie/HDR poza zakresem.
+- [x] Światła sceny directional/point/spot, ambient, gradient/pożyczony cubemap, mgła także unlit modeli, WORLD dzień/noc, typowane edycje i wspólne undo oraz gizma świateł/socketu. `--environment` i jawne otoczenie voxelów; [API](lighting-and-sky.md), [dowody desktop GL20/GL30](artifacts/environment/README.md). Android nowych funkcji **UNVERIFIED** bez rzeczywistego GLES/EGL gate; opcjonalny desktop PBR/cienie/HDR opisują osobne [glTF](gltf-assets.md), [shadows](shadows.md) i [HDR](hdr-rendering.md).
 - [x] Guide istniejącego API z komendami, zrzutami i przykładem SceneAssets: [engine-guide.md](engine-guide.md). Stan kolejnych wdrożeń jest opisany w checkboxach powyżej.
 
 - [x] Niezależna walidacja animacji na darmowym importowanym Fox: GL20/GL30, 24 kości, Survey/Walk/Run, crossfade, maska, mikser, zegary, callbacki i cleanup. [Dowody](artifacts/imported-animation/README.md). Nie zamyka zadań FPS/streamingu/oświetlenia ani importu dowolnych rigów.
@@ -271,7 +273,7 @@ Starsze audyty i liczniki testów w tym pliku pozostają historycznymi checkpoin
 
 Feature gaps in browser providers, remote netcode and physical-device validation remain separate backlog items; this maintenance batch does not mark them implemented.
 
-- [ ] BUG-UI-001: capture font advances and ink-edge coverage on hosted CI; keep the failing glyph gate until a diagnosis-backed fix. [Specification](Spec/2026-10-17-ui-font-parity.md).
+- [ ] BUG-UI-001: diagnosis-backed fractional metrics fix and exact hosted-reference local replay pass; retain the glyph gate and obtain fresh hosted CI PASS. [Specification](Spec/2026-10-17-ui-font-parity.md).
 
 ## ORBIT WebAssembly — 2026-10-17
 
@@ -302,4 +304,4 @@ Feature gaps in browser providers, remote netcode and physical-device validation
 - [ ] Podłączyć nowy rdzeń replikacji do faktycznego hosta Colyseus z uwierzytelnionymi sesjami/ticketami; prediction/reconciliation i obciążenie sieci osobno.
 - [ ] Test typowanego providera na aktualnym prywatnym API ORBIT; syntetyczny MessagePort host nie jest takim testem.
 - [ ] Natywne adaptery gamepad i touch gestures oraz dalsze prefab overrides/asset pipeline zgodnie z potrzebami gry.
-- [ ] Rozwiązać BUG-UI-001 na podstawie nowych metryk hostowanego CI; lokalny PASS nie zamyka różnicy pomiędzy hostami.
+- [ ] Potwierdzić poprawkę BUG-UI-001 świeżym hosted CI; diagnoza i lokalny replay PASS nie zamykają bramki.

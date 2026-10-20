@@ -4,6 +4,17 @@ This file records user-facing changes. There are no published release entries he
 
 ## Unreleased
 
+### Engine quality and modern 3D — 2026-10-20
+
+- Enforce Transform3D scene ownership, detach removed parents and deliver committed component changes despite failed observers.
+- Reuse transactional lighting snapshots; correct value equality and add an opt-in CPU allocation benchmark.
+- Add optional pinned glTF/GLB import, managed texture/lease ownership, PBR, explicit material-profile validation and finite point-light ranges.
+- Add directional shadow policy, RGBA16F HDR/exposure/ACES/Reinhard and an integrated Fox Garden runtime-tools showcase.
+- Add translation-only root-motion extraction with an explicit movement sink, exact loop handling and reusable callback-mutation snapshots.
+- Preserve fractional native font advances/bearings without enlarging atlases; bound borrowed-font cache history.
+- Share managed VAO recovery between desktop/core and Android; use one failure-safe framebuffer allocator with idempotent cleanup.
+- Add real GL context-replacement, allocation/draw failure, rollback and negative-control tests. Platform limits and commands are in the new guides.
+
 ### Game authoring APIs — 2026-10-20
 
 - Added typed platform services with a local provider and a browser ORBIT adapter, bounded owner-thread callback delivery, cancellation and versioned saves.

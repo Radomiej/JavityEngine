@@ -6,7 +6,7 @@ JavityEngine is a Java game engine in active modernization, built on libGDX. The
 
 ## What changed
 
-The modernization adds a Java 25/Gradle build, a common 2D/3D component core, optional Artemis ECS and local Java-authoritative Colyseus development. Recent work also hardens Wasm resource cleanup and verifies actual scene pixels instead of the page overlay. See [CHANGELOG.md](CHANGELOG.md), the [bug checklist](docs/Bugs/README.md) and the [current backlog](docs/TODO.md).
+The modernization adds a Java 25/Gradle build, a common 2D/3D component core, optional Artemis ECS and local Java-authoritative Colyseus development. Recent work adds optional glTF/GLB import, PBR, directional shadows, RGBA16F HDR, translation root motion, and more precise UI typography. Shared GPU recovery and ownership paths have dedicated regression tests. See [CHANGELOG.md](CHANGELOG.md), the [bug checklist](docs/Bugs/README.md) and the [current backlog](docs/TODO.md).
 
 ## Quick start
 
@@ -23,6 +23,7 @@ The default desktop demo shows the new core, including a 2D object, a 3D model, 
 ./gradlew :javity-desktop:run --args='--map'       # Offline raster map
 ./gradlew :javity-desktop:run --args='--runtime'   # Runtime services and serialization
 ./gradlew :javity-desktop:run --args='--plugins'   # UI, animation, and scripting integrations
+./gradlew :javity-desktop:qualityDemo             # PBR Fox Garden, shadows/HDR and runtime tools
 ./gradlew :javity-desktop:run --args='--voxels'    # Voxel world
 ./gradlew :javity-desktop:run --args='--mm'         # Relay Ward systems demo
 ./gradlew :javity-desktop:run --args='--legacy'     # Historical API demo
@@ -70,6 +71,7 @@ The core and optional features are separate Gradle modules. Add only the modules
 | `javity-map-core`, `javity-map` | Raster map API and historical geographic map plugin |
 | `javity-maplibre` | Optional MapLibre Native vector maps; Linux x64 EGL/GLES |
 | `javity-assets` | Optional local asset streaming and bounded cache |
+| `javity-gltf` | Optional bounded glTF/GLB importer, PBR, desktop directional shadows and HDR |
 | `javity-ecs-artemis` | Optional Artemis-ODB adapter; core does not depend on Artemis |
 | `javity-rooms` | Local Colyseus gateway and Java-authoritative room example |
 | `javity-engine`, `javity-backend`, `javity-net` | Historical API/backend modules retained for migration |
@@ -112,3 +114,13 @@ Build a versioned `.nekko` archive containing WebAssembly, its loader, assets an
 ## Game authoring APIs
 
 Use [typed platform services](docs/platform-services.md) for ORBIT/local profiles and versioned saves, [GameObject UI panels](docs/ui-game-object.md) for scene-owned UI, [input contexts](docs/input-actions.md) for gameplay/menu controls, and [prefab catalogs](docs/prefab-pipeline.md) for versioned templates. The [replication core](docs/game-replication.md) provides authority, snapshots and interpolation; live ticket-backed Colyseus transport remains a separate integration. [Scope and verification](docs/Spec/2026-10-20-authoring-api-batch.md).
+
+## Modern 3D workflow
+
+[Fox Garden](docs/quality-showcase.md) combines imported animations, authored greenery, scene
+lights, PBR/shadows/HDR, input and the existing GameObject tools. Start with
+`./gradlew :javity-desktop:qualityDemo`; use F1 for the runtime hierarchy.
+[glTF assets and supported profile](docs/gltf-assets.md), [shadows](docs/shadows.md),
+[HDR](docs/hdr-rendering.md) and [root motion](docs/root-motion.md) describe the API
+and ownership rules. These optional features have scoped desktop tests, not
+blanket Android/WebAssembly or complete Unity compatibility certification.
