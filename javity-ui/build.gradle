@@ -5,6 +5,7 @@ dependencies {
 
     // The public UI jar remains portable. Tests exercise the desktop provider directly.
     testRuntimeOnly project(':javity-ui-yoga-lwjgl')
+    testRuntimeOnly "com.badlogicgames.gdx:gdx-platform:${rootProject.gdxVersion}:natives-desktop"
     testRuntimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:${rootProject.gdxVersion}:natives-desktop"
 }
 

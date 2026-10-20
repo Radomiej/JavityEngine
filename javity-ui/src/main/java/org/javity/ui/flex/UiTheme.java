@@ -3,9 +3,9 @@ package org.javity.ui.flex;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
@@ -24,7 +24,10 @@ public final class UiTheme implements Disposable {
   private final FileHandle trueTypeFile;
   private final String characters;
   private final Map<Integer, BitmapFont> sizeFonts = new HashMap<>();
-  private final Map<Float, BitmapFont> scaledBorrowedFonts = new HashMap<>();
+
+  private record BorrowedFontCopy(float sourceX, float sourceY, BitmapFont font) {}
+
+  private final Map<Float, BorrowedFontCopy> scaledBorrowedFonts = new HashMap<>();
   private final Map<String, TextureRegion> images = new HashMap<>();
   private RectanglePainter rectanglePainter;
 
@@ -64,7 +67,8 @@ public final class UiTheme implements Disposable {
     }
     Texture createdWhite;
     try {
-      createdWhite = new Texture(new PixmapTextureData(pixel, pixel.getFormat(), false, false, true));
+      createdWhite =
+          new Texture(new PixmapTextureData(pixel, pixel.getFormat(), false, false, true));
     } catch (RuntimeException | Error failure) {
       disposeAfterFailure(pixel, failure);
       if (ownsFont) disposeAfterFailure(font, failure);
@@ -98,7 +102,10 @@ public final class UiTheme implements Disposable {
       parameters.kerning = true;
       parameters.minFilter = Texture.TextureFilter.Linear;
       parameters.magFilter = Texture.TextureFilter.Linear;
-      return generator.generateFont(parameters);
+      SubpixelFontData data = SubpixelFontData.read(file, size, characters);
+      BitmapFont generated = generator.generateFont(parameters, data);
+      generated.setUseIntegerPositions(false);
+      return generated;
     } finally {
       generator.dispose();
     }
@@ -227,7 +234,7 @@ public final class UiTheme implements Disposable {
             style.lineHeight(),
             UtilityStyles.padding(classes),
             wrap);
-    if (trueTypeFile == null && !wrap) label.setFontScale(style.textScale());
+    if (!wrap) setLabelScale(label, trueTypeFile == null ? style.textScale() : 1f);
     return label;
   }
 
@@ -238,9 +245,14 @@ public final class UiTheme implements Disposable {
   public void updateLabel(Label label, String classes, boolean wrap) {
     var style = visual(classes);
     label.setStyle(labelStyle(style, classes, wrap));
-    label.setFontScale(trueTypeFile == null && !wrap ? style.textScale() : 1f);
+    if (!wrap) setLabelScale(label, trueTypeFile == null ? style.textScale() : 1f);
     if (label instanceof TailwindLabel tailwindLabel)
       tailwindLabel.update(style.lineHeight(), UtilityStyles.padding(classes), wrap);
+  }
+
+  private static void setLabelScale(Label label, float relativeScale) {
+    BitmapFont font = label.getStyle().font;
+    label.setFontScale(font.getScaleX() * relativeScale, font.getScaleY() * relativeScale);
   }
 
   private Label.LabelStyle labelStyle(UtilityStyles.Visual visual, String classes) {
@@ -278,14 +290,14 @@ public final class UiTheme implements Disposable {
     var visual = visual(classes);
     TextButton button =
         new TailwindTextButton(text, buttonStyle(visual, classes), visual.lineHeight());
-    button.getLabel().setFontScale(trueTypeFile == null ? visual.textScale() : 1f);
+    setLabelScale(button.getLabel(), trueTypeFile == null ? visual.textScale() : 1f);
     return button;
   }
 
   public void updateButton(TextButton button, String classes) {
     UtilityStyles.Visual visual = visual(classes);
     button.setStyle(buttonStyle(visual, classes));
-    button.getLabel().setFontScale(trueTypeFile == null ? visual.textScale() : 1f);
+    setLabelScale(button.getLabel(), trueTypeFile == null ? visual.textScale() : 1f);
     if (button instanceof TailwindTextButton tailwindButton)
       tailwindButton.setLineBoxHeight(visual.lineHeight());
   }
@@ -450,7 +462,8 @@ public final class UiTheme implements Disposable {
     Throwable failure = null;
     if (rectanglePainter != null) failure = dispose(rectanglePainter, failure);
     images.clear();
-    for (BitmapFont cached : scaledBorrowedFonts.values()) failure = dispose(cached, failure);
+    for (BorrowedFontCopy cached : scaledBorrowedFonts.values())
+      failure = dispose(cached.font(), failure);
     scaledBorrowedFonts.clear();
     if (ownsFont) {
       for (BitmapFont cached : sizeFonts.values())
@@ -479,8 +492,17 @@ public final class UiTheme implements Disposable {
   private BitmapFont wrappedFontFor(UtilityStyles.Visual visual) {
     BitmapFont base = fontFor(visual);
     if (trueTypeFile != null || visual.textScale() == 1f) return base;
-    return scaledBorrowedFonts.computeIfAbsent(
-        visual.textScale(), scale -> copyScaledFont(base, scale));
+    float relativeScale = visual.textScale();
+    BorrowedFontCopy cached = scaledBorrowedFonts.get(relativeScale);
+    if (cached != null
+        && cached.sourceX() == base.getScaleX()
+        && cached.sourceY() == base.getScaleY()) return cached.font();
+    BitmapFont copy = copyScaledFont(base, relativeScale);
+    // Keep only the current copy per style. Copies own neither textures nor native resources;
+    // live labels retain older copies themselves, so eviction drops only this cache reference.
+    scaledBorrowedFonts.put(
+        relativeScale, new BorrowedFontCopy(base.getScaleX(), base.getScaleY(), copy));
+    return copy;
   }
 
   /** Keeps wrapped per-style scale out of the caller-owned BitmapFontData. */
@@ -493,7 +515,9 @@ public final class UiTheme implements Disposable {
 
   static BitmapFont.BitmapFontData copyScaledFontData(
       BitmapFont.BitmapFontData original, float scale) {
-    BitmapFont.BitmapFontData copy = new BitmapFont.BitmapFontData();
+    BitmapFont.BitmapFontData copy;
+    if (original instanceof SubpixelFontData fractional) copy = fractional.copyMetrics();
+    else copy = new BitmapFont.BitmapFontData();
     copy.name = original.name;
     copy.imagePaths = original.imagePaths == null ? null : original.imagePaths.clone();
     copy.fontFile = original.fontFile;
@@ -644,7 +668,7 @@ public final class UiTheme implements Disposable {
     private float textWidth(String text) {
       if (text.isEmpty()) return 0;
       scratch.setText(getStyle().font, text);
-      return scratch.width * getFontScaleX();
+      return scratch.width * (wrap ? 1f : getFontScaleX() / getStyle().font.getScaleX());
     }
 
     @Override
