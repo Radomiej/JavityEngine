@@ -62,3 +62,8 @@ Instrukcje builda i krótkie przykłady: [README repozytorium](../README.md). Za
 Public showcase: [GitHub Pages](https://radomiej.github.io/JavityEngine/) · [Unreleased changes](../CHANGELOG.md) · [static-site verification](artifacts/site/README.md).
 
 Tworzenie gier: [platforma/ORBIT](platform-services.md) · [panel jako komponent](ui-game-object.md) · [wejście](input-actions.md) · [prefaby](prefab-pipeline.md) · [replikacja](game-replication.md).
+## Kierunek jakości silnika
+
+[Porównanie z Unity i jMonkeyEngine, potwierdzone luki i proponowane etapy](engine-quality-review.md).
+Aktualizacja 2026-10-20 obejmuje audyt źródeł i sondy CPU; nie oznacza wdrożenia
+PBR/glTF/cieni ani zakończenia celu AAA.

@@ -1,5 +1,17 @@
 # TODO
 
+## Cel jakości silnika — 2026-10-20
+
+[Audyt kodu i referencji Unity/jMonkeyEngine](engine-quality-review.md).
+To kolejność proponowana, nie deklaracja zakończonego zakresu AAA.
+
+- [ ] Q-001: kontrakt własności hierarchii Transform3D, attach/usunięcie rodzica i regresje między scenami.
+- [ ] Q-002: dostarczać zatwierdzone zmiany komponentów mimo błędu pojedynczego listenera; testy reentrancy i błędów.
+- [ ] Wyjaśnić native smoke failure CI39375230181 przed zamknięciem desktop gate.
+- [ ] Q-003: zmierzyć i ograniczyć alokacje snapshotu światła z zachowaniem atomowości po błędzie.
+- [ ] Zaprojektować opcjonalny adapter glTF/GLB i materiałów PBR; zbadać gdx-gltf zamiast tworzyć importer od zera.
+- [ ] Kolejne niezależne etapy: IBL/cienie, HDR/tone mapping, eventy/root motion i wspólna scena referencyjna.
+
 Aktualna kolejność nowych prac: [work-queue.md](work-queue.md). Audyt OneJS: [onejs-coverage-audit.md](onejs-coverage-audit.md).
 
 Priorytet użytkownika: zachować i migrować dotychczasowe funkcje, rozpakować lokalnie Galaxy Rapid i pluginy; nowe zaawansowane funkcje po stabilizacji bazy. Modernizacja jest zmergowana i wypchnięta na master; strona GitHub Pages działa. Otwarte bramki pozostają jawnie zapisane poniżej.
