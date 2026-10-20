@@ -3,3 +3,8 @@ work dedicated to the public domain under CC0 1.0 Universal:
 https://creativecommons.org/publicdomain/zero/1.0/
 No third-party artwork is included. Each fixture contains an original quad,
 five 1x1 procedural PNGs and (skinned.glb) a two-joint linear translation clip.
+
+avatar.glb and tools/generate-avatar-fixture.py are original CC0 1.0 Universal
+work, authored for Javity's imported-avatar example. The fixture is a small block
+humanoid with six body regions, an eight-joint rig, a rigid hand tool and one
+original linear quaternion clip (tool-salute). It contains no third-party artwork.
