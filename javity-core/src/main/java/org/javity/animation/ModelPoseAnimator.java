@@ -14,6 +14,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.javity.core.Component;
 import org.javity.render.ModelRenderer;
 
@@ -36,6 +37,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   private ModelRenderer renderer;
   private ModelPosePlayback current;
   private TransitionState baseTransition;
+  private ModelRootMotion rootMotion;
 
   @Override
   public void onCreate() {
@@ -48,6 +50,8 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     Objects.requireNonNull(mode);
     requireAttachedAndUsable();
     setupRenderer();
+    if (rootMotion != null)
+      throw new IllegalStateException("Root motion requires a single named base clip");
     for (LinearModelMixer.Entry entry : mixer.entries()) clip(entry.animationName());
     PlaybackClock clock =
         new PlaybackClock("<mixer>", mixer.cycleDuration(), mode, 0, 1, List.of());
@@ -72,6 +76,8 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     Objects.requireNonNull(transition);
     requireAttachedAndUsable();
     setupRenderer();
+    if (rootMotion != null && transition.fadeSeconds() > 0)
+      throw new IllegalStateException("Root motion does not support base clip fades");
     ClipData data = clip(transition.clipName());
     PlaybackClock clock =
         new PlaybackClock(
@@ -114,6 +120,37 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     return current;
   }
 
+  /**
+   * Extracts translation from one exact top-level node path. The sink runs during this animator's
+   * update, after pose publication and before after-WORLD systems such as physics. The selected
+   * node retains its bind translation. Mixers, base fades and layers selecting this node are
+   * rejected.
+   */
+  public void setRootMotion(String nodePath, Consumer<RootMotionDelta> sink) {
+    Objects.requireNonNull(sink, "sink");
+    requireAttachedAndUsable();
+    setupRenderer();
+    Integer index = pathIndices.get(nodePath);
+    if (index == null || index < 0 || nodes.get(index).node.getParent() != null)
+      throw new IllegalArgumentException("Root motion requires an exact top-level node path");
+    if ((current != null && current.mixer != null) || baseTransition != null)
+      throw new IllegalStateException("Root motion requires a single named base clip without fade");
+    if (updateMode != UpdateMode.WORLD)
+      throw new IllegalStateException("Root motion requires WORLD update mode");
+    for (ModelAnimationLayer layer : layers)
+      if (layer.resolvedMask[index])
+        throw new IllegalStateException("Root-motion node must be excluded from every layer");
+    rootMotion = new ModelRootMotion(index, sink);
+    composeNow();
+  }
+
+  /** Restores ordinary animated translation immediately, without emitting a movement delta. */
+  public void clearRootMotion() {
+    requireAttachedAndUsable();
+    rootMotion = null;
+    composeNow();
+  }
+
   public ModelAnimationLayer addLayer(String name, NodeMask mask) {
     Objects.requireNonNull(mask);
     requireAttachedAndUsable();
@@ -126,6 +163,8 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       if (layer.name.equals(name))
         throw new IllegalArgumentException("Duplicate model layer: " + name);
     boolean[] resolved = resolveMask(mask);
+    if (rootMotion != null && resolved[rootMotion.nodeIndex])
+      throw new IllegalStateException("Root-motion node must be excluded from every layer");
     ModelAnimationLayer layer = new ModelAnimationLayer(this, name, mask);
     layer.resolvedMask = resolved;
     layers.add(layer);
@@ -158,105 +197,149 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
     }
     if (!Float.isFinite(delta) || delta < 0)
       throw new IllegalArgumentException("Pose delta must be finite and non-negative");
+    if (rootMotion != null && updateMode != UpdateMode.WORLD)
+      throw new IllegalStateException("Root motion requires WORLD update mode");
 
     PlaybackClock.Step baseStep = current == null ? null : current.clock.preflight(delta);
     ModelPosePlayback plannedBase = current;
-    TransitionState plannedBaseFade = baseTransition;
-    long plannedBaseFadeRevision = plannedBaseFade == null ? -1 : plannedBaseFade.revision;
-    java.util.Arrays.fill(layerSteps, null);
-    java.util.Arrays.fill(layerPlaybacks, null);
-    int frameLayerCount = layers.size();
-    for (int i = 0; i < frameLayerCount; i++) {
-      ModelPosePlayback playback = layers.get(i).current;
-      layerPlaybacks[i] = playback;
-      if (playback != null) layerSteps[i] = playback.clock.preflight(delta);
-    }
-
-    java.util.Arrays.fill(layerTransitions, null);
-    java.util.Arrays.fill(layerTransitionRevisions, -1);
-    for (int i = 0; i < frameLayerCount; i++) {
-      layerTransitions[i] = layers.get(i).transition;
-      if (layerTransitions[i] != null) layerTransitionRevisions[i] = layerTransitions[i].revision;
-    }
-
-    for (int i = 0; i < frameLayerCount; i++) layers.get(i).updateFade(delta);
-    ModelPosePlayback base = current;
-    if (base != null && baseStep != null) {
-      if (!base.clock.fireStart(() -> current == base && isOwnerRunnable() && isRendererLive())) {
-        if (current == base && !isOwnerRunnable()) relinquishPose();
+    ModelRootMotion plannedRootMotion = rootMotion;
+    long rootEnabledRevision = enabledRevision();
+    long rootRendererRevision = renderer.enabledRevision();
+    long rootActiveRevision = getGameObject().activeRevision();
+    RootMotionDelta rootDelta =
+        plannedRootMotion == null || plannedBase == null
+            ? null
+            : plannedRootMotion.plan(
+                plannedBase,
+                baseStep,
+                delta,
+                seconds ->
+                    sampleRootTranslation(plannedBase, plannedRootMotion.nodeIndex, seconds));
+    ModelRootMotion.TranslationSnapshot rootSource =
+        rootDelta == null
+            ? null
+            : plannedRootMotion.captureTranslation(
+                clip(plannedBase.animationName()).tracks[plannedRootMotion.nodeIndex].translation);
+    try {
+      TransitionState plannedBaseFade = baseTransition;
+      long plannedBaseFadeRevision = plannedBaseFade == null ? -1 : plannedBaseFade.revision;
+      java.util.Arrays.fill(layerSteps, null);
+      java.util.Arrays.fill(layerPlaybacks, null);
+      int frameLayerCount = layers.size();
+      for (int i = 0; i < frameLayerCount; i++) {
+        ModelPosePlayback playback = layers.get(i).current;
+        layerPlaybacks[i] = playback;
+        if (playback != null) layerSteps[i] = playback.clock.preflight(delta);
       }
-    }
-    for (int i = 0; i < frameLayerCount; i++) {
-      ModelAnimationLayer layer = layers.get(i);
-      ModelPosePlayback playback = layerPlaybacks[i];
-      PlaybackClock.Step step = layerSteps[i];
-      if (playback != null
-          && step != null
-          && layer.current == playback
-          && playback.clock.revision() == step.generation()) {
-        playback.clock.fireStart(
-            () ->
-                layer.current == playback
-                    && playback.clock.revision() == step.generation()
-                    && isOwnerRunnable()
-                    && isRendererLive());
+
+      java.util.Arrays.fill(layerTransitions, null);
+      java.util.Arrays.fill(layerTransitionRevisions, -1);
+      for (int i = 0; i < frameLayerCount; i++) {
+        layerTransitions[i] = layers.get(i).transition;
+        if (layerTransitions[i] != null) layerTransitionRevisions[i] = layerTransitions[i].revision;
+      }
+
+      for (int i = 0; i < frameLayerCount; i++) layers.get(i).updateFade(delta);
+      ModelPosePlayback base = current;
+      if (base != null && baseStep != null) {
+        if (!base.clock.fireStart(() -> current == base && isOwnerRunnable() && isRendererLive())) {
+          if (current == base && !isOwnerRunnable()) relinquishPose();
+        }
+      }
+      for (int i = 0; i < frameLayerCount; i++) {
+        ModelAnimationLayer layer = layers.get(i);
+        ModelPosePlayback playback = layerPlaybacks[i];
+        PlaybackClock.Step step = layerSteps[i];
+        if (playback != null
+            && step != null
+            && layer.current == playback
+            && playback.clock.revision() == step.generation()) {
+          playback.clock.fireStart(
+              () ->
+                  layer.current == playback
+                      && playback.clock.revision() == step.generation()
+                      && isOwnerRunnable()
+                      && isRendererLive());
+          if (!isOwnerRunnable() || !isRendererLive()) {
+            relinquishPose();
+            return;
+          }
+        }
+      }
+      if (!isOwnerRunnable() || !isRendererLive()) {
+        relinquishPose();
+        return;
+      }
+      if (plannedBase != null
+          && current == plannedBase
+          && baseTransition == plannedBaseFade
+          && plannedBaseFade != null
+          && plannedBaseFade.revision == plannedBaseFadeRevision
+          && baseStep != null
+          && plannedBase.clock.revision() == baseStep.generation()
+          && plannedBase.clock.isActive()
+          && !plannedBase.clock.isPaused()
+          && frameIndex() >= plannedBaseFade.eligibleFrame) {
+        plannedBaseFade.advance(delta);
+        if (plannedBaseFade.progress() >= 1) baseTransition = null;
+      }
+      if (base != null && baseStep != null && current == base)
+        base.clock.advance(
+            baseStep, () -> current == base && isOwnerRunnable() && isRendererLive());
+      if (!isOwnerRunnable() || !isRendererLive()) {
+        relinquishPose();
+        return;
+      }
+      for (int i = 0; i < frameLayerCount; i++) {
+        ModelAnimationLayer layer = layers.get(i);
+        ModelPosePlayback playback = layerPlaybacks[i];
+        PlaybackClock.Step step = layerSteps[i];
+        TransitionState fade = layerTransitions[i];
+        if (playback != null
+            && layer.current == playback
+            && layer.transition == fade
+            && fade != null
+            && fade.revision == layerTransitionRevisions[i]
+            && step != null
+            && playback.clock.revision() == step.generation()
+            && playback.clock.isActive()
+            && !playback.clock.isPaused()
+            && frameIndex() >= fade.eligibleFrame) {
+          fade.advance(delta);
+          if (fade.progress() >= 1) layer.transition = null;
+        }
+        if (playback != null && step != null && layer.current == playback)
+          playback.clock.advance(
+              step, () -> layer.current == playback && isOwnerRunnable() && isRendererLive());
         if (!isOwnerRunnable() || !isRendererLive()) {
           relinquishPose();
           return;
         }
       }
+      if (isOwnerRunnable() && isRendererLive()) {
+        composeNow();
+        if (rootDelta != null
+            && rootMotion == plannedRootMotion
+            && current == plannedBase
+            && plannedBase.clock.revision() == baseStep.generation()
+            && enabledRevision() == rootEnabledRevision
+            && getGameObject().activeRevision() == rootActiveRevision
+            && renderer.enabledRevision() == rootRendererRevision
+            && rootSource != null
+            && rootSource.unchanged()) plannedRootMotion.sink.accept(rootDelta);
+      } else relinquishPose();
+    } finally {
+      if (rootSource != null) rootSource.close();
     }
-    if (!isOwnerRunnable() || !isRendererLive()) {
-      relinquishPose();
-      return;
-    }
-    if (plannedBase != null
-        && current == plannedBase
-        && baseTransition == plannedBaseFade
-        && plannedBaseFade != null
-        && plannedBaseFade.revision == plannedBaseFadeRevision
-        && baseStep != null
-        && plannedBase.clock.revision() == baseStep.generation()
-        && plannedBase.clock.isActive()
-        && !plannedBase.clock.isPaused()
-        && frameIndex() >= plannedBaseFade.eligibleFrame) {
-      plannedBaseFade.advance(delta);
-      if (plannedBaseFade.progress() >= 1) baseTransition = null;
-    }
-    if (base != null && baseStep != null && current == base)
-      base.clock.advance(baseStep, () -> current == base && isOwnerRunnable() && isRendererLive());
-    if (!isOwnerRunnable() || !isRendererLive()) {
-      relinquishPose();
-      return;
-    }
-    for (int i = 0; i < frameLayerCount; i++) {
-      ModelAnimationLayer layer = layers.get(i);
-      ModelPosePlayback playback = layerPlaybacks[i];
-      PlaybackClock.Step step = layerSteps[i];
-      TransitionState fade = layerTransitions[i];
-      if (playback != null
-          && layer.current == playback
-          && layer.transition == fade
-          && fade != null
-          && fade.revision == layerTransitionRevisions[i]
-          && step != null
-          && playback.clock.revision() == step.generation()
-          && playback.clock.isActive()
-          && !playback.clock.isPaused()
-          && frameIndex() >= fade.eligibleFrame) {
-        fade.advance(delta);
-        if (fade.progress() >= 1) layer.transition = null;
-      }
-      if (playback != null && step != null && layer.current == playback)
-        playback.clock.advance(
-            step, () -> layer.current == playback && isOwnerRunnable() && isRendererLive());
-      if (!isOwnerRunnable() || !isRendererLive()) {
-        relinquishPose();
-        return;
-      }
-    }
-    if (isOwnerRunnable() && isRendererLive()) composeNow();
-    else relinquishPose();
+  }
+
+  private Vector3 sampleRootTranslation(ModelPosePlayback playback, int index, double seconds) {
+    NodeTrack track = clip(playback.animationName()).tracks[index];
+    Vector3 result = new Vector3();
+    if (track == null || track.translation == null || track.translation.size == 0)
+      return result.set(nodes.get(index).bindT);
+    sampleVector(track.translation, seconds, result);
+    return result;
   }
 
   /** Called by ModelRenderer immediately before drawing to observe post-WORLD ownership changes. */
@@ -700,10 +783,12 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
       }
     }
     for (PoseNode node : nodes) {
-      node.node.translation.set(node.outT);
+      Vector3 translation =
+          rootMotion != null && rootMotion.nodeIndex == node.index ? node.bindT : node.outT;
+      node.node.translation.set(translation);
       node.node.rotation.set(node.outR);
       node.node.scale.set(node.outS);
-      node.node.localTransform.set(node.outT, node.outR, node.outS);
+      node.node.localTransform.set(translation, node.outR, node.outS);
       node.node.isAnimated = true;
     }
     renderer.instance.calculateTransforms();
@@ -978,6 +1063,7 @@ public final class ModelPoseAnimator extends Component implements ModelPosePlayb
   }
 
   private void clearIndex() {
+    rootMotion = null;
     sharedData = null;
     bindLocalTrs = null;
     sharedLayout.clear();
